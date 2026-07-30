@@ -10,5 +10,363 @@
   &__content {
     min-width: 0;
     flex: 1;
+    padding: 20px;
+  }
+}
+
+.student-list {
+  position: relative;
+  min-height: calc(100vh - 112px);
+  padding-bottom: 84px;
+  overflow: hidden;
+  background-color: #ffffff;
+  border: 1px solid #e0e5eb;
+  border-radius: 10px;
+
+  &__toolbar {
+    min-height: 84px;
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+  }
+
+  &__filters,
+  &__actions,
+  &__level-filter {
+    display: flex;
+    align-items: center;
+  }
+
+  &__filters,
+  &__actions {
+    gap: 9px;
+  }
+
+  &__filter-button,
+  &__outline-button,
+  &__primary-button,
+  &__search {
+    height: 40px;
+    background-color: #ffffff;
+    border: 1px solid #dce2e8;
+    border-radius: 5px;
+    font-size: 13px;
+  }
+
+  &__level-filter {
+    gap: 7px;
+  }
+
+  &__filter-button {
+    min-width: 40px;
+    padding: 0 12px;
+    color: #667085;
+    cursor: pointer;
+
+    &--active {
+      background-color: #eff8ff;
+      border-color: #7ac6ff;
+      color: #0796f6;
+    }
+  }
+
+  &__search {
+    width: 180px;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+
+    input {
+      min-width: 0;
+      height: 100%;
+      flex: 1;
+      padding: 0 10px;
+      border: 0;
+      outline: 0;
+      color: #344054;
+
+      &::placeholder {
+        color: #b2bac5;
+      }
+    }
+
+    i {
+      width: 40px;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-left: 1px solid #e3e7ec;
+      color: #87919e;
+    }
+
+    &:focus-within {
+      border-color: #159ef4;
+      box-shadow: 0 0 0 2px rgba(21, 158, 244, 0.1);
+    }
+  }
+
+  &__outline-button,
+  &__primary-button {
+    padding: 0 17px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  &__outline-button {
+    border-color: #159ef4;
+    color: #0796f6;
+  }
+
+  &__primary-button {
+    background-color: #079ff5;
+    border-color: #079ff5;
+    color: #ffffff;
+  }
+
+  &__table-wrap {
+    overflow-x: auto;
+  }
+
+  &__table {
+    width: 100%;
+    min-width: 900px;
+    border-collapse: collapse;
+    table-layout: fixed;
+
+    th,
+    td {
+      height: 56px;
+      padding: 8px 12px;
+      border-bottom: 1px solid #e5e8ec;
+      text-align: center;
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+
+    th {
+      height: 44px;
+      color: #8a94a2;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    td {
+      color: #293548;
+      font-size: 14px;
+    }
+
+    th:nth-child(1) { width: 52px; }
+    th:nth-child(2) { width: 80px; }
+    th:nth-child(3) { width: 110px; }
+    th:nth-child(4) { width: 120px; }
+    th:nth-child(5) { width: 160px; }
+    th:nth-child(6) { width: 130px; }
+    th:nth-child(7) { width: 150px; }
+    th:nth-child(8) { width: 100px; }
+  }
+
+  &__row {
+    cursor: pointer;
+    transition: background-color 140ms ease;
+
+    &:hover {
+      background-color: #f1f9ff;
+    }
+
+    &:focus-visible {
+      position: relative;
+      outline: none;
+      box-shadow: inset 0 0 0 2px #65bdf5;
+    }
+
+    &--selected {
+      background-color: #e8f5ff;
+
+      &:hover {
+        background-color: #def1ff;
+      }
+    }
+  }
+
+  &__check-cell {
+    .custom-checkbox {
+      margin: 0 auto;
+    }
+  }
+
+  &__status {
+    min-width: 52px;
+    padding: 5px 10px;
+    display: inline-flex;
+    justify-content: center;
+    border: 1px solid;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: 700;
+
+    &--active {
+      background-color: #eef9ff;
+      border-color: #8fd3fb;
+      color: #0796f6;
+    }
+
+    &--inactive {
+      background-color: #f4f5f7;
+      border-color: #d8dde4;
+      color: #7a8492;
+    }
+  }
+
+  &__table-button {
+    min-height: 36px;
+    padding: 0 13px;
+    background-color: #ffffff;
+    border: 1px solid #dce1e7;
+    border-radius: 5px;
+    color: #344054;
+    cursor: pointer;
+  }
+
+  &__empty {
+    height: 180px !important;
+    color: #8993a0 !important;
+  }
+
+  &__pagination {
+    position: absolute;
+    right: 0;
+    bottom: 16px;
+    left: 0;
+    display: flex;
+    justify-content: center;
+
+    button {
+      width: 44px;
+      height: 44px;
+      background-color: #ffffff;
+      border: 1px solid #dfe4e9;
+      color: #c8cdd3;
+
+      & + button {
+        margin-left: -1px;
+      }
+
+      &:first-child { border-radius: 5px 0 0 5px; }
+      &:last-child { border-radius: 0 5px 5px 0; }
+    }
+  }
+
+  &__pagination-current {
+    color: #1f2937 !important;
+    font-weight: 700;
+  }
+
+  &__selection-bar {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    min-height: 64px;
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #55585c;
+    color: #ffffff;
+    z-index: 2;
+
+    strong {
+      font-size: 14px;
+    }
+  }
+
+  &__selection-actions {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+
+    button {
+      min-width: 48px;
+      padding: 8px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      background: none;
+      border: 0;
+      color: #ffffff;
+      font-size: 12px;
+      cursor: pointer;
+
+      i { font-size: 15px; }
+    }
+  }
+
+  &__selection-close {
+    min-width: auto !important;
+    color: #c8cdd2 !important;
+  }
+
+  &__sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+}
+
+@media (max-width: 1180px) {
+  .student-list {
+    &__toolbar {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+
+    &__actions {
+      width: 100%;
+    }
+
+    &__search {
+      flex: 1;
+    }
+  }
+}
+
+@media (max-width: 720px) {
+  .student-management-page__content {
+    padding: 12px;
+  }
+
+  .student-list {
+    &__toolbar {
+      padding: 16px;
+    }
+
+    &__filters,
+    &__actions {
+      width: 100%;
+      flex-wrap: wrap;
+    }
+
+    &__search {
+      width: 100%;
+      flex-basis: 100%;
+    }
+
+    &__selection-bar {
+      padding: 0 16px;
+    }
   }
 }
