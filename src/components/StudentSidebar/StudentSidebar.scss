@@ -1,0 +1,57 @@
+.student-sidebar {
+  width: 220px;
+  min-height: calc(100vh - 72px);
+  flex: 0 0 220px;
+  padding: 24px 16px;
+  background-color: #ffffff;
+  border-right: 1px solid #e8edf3;
+
+  &__navigation {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  &__menu {
+    width: 100%;
+    min-height: 52px;
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    border-radius: 9px;
+    color: #4d596a;
+    font-size: 15px;
+    font-weight: 600;
+    transition: background-color 160ms ease, color 160ms ease;
+
+    &:hover {
+      background-color: #f2f7fd;
+      color: #1478f2;
+    }
+
+    &:focus-visible {
+      outline: 2px solid #1478f2;
+      outline-offset: 2px;
+    }
+
+    &--active {
+      background-color: #e5f3ff;
+      color: #1478f2;
+      font-weight: 700;
+    }
+  }
+}
+
+@media (max-width: 720px) {
+  .student-sidebar {
+    width: 176px;
+    flex-basis: 176px;
+    padding: 16px 12px;
+
+    &__menu {
+      min-height: 48px;
+      padding: 0 14px;
+      font-size: 14px;
+    }
+  }
+}
