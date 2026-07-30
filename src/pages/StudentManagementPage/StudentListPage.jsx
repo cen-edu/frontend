@@ -52,6 +52,11 @@ function StudentListPage() {
         setSelectedIds([]);
     };
 
+    const deleteSelectedStudents = () => {
+        setStudents((current) => current.filter((student) => !selectedIds.includes(student.id)));
+        setSelectedIds([]);
+    };
+
     const registerStudent = (student) => {
         setStudents((current) => {
             const nextId = Math.max(...current.map((item) => item.id), 0) + 1;
@@ -113,6 +118,7 @@ function StudentListPage() {
             <StudentSelectionBar
                 selectedCount={selectedIds.length}
                 onChangeStatus={changeSelectedStatus}
+                onDelete={deleteSelectedStudents}
                 onClear={() => setSelectedIds([])}
             />
 

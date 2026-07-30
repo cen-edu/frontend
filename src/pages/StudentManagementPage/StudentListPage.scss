@@ -44,6 +44,13 @@
     padding: 0 12px;
     color: #667085;
     cursor: pointer;
+    transition: background-color 140ms ease, border-color 140ms ease, color 140ms ease;
+
+    &:hover {
+      background-color: #f1f9ff;
+      border-color: #9fd8fb;
+      color: #0796f6;
+    }
 
     &--active {
       background-color: #eff8ff;
@@ -94,10 +101,21 @@
     gap: 7px;
     font-weight: 600;
     cursor: pointer;
+    transition: background-color 140ms ease, border-color 140ms ease, color 140ms ease;
   }
 
-  &__outline-button { border-color: #159ef4; color: #0796f6; }
-  &__primary-button { background-color: #079ff5; border-color: #079ff5; color: #ffffff; }
+  &__outline-button {
+    border-color: #159ef4;
+    color: #0796f6;
+    &:hover { background-color: #edf8ff; border-color: #078ee0; color: #0786d3; }
+  }
+
+  &__primary-button {
+    background-color: #079ff5;
+    border-color: #079ff5;
+    color: #ffffff;
+    &:hover { background-color: #0788d8; border-color: #0788d8; }
+  }
   &__table-wrap { overflow-x: auto; }
 
   &__table {
@@ -162,6 +180,13 @@
     border-radius: 5px;
     color: #344054;
     cursor: pointer;
+    transition: background-color 140ms ease, border-color 140ms ease, color 140ms ease;
+
+    &:hover {
+      background-color: #edf8ff;
+      border-color: #91cff5;
+      color: #0786d3;
+    }
   }
 
   &__empty { height: 180px !important; color: #8993a0 !important; }
@@ -183,6 +208,11 @@
       & + button { margin-left: -1px; }
       &:first-child { border-radius: 5px 0 0 5px; }
       &:last-child { border-radius: 0 5px 5px 0; }
+      &:not(:disabled) {
+        cursor: pointer;
+        &:hover { background-color: #edf8ff; border-color: #91cff5; color: #0786d3; }
+      }
+      &:disabled { cursor: default; }
     }
   }
 
@@ -222,11 +252,19 @@
       color: #ffffff;
       font-size: 12px;
       cursor: pointer;
+      border-radius: 5px;
+      transition: background-color 140ms ease, color 140ms ease;
       i { font-size: 15px; }
+
+      &:hover { background-color: rgba(255, 255, 255, 0.14); }
     }
   }
 
   &__selection-close { min-width: auto !important; color: #c8cdd2 !important; }
+  &__selection-delete {
+    color: #ffd0d0 !important;
+    &:hover { background-color: rgba(255, 87, 87, 0.2) !important; color: #ffffff !important; }
+  }
 
   &__sr-only {
     position: absolute;

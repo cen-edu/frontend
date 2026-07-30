@@ -90,6 +90,12 @@
     border-radius: 10px;
     color: #3e4b5d;
     cursor: pointer;
+    transition: background-color 140ms ease, border-color 140ms ease;
+
+    &:hover {
+      background-color: #f4faff;
+      border-color: #afd9f3;
+    }
   }
 
   &__profile-icon {
