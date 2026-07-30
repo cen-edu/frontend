@@ -27,6 +27,7 @@ function StudentToolbar({
     onStatusFilterChange,
     searchTerm,
     onSearchTermChange,
+    onOpenBulkRegistration,
     onOpenRegistration,
 }) {
     return (
@@ -67,7 +68,7 @@ function StudentToolbar({
                     />
                     <i className="bi bi-search" aria-hidden="true" />
                 </label>
-                <button type="button" className="student-list__outline-button">
+                <button type="button" className="student-list__outline-button" onClick={onOpenBulkRegistration}>
                     <i className="bi bi-people-fill" aria-hidden="true" />
                     학생 일괄 등록
                 </button>

@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import initialStudents from '../../mocks/students';
+import StudentBulkRegistrationModal from './components/StudentBulkRegistrationModal';
 import StudentDetailModal from './components/StudentDetailModal';
 import StudentRegistrationModal from './components/StudentRegistrationModal';
 import StudentSelectionBar from './components/StudentSelectionBar';
@@ -14,6 +15,7 @@ function StudentListPage() {
     const [statusFilter, setStatusFilter] = useState('all');
     const [sortOrder, setSortOrder] = useState('newest');
     const [searchTerm, setSearchTerm] = useState('');
+    const [isBulkRegistrationOpen, setIsBulkRegistrationOpen] = useState(false);
     const [isRegistrationOpen, setIsRegistrationOpen] = useState(false);
     const [detailStudent, setDetailStudent] = useState(null);
 
@@ -98,6 +100,7 @@ function StudentListPage() {
                 onStatusFilterChange={setStatusFilter}
                 searchTerm={searchTerm}
                 onSearchTermChange={setSearchTerm}
+                onOpenBulkRegistration={() => setIsBulkRegistrationOpen(true)}
                 onOpenRegistration={() => setIsRegistrationOpen(true)}
             />
 
@@ -121,6 +124,13 @@ function StudentListPage() {
                 onDelete={deleteSelectedStudents}
                 onClear={() => setSelectedIds([])}
             />
+
+            {isBulkRegistrationOpen && (
+                <StudentBulkRegistrationModal
+                    onClose={() => setIsBulkRegistrationOpen(false)}
+                    onRegister={() => setIsBulkRegistrationOpen(false)}
+                />
+            )}
 
             {isRegistrationOpen && (
                 <StudentRegistrationModal onClose={() => setIsRegistrationOpen(false)} onRegister={registerStudent} />

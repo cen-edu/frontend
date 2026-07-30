@@ -27,6 +27,8 @@ StudentManagementPage/
     ├── StudentSelectionBar.jsx
     ├── StudentFormModal.jsx
     ├── StudentFormModal.scss
+    ├── StudentBulkRegistrationModal.jsx
+    ├── StudentBulkRegistrationModal.scss
     ├── StudentRegistrationModal.jsx
     ├── StudentDetailModal.jsx
     ├── StudentGradeSelector.jsx
@@ -49,7 +51,7 @@ StudentManagementPage/
 - 검색어, 학교급 필터, 상태 필터, 정렬 방식과 선택된 학생 ID를 관리한다.
 - 학생 등록, 상세 수정, 활성·비활성 일괄 변경과 선택 학생 삭제 로직을 소유한다.
 - 화면 표현은 `StudentToolbar`, `StudentTable`, `StudentSelectionBar`에 위임한다.
-- 등록·상세 모달의 열림 상태와 저장 결과를 관리한다.
+- 일괄 등록·개별 등록·상세 모달의 열림 상태와 저장 결과를 관리한다.
 - 개발용 초기 데이터는 `src/mocks/students.js`에서 가져온다.
 
 ### `ClassManagementPage.jsx`
@@ -65,7 +67,7 @@ StudentManagementPage/
 - 최신 등록순·이름순 정렬을 제공한다.
 - 전체·초·중·고 학교급 필터와 활성·비활성 상태 필터를 제공한다.
 - 학생 이름 검색 입력을 제공한다.
-- 학생 일괄 등록 및 개별 등록 버튼을 렌더링한다.
+- 학생 일괄 등록 및 개별 등록 버튼을 렌더링하고 각 모달 열기 요청을 상위 페이지에 전달한다.
 - 필터 상태는 직접 소유하지 않고 `StudentListPage`에서 props로 전달받는다.
 
 ### `StudentTable.jsx`
@@ -92,6 +94,15 @@ StudentManagementPage/
 - 모달이 열리면 본문 스크롤을 잠근다.
 - 바깥 영역 클릭과 `Escape` 키로 닫기를 지원한다.
 - 실제 폼 내용과 푸터 버튼은 `children`으로 전달받는다.
+- `width` prop으로 모달별 너비를 조절한다.
+
+### `StudentBulkRegistrationModal.jsx`
+
+- 학생 일괄 등록을 위한 양식 다운로드와 파일 첨부 흐름을 제공한다.
+- CSV 양식을 생성해 다운로드한다.
+- 엑셀 또는 CSV 파일 첨부를 지원하고 선택한 파일명을 표시한다.
+- 파일이 첨부된 경우에만 등록 버튼을 활성화한다.
+- 실제 파일 해석과 서버 등록은 향후 API 연동 계층에서 처리한다.
 
 ### `StudentRegistrationModal.jsx`
 
@@ -165,6 +176,7 @@ StudentListPage (학생 데이터와 화면 상태 관리)
         ├── StudentToolbar (필터·검색 변경 요청)
         ├── StudentTable (선택·상세보기 요청)
         ├── StudentSelectionBar (일괄 상태 변경 요청)
+        ├── StudentBulkRegistrationModal (일괄 등록 파일 전달)
         ├── StudentRegistrationModal (신규 학생 등록 요청)
         └── StudentDetailModal (기존 학생 저장 요청)
 ```

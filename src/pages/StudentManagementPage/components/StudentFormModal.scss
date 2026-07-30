@@ -1,5 +1,5 @@
 .student-form-modal {
-  width: min(752px, calc(100vw - 32px));
+  width: min(var(--student-form-modal-width, 752px), calc(100vw - 32px));
   max-height: calc(100vh - 40px);
   overflow-y: auto;
   background-color: #ffffff;

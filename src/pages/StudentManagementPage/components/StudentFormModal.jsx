@@ -2,7 +2,7 @@ import { useEffect, useId } from 'react';
 import { createPortal } from 'react-dom';
 import './StudentFormModal.scss';
 
-function StudentFormModal({ title, closeLabel, onClose, children }) {
+function StudentFormModal({ title, closeLabel, onClose, children, width = 752 }) {
     const titleId = useId();
 
     useEffect(() => {
@@ -23,7 +23,13 @@ function StudentFormModal({ title, closeLabel, onClose, children }) {
         <div className="student-form-modal__overlay" onMouseDown={(event) => {
             if (event.target === event.currentTarget) onClose();
         }}>
-            <section className="student-form-modal" role="dialog" aria-modal="true" aria-labelledby={titleId}>
+            <section
+                className="student-form-modal"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby={titleId}
+                style={{ '--student-form-modal-width': typeof width === 'number' ? `${width}px` : width }}
+            >
                 <header className="student-form-modal__header">
                     <h2 id={titleId}>{title}</h2>
                     <button type="button" aria-label={closeLabel} onClick={onClose}>

@@ -1,0 +1,139 @@
+.student-bulk-modal {
+  padding: 24px;
+
+  &__step {
+    padding-bottom: 20px;
+    border-bottom: 1px solid #e3e7ec;
+
+    &--upload {
+      padding-top: 20px;
+      padding-bottom: 0;
+      border-bottom: 0;
+    }
+
+    strong {
+      display: block;
+      margin-bottom: 7px;
+      color: #079ff5;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    p {
+      margin-bottom: 5px;
+      color: #3e4856;
+      font-size: 13px;
+    }
+
+    small {
+      display: block;
+      color: #8a94a2;
+      font-size: 11px;
+    }
+  }
+
+  &__download-button,
+  &__attach-button {
+    height: 40px;
+    background-color: #ffffff;
+    border: 1px solid #d7dde4;
+    border-radius: 5px;
+    color: #465160;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background-color 140ms ease, border-color 140ms ease, color 140ms ease;
+
+    &:hover {
+      background-color: #edf8ff;
+      border-color: #91cff5;
+      color: #0786d3;
+    }
+  }
+
+  &__download-button {
+    min-width: 144px;
+    margin-top: 14px;
+    padding: 0 16px;
+
+    i { margin-right: 7px; }
+  }
+
+  &__file-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    opacity: 0;
+  }
+
+  &__upload-row {
+    margin-top: 15px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px;
+  }
+
+  &__filename {
+    min-width: 0;
+    height: 40px;
+    padding: 0 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    overflow: hidden;
+    background-color: #ffffff;
+    border: 1px solid #dce2e8;
+    border-radius: 5px;
+    color: #b0b8c2;
+    font-size: 12px;
+
+    span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    &--selected {
+      border-color: #91cff5;
+      color: #344054;
+
+      i { color: #079ff5; }
+    }
+  }
+
+  &__attach-button {
+    min-width: 80px;
+    padding: 0 13px;
+  }
+
+  &__footer {
+    padding-top: 24px;
+    display: flex;
+    justify-content: flex-end;
+
+    button {
+      width: 100px;
+      height: 40px;
+      background-color: #079ff5;
+      border: 1px solid #079ff5;
+      border-radius: 5px;
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background-color 140ms ease, border-color 140ms ease;
+
+      &:not(:disabled):hover {
+        background-color: #0788d8;
+        border-color: #0788d8;
+      }
+
+      &:disabled {
+        background-color: #f0f2f4;
+        border-color: #f0f2f4;
+        color: #b3bac3;
+        cursor: not-allowed;
+      }
+    }
+  }
+}
