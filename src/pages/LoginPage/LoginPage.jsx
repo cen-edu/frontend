@@ -1,9 +1,12 @@
 import mainLogo from '../../assets/images/login-main-logo.png'
-import loginSymbol from '../../assets/images/login-symbol.png'
+import loginSymbol from '../../assets/images/logo-symbol.png'
+import { useNavigate } from 'react-router-dom'
 
 import './LoginPage.scss'
 
 const LoginPage = () => {
+    const navigate = useNavigate();
+
     return (
         <main className="login-page">
             {/* 왼쪽 영역 */}
@@ -92,6 +95,7 @@ const LoginPage = () => {
                         <button
                             className="login-form__submit"
                             type="button"
+                            onClick={() => navigate('/dashboard')}
                         >
                             시작하기
                         </button>

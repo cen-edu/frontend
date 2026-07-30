@@ -1,0 +1,118 @@
+.header {
+  width: 100%;
+  height: 72px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e8edf3;
+
+  &__inner {
+    width: 100%;
+    height: 100%;
+    padding: 0 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__left {
+    height: 100%;
+    display: flex;
+    align-items: center;
+  }
+
+  &__brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-right: 56px;
+    color: #122238;
+    text-decoration: none;
+  }
+
+  &__brand-image {
+    width: 38px;
+    height: 38px;
+    object-fit: contain;
+  }
+
+  &__brand-name {
+    font-size: 20px;
+    font-weight: 800;
+    white-space: nowrap;
+  }
+
+  &__navigation {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    gap: 42px;
+  }
+
+  &__menu {
+    position: relative;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    color: #596579;
+    font-size: 16px;
+    font-weight: 600;
+    text-decoration: none;
+
+    &::after {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      height: 3px;
+      border-radius: 3px 3px 0 0;
+      background-color: transparent;
+      content: "";
+    }
+
+    &--active {
+      color: #1478f2;
+      font-weight: 700;
+
+      &::after {
+        background-color: #1478f2;
+      }
+    }
+  }
+
+  &__profile {
+    min-width: 156px;
+    height: 44px;
+    padding: 0 14px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    background-color: #ffffff;
+    border: 1px solid #dfe5ec;
+    border-radius: 10px;
+    color: #3e4b5d;
+    cursor: pointer;
+  }
+
+  &__profile-icon {
+    width: 25px;
+    height: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #fff2d9;
+    border-radius: 50%;
+    color: #f2a93b;
+    font-size: 13px;
+  }
+
+  &__profile-name {
+    flex: 1;
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  &__profile-arrow {
+    color: #9ba6b4;
+    font-size: 11px;
+  }
+}
