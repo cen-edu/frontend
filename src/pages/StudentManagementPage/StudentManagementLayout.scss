@@ -1,0 +1,21 @@
+.student-management-page {
+  min-height: 100vh;
+  background-color: #f6f8fa;
+
+  &__body {
+    min-height: calc(100vh - 72px);
+    display: flex;
+  }
+
+  &__content {
+    min-width: 0;
+    flex: 1;
+    padding: 20px;
+  }
+}
+
+@media (max-width: 720px) {
+  .student-management-page__content {
+    padding: 12px;
+  }
+}
