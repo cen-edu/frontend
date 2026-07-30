@@ -34,7 +34,8 @@
 
 - 페이지 이동과 활성 메뉴 처리는 `react-router-dom`을 사용한다.
 - 새로운 페이지 경로는 `src/App.jsx`의 라우트 구성에 등록한다.
-- 학생 관리 하위 화면은 `src/pages/StudentManagementPage/StudentManagementLayout.jsx`의 중첩 라우트와 `Outlet` 구조를 사용한다.
+- 학생 관리 하위 화면은 기본적으로 `src/pages/StudentManagementPage/StudentManagementLayout.jsx`의 중첩 라우트와 `Outlet` 구조를 사용한다.
+- 헤더와 사이드바가 없어야 하는 반 생성·수정 화면(`/students/classes/new`, `/students/classes/:classId/edit`)은 예외로 `StudentManagementLayout` 밖의 독립 라우트를 사용한다.
 
 ## 접근성
 

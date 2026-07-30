@@ -7,9 +7,11 @@
 | 경로 | 화면 | 역할 |
 | --- | --- | --- |
 | `/students` | `StudentListPage` | 학생 목록 조회, 필터링, 선택, 등록, 수정 |
-| `/students/classes` | `ClassManagementPage` | 반 관리 화면. 현재 본문은 구현 전 상태 |
+| `/students/classes` | `ClassManagementPage` | 반 목록 조회, 검색, 선택, 순서 변경, 생성, 수정 |
+| `/students/classes/new` | `ClassCreationRoutePage` | 헤더와 사이드바가 없는 독립 반 생성 화면 |
+| `/students/classes/:classId/edit` | `ClassEditRoutePage` | 반 생성 화면을 재사용하는 독립 반 수정 화면 |
 
-두 경로는 `StudentManagementLayout`을 공통 부모로 사용한다. 하위 화면은 React Router의 `Outlet` 위치에 렌더링된다.
+`/students`와 `/students/classes`는 `StudentManagementLayout`을 공통 부모로 사용하고 `Outlet` 위치에 렌더링된다. 반 생성·수정 경로는 전역 헤더와 학생 관리 사이드바를 표시하지 않는 독립 라우트다.
 
 ## 디렉터리 구조
 
@@ -21,7 +23,16 @@ StudentManagementPage/
 ├── StudentListPage.jsx
 ├── StudentListPage.scss
 ├── ClassManagementPage.jsx
+├── ClassManagementPage.scss
+├── ClassCreationRoutePage.jsx
+├── ClassCreationRoutePage.scss
+├── ClassEditRoutePage.jsx
 └── components/
+    ├── ClassToolbar.jsx
+    ├── ClassTable.jsx
+    ├── ClassCreationPage.jsx
+    ├── ClassCreationPage.scss
+    ├── ClassSelectionBar.jsx
     ├── StudentToolbar.jsx
     ├── StudentTable.jsx
     ├── StudentSelectionBar.jsx
@@ -57,8 +68,54 @@ StudentManagementPage/
 ### `ClassManagementPage.jsx`
 
 - `/students/classes` 경로에 대응하는 반 관리 페이지다.
-- 현재는 사이드바 이동과 라우팅 구조만 유지하기 위한 빈 화면이다.
-- 반 관리 기능을 구현할 때 이 파일을 진입점으로 사용한다.
+- 반 목록, 검색어와 선택된 반 ID를 관리한다.
+- 검색 결과의 전체 선택과 개별 선택을 처리한다.
+- 반 만들기 버튼을 누르면 현재 반 목록을 라우트 상태로 전달하며 독립 생성 경로로 이동한다.
+- 생성·수정 경로에서 전달받은 목록과 키보드 방향키를 이용한 반 순서 변경을 반 목록에 반영한다.
+- 개발용 초기 데이터는 `src/mocks/classes.js`에서 가져온다.
+
+### `ClassCreationRoutePage.jsx`
+
+- `/students/classes/new`에 대응하며 `StudentManagementLayout` 밖에서 렌더링된다.
+- 반 생성 화면만 담는 전체 화면 배경을 제공하고 헤더와 사이드바는 렌더링하지 않는다.
+- 반 목록을 라우트 상태로 보존하고 닫기 또는 등록 시 `/students/classes`로 전달한다.
+
+### `ClassEditRoutePage.jsx`
+
+- `/students/classes/:classId/edit`에 대응하며 `StudentManagementLayout` 밖에서 렌더링된다.
+- 라우트 상태나 초기 더미 목록에서 수정 대상 반을 찾아 `ClassCreationPage`에 초기값으로 전달한다.
+- 수정하거나 닫을 때 현재 반 목록을 보존해 `/students/classes`로 복귀한다.
+- 대상 반이 없으면 안내와 목록 복귀 버튼을 표시한다.
+
+## 반 관리 컴포넌트
+
+### `ClassToolbar.jsx`
+
+- 반 순서 반영 안내 문구, 반 이름 검색창과 반 만들기 버튼을 렌더링한다.
+- 선생님 필터는 제공하지 않는다.
+- 검색어와 독립 반 생성 화면으로 이동할 요청을 `ClassManagementPage`에 전달한다.
+
+### `ClassTable.jsx`
+
+- 반 순서, 반 이름, 학생 요약, 담당 선생님과 상세 버튼을 표로 표시한다.
+- 공통 `CustomCheckbox` 또는 행 전체 클릭으로 전체·개별 반을 선택하며 행 hover와 키보드 포커스 피드백을 제공한다.
+- 행 전체를 마우스로 드래그해 다른 행의 위·아래에 놓거나 이동 핸들에 포커스한 뒤 방향키를 눌러 순서를 변경할 수 있다.
+- 드래그 중인 행과 놓일 위치를 시각적으로 표시한다.
+
+### `ClassSelectionBar.jsx`
+
+- 한 개 이상의 반이 선택되면 반 관리 화면 하단에 표시된다.
+- 선택된 반 개수와 삭제·선택 해제 메뉴를 제공한다.
+- 실제 반 삭제와 선택 상태 변경은 `ClassManagementPage`에 요청한다.
+
+### `ClassCreationPage.jsx`
+
+- 독립 생성·수정 경로의 본문 전체에 표시되는 공통 반 폼 화면이다.
+- 반 이름과 선생님·학생 검색어, 선택된 선생님·학생 ID를 관리한다.
+- 수정 시 전달받은 반 이름과 선택 ID를 초기값으로 사용하고 제목·제출 버튼 문구를 화면 용도에 맞게 표시한다.
+- 검색 결과나 학년 그룹 단위로 대상을 추가하고 선택 목록에서 개별 또는 그룹 단위로 제외한다.
+- 추가·제외 아이콘뿐 아니라 각 목록 행 전체를 클릭할 수 있고 hover 및 키보드 포커스 피드백을 제공한다.
+- 등록 시 선택 결과를 반 목록 형식으로 정리해 `ClassManagementPage`에 전달하고 닫기 버튼으로 목록에 복귀한다.
 
 ## 목록 컴포넌트
 
@@ -153,6 +210,18 @@ StudentManagementPage/
 - 목록 화면의 툴바, 테이블, 행 상태, 페이지네이션과 선택 바 스타일을 정의한다.
 - 하위 목록 컴포넌트가 사용하는 `student-list` BEM 클래스의 단일 스타일 소스다.
 
+### `ClassManagementPage.scss`
+
+- 반 관리 툴바, 검색, 목록 테이블, 버튼과 반 폼의 `class-management` BEM 스타일을 정의한다.
+
+### `components/ClassCreationPage.scss`
+
+- 반 생성 화면의 헤더, 선생님·학생 선택 패널, 검색창과 등록 푸터의 `class-creation` BEM 스타일을 정의한다.
+
+### `ClassCreationRoutePage.scss`
+
+- 헤더와 사이드바 없이 반 생성 카드만 표시되는 전체 화면 배경과 높이를 정의한다.
+
 ### `components/StudentFormModal.scss`
 
 - 등록·상세 모달이 공유하는 레이아웃과 입력 필드, 학년·상태 버튼, 푸터 버튼 스타일을 정의한다.
@@ -161,6 +230,8 @@ StudentManagementPage/
 ## 외부 의존 파일
 
 - `src/mocks/students.js`: 학생 목록 개발용 초기 데이터
+- `src/mocks/classes.js`: 반 목록 개발용 초기 데이터
+- `src/mocks/teachers.js`: 반 생성 화면의 선생님 개발용 데이터
 - `src/components/Header/Header.jsx`: 서비스 공통 헤더
 - `src/components/StudentSidebar/StudentSidebar.jsx`: 학생 관리용 사이드바
 - `src/components/common/CustomSelect/CustomSelect.jsx`: 공통 드롭다운
@@ -181,6 +252,25 @@ StudentListPage (학생 데이터와 화면 상태 관리)
         └── StudentDetailModal (기존 학생 저장 요청)
 ```
 
+```text
+src/mocks/classes.js
+        ↓
+ClassManagementPage (반 데이터와 화면 상태 관리)
+        ├── ClassToolbar (검색 변경·반 생성 요청)
+        ├── ClassTable (선택·상세·순서 변경 요청)
+        └── ClassSelectionBar (선택 반 삭제·선택 해제 요청)
+
+ClassManagementPage ── 현재 반 목록 전달 ──→ ClassCreationRoutePage
+                                              └── ClassCreationPage (선생님·학생 선택과 반 생성 요청)
+                                                        ↓
+                                     등록된 반 목록과 함께 ClassManagementPage로 복귀
+
+ClassManagementPage ── 수정할 반과 목록 전달 ──→ ClassEditRoutePage
+                                                └── ClassCreationPage (기존 선택값 수정 요청)
+                                                          ↓
+                                       수정된 반 목록과 함께 ClassManagementPage로 복귀
+```
+
 실제 API가 연결되면 서버 요청과 응답 처리는 `StudentListPage`에 직접 누적하지 않고 별도의 API 모듈 또는 전용 훅으로 분리한다.
 
 ## 변경 시 원칙
@@ -188,5 +278,5 @@ StudentListPage (학생 데이터와 화면 상태 관리)
 - 페이지는 데이터와 화면 상태를 조정하고, 반복되는 UI 표현은 하위 컴포넌트에 위임한다.
 - 등록·상세 모달에 동일한 필드를 각각 중복 작성하지 않는다.
 - 학생 폼의 공통 필드를 변경하면 등록과 상세 화면에 모두 필요한 변경인지 먼저 확인한다.
-- 새로운 학생 관리 하위 페이지는 `StudentManagementLayout`의 중첩 라우트로 추가한다.
+- 새로운 학생 관리 하위 페이지는 기본적으로 `StudentManagementLayout`의 중첩 라우트로 추가하며, 공통 헤더와 사이드바가 없어야 하는 전체 화면 흐름만 독립 라우트로 분리한다.
 - 파일의 책임이 달라지거나 컴포넌트가 추가·삭제되면 이 문서를 함께 수정한다.
