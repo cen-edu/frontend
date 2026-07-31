@@ -8,10 +8,11 @@
 | --- | --- | --- |
 | `/students` | `StudentListPage` | 학생 목록 조회, 필터링, 선택, 등록, 수정 |
 | `/students/classes` | `ClassManagementPage` | 반 목록 조회, 검색, 선택, 순서 변경, 생성, 수정 |
+| `/students/reports` | `FeatureIntro` | 학생별 학습 리포트 메뉴의 초기 안내 화면 |
 | `/students/classes/new` | `ClassCreationRoutePage` | 헤더와 사이드바가 없는 독립 반 생성 화면 |
 | `/students/classes/:classId/edit` | `ClassEditRoutePage` | 반 생성 화면을 재사용하는 독립 반 수정 화면 |
 
-`/students`와 `/students/classes`는 `StudentManagementLayout`을 공통 부모로 사용하고 `Outlet` 위치에 렌더링된다. 반 생성·수정 경로는 전역 헤더와 학생 관리 사이드바를 표시하지 않는 독립 라우트다.
+`/students`, `/students/classes`, `/students/reports`는 `StudentManagementLayout`을 공통 부모로 사용한다. `StudentManagementLayout`은 공용 `SectionLayout`에 학생 관리 메뉴 설정을 전달하며, 자식 화면은 `SectionLayout`의 `Outlet` 위치에 렌더링된다. 반 생성·수정 경로는 전역 헤더와 사이드바를 표시하지 않는 독립 라우트다.
 
 ## 디렉터리 구조
 
@@ -19,7 +20,6 @@
 StudentManagementPage/
 ├── README.md
 ├── StudentManagementLayout.jsx
-├── StudentManagementLayout.scss
 ├── StudentListPage.jsx
 ├── StudentListPage.scss
 ├── ClassManagementPage.jsx
@@ -52,8 +52,8 @@ StudentManagementPage/
 ### `StudentManagementLayout.jsx`
 
 - 학생 관리 영역의 공통 레이아웃이다.
-- 전역 `Header`와 학생 관리용 `StudentSidebar`를 배치한다.
-- `Outlet`을 통해 학생 목록 또는 반 관리 화면을 렌더링한다.
+- 공용 `SectionLayout`에 `students` 섹션 키를 전달한다.
+- 전역 헤더, 사이드바와 `Outlet` 배치는 `SectionLayout`이 담당한다.
 - 목록 데이터나 모달 상태를 직접 관리하지 않는다.
 
 ### `StudentListPage.jsx`
@@ -201,10 +201,6 @@ StudentManagementPage/
 
 ## 스타일 파일
 
-### `StudentManagementLayout.scss`
-
-- 학생 관리 공통 레이아웃의 높이, 배경, 사이드바 옆 본문 영역과 반응형 여백을 정의한다.
-
 ### `StudentListPage.scss`
 
 - 목록 화면의 툴바, 테이블, 행 상태, 페이지네이션과 선택 바 스타일을 정의한다.
@@ -233,7 +229,10 @@ StudentManagementPage/
 - `src/mocks/classes.js`: 반 목록 개발용 초기 데이터
 - `src/mocks/teachers.js`: 반 생성 화면의 선생님 개발용 데이터
 - `src/components/Header/Header.jsx`: 서비스 공통 헤더
-- `src/components/StudentSidebar/StudentSidebar.jsx`: 학생 관리용 사이드바
+- `src/components/SectionLayout/SectionLayout.jsx`: 헤더, 공용 사이드바와 중첩 화면을 배치하는 섹션 공통 레이아웃
+- `src/components/Sidebar/Sidebar.jsx`: 섹션별 메뉴 배열을 렌더링하는 공용 사이드바
+- `src/components/FeatureIntro/FeatureIntro.jsx`: 아직 구현되지 않은 하위 메뉴의 초기 안내 화면
+- `src/config/sidebarMenus.js`: 문제 만들기, 학습 관리, 학생 관리의 사이드바 메뉴 설정
 - `src/components/common/CustomSelect/CustomSelect.jsx`: 공통 드롭다운
 - `src/components/common/CustomCheckbox/CustomCheckbox.jsx`: 목록 선택용 공통 체크박스
 - `src/App.jsx`: 학생 관리 중첩 라우트 등록
@@ -278,5 +277,5 @@ ClassManagementPage ── 수정할 반과 목록 전달 ──→ ClassEditRou
 - 페이지는 데이터와 화면 상태를 조정하고, 반복되는 UI 표현은 하위 컴포넌트에 위임한다.
 - 등록·상세 모달에 동일한 필드를 각각 중복 작성하지 않는다.
 - 학생 폼의 공통 필드를 변경하면 등록과 상세 화면에 모두 필요한 변경인지 먼저 확인한다.
-- 새로운 학생 관리 하위 페이지는 기본적으로 `StudentManagementLayout`의 중첩 라우트로 추가하며, 공통 헤더와 사이드바가 없어야 하는 전체 화면 흐름만 독립 라우트로 분리한다.
+- 새로운 학생 관리 하위 페이지는 기본적으로 `StudentManagementLayout`의 중첩 라우트로 추가하고 `src/config/sidebarMenus.js`에도 메뉴를 등록하며, 공통 헤더와 사이드바가 없어야 하는 전체 화면 흐름만 독립 라우트로 분리한다.
 - 파일의 책임이 달라지거나 컴포넌트가 추가·삭제되면 이 문서를 함께 수정한다.

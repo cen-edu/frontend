@@ -1,4 +1,4 @@
-.student-sidebar {
+.sidebar {
   width: 220px;
   min-height: calc(100vh - 72px);
   flex: 0 0 220px;
@@ -43,7 +43,7 @@
 }
 
 @media (max-width: 720px) {
-  .student-sidebar {
+  .sidebar {
     width: 176px;
     flex-basis: 176px;
     padding: 16px 12px;

@@ -1,4 +1,4 @@
-.student-management-page {
+.section-layout {
   min-height: 100vh;
   background-color: #f6f8fa;
 
@@ -15,7 +15,7 @@
 }
 
 @media (max-width: 720px) {
-  .student-management-page__content {
+  .section-layout__content {
     padding: 12px;
   }
 }
