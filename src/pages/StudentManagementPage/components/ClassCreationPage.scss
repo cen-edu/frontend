@@ -60,9 +60,6 @@
 
   &__columns {
     margin-top: 26px;
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: 24px;
   }
 
   &__group {
@@ -305,12 +302,6 @@
       &:not(:disabled):hover { background-color: #0788d8; border-color: #0788d8; }
       &:disabled { background-color: #b8dff5; border-color: #b8dff5; cursor: default; }
     }
-  }
-}
-
-@media (max-width: 1280px) {
-  .class-creation {
-    &__columns { grid-template-columns: 1fr; }
   }
 }
 

@@ -18,9 +18,9 @@ function ClassCreationRoutePage() {
     };
 
     return (
-        <main className="class-creation-route">
+        <div className="class-creation-route class-creation-route--nested">
             <ClassCreationPage onClose={() => returnToClassList()} onRegister={registerClass} />
-        </main>
+        </div>
     );
 }
 

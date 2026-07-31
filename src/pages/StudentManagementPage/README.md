@@ -9,10 +9,10 @@
 | `/students` | `StudentListPage` | 학생 목록 조회, 필터링, 선택, 등록, 수정 |
 | `/students/classes` | `ClassManagementPage` | 반 목록 조회, 검색, 선택, 순서 변경, 생성, 수정 |
 | `/students/reports` | `FeatureIntro` | 학생별 학습 리포트 메뉴의 초기 안내 화면 |
-| `/students/classes/new` | `ClassCreationRoutePage` | 헤더와 사이드바가 없는 독립 반 생성 화면 |
+| `/students/classes/new` | `ClassCreationRoutePage` | 헤더와 사이드바 안에서 반 이름과 학생을 설정하는 생성 화면 |
 | `/students/classes/:classId/edit` | `ClassEditRoutePage` | 반 생성 화면을 재사용하는 독립 반 수정 화면 |
 
-`/students`, `/students/classes`, `/students/reports`는 `StudentManagementLayout`을 공통 부모로 사용한다. `StudentManagementLayout`은 공용 `SectionLayout`에 학생 관리 메뉴 설정을 전달하며, 자식 화면은 `SectionLayout`의 `Outlet` 위치에 렌더링된다. 반 생성·수정 경로는 전역 헤더와 사이드바를 표시하지 않는 독립 라우트다.
+`/students`, `/students/classes`, `/students/classes/new`, `/students/reports`는 `StudentManagementLayout`을 공통 부모로 사용한다. `StudentManagementLayout`은 공용 `SectionLayout`에 학생 관리 메뉴 설정을 전달하며, 자식 화면은 `SectionLayout`의 `Outlet` 위치에 렌더링된다. 반 수정 경로만 전역 헤더와 사이드바를 표시하지 않는 독립 라우트다.
 
 ## 디렉터리 구조
 
@@ -70,14 +70,14 @@ StudentManagementPage/
 - `/students/classes` 경로에 대응하는 반 관리 페이지다.
 - 반 목록, 검색어와 선택된 반 ID를 관리한다.
 - 검색 결과의 전체 선택과 개별 선택을 처리한다.
-- 반 만들기 버튼을 누르면 현재 반 목록을 라우트 상태로 전달하며 독립 생성 경로로 이동한다.
+- 반 만들기 버튼을 누르면 현재 반 목록을 라우트 상태로 전달하며 중첩 생성 경로로 이동한다.
 - 생성·수정 경로에서 전달받은 목록과 키보드 방향키를 이용한 반 순서 변경을 반 목록에 반영한다.
 - 개발용 초기 데이터는 `src/mocks/classes.js`에서 가져온다.
 
 ### `ClassCreationRoutePage.jsx`
 
-- `/students/classes/new`에 대응하며 `StudentManagementLayout` 밖에서 렌더링된다.
-- 반 생성 화면만 담는 전체 화면 배경을 제공하고 헤더와 사이드바는 렌더링하지 않는다.
+- `/students/classes/new`에 대응하며 `StudentManagementLayout`의 `Outlet` 안에서 렌더링된다.
+- 공통 헤더와 학생 관리 사이드바 안에 반 생성 폼을 표시한다.
 - 반 목록을 라우트 상태로 보존하고 닫기 또는 등록 시 `/students/classes`로 전달한다.
 
 ### `ClassEditRoutePage.jsx`
@@ -93,7 +93,7 @@ StudentManagementPage/
 
 - 반 순서 반영 안내 문구, 반 이름 검색창과 반 만들기 버튼을 렌더링한다.
 - 선생님 필터는 제공하지 않는다.
-- 검색어와 독립 반 생성 화면으로 이동할 요청을 `ClassManagementPage`에 전달한다.
+- 검색어와 반 생성 화면으로 이동할 요청을 `ClassManagementPage`에 전달한다.
 
 ### `ClassTable.jsx`
 
@@ -110,10 +110,11 @@ StudentManagementPage/
 
 ### `ClassCreationPage.jsx`
 
-- 독립 생성·수정 경로의 본문 전체에 표시되는 공통 반 폼 화면이다.
-- 반 이름과 선생님·학생 검색어, 선택된 선생님·학생 ID를 관리한다.
+- 생성·수정 경로에서 사용하는 공통 반 폼 화면이다.
+- 반 이름과 학생 검색어, 선택된 학생 ID를 관리한다.
+- 담당 선생님 선택 UI는 제공하지 않으며 등록·수정 결과에는 현재 사용자 `이하영 선생님`을 고정 배정한다.
 - 수정 시 전달받은 반 이름과 선택 ID를 초기값으로 사용하고 제목·제출 버튼 문구를 화면 용도에 맞게 표시한다.
-- 검색 결과나 학년 그룹 단위로 대상을 추가하고 선택 목록에서 개별 또는 그룹 단위로 제외한다.
+- 검색 결과의 학생을 개별 또는 학년 그룹 단위로 추가하고 선택 목록에서 개별 또는 그룹 단위로 제외한다.
 - 추가·제외 아이콘뿐 아니라 각 목록 행 전체를 클릭할 수 있고 hover 및 키보드 포커스 피드백을 제공한다.
 - 등록 시 선택 결과를 반 목록 형식으로 정리해 `ClassManagementPage`에 전달하고 닫기 버튼으로 목록에 복귀한다.
 
@@ -212,11 +213,12 @@ StudentManagementPage/
 
 ### `components/ClassCreationPage.scss`
 
-- 반 생성 화면의 헤더, 선생님·학생 선택 패널, 검색창과 등록 푸터의 `class-creation` BEM 스타일을 정의한다.
+- 반 생성 화면의 헤더, 학생 선택 패널, 검색창과 등록 푸터의 `class-creation` BEM 스타일을 정의한다.
 
 ### `ClassCreationRoutePage.scss`
 
-- 헤더와 사이드바 없이 반 생성 카드만 표시되는 전체 화면 배경과 높이를 정의한다.
+- 중첩 반 생성 화면과 독립 반 수정 화면의 배경, 여백과 높이를 각각 정의한다.
+- 데스크톱 중첩 생성 화면은 등록 푸터가 뷰포트 안에 유지되도록 카드 높이를 제한하고 학생 목록 패널 내부에서 스크롤한다.
 
 ### `components/StudentFormModal.scss`
 
@@ -227,7 +229,7 @@ StudentManagementPage/
 
 - `src/mocks/students.js`: 학생 목록 개발용 초기 데이터
 - `src/mocks/classes.js`: 반 목록 개발용 초기 데이터
-- `src/mocks/teachers.js`: 반 생성 화면의 선생님 개발용 데이터
+- `src/mocks/teachers.js`: 로그인 사용자 연동 전 담당 선생님을 고정하는 개발용 데이터
 - `src/components/Header/Header.jsx`: 서비스 공통 헤더
 - `src/components/SectionLayout/SectionLayout.jsx`: 헤더, 공용 사이드바와 중첩 화면을 배치하는 섹션 공통 레이아웃
 - `src/components/Sidebar/Sidebar.jsx`: 섹션별 메뉴 배열을 렌더링하는 공용 사이드바
@@ -259,8 +261,9 @@ ClassManagementPage (반 데이터와 화면 상태 관리)
         ├── ClassTable (선택·상세·순서 변경 요청)
         └── ClassSelectionBar (선택 반 삭제·선택 해제 요청)
 
-ClassManagementPage ── 현재 반 목록 전달 ──→ ClassCreationRoutePage
-                                              └── ClassCreationPage (선생님·학생 선택과 반 생성 요청)
+ClassManagementPage ── 현재 반 목록 전달 ──→ StudentManagementLayout
+                                              └── ClassCreationRoutePage
+                                                    └── ClassCreationPage (학생 선택과 반 생성 요청, 현재 선생님 고정 배정)
                                                         ↓
                                      등록된 반 목록과 함께 ClassManagementPage로 복귀
 
