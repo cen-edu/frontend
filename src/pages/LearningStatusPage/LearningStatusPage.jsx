@@ -1,7 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import AssignmentPeriodFilter from '../../components/common/AssignmentPeriodFilter/AssignmentPeriodFilter';
 import CustomSelect from '../../components/common/CustomSelect/CustomSelect';
+import SearchInput from '../../components/common/SearchInput/SearchInput';
 import { learningAssignments, learningFilterOptions } from '../../mocks/learningStatus';
+import { getDefaultAssignmentDateRange, isAssignedWithinPeriod } from '../../utils/assignmentPeriod';
 import AssignmentList from './components/AssignmentList';
 import LearningSummary from './components/LearningSummary';
 import StudentProgressTable from './components/StudentProgressTable';
@@ -19,8 +22,11 @@ function LearningStatusPage() {
     const requestedWorksheet = searchParams.get('worksheet');
     const requestedAssignment = learningAssignments.find((assignment) =>
         assignment.id === requestedWorksheet || assignment.analysisWorksheetId === requestedWorksheet);
+    const initialDateRange = useMemo(getDefaultAssignmentDateRange, []);
     const [classId, setClassId] = useState(requestedAssignment?.classId ?? 'all');
-    const [period, setPeriod] = useState(requestedAssignment?.period ?? 'this-week');
+    const [period, setPeriod] = useState('all');
+    const [customStartDate, setCustomStartDate] = useState(initialDateRange.startDate);
+    const [customEndDate, setCustomEndDate] = useState(initialDateRange.endDate);
     const [assignmentStatus, setAssignmentStatus] = useState('all');
     const [studentStatus, setStudentStatus] = useState('all');
     const [searchTerm, setSearchTerm] = useState('');
@@ -31,10 +37,10 @@ function LearningStatusPage() {
         const keyword = searchTerm.trim().toLowerCase();
         return learningAssignments.filter((assignment) =>
             (classId === 'all' || assignment.classId === classId)
-            && (period === 'this-month' || assignment.period === period)
-            && (assignmentStatus === 'all' || assignment.status === assignmentStatus)
-            && (!keyword || assignment.title.toLowerCase().includes(keyword)));
-    }, [assignmentStatus, classId, period, searchTerm]);
+                && isAssignedWithinPeriod(assignment.assignedAt, period, customStartDate, customEndDate)
+                && (assignmentStatus === 'all' || assignment.status === assignmentStatus)
+                && (!keyword || assignment.title.toLowerCase().includes(keyword)));
+    }, [assignmentStatus, classId, customEndDate, customStartDate, period, searchTerm]);
 
     useEffect(() => {
         if (!filteredAssignments.some((assignment) => assignment.id === selectedId)) {
@@ -88,18 +94,14 @@ function LearningStatusPage() {
             <div className="learning-status__toolbar">
                 <div className="learning-status__filters">
                     <CustomSelect label="반 선택" value={classId} options={learningFilterOptions.classes} onChange={setClassId} width={158} />
-                    <CustomSelect label="기간 선택" value={period} options={learningFilterOptions.periods} onChange={setPeriod} width={116} />
+                    <AssignmentPeriodFilter period={period} startDate={customStartDate} endDate={customEndDate} onPeriodChange={setPeriod} onStartDateChange={setCustomStartDate} onEndDateChange={setCustomEndDate} />
                     <div className="learning-status__tabs" role="group" aria-label="학습 진행 상태">
                         {assignmentTabs.map((tab) => (
                             <button key={tab.value} type="button" className={assignmentStatus === tab.value ? 'learning-status__tab learning-status__tab--active' : 'learning-status__tab'} aria-pressed={assignmentStatus === tab.value} onClick={() => setAssignmentStatus(tab.value)}>{tab.label}</button>
                         ))}
                     </div>
                 </div>
-                <label className="learning-status__search">
-                    <span className="learning-status__sr-only">학습명 검색</span>
-                    <input type="search" value={searchTerm} placeholder="학습명 검색" onChange={(event) => setSearchTerm(event.target.value)} />
-                    <i className="bi bi-search" aria-hidden="true" />
-                </label>
+                <SearchInput value={searchTerm} placeholder="학습명 검색" onChange={setSearchTerm} />
             </div>
 
             <LearningSummary summary={summary} activeKey={activeSummaryKey} onSelect={selectSummary} />

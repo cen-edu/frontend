@@ -36,10 +36,8 @@
   &__filters { display: flex; align-items: center; gap: 8px; }
   &__tabs { margin-left: 4px; padding: 3px; display: flex; background: #f2f5f7; border-radius: 7px; }
   &__tab { min-height: 32px; padding: 0 12px; background: transparent; border: 0; border-radius: 5px; color: #747f91; font-size: 12px; font-weight: 600; cursor: pointer; &:hover { color: #176fc1; } &:focus-visible { outline: 2px solid rgba(23,111,193,.35); outline-offset: 1px; } &--active { background: #fff; box-shadow: 0 1px 4px rgba(37,54,73,.12); color: #176fc1; } }
-  &__search { width: 190px; height: 38px; display: flex; align-items: center; background: #fff; border: 1px solid #d7dde4; border-radius: 6px; input { min-width: 0; height: 100%; padding: 0 4px 0 11px; flex: 1; border: 0; outline: 0; color: #263247; font-size: 12px; &::placeholder { color: #949eaa; } } i { padding: 0 11px; color: #747f91; } &:focus-within { border-color: #176fc1; box-shadow: 0 0 0 2px rgba(23,111,193,.1); } }
   &__content { display: grid; grid-template-columns: minmax(270px, .72fr) minmax(640px, 2fr); gap: 16px; align-items: start; }
-  &__sr-only { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
 }
 
-@media (max-width: 1120px) { .learning-status { &__toolbar { align-items: stretch; flex-direction: column; } &__search { width: 100%; } &__content { grid-template-columns: 1fr; } } }
-@media (max-width: 720px) { .learning-status { &__page-header { padding: 19px 16px 16px; align-items: flex-start; flex-direction: column; gap: 10px; } &__filters { align-items: stretch; flex-wrap: wrap; .custom-select { flex: 1; } } &__tabs { width: 100%; margin-left: 0; } &__tab { flex: 1; } } }
+@media (max-width: 1120px) { .learning-status { &__toolbar { align-items: stretch; flex-direction: column; } &__content { grid-template-columns: 1fr; } } }
+@media (max-width: 720px) { .learning-status { &__page-header { padding: 19px 16px 16px; align-items: flex-start; flex-direction: column; gap: 10px; } &__filters { align-items: stretch; flex-wrap: wrap; > .custom-select { flex: 1; } } &__tabs { width: 100%; margin-left: 0; } &__tab { flex: 1; } } }

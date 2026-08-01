@@ -4,11 +4,6 @@ export const assessmentResultFilterOptions = {
         { value: 'middle-1-1', label: '중1 1반' },
         { value: 'middle-1-2', label: '중1 2반' },
     ],
-    periods: [
-        { value: 'all', label: '전체 기간' },
-        { value: '2026-1', label: '2026년 1학기' },
-        { value: '2025-2', label: '2025년 2학기' },
-    ],
 };
 
 const students = [
@@ -57,7 +52,7 @@ const students = [
 export const initialAssessmentResults = [
     {
         id: 'semester-assessment-1', type: 'assessment', title: '1학기 종합평가',
-        classId: 'middle-1-1', className: '중1 1반', period: '2026-1', status: 'grading', modified: false,
+        classId: 'middle-1-1', className: '중1 1반', assignedAt: '2026.07.29', status: 'grading', modified: false,
         questions: [
             { no: 1, format: 'choice', maxScore: 5, answer: '3', rubric: [], gradingStatus: 'auto' },
             { no: 2, format: 'choice', maxScore: 5, answer: '12', rubric: [], gradingStatus: 'auto' },
@@ -69,7 +64,7 @@ export const initialAssessmentResults = [
     },
     {
         id: 'unit-2-practice', type: 'practice', title: '2단원 연습',
-        classId: 'middle-1-1', className: '중1 1반', period: '2026-1', status: 'confirmed', modified: false,
+        classId: 'middle-1-1', className: '중1 1반', assignedAt: '2026.07.21', status: 'confirmed', modified: false,
         questions: [
             { no: 1, format: 'short', maxScore: 5, answer: '8', rubric: [], gradingStatus: 'auto' },
             { no: 2, format: 'short', maxScore: 5, answer: '15', rubric: [], gradingStatus: 'auto' },
@@ -86,7 +81,11 @@ export const initialAssessmentResults = [
 export const getAssessmentResults = () => {
     try {
         const saved = window.localStorage.getItem('assessment-results');
-        return saved ? JSON.parse(saved) : initialAssessmentResults;
+        if (!saved) return initialAssessmentResults;
+        return JSON.parse(saved).map((result) => {
+            const initialResult = initialAssessmentResults.find((item) => item.id === result.id);
+            return { ...result, assignedAt: result.assignedAt ?? initialResult?.assignedAt };
+        });
     } catch {
         return initialAssessmentResults;
     }

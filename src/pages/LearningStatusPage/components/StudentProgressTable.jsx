@@ -40,10 +40,6 @@ function StudentProgressTable({
                     {gradingPending > 0 && <span className="learning-students__grading-count">채점 대기 {gradingPending}명</span>}
                 </div>
                 <div className="learning-students__header-controls">
-                    <div className="learning-students__links">
-                        {gradingPending > 0 && <Link to={`/learning/results?worksheet=${worksheetId}`}>채점하러 가기 <i className="bi bi-arrow-right" aria-hidden="true" /></Link>}
-                        <Link to={`/learning/weaknesses?worksheet=${worksheetId}`}>취약점 분석 보기 <i className="bi bi-arrow-right" aria-hidden="true" /></Link>
-                    </div>
                     <CustomSelect label="학생 학습 상태" value={status} options={statusOptions} onChange={onStatusChange} width={116} />
                 </div>
             </div>
@@ -75,7 +71,7 @@ function StudentProgressTable({
                                         </span>
                                     </td>
                                     <td>
-                                        {student.grading === 'done' && <Link className="learning-students__grading-link" to={`/learning/results?worksheet=${worksheetId}&student=${student.id}`}>채점 완료 <i className="bi bi-chevron-right" aria-hidden="true" /></Link>}
+                                        {student.grading === 'done' && <span className="learning-students__grading-done">채점 완료</span>}
                                         {student.grading === 'pending' && <span className="learning-students__grading-pending">채점 대기</span>}
                                         {student.grading === null && <span className="learning-students__muted">-</span>}
                                     </td>

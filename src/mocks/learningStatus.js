@@ -4,11 +4,6 @@ export const learningFilterOptions = {
         { value: 'class-1', label: '중학교 1학년 1반' },
         { value: 'class-2', label: '중학교 1학년 2반' },
     ],
-    periods: [
-        { value: 'this-week', label: '이번 주' },
-        { value: 'last-week', label: '지난 주' },
-        { value: 'this-month', label: '이번 달' },
-    ],
     studentStatuses: [
         { value: 'all', label: '전체 상태' },
         { value: 'submitted', label: '제출 완료' },
@@ -31,7 +26,6 @@ export const learningAssignments = [
         totalUnits: 10,
         assignedAt: '2026.07.29',
         dueAt: '2026.08.01 18:00',
-        period: 'this-week',
         status: 'ongoing',
         students: [
             { id: 101, number: 1, name: '김민서', status: 'submitted', doneUnits: 10, grading: 'done', score: 92, submittedAt: '08.01 09:12' },
@@ -56,7 +50,6 @@ export const learningAssignments = [
         totalUnits: 10,
         assignedAt: '2026.07.31',
         dueAt: '2026.08.02 18:00',
-        period: 'this-week',
         status: 'ongoing',
         students: [
             { id: 101, number: 1, name: '김민서', status: 'in-progress', doneUnits: 6, grading: null, score: null, submittedAt: '-' },
@@ -81,7 +74,6 @@ export const learningAssignments = [
         totalUnits: 10,
         assignedAt: '2026.07.27',
         dueAt: '2026.07.31 18:00',
-        period: 'this-week',
         status: 'completed',
         students: [
             { id: 201, number: 1, name: '서지민', status: 'submitted', doneUnits: 10, grading: 'done', score: 91, submittedAt: '07.31 14:08' },
@@ -103,7 +95,6 @@ export const learningAssignments = [
         totalUnits: 12,
         assignedAt: '2026.07.21',
         dueAt: '2026.07.25 18:00',
-        period: 'last-week',
         status: 'completed',
         students: [
             { id: 101, number: 1, name: '김민수', status: 'submitted', doneUnits: 12, grading: null, score: null, submittedAt: '07.24 17:20' },

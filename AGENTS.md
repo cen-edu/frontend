@@ -61,7 +61,8 @@
 - 평가 결과의 반·기간 필터도 `AnalysisFilters`의 `controls` 구성을 사용하며 학습지 선택은 좌측 학습 목록으로 대체한다.
 - 드롭다운 디자인은 `src/components/common/CustomSelect/CustomSelect.scss`의 공통 스타일을 따른다.
 - 페이지별로 별도의 드롭다운 컴포넌트나 중복 스타일을 만들지 않는다.
-- 드롭다운의 너비와 비활성 상태 등 화면별 차이는 `CustomSelect`의 props로 조절한다.
+- 드롭다운의 높이, 글꼴, 테두리와 옵션 스타일은 `CustomSelect.scss`에서만 관리하고 페이지 SCSS에서 덮어쓰지 않는다. 너비와 비활성 상태 등 화면별 차이는 `CustomSelect`의 props로 조절한다.
+- 학습 관리 화면의 학습명 검색은 `src/components/common/SearchInput/SearchInput.jsx`를 재사용하며, 검색창 높이와 입력·플레이스홀더 글꼴 및 테두리는 `SearchInput.scss`에서만 관리한다.
 - 테이블이나 목록의 항목 선택 체크박스는 `src/components/common/CustomCheckbox/CustomCheckbox.jsx`를 사용한다.
 - 항목 선택 체크박스의 디자인은 `src/components/common/CustomCheckbox/CustomCheckbox.scss`의 공통 스타일을 따르고 페이지에서 중복 구현하지 않는다.
 - 학생 관리 영역의 모달은 `src/pages/StudentManagementPage/components/StudentFormModal.jsx`와 `StudentFormModal.scss`의 공통 오버레이, 헤더, 닫기 동작을 재사용하고 화면별 너비는 `width` prop으로 조절한다.
