@@ -14,6 +14,7 @@ import WeaknessAnalysisPage from './pages/WeaknessAnalysisPage/WeaknessAnalysisP
 import StudentDiagnosisPage from './pages/WeaknessAnalysisPage/StudentDiagnosisPage';
 import AssessmentResultPage from './pages/AssessmentResultPage/AssessmentResultPage';
 import GradingPage from './pages/AssessmentResultPage/GradingPage';
+import WrongAnswerPage from './pages/WrongAnswerPage/WrongAnswerPage';
 
 function App() {
   return (
@@ -29,7 +30,7 @@ function App() {
         <Route path="/learning" element={<SectionLayout section="learning" />}>
           <Route index element={<LearningStatusPage />} />
           <Route path="results" element={<AssessmentResultPage />} />
-          <Route path="wrong-answers" element={<FeatureIntro title="오답 학습" description="오답 문항의 해설과 관련 개념, 학생별 복습 이력을 관리합니다." />} />
+          <Route path="wrong-answers" element={<WrongAnswerPage />} />
           <Route path="weaknesses" element={<WeaknessAnalysisPage />} />
           <Route path="weaknesses/students/:id" element={<StudentDiagnosisPage />} />
         </Route>

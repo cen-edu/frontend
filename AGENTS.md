@@ -42,6 +42,7 @@
 - 헤더와 사이드바가 없어야 하는 반 수정 화면(`/students/classes/:classId/edit`)은 예외로 `StudentManagementLayout` 밖의 독립 라우트를 사용한다.
 - 학습 현황과 취약점 분석 사이의 학습지 컨텍스트는 `worksheet` 쿼리로 전달하고, 학습 현황에서 미리 선택할 학생 ID는 쉼표로 구분한 `select` 쿼리로 전달한다.
 - 평가 결과 조회(`/learning/results`)는 학습 관리의 중첩 라우트를 사용하고, 채점 화면(`/learning/results/:worksheetId/grading`)은 헤더와 사이드바가 없는 독립 라우트로 유지한다.
+- 취약점 분석에서 오답 학습(`/learning/wrong-answers`)으로 이동할 때는 `worksheet`, 쉼표로 구분한 `students`, 선택 개념이 있으면 `concept` 쿼리를 전달해 배정 모달의 학습지·학생·항목을 미리 선택한다.
 
 ## 접근성
 
@@ -62,3 +63,4 @@
 - 항목 선택 체크박스의 디자인은 `src/components/common/CustomCheckbox/CustomCheckbox.scss`의 공통 스타일을 따르고 페이지에서 중복 구현하지 않는다.
 - 학생 관리 영역의 모달은 `src/pages/StudentManagementPage/components/StudentFormModal.jsx`와 `StudentFormModal.scss`의 공통 오버레이, 헤더, 닫기 동작을 재사용하고 화면별 너비는 `width` prop으로 조절한다.
 - 학생 폼의 학년 선택과 선택 입력 영역은 각각 `StudentGradeSelector.jsx`, `StudentOptionalFields.jsx`를 재사용한다.
+- 오답 학습 배정 모달은 `StudentFormModal` 프레임을 재사용하며, 해설 검토가 완료되지 않은 문항이나 개념은 선택 및 배정을 비활성화한다.

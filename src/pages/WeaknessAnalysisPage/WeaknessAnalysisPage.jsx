@@ -24,13 +24,13 @@ function WeaknessAnalysisPage() {
     const toggleStudent = (studentId) => setSelectedStudents((current) => current.includes(studentId) ? current.filter((id) => id !== studentId) : [...current, studentId]);
     const typeLabel = worksheet.origin === 'custom' ? '맞춤 문제 · 챗봇 연계' : worksheet.type === 'assessment' ? '종합평가' : '일반 학습';
 
-    return <div className="weakness-page"><header className="weakness-page__heading"><div><p>WEAKNESS ANALYSIS</p><h1>취약점 분석</h1></div><span>{worksheet.date} 기준</span></header>
+    return <section className="weakness-page" aria-label="취약점 분석">
         <AnalysisFilters filters={filters} options={weaknessFilterOptions} onChange={changeFilter} badge={{ label: typeLabel, tone: worksheet.origin === 'custom' ? 'purple' : worksheet.type === 'assessment' ? 'orange' : 'blue' }} />
         <GradingNotice count={metrics.pending} /><DiagnosisSummaryCards worksheet={worksheet} metrics={metrics} />
         {worksheet.origin === 'custom' && <PrescriptionTable worksheet={displayedWorksheet} />}
         <div className="weakness-page__analysis-grid">{worksheet.type === 'assessment' ? <QuestionMatrix worksheet={displayedWorksheet} view={matrixView} onViewChange={setMatrixView} onSelect={setSelection} selection={selection} /> : <ConceptMatrix worksheet={displayedWorksheet} sortBy={sortBy} onSortChange={setSortBy} onSelect={setSelection} selection={selection} />}<DetailSidePanel worksheet={worksheet} selection={selection} onQuadrantSelect={() => setStatusFilter('priority')} /></div>
         <StudentDiagnosisTable worksheet={displayedWorksheet} selected={selectedStudents} onToggle={toggleStudent} statusFilter={statusFilter} onStatusFilter={setStatusFilter} />
-        <DiagnosisSelectionBar selectedStudents={worksheet.students.filter((student) => selectedStudents.includes(student.id))} worksheetId={worksheet.id} />
-    </div>;
+        <DiagnosisSelectionBar selectedStudents={worksheet.students.filter((student) => selectedStudents.includes(student.id))} worksheetId={worksheet.id} conceptId={selection?.conceptId} />
+    </section>;
 }
 export default WeaknessAnalysisPage;

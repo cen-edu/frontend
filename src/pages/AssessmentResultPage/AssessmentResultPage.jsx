@@ -42,8 +42,7 @@ function AssessmentResultPage() {
     };
 
     return (
-        <section className="assessment-results" aria-labelledby="assessment-results-title">
-            <div className="assessment-results__heading"><span>ASSESSMENT RESULTS</span><h1 id="assessment-results-title">평가 결과</h1><p>채점을 진행하고 확정된 점수를 확인하세요.</p></div>
+        <section className="assessment-results" aria-label="평가 결과">
             <div className="assessment-results__toolbar">
                 <div className="assessment-results__filters">
                     <AnalysisFilters showContext={false} className="analysis-filters--results" controls={[
