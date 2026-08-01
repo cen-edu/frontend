@@ -41,6 +41,7 @@
 - 반 생성 화면(`/students/classes/new`)은 `StudentManagementLayout`의 중첩 라우트를 사용해 헤더와 사이드바를 표시한다.
 - 헤더와 사이드바가 없어야 하는 반 수정 화면(`/students/classes/:classId/edit`)은 예외로 `StudentManagementLayout` 밖의 독립 라우트를 사용한다.
 - 학습 현황과 취약점 분석 사이의 학습지 컨텍스트는 `worksheet` 쿼리로 전달하고, 학습 현황에서 미리 선택할 학생 ID는 쉼표로 구분한 `select` 쿼리로 전달한다.
+- 평가 결과 조회(`/learning/results`)는 학습 관리의 중첩 라우트를 사용하고, 채점 화면(`/learning/results/:worksheetId/grading`)은 헤더와 사이드바가 없는 독립 라우트로 유지한다.
 
 ## 접근성
 
@@ -53,6 +54,7 @@
 - 헤더와 사이드바가 함께 표시되는 중첩 라우트 화면은 `src/components/SectionLayout/SectionLayout.jsx`를 재사용한다.
 - 서비스의 모든 셀렉트 드롭다운은 네이티브 `<select>` 대신 `src/components/common/CustomSelect/CustomSelect.jsx`를 사용한다.
 - 대시보드와 취약점 분석처럼 학년도·학기·반·학습지를 선택하는 분석 조회 영역은 `src/components/common/AnalysisFilters/AnalysisFilters.jsx`를 재사용한다.
+- 평가 결과의 반·기간 필터도 `AnalysisFilters`의 `controls` 구성을 사용하며 학습지 선택은 좌측 학습 목록으로 대체한다.
 - 드롭다운 디자인은 `src/components/common/CustomSelect/CustomSelect.scss`의 공통 스타일을 따른다.
 - 페이지별로 별도의 드롭다운 컴포넌트나 중복 스타일을 만들지 않는다.
 - 드롭다운의 너비와 비활성 상태 등 화면별 차이는 `CustomSelect`의 props로 조절한다.
