@@ -3,8 +3,6 @@ import './App.css'
 import LoginPage from './pages/LoginPage/LoginPage';
 import DashboardPage from './pages/DashboardPage/DashboardPage';
 import ClassManagementPage from './pages/StudentManagementPage/ClassManagementPage';
-import ClassCreationRoutePage from './pages/StudentManagementPage/ClassCreationRoutePage';
-import ClassEditRoutePage from './pages/StudentManagementPage/ClassEditRoutePage';
 import StudentListPage from './pages/StudentManagementPage/StudentListPage';
 import StudentManagementLayout from './pages/StudentManagementPage/StudentManagementLayout';
 import SectionLayout from './components/SectionLayout/SectionLayout';
@@ -35,11 +33,9 @@ function App() {
           <Route path="weaknesses/students/:id" element={<StudentDiagnosisPage />} />
         </Route>
         <Route path="/learning/results/:worksheetId/grading" element={<GradingPage />} />
-        <Route path="/students/classes/:classId/edit" element={<ClassEditRoutePage />} />
         <Route path="/students" element={<StudentManagementLayout />}>
           <Route index element={<StudentListPage />} />
           <Route path="classes" element={<ClassManagementPage />} />
-          <Route path="classes/new" element={<ClassCreationRoutePage />} />
           <Route path="reports" element={<FeatureIntro title="학생별 학습 리포트" description="학생별 학습 이력, 평가 결과와 취약 개념을 조회합니다." />} />
         </Route>
       </Routes>

@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
 import initialClasses from '../../mocks/classes';
+import ClassFormModal from './components/ClassFormModal';
 import ClassSelectionBar from './components/ClassSelectionBar';
 import ClassTable from './components/ClassTable';
 import ClassToolbar from './components/ClassToolbar';
@@ -8,13 +8,12 @@ import { formatClassLabel } from './components/classFormConfig';
 import './ClassManagementPage.scss';
 
 function ClassManagementPage() {
-    const navigate = useNavigate();
-    const location = useLocation();
-    const [classes, setClasses] = useState(() => location.state?.classes ?? initialClasses);
+    const [classes, setClasses] = useState(initialClasses);
     const [selectedIds, setSelectedIds] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [yearFilter, setYearFilter] = useState('all');
     const [gradeFilter, setGradeFilter] = useState('all');
+    const [classForm, setClassForm] = useState(null);
 
     const yearOptions = useMemo(() => [
         { value: 'all', label: '전체 학년도' },
@@ -95,6 +94,18 @@ function ClassManagementPage() {
         });
     };
 
+    const saveClass = (classItem) => {
+        if (classItem.id) {
+            setClasses((current) => current.map((item) => item.id === classItem.id ? classItem : item));
+        } else {
+            setClasses((current) => {
+                const nextId = Math.max(...current.map(({ id }) => id), 0) + 1;
+                return [...current, { ...classItem, id: nextId }];
+            });
+        }
+        setClassForm(null);
+    };
+
     return (
         <section className="class-management" aria-labelledby="class-management-title">
             <header className="class-management__header">
@@ -114,14 +125,14 @@ function ClassManagementPage() {
                 onGradeFilterChange={setGradeFilter}
                 searchTerm={searchTerm}
                 onSearchTermChange={setSearchTerm}
-                onOpenCreate={() => navigate('/students/classes/new', { state: { classes } })}
+                onOpenCreate={() => setClassForm({ mode: 'create' })}
             />
             <ClassTable
                 classes={filteredClasses}
                 selectedIds={selectedIds}
                 onToggleAll={toggleAll}
                 onToggleClass={toggleClass}
-                onOpenDetail={(classItem) => navigate(`/students/classes/${classItem.id}/edit`, { state: { classes } })}
+                onOpenDetail={(classItem) => setClassForm({ mode: 'detail', classItem })}
                 onMoveClass={moveClass}
                 onReorderClass={reorderClass}
             />
@@ -130,6 +141,13 @@ function ClassManagementPage() {
                 onDelete={deleteSelectedClasses}
                 onClear={() => setSelectedIds([])}
             />
+            {classForm && (
+                <ClassFormModal
+                    initialClass={classForm.classItem}
+                    onClose={() => setClassForm(null)}
+                    onSave={saveClass}
+                />
+            )}
         </section>
     );
 }

@@ -46,8 +46,7 @@
 - 페이지 이동과 활성 메뉴 처리는 `react-router-dom`을 사용한다.
 - 새로운 페이지 경로는 `src/App.jsx`의 라우트 구성에 등록한다.
 - 학생 관리 하위 화면은 기본적으로 `src/pages/StudentManagementPage/StudentManagementLayout.jsx`의 중첩 라우트와 `Outlet` 구조를 사용한다.
-- 반 생성 화면(`/students/classes/new`)은 `StudentManagementLayout`의 중첩 라우트를 사용해 헤더와 사이드바를 표시한다.
-- 헤더와 사이드바가 없어야 하는 반 수정 화면(`/students/classes/:classId/edit`)은 예외로 `StudentManagementLayout` 밖의 독립 라우트를 사용한다.
+- 반 생성과 반 상세 수정은 별도 라우트로 이동하지 않고 `/students/classes` 목록 화면에서 `StudentFormModal` 프레임을 재사용한 모달로 제공한다.
 - 학습 현황과 취약점 분석 사이의 학습지 컨텍스트는 `worksheet` 쿼리로 전달한다.
 - 평가 결과 조회(`/learning/results`)는 학습 관리의 중첩 라우트를 사용하고, 채점 화면(`/learning/results/:worksheetId/grading`)은 헤더와 사이드바가 없는 독립 라우트로 유지한다.
 - 취약점 분석에서 오답 학습(`/learning/wrong-answers`)으로 이동할 때는 `worksheet`, 쉼표로 구분한 `students`, 선택 개념이 있으면 `concept` 쿼리를 전달해 배정 모달의 학습지·학생·항목을 미리 선택한다.
