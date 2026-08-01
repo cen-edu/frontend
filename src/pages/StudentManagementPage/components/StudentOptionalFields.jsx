@@ -10,17 +10,6 @@ function StudentOptionalFields({ form, onChange }) {
                 <input name="parentPhone" value={form.parentPhone} type="tel" placeholder="숫자만 입력" onChange={onChange} />
             </label>
             <label className="student-form-modal__field">
-                <span>학교</span>
-                <input name="school" value={form.school} placeholder="학교명 입력" onChange={onChange} />
-            </label>
-            <label className="student-form-modal__field">
-                <span>수업 시작일</span>
-                <div className="student-form-modal__icon-input">
-                    <i className="bi bi-calendar3" aria-hidden="true" />
-                    <input name="classStartDate" value={form.classStartDate} inputMode="numeric" placeholder="YYYY.MM.DD" onChange={onChange} />
-                </div>
-            </label>
-            <label className="student-form-modal__field">
                 <span>학생 생년월일</span>
                 <div className="student-form-modal__icon-input">
                     <i className="bi bi-calendar3" aria-hidden="true" />

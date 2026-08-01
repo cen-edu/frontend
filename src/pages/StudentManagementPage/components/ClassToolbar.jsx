@@ -1,8 +1,37 @@
-function ClassToolbar({ searchTerm, onSearchTermChange, onOpenCreate }) {
+import CustomSelect from '../../../components/common/CustomSelect/CustomSelect';
+
+function ClassToolbar({
+    yearFilter,
+    yearOptions,
+    onYearFilterChange,
+    gradeFilter,
+    gradeOptions,
+    onGradeFilterChange,
+    searchTerm,
+    onSearchTermChange,
+    onOpenCreate,
+}) {
     const submitSearch = (event) => event.preventDefault();
 
     return (
         <div className="class-management__toolbar">
+            <div className="class-management__filters">
+                <CustomSelect
+                    label="학년도 필터"
+                    value={yearFilter}
+                    options={yearOptions}
+                    onChange={onYearFilterChange}
+                    width={132}
+                />
+                <CustomSelect
+                    label="학년 필터"
+                    value={gradeFilter}
+                    options={gradeOptions}
+                    onChange={onGradeFilterChange}
+                    width={112}
+                />
+            </div>
+
             <div className="class-management__actions">
                 <form className="class-management__search" role="search" onSubmit={submitSearch}>
                     <input

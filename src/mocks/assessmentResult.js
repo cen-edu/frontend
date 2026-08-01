@@ -1,7 +1,7 @@
 export const assessmentResultFilterOptions = {
     grades: [
         { value: 'all', label: '전체 학년' },
-        { value: 'middle-1', label: '중학교 1학년' },
+        { value: 'middle-1', label: '1학년' },
     ],
     classes: [
         { value: 'all', label: '전체 반' },

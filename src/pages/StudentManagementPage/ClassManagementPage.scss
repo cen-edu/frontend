@@ -33,11 +33,14 @@
     padding: 14px 24px;
     display: flex;
     align-items: center;
-    justify-content: flex-end;
+    justify-content: space-between;
     border-bottom: 1px solid #ebeef2;
   }
 
+  &__filters,
   &__actions { display: flex; align-items: center; gap: 8px; }
+
+  &__actions { margin-left: auto; }
 
   &__search {
     width: 200px;
@@ -217,18 +220,17 @@
 @media (max-width: 900px) {
   .class-management {
     &__header { align-items: flex-start; flex-direction: column; gap: 10px; }
-    &__toolbar { justify-content: stretch; }
-    &__actions { width: 100%; }
-    &__search { flex: 1; }
+    &__toolbar { flex-wrap: wrap; gap: 8px; }
   }
 }
 
 @media (max-width: 560px) {
   .class-management {
     &__header { padding: 19px 16px 16px; }
-    &__toolbar { padding: 14px 16px; }
-    &__actions { align-items: stretch; flex-direction: column; }
-    &__search, &__create-button { width: 100%; }
+    &__toolbar { padding: 14px 16px; align-items: stretch; flex-direction: column; }
+    &__filters, &__actions { width: 100%; }
+    &__actions { margin-left: 0; }
+    &__search { flex: 1; }
     &__selection-bar { padding: 0 12px; }
   }
 }

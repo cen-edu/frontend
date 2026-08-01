@@ -23,8 +23,8 @@ function StudentTable({ students, selectedIds, onToggleAll, onToggleStudent, onO
                         <th className="student-list__check-cell">
                             <CustomCheckbox label="현재 목록 전체 선택" checked={isAllSelected} onChange={onToggleAll} />
                         </th>
+                        <th>등록 연도</th>
                         <th>학년</th>
-                        <th>상태</th>
                         <th>학생 이름</th>
                         <th>연락처</th>
                         <th>학생 ID</th>
@@ -49,12 +49,8 @@ function StudentTable({ students, selectedIds, onToggleAll, onToggleStudent, onO
                                     onChange={() => onToggleStudent(student.id)}
                                 />
                             </td>
-                            <td>{student.grade}</td>
-                            <td>
-                                <span className={`student-list__status student-list__status--${student.status}`}>
-                                    {student.status === 'active' ? '활성' : '비활성'}
-                                </span>
-                            </td>
+                            <td>{student.registrationYear}년</td>
+                            <td>{student.grade}학년</td>
                             <td>{student.name}</td>
                             <td>{student.phone}</td>
                             <td>{student.studentId}</td>

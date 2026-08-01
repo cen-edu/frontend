@@ -94,34 +94,7 @@
   }
 
   &__readonly { background: #f5f6f8 !important; color: #667185 !important; cursor: not-allowed; }
-  &__grade-controls, &__level-buttons, &__status-buttons { display: flex; align-items: center; }
-  &__grade-controls { gap: 8px; }
-
-  &__level-buttons,
-  &__status-buttons {
-    overflow: hidden;
-    gap: 0;
-    border: 1px solid #d7dde4;
-    border-radius: 6px;
-
-    button {
-      min-width: 40px;
-      height: 38px;
-      padding: 0 11px;
-      background: #fff;
-      border: 0;
-      border-right: 1px solid #e1e5ea;
-      color: #596579;
-      font-size: 12px;
-      cursor: pointer;
-      &:last-child { border-right: 0; }
-      &:hover { background: #f2f7fc; color: #176fc1; }
-      &:focus-visible { position: relative; outline: 2px solid rgba(23, 111, 193, .35); outline-offset: -2px; }
-    }
-
-    .student-form-modal__level-button--active,
-    .student-form-modal__status-button--active { background: #eaf3fb; color: #176fc1; font-weight: 600; }
-  }
+  &__grade-controls { display: flex; align-items: center; }
 
   &__icon-input {
     position: relative;
@@ -175,7 +148,6 @@
     &__section-title { margin-inline: 16px; }
     &__fields { padding-inline: 16px; }
     &__field { grid-template-columns: 1fr; gap: 7px; }
-    &__grade-controls { flex-wrap: wrap; }
     &__footer--split { align-items: stretch; flex-direction: column; }
     &__primary-button, &__secondary-button { width: 100%; }
   }

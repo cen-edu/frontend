@@ -2,26 +2,20 @@ import { useState } from 'react';
 import StudentFormModal from './StudentFormModal';
 import StudentGradeSelector from './StudentGradeSelector';
 import StudentOptionalFields from './StudentOptionalFields';
-import { formatGrade, parseGrade } from './studentFormConfig';
 
 function StudentDetailModal({ student, onClose, onSave }) {
-    const initialGrade = parseGrade(student.grade);
     const [form, setForm] = useState({
         name: student.name,
         attendanceNumber: student.attendanceNumber ?? String(student.id).padStart(4, '0'),
         studentPhone: student.phone === '-' ? '' : student.phone,
         parentPhone: student.parentPhone ?? '',
-        school: student.school ?? '',
-        classStartDate: student.classStartDate ?? '',
         birthDate: student.birthDate ?? '',
         email: student.email ?? '',
         address: student.address ?? '',
         homePhone: student.homePhone ?? '',
         note: student.note ?? '',
     });
-    const [schoolLevel, setSchoolLevel] = useState(initialGrade.schoolLevel);
-    const [gradeYear, setGradeYear] = useState(initialGrade.gradeYear);
-    const [status, setStatus] = useState(student.status);
+    const [grade, setGrade] = useState(student.grade);
     const [passwordReset, setPasswordReset] = useState(false);
 
     const updateField = (event) => {
@@ -37,12 +31,16 @@ function StudentDetailModal({ student, onClose, onSave }) {
                     ...student,
                     ...form,
                     phone: form.studentPhone || '-',
-                    grade: formatGrade(schoolLevel, gradeYear),
-                    status,
+                    grade,
                 });
             }}>
                 <div className="student-form-modal__section-title">필수 입력 사항</div>
                 <div className="student-form-modal__fields student-form-modal__fields--required">
+                    <label className="student-form-modal__field">
+                        <span>등록 연도</span>
+                        <input className="student-form-modal__readonly" value={student.registrationYear} readOnly aria-readonly="true" />
+                    </label>
+
                     <label className="student-form-modal__field">
                         <span>학생 이름</span>
                         <input autoFocus name="name" value={form.name} required onChange={updateField} />
@@ -50,26 +48,13 @@ function StudentDetailModal({ student, onClose, onSave }) {
 
                     <div className="student-form-modal__field">
                         <span>학년</span>
-                        <StudentGradeSelector
-                            schoolLevel={schoolLevel}
-                            gradeYear={gradeYear}
-                            onSchoolLevelChange={setSchoolLevel}
-                            onGradeYearChange={setGradeYear}
-                        />
+                        <StudentGradeSelector value={grade} onChange={setGrade} />
                     </div>
 
                     <label className="student-form-modal__field">
                         <span>출결 번호</span>
                         <input name="attendanceNumber" value={form.attendanceNumber} inputMode="numeric" required onChange={updateField} />
                     </label>
-
-                    <div className="student-form-modal__field">
-                        <span>학생 상태</span>
-                        <div className="student-form-modal__status-buttons">
-                            <button type="button" className={status === 'active' ? 'student-form-modal__status-button--active' : ''} onClick={() => setStatus('active')}>활성</button>
-                            <button type="button" className={status === 'inactive' ? 'student-form-modal__status-button--active' : ''} onClick={() => setStatus('inactive')}>비활성</button>
-                        </div>
-                    </div>
 
                     <label className="student-form-modal__field student-form-modal__field--wide">
                         <span>학생 ID</span>

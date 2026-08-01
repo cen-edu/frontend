@@ -37,13 +37,24 @@
   &__form { min-height: calc(100vh - 197px); display: flex; flex-direction: column; }
   &__body { padding: 24px; flex: 1; }
 
+  &__details {
+    display: flex;
+    align-items: flex-end;
+    gap: 20px;
+  }
+
+  &__select-field,
   &__name-field {
-    display: grid;
-    grid-template-columns: 88px 280px;
-    align-items: center;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
     color: #263247;
     font-size: 13px;
     font-weight: 600;
+  }
+
+  &__name-field {
+    width: 280px;
 
     input {
       width: 100%;
@@ -150,15 +161,9 @@
     &:hover { background: #f2f7fc; color: #176fc1; }
     &:focus-visible { position: relative; outline: 2px solid #7eafd8; outline-offset: -2px; z-index: 1; }
 
-    &--summary {
-      background: #f5f6f8;
-      span { display: inline-flex; align-items: center; gap: 7px; }
-      strong { color: #263247; font-weight: 600; }
-      em { color: #747f91; font-style: normal; }
-      > span:first-child > .bi-caret-down-fill { margin-right: 2px; color: #747f91; font-size: 9px; }
-    }
+    > span:first-child { display: inline-flex; align-items: center; gap: 8px; }
+    em { color: #747f91; font-size: 11px; font-style: normal; font-weight: 400; }
 
-    &--indented { padding-left: 42px; }
     &--remove .class-creation__row-action { color: #596579; }
   }
 
@@ -241,7 +246,8 @@
   .class-creation {
     &__header { padding-inline: 16px; }
     &__body { padding: 20px 16px; }
-    &__name-field { grid-template-columns: 1fr; gap: 8px; }
+    &__details { align-items: stretch; flex-direction: column; }
+    &__name-field { width: 100%; }
     &__pair { grid-template-columns: 1fr; }
     &__panel, &__source &__panel { height: 360px; }
     &__empty { min-height: 280px; }

@@ -4,7 +4,7 @@ export const dashboardFilterOptions = {
         { value: '2025', label: '2025학년도' },
     ],
     grades: [
-        { value: 'middle-1', label: '중학교 1학년' },
+        { value: 'middle-1', label: '1학년' },
     ],
     terms: [
         { value: 'first', label: '1학기' },

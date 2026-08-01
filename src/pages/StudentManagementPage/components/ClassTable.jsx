@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import CustomCheckbox from '../../../components/common/CustomCheckbox/CustomCheckbox';
+import { formatClassLabel } from './classFormConfig';
 
 function ClassTable({ classes, selectedIds, onToggleAll, onToggleClass, onOpenDetail, onMoveClass, onReorderClass }) {
     const [draggedClassId, setDraggedClassId] = useState(null);
@@ -79,6 +80,7 @@ function ClassTable({ classes, selectedIds, onToggleAll, onToggleClass, onOpenDe
                 </thead>
                 <tbody>
                     {classes.map((classItem, index) => {
+                        const classLabel = formatClassLabel(classItem);
                         const rowClasses = [
                             'class-management__row',
                             selectedIds.includes(classItem.id) && 'class-management__row--selected',
@@ -105,13 +107,13 @@ function ClassTable({ classes, selectedIds, onToggleAll, onToggleClass, onOpenDe
                             >
                             <td className="class-management__check-cell">
                                 <CustomCheckbox
-                                    label={`${classItem.name} 선택`}
+                                    label={`${classLabel} 선택`}
                                     checked={selectedIds.includes(classItem.id)}
                                     onChange={() => onToggleClass(classItem.id)}
                                 />
                             </td>
                             <td>{index + 1}</td>
-                            <td className="class-management__name">{classItem.name}</td>
+                            <td className="class-management__name">{classLabel}</td>
                             <td>{classItem.studentSummary}</td>
                             <td>{classItem.teacher}</td>
                             <td>
@@ -130,7 +132,7 @@ function ClassTable({ classes, selectedIds, onToggleAll, onToggleClass, onOpenDe
                                 <button
                                     type="button"
                                     className="class-management__move-button"
-                                    aria-label={`${classItem.name} 순서 이동, 행을 마우스로 끌거나 위아래 방향키 사용`}
+                                    aria-label={`${classLabel} 순서 이동, 행을 마우스로 끌거나 위아래 방향키 사용`}
                                     onClick={(event) => event.stopPropagation()}
                                     onKeyDown={(event) => handleMoveKeyDown(event, classItem.id)}
                                 >

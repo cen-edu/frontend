@@ -5,55 +5,50 @@ const sortOptions = [
     { value: 'name', label: '이름순' },
 ];
 
-const statusOptions = [
-    { value: 'all', label: '전체 상태' },
-    { value: 'active', label: '활성' },
-    { value: 'inactive', label: '비활성' },
-];
-
-const levelOptions = [
-    ['all', '전체'],
-    ['elementary', '초'],
-    ['middle', '중'],
-    ['high', '고'],
+const gradeOptions = [
+    { value: 'all', label: '전체 학년' },
+    { value: '1', label: '1학년' },
+    { value: '2', label: '2학년' },
+    { value: '3', label: '3학년' },
 ];
 
 function StudentToolbar({
     sortOrder,
     onSortChange,
-    schoolLevel,
-    onSchoolLevelChange,
-    statusFilter,
-    onStatusFilterChange,
+    yearFilter,
+    onYearFilterChange,
+    students,
+    gradeFilter,
+    onGradeFilterChange,
     searchTerm,
     onSearchTermChange,
     onOpenBulkRegistration,
     onOpenRegistration,
 }) {
+    const yearOptions = [
+        { value: 'all', label: '전체 등록 연도' },
+        ...[...new Set(students.map(({ registrationYear }) => registrationYear))]
+            .sort((first, second) => Number(second) - Number(first))
+            .map((year) => ({ value: year, label: `${year}년` })),
+    ];
+
     return (
         <div className="student-list__toolbar">
             <div className="student-list__filters">
                 <CustomSelect label="정렬 순서" value={sortOrder} onChange={onSortChange} options={sortOptions} />
-
-                <div className="student-list__level-filter" aria-label="학년 구분">
-                    {levelOptions.map(([value, label]) => (
-                        <button
-                            key={value}
-                            type="button"
-                            className={`student-list__filter-button${schoolLevel === value ? ' student-list__filter-button--active' : ''}`}
-                            onClick={() => onSchoolLevelChange(value)}
-                        >
-                            {label}
-                        </button>
-                    ))}
-                </div>
-
                 <CustomSelect
-                    label="상태 필터"
-                    value={statusFilter}
-                    onChange={onStatusFilterChange}
-                    width={104}
-                    options={statusOptions}
+                    label="등록 연도 필터"
+                    value={yearFilter}
+                    onChange={onYearFilterChange}
+                    width={132}
+                    options={yearOptions}
+                />
+                <CustomSelect
+                    label="학년 필터"
+                    value={gradeFilter}
+                    onChange={onGradeFilterChange}
+                    width={112}
+                    options={gradeOptions}
                 />
             </div>
 

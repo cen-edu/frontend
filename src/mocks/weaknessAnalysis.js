@@ -1,6 +1,6 @@
 export const weaknessFilterOptions = {
     years: [{ value: '2026', label: '2026학년도' }, { value: '2025', label: '2025학년도' }],
-    grades: [{ value: 'middle-1', label: '중학교 1학년' }],
+    grades: [{ value: 'middle-1', label: '1학년' }],
     terms: [{ value: 'first', label: '1학기' }, { value: 'second', label: '2학기' }],
     classes: [{ value: 'middle-1-1', label: '1반' }, { value: 'middle-1-2', label: '2반' }],
     worksheets: [

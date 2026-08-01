@@ -4,6 +4,7 @@ import initialClasses from '../../mocks/classes';
 import ClassSelectionBar from './components/ClassSelectionBar';
 import ClassTable from './components/ClassTable';
 import ClassToolbar from './components/ClassToolbar';
+import { formatClassLabel } from './components/classFormConfig';
 import './ClassManagementPage.scss';
 
 function ClassManagementPage() {
@@ -12,13 +13,36 @@ function ClassManagementPage() {
     const [classes, setClasses] = useState(() => location.state?.classes ?? initialClasses);
     const [selectedIds, setSelectedIds] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
+    const [yearFilter, setYearFilter] = useState('all');
+    const [gradeFilter, setGradeFilter] = useState('all');
+
+    const yearOptions = useMemo(() => [
+        { value: 'all', label: '전체 학년도' },
+        ...[...new Set(classes.map(({ year }) => year))]
+            .sort((first, second) => Number(second) - Number(first))
+            .map((year) => ({ value: year, label: `${year}학년도` })),
+    ], [classes]);
+
+    const gradeOptions = useMemo(() => [
+        { value: 'all', label: '전체 학년' },
+        ...[...new Set(classes
+            .filter(({ year }) => yearFilter === 'all' || year === yearFilter)
+            .map(({ grade }) => grade))]
+            .sort((first, second) => Number(first) - Number(second))
+            .map((grade) => ({ value: grade, label: `${grade}학년` })),
+    ], [classes, yearFilter]);
 
     const filteredClasses = useMemo(() => {
         const keyword = searchTerm.trim().toLowerCase();
-        return keyword
-            ? classes.filter((classItem) => classItem.name.toLowerCase().includes(keyword))
-            : classes;
-    }, [classes, searchTerm]);
+        return classes.filter((classItem) => (yearFilter === 'all' || classItem.year === yearFilter)
+            && (gradeFilter === 'all' || classItem.grade === gradeFilter)
+            && (!keyword || formatClassLabel(classItem).toLowerCase().includes(keyword)));
+    }, [classes, gradeFilter, searchTerm, yearFilter]);
+
+    const changeYearFilter = (year) => {
+        setYearFilter(year);
+        setGradeFilter('all');
+    };
 
     const toggleAll = () => {
         const visibleIds = filteredClasses.map(({ id }) => id);
@@ -40,12 +64,19 @@ function ClassManagementPage() {
     };
 
     const moveClass = (classId, offset) => {
+        const visibleIds = filteredClasses.map(({ id }) => id);
+        const visibleIndex = visibleIds.indexOf(classId);
+        const targetId = visibleIds[visibleIndex + offset];
+        if (targetId === undefined) return;
+
         setClasses((current) => {
             const currentIndex = current.findIndex(({ id }) => id === classId);
-            const targetIndex = currentIndex + offset;
-            if (currentIndex < 0 || targetIndex < 0 || targetIndex >= current.length) return current;
+            if (currentIndex < 0) return current;
             const next = [...current];
-            [next[currentIndex], next[targetIndex]] = [next[targetIndex], next[currentIndex]];
+            const [movedClass] = next.splice(currentIndex, 1);
+            const targetIndex = next.findIndex(({ id }) => id === targetId);
+            if (targetIndex < 0) return current;
+            next.splice(offset > 0 ? targetIndex + 1 : targetIndex, 0, movedClass);
             return next;
         });
     };
@@ -75,6 +106,12 @@ function ClassManagementPage() {
             </header>
 
             <ClassToolbar
+                yearFilter={yearFilter}
+                yearOptions={yearOptions}
+                onYearFilterChange={changeYearFilter}
+                gradeFilter={gradeFilter}
+                gradeOptions={gradeOptions}
+                onGradeFilterChange={setGradeFilter}
                 searchTerm={searchTerm}
                 onSearchTermChange={setSearchTerm}
                 onOpenCreate={() => navigate('/students/classes/new', { state: { classes } })}

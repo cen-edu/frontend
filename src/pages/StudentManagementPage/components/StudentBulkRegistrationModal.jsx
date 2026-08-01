@@ -8,8 +8,8 @@ function StudentBulkRegistrationModal({ onClose, onRegister }) {
 
     const downloadTemplate = () => {
         const rows = [
-            '학생 이름,학년,출결 번호,학생 연락처,학부모 연락처,학교,수업 시작일,생년월일,학생 이메일,집 주소,집 전화,특이사항',
-            '홍길동,중1,0001,010-1234-5678,010-9876-5432,예시중학교,2026.03.02,2013.05.10,student@example.com,서울시 예시구,02-123-4567,',
+            '학생 이름,학년,출결 번호,학생 연락처,학부모 연락처,생년월일,학생 이메일,집 주소,집 전화,특이사항',
+            '홍길동,1,0001,010-1234-5678,010-9876-5432,2013.05.10,student@example.com,서울시 예시구,02-123-4567,',
         ];
         const blob = new Blob([`\uFEFF${rows.join('\n')}`], { type: 'text/csv;charset=utf-8' });
         const downloadUrl = URL.createObjectURL(blob);
