@@ -1,9 +1,11 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import CustomSelect from '../../components/common/CustomSelect/CustomSelect';
 import { learningAssignments, learningFilterOptions } from '../../mocks/learningStatus';
 import AssignmentList from './components/AssignmentList';
 import LearningSummary from './components/LearningSummary';
 import StudentProgressTable from './components/StudentProgressTable';
+import StudentReminderBar from './components/StudentReminderBar';
 import './LearningStatusPage.scss';
 import './components/LearningStatusComponents.scss';
 
@@ -14,13 +16,24 @@ const assignmentTabs = [
 ];
 
 function LearningStatusPage() {
-    const [classId, setClassId] = useState('all');
-    const [period, setPeriod] = useState('this-week');
+    const [searchParams] = useSearchParams();
+    const requestedWorksheet = searchParams.get('worksheet');
+    const requestedAssignment = learningAssignments.find((assignment) =>
+        assignment.id === requestedWorksheet || assignment.analysisWorksheetId === requestedWorksheet);
+    const requestedStudentIds = (searchParams.get('select') ?? '')
+        .split(',')
+        .map(Number)
+        .filter((studentId) => Number.isFinite(studentId)
+            && requestedAssignment?.students.some((student) => student.id === studentId && student.status !== 'submitted'));
+    const [classId, setClassId] = useState(requestedAssignment?.classId ?? 'all');
+    const [period, setPeriod] = useState(requestedAssignment?.period ?? 'this-week');
     const [assignmentStatus, setAssignmentStatus] = useState('all');
     const [studentStatus, setStudentStatus] = useState('all');
     const [searchTerm, setSearchTerm] = useState('');
-    const [selectedId, setSelectedId] = useState('linear-equation-quiz');
+    const [selectedId, setSelectedId] = useState(requestedAssignment?.id ?? 'linear-equation-quiz');
+    const [selectedStudentIds, setSelectedStudentIds] = useState(requestedStudentIds);
     const [remindedIds, setRemindedIds] = useState([]);
+    const previousAssignmentId = useRef(selectedId);
 
     const filteredAssignments = useMemo(() => {
         const keyword = searchTerm.trim().toLowerCase();
@@ -38,24 +51,62 @@ function LearningStatusPage() {
     }, [filteredAssignments, selectedId]);
 
     useEffect(() => {
-        setStudentStatus('all');
-        setRemindedIds([]);
+        if (previousAssignmentId.current !== selectedId) {
+            setStudentStatus('all');
+            setSelectedStudentIds([]);
+            setRemindedIds([]);
+            previousAssignmentId.current = selectedId;
+        }
     }, [selectedId]);
 
     const selectedAssignment = filteredAssignments.find((assignment) => assignment.id === selectedId);
-    const visibleStudents = selectedAssignment?.students.filter((student) =>
-        studentStatus === 'all' || student.status === studentStatus) ?? [];
+    const visibleStudents = selectedAssignment?.students.filter((student) => {
+        if (studentStatus === 'unsubmitted') return student.status !== 'submitted';
+        return studentStatus === 'all' || student.status === studentStatus;
+    }) ?? [];
     const allStudents = filteredAssignments.flatMap((assignment) => assignment.students);
     const summary = {
         assignments: filteredAssignments.filter((assignment) => assignment.status === 'ongoing').length,
         submitted: allStudents.filter((student) => student.status === 'submitted').length,
         inProgress: allStudents.filter((student) => student.status === 'in-progress').length,
-        notStarted: allStudents.filter((student) => student.status === 'not-started').length,
+        unsubmitted: allStudents.filter((student) => student.status !== 'submitted').length,
     };
 
     const sendReminder = (studentId) => {
         setRemindedIds((current) => current.includes(studentId) ? current : [...current, studentId]);
     };
+
+    const toggleStudent = (studentId) => {
+        setSelectedStudentIds((current) => current.includes(studentId)
+            ? current.filter((id) => id !== studentId)
+            : [...current, studentId]);
+    };
+
+    const toggleAllStudents = () => {
+        const selectableIds = visibleStudents.filter((student) => student.status !== 'submitted').map((student) => student.id);
+        const allSelected = selectableIds.length > 0 && selectableIds.every((id) => selectedStudentIds.includes(id));
+        setSelectedStudentIds((current) => allSelected
+            ? current.filter((id) => !selectableIds.includes(id))
+            : [...new Set([...current, ...selectableIds])]);
+    };
+
+    const sendSelectedReminders = () => {
+        setRemindedIds((current) => [...new Set([...current, ...selectedStudentIds])]);
+    };
+
+    const selectSummary = (key) => {
+        if (key === 'assignments') {
+            setAssignmentStatus('ongoing');
+            setStudentStatus('all');
+            return;
+        }
+        setAssignmentStatus('all');
+        setStudentStatus(key === 'inProgress' ? 'in-progress' : key);
+    };
+
+    const activeSummaryKey = assignmentStatus === 'ongoing' && studentStatus === 'all'
+        ? 'assignments'
+        : ({ submitted: 'submitted', 'in-progress': 'inProgress', unsubmitted: 'unsubmitted' }[studentStatus] ?? '');
 
     return (
         <section className="learning-status" aria-labelledby="learning-status-title">
@@ -63,7 +114,7 @@ function LearningStatusPage() {
                 <div>
                     <span className="learning-status__eyebrow">LEARNING STATUS</span>
                     <h1 id="learning-status-title">학습 현황</h1>
-                    <p>반과 학생별 제출 여부, 풀이 진행 상황과 채점 결과를 확인하세요.</p>
+                    <p>반과 학생별 제출 여부와 풀이 진행 상황을 확인하세요.</p>
                 </div>
                 <span className="learning-status__updated"><i className="bi bi-arrow-clockwise" aria-hidden="true" /> 오늘 11:30 업데이트</span>
             </div>
@@ -85,7 +136,7 @@ function LearningStatusPage() {
                 </label>
             </div>
 
-            <LearningSummary summary={summary} />
+            <LearningSummary summary={summary} activeKey={activeSummaryKey} onSelect={selectSummary} />
 
             <div className="learning-status__content">
                 <AssignmentList assignments={filteredAssignments} selectedId={selectedId} onSelect={setSelectedId} />
@@ -97,8 +148,17 @@ function LearningStatusPage() {
                     onStatusChange={setStudentStatus}
                     remindedIds={remindedIds}
                     onRemind={sendReminder}
+                    selectedIds={selectedStudentIds}
+                    onToggleStudent={toggleStudent}
+                    onToggleAll={toggleAllStudents}
                 />
             </div>
+            <StudentReminderBar
+                selectedCount={selectedStudentIds.length}
+                allReminded={selectedStudentIds.every((id) => remindedIds.includes(id))}
+                onClear={() => setSelectedStudentIds([])}
+                onRemind={sendSelectedReminders}
+            />
         </section>
     );
 }

@@ -31,6 +31,7 @@
 - 클릭 가능한 버튼에는 비활성 상태를 제외하고 배경색, 테두리색 또는 글자색이 변하는 명확한 hover 피드백을 제공한다.
 - 교사용 대시보드의 상단 요약 카드는 Ant Design의 `Row`, `Col`, `Card`, `Statistic`과 페이지 전용 SCSS를 사용한다.
 - 교사용 대시보드의 학생 성취 분포 그래프는 Recharts의 `ScatterChart`를 사용하며, X축은 단원 학습 진행률, Y축은 정답률로 표현한다. 학생 점의 클릭·키보드 접근성과 개인 리포트 이동을 유지한다.
+- 학습지 유형 데이터는 `practice`(일반 학습), `assessment`(종합평가)로 통일하고, 맞춤 출제 여부는 `origin: 'custom'`으로 구분한다.
 
 ## 라우팅
 
@@ -39,6 +40,7 @@
 - 학생 관리 하위 화면은 기본적으로 `src/pages/StudentManagementPage/StudentManagementLayout.jsx`의 중첩 라우트와 `Outlet` 구조를 사용한다.
 - 반 생성 화면(`/students/classes/new`)은 `StudentManagementLayout`의 중첩 라우트를 사용해 헤더와 사이드바를 표시한다.
 - 헤더와 사이드바가 없어야 하는 반 수정 화면(`/students/classes/:classId/edit`)은 예외로 `StudentManagementLayout` 밖의 독립 라우트를 사용한다.
+- 학습 현황과 취약점 분석 사이의 학습지 컨텍스트는 `worksheet` 쿼리로 전달하고, 학습 현황에서 미리 선택할 학생 ID는 쉼표로 구분한 `select` 쿼리로 전달한다.
 
 ## 접근성
 

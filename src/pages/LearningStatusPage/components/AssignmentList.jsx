@@ -1,3 +1,5 @@
+import { getDueStatus, learningTypeLabels } from '../learningStatusUtils';
+
 function AssignmentList({ assignments, selectedId, onSelect }) {
     return (
         <section className="learning-panel learning-assignments" aria-labelledby="assignment-list-title">
@@ -13,6 +15,7 @@ function AssignmentList({ assignments, selectedId, onSelect }) {
                 {assignments.map((assignment) => {
                     const submitted = assignment.students.filter((student) => student.status === 'submitted').length;
                     const rate = Math.round((submitted / assignment.students.length) * 100);
+                    const dueStatus = getDueStatus(assignment.dueAt);
 
                     return (
                         <button
@@ -24,13 +27,17 @@ function AssignmentList({ assignments, selectedId, onSelect }) {
                         >
                             <span className="learning-assignments__meta">
                                 <span>{assignment.className}</span>
-                                <span>{assignment.type}</span>
+                                <span className={`learning-type-badge learning-type-badge--${assignment.type}`}>{learningTypeLabels[assignment.type]}</span>
+                                {assignment.origin === 'custom' && <span className="learning-origin-badge">맞춤</span>}
                                 <span className={`learning-assignments__state learning-assignments__state--${assignment.status}`}>
                                     {assignment.status === 'ongoing' ? '진행 중' : '마감'}
                                 </span>
                             </span>
                             <strong>{assignment.title}</strong>
-                            <span className="learning-assignments__due"><i className="bi bi-calendar3" aria-hidden="true" /> 마감 {assignment.dueAt}</span>
+                            <span className="learning-assignments__due">
+                                <span><i className="bi bi-calendar3" aria-hidden="true" /> 마감 {assignment.dueAt}</span>
+                                {dueStatus && <b className={`learning-assignments__deadline learning-assignments__deadline--${dueStatus.tone}`}><i className="bi bi-exclamation-triangle-fill" aria-hidden="true" /> {dueStatus.label}</b>}
+                            </span>
                             <span className="learning-assignments__progress">
                                 <span><b>제출 {submitted}/{assignment.students.length}명</b><em>{rate}%</em></span>
                                 <span className="learning-assignments__track"><span style={{ width: `${rate}%` }} /></span>

@@ -30,7 +30,7 @@ function WeaknessAnalysisPage() {
         {worksheet.origin === 'custom' && <PrescriptionTable worksheet={displayedWorksheet} />}
         <div className="weakness-page__analysis-grid">{worksheet.type === 'assessment' ? <QuestionMatrix worksheet={displayedWorksheet} view={matrixView} onViewChange={setMatrixView} onSelect={setSelection} selection={selection} /> : <ConceptMatrix worksheet={displayedWorksheet} sortBy={sortBy} onSortChange={setSortBy} onSelect={setSelection} selection={selection} />}<DetailSidePanel worksheet={worksheet} selection={selection} onQuadrantSelect={() => setStatusFilter('priority')} /></div>
         <StudentDiagnosisTable worksheet={displayedWorksheet} selected={selectedStudents} onToggle={toggleStudent} statusFilter={statusFilter} onStatusFilter={setStatusFilter} />
-        <DiagnosisSelectionBar count={selectedStudents.length} />
+        <DiagnosisSelectionBar selectedStudents={worksheet.students.filter((student) => selectedStudents.includes(student.id))} worksheetId={worksheet.id} />
     </div>;
 }
 export default WeaknessAnalysisPage;

@@ -5,6 +5,7 @@
   gap: 14px;
 
   &__card {
+    width: 100%;
     min-height: 104px;
     padding: 20px;
     display: flex;
@@ -14,6 +15,13 @@
     border: 1px solid #e3e8ee;
     border-radius: 12px;
     box-shadow: 0 4px 14px rgba(35, 53, 72, .035);
+    text-align: left;
+    cursor: pointer;
+    transition: border-color 140ms ease, box-shadow 140ms ease, transform 140ms ease;
+
+    &:hover { border-color: #addaf5; box-shadow: 0 7px 18px rgba(35, 53, 72, .08); transform: translateY(-1px); }
+    &:focus-visible { outline: 3px solid rgba(22, 143, 224, .18); outline-offset: 2px; }
+    &--active { border-color: #72bee9; box-shadow: 0 0 0 2px rgba(22, 143, 224, .1); }
 
     p { margin-bottom: 7px; color: #7c8796; font-size: 12px; font-weight: 600; }
     strong { color: #263548; font-size: 25px; line-height: 1; }
@@ -61,6 +69,21 @@
   &__count { padding: 5px 9px; background: #eef7fd; border-radius: 12px; color: #1686d0; font-size: 11px; font-weight: 700; }
 }
 
+.learning-type-badge,
+.learning-origin-badge {
+  padding: 3px 7px;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 10px;
+  font-size: 9px;
+  font-weight: 750;
+  line-height: 1.2;
+}
+
+.learning-type-badge--practice { background: #edf7ff; color: #2387ca; }
+.learning-type-badge--assessment { background: #fff1e8; color: #c96d25; }
+.learning-origin-badge { background: #f2edff; color: #7655d6; }
+
 .learning-assignments {
   &__list { padding: 8px; display: grid; gap: 5px; }
 
@@ -86,7 +109,8 @@
 
   &__meta { display: flex; align-items: center; gap: 6px; color: #8994a2; font-size: 10px; }
   &__state { margin-left: auto; padding: 3px 7px; border-radius: 10px; font-weight: 700; &--ongoing { background: #eaf8f1; color: #299d70; } &--completed { background: #f0f2f5; color: #7a8592; } }
-  &__due { margin-top: 7px; color: #8a95a2; font-size: 10px; i { margin-right: 3px; } }
+  &__due { margin-top: 7px; display: flex; align-items: center; justify-content: space-between; gap: 8px; color: #8a95a2; font-size: 10px; i { margin-right: 3px; } }
+  &__deadline { padding: 3px 6px; border-radius: 5px; font-size: 9px; white-space: nowrap; i { margin-right: 2px; } &--today, &--overdue { background: #fff0ed; color: #d65845; } &--soon { background: #fff6df; color: #ba7918; } }
   &__progress { margin-top: 14px; display: grid; gap: 7px; > span:first-child { display: flex; justify-content: space-between; color: #6f7b8a; font-size: 10px; } b { color: #506074; } em { color: #168bd5; font-style: normal; font-weight: 700; } }
   &__track { height: 6px; overflow: hidden; display: block; background: #e9edf1; border-radius: 10px; > span { height: 100%; display: block; background: linear-gradient(90deg, #35bca0, #28a9df); border-radius: inherit; } }
   &__empty { padding: 70px 20px; color: #919ba8; font-size: 12px; text-align: center; }
@@ -94,16 +118,44 @@
 
 .learning-students {
   &__header { align-items: center; }
-  &__class { margin-bottom: 4px; display: block; color: #168bd5; font-size: 10px; font-weight: 750; }
+  &__class { margin-bottom: 5px; display: flex; align-items: center; gap: 6px; color: #168bd5; font-size: 10px; font-weight: 750; }
+  &__grading-count { margin-top: 7px; display: inline-flex; padding: 4px 7px; background: #fff3e8; border-radius: 6px; color: #c66a21; font-size: 9px; font-weight: 750; }
+  &__header-controls { display: flex; align-items: center; gap: 16px; }
+  &__links { display: flex; align-items: center; gap: 11px; a { color: #3487bd; font-size: 9px; font-weight: 750; text-decoration: none; white-space: nowrap; transition: color 140ms ease; &:hover { color: #086fac; } } }
   &__table-wrap { overflow-x: auto; }
-  &__table { width: 100%; min-width: 760px; border-collapse: collapse; table-layout: fixed; th, td { height: 59px; padding: 8px 10px; border-bottom: 1px solid #edf0f3; color: #617084; font-size: 11px; text-align: center; } th { height: 43px; background: #f8fafb; color: #8a95a3; font-weight: 600; } th:nth-child(1) { width: 52px; } th:nth-child(2) { width: 90px; } th:nth-child(3) { width: 104px; } th:nth-child(4) { width: 180px; } th:nth-child(5) { width: 70px; } th:nth-child(6) { width: 100px; } th:nth-child(7) { width: 102px; } tbody tr { transition: background-color 140ms ease; &:hover { background: #f7fbfe; } &:last-child td { border-bottom: 0; } } }
-  &__name { color: #2d3b4e; font-size: 12px; }
+  &__table { width: 100%; min-width: 850px; border-collapse: collapse; table-layout: fixed; th, td { height: 59px; padding: 8px 8px; border-bottom: 1px solid #edf0f3; color: #617084; font-size: 11px; text-align: center; } th { height: 43px; background: #f8fafb; color: #8a95a3; font-weight: 600; } th:nth-child(1) { width: 45px; } th:nth-child(2) { width: 46px; } th:nth-child(3) { width: 80px; } th:nth-child(4) { width: 94px; } th:nth-child(5) { width: 185px; } th:nth-child(6) { width: 94px; } th:nth-child(7) { width: 88px; } th:nth-child(8) { width: 98px; } tbody tr { transition: background-color 140ms ease; &:hover { background: #f7fbfe; } &:last-child td { border-bottom: 0; } } .custom-checkbox { margin: 0 auto; } }
+  &__name { color: #2d3b4e; font-size: 12px; font-weight: 750; text-decoration: none; &:hover { color: #168bd5; text-decoration: underline; } }
   &__status { padding: 5px 8px; display: inline-flex; border-radius: 12px; font-size: 9px; font-weight: 750; &--submitted { background: #eaf8f1; color: #26986b; } &--in-progress { background: #edf6ff; color: #2186cf; } &--not-started { background: #fff3e6; color: #d27a25; } }
-  &__progress { display: flex; align-items: center; gap: 8px; > span { height: 6px; overflow: hidden; flex: 1; background: #e9edf1; border-radius: 10px; > span { height: 100%; display: block; background: #45aee6; border-radius: inherit; } } b { width: 30px; color: #526175; font-size: 10px; text-align: right; } }
+  &__progress { display: flex; align-items: center; gap: 8px; > span { height: 6px; overflow: hidden; flex: 1; background: #e9edf1; border-radius: 10px; > span { height: 100%; display: block; background: #45aee6; border-radius: inherit; } } b { min-width: 64px; color: #526175; font-size: 9px; text-align: right; white-space: nowrap; } }
   &__muted { color: #98a1ac; }
+  &__grading-link { color: #2586c8; font-size: 9px; font-weight: 750; text-decoration: none; white-space: nowrap; &:hover { color: #086fac; text-decoration: underline; } }
+  &__grading-pending { color: #c97a30; font-size: 9px; font-weight: 750; white-space: nowrap; }
   &__remind { min-height: 31px; padding: 0 9px; display: inline-flex; align-items: center; gap: 4px; background: #fff; border: 1px solid #ccdfeC; border-radius: 6px; color: #2586c8; font-size: 9px; font-weight: 700; cursor: pointer; transition: background-color 140ms ease, border-color 140ms ease, color 140ms ease; &:hover { background: #eaf6ff; border-color: #86c4ed; color: #0a72b8; } &--sent { background: #eef8f3; border-color: #a9dbc6; color: #278d65; } }
   &__empty-cell { height: 150px !important; color: #919ba8 !important; }
   &--empty { min-height: 300px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; color: #929ca8; i { font-size: 28px; } p { font-size: 12px; } }
+}
+
+.student-reminder-bar {
+  position: fixed;
+  right: 28px;
+  bottom: 22px;
+  min-width: 430px;
+  padding: 13px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 22px;
+  background: #26394d;
+  border-radius: 13px;
+  box-shadow: 0 12px 32px rgba(24, 40, 58, .25);
+  color: #fff;
+  z-index: 20;
+
+  strong { font-size: 11px; }
+  &__actions { display: flex; align-items: center; gap: 8px; }
+  button { min-height: 32px; padding: 0 12px; border-radius: 7px; font-size: 10px; font-weight: 750; cursor: pointer; transition: background-color 140ms ease, border-color 140ms ease, color 140ms ease; }
+  &__clear { background: transparent; border: 1px solid #6b7b8d; color: #e4eaf0; &:hover { background: #344b62; border-color: #8fa0b1; } }
+  &__send { background: #199ce7; border: 1px solid #199ce7; color: #fff; i { margin-right: 4px; } &:hover { background: #087ec3; border-color: #087ec3; } &--sent { background: #2a9b72; border-color: #2a9b72; } }
 }
 
 @media (max-width: 1180px) {
@@ -115,4 +167,7 @@
   .learning-summary__card { min-height: 88px; }
   .learning-panel__header { padding: 17px; }
   .learning-students__header { align-items: flex-start; flex-direction: column; }
+  .learning-students__header-controls { width: 100%; align-items: stretch; flex-direction: column; }
+  .learning-students__links { justify-content: space-between; }
+  .student-reminder-bar { left: 12px; right: 12px; min-width: 0; }
 }
