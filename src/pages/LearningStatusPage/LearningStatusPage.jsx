@@ -5,7 +5,6 @@ import { learningAssignments, learningFilterOptions } from '../../mocks/learning
 import AssignmentList from './components/AssignmentList';
 import LearningSummary from './components/LearningSummary';
 import StudentProgressTable from './components/StudentProgressTable';
-import StudentReminderBar from './components/StudentReminderBar';
 import './LearningStatusPage.scss';
 import './components/LearningStatusComponents.scss';
 
@@ -20,19 +19,12 @@ function LearningStatusPage() {
     const requestedWorksheet = searchParams.get('worksheet');
     const requestedAssignment = learningAssignments.find((assignment) =>
         assignment.id === requestedWorksheet || assignment.analysisWorksheetId === requestedWorksheet);
-    const requestedStudentIds = (searchParams.get('select') ?? '')
-        .split(',')
-        .map(Number)
-        .filter((studentId) => Number.isFinite(studentId)
-            && requestedAssignment?.students.some((student) => student.id === studentId && student.status !== 'submitted'));
     const [classId, setClassId] = useState(requestedAssignment?.classId ?? 'all');
     const [period, setPeriod] = useState(requestedAssignment?.period ?? 'this-week');
     const [assignmentStatus, setAssignmentStatus] = useState('all');
     const [studentStatus, setStudentStatus] = useState('all');
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedId, setSelectedId] = useState(requestedAssignment?.id ?? 'linear-equation-quiz');
-    const [selectedStudentIds, setSelectedStudentIds] = useState(requestedStudentIds);
-    const [remindedIds, setRemindedIds] = useState([]);
     const previousAssignmentId = useRef(selectedId);
 
     const filteredAssignments = useMemo(() => {
@@ -53,8 +45,6 @@ function LearningStatusPage() {
     useEffect(() => {
         if (previousAssignmentId.current !== selectedId) {
             setStudentStatus('all');
-            setSelectedStudentIds([]);
-            setRemindedIds([]);
             previousAssignmentId.current = selectedId;
         }
     }, [selectedId]);
@@ -70,28 +60,6 @@ function LearningStatusPage() {
         submitted: allStudents.filter((student) => student.status === 'submitted').length,
         inProgress: allStudents.filter((student) => student.status === 'in-progress').length,
         unsubmitted: allStudents.filter((student) => student.status !== 'submitted').length,
-    };
-
-    const sendReminder = (studentId) => {
-        setRemindedIds((current) => current.includes(studentId) ? current : [...current, studentId]);
-    };
-
-    const toggleStudent = (studentId) => {
-        setSelectedStudentIds((current) => current.includes(studentId)
-            ? current.filter((id) => id !== studentId)
-            : [...current, studentId]);
-    };
-
-    const toggleAllStudents = () => {
-        const selectableIds = visibleStudents.filter((student) => student.status !== 'submitted').map((student) => student.id);
-        const allSelected = selectableIds.length > 0 && selectableIds.every((id) => selectedStudentIds.includes(id));
-        setSelectedStudentIds((current) => allSelected
-            ? current.filter((id) => !selectableIds.includes(id))
-            : [...new Set([...current, ...selectableIds])]);
-    };
-
-    const sendSelectedReminders = () => {
-        setRemindedIds((current) => [...new Set([...current, ...selectedStudentIds])]);
     };
 
     const selectSummary = (key) => {
@@ -144,19 +112,8 @@ function LearningStatusPage() {
                     status={studentStatus}
                     statusOptions={learningFilterOptions.studentStatuses}
                     onStatusChange={setStudentStatus}
-                    remindedIds={remindedIds}
-                    onRemind={sendReminder}
-                    selectedIds={selectedStudentIds}
-                    onToggleStudent={toggleStudent}
-                    onToggleAll={toggleAllStudents}
                 />
             </div>
-            <StudentReminderBar
-                selectedCount={selectedStudentIds.length}
-                allReminded={selectedStudentIds.every((id) => remindedIds.includes(id))}
-                onClear={() => setSelectedStudentIds([])}
-                onRemind={sendSelectedReminders}
-            />
         </section>
     );
 }

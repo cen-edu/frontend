@@ -22,7 +22,6 @@ export const sidebarMenus = {
         menus: [
             { label: '학생 관리', path: '/students', end: true },
             { label: '반 관리', path: '/students/classes' },
-            { label: '학생별 학습 리포트', path: '/students/reports' },
         ],
     },
 };

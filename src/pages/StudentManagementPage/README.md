@@ -8,11 +8,11 @@
 | --- | --- | --- |
 | `/students` | `StudentListPage` | 학생 목록 조회, 필터링, 선택, 등록, 수정 |
 | `/students/classes` | `ClassManagementPage` | 반 목록 조회, 검색, 선택, 순서 변경, 생성, 수정 |
-| `/students/reports` | `FeatureIntro` | 학생별 학습 리포트 메뉴의 초기 안내 화면 |
+| `/students/reports` | `FeatureIntro` | 대시보드에서 학생별 결과를 선택해 진입하는 초기 안내 화면 |
 | `/students/classes/new` | `ClassCreationRoutePage` | 헤더와 사이드바 안에서 반 이름과 학생을 설정하는 생성 화면 |
 | `/students/classes/:classId/edit` | `ClassEditRoutePage` | 반 생성 화면을 재사용하는 독립 반 수정 화면 |
 
-`/students`, `/students/classes`, `/students/classes/new`, `/students/reports`는 `StudentManagementLayout`을 공통 부모로 사용한다. `StudentManagementLayout`은 공용 `SectionLayout`에 학생 관리 메뉴 설정을 전달하며, 자식 화면은 `SectionLayout`의 `Outlet` 위치에 렌더링된다. 반 수정 경로만 전역 헤더와 사이드바를 표시하지 않는 독립 라우트다.
+`/students`, `/students/classes`, `/students/classes/new`, `/students/reports`는 `StudentManagementLayout`을 공통 부모로 사용한다. `StudentManagementLayout`은 공용 `SectionLayout`에 학생 관리 메뉴 설정을 전달하며, 자식 화면은 `SectionLayout`의 `Outlet` 위치에 렌더링된다. `/students/reports`는 학생 관리 사이드바 메뉴에는 노출하지 않고 대시보드의 학생별 결과에서 진입한다. 반 수정 경로만 전역 헤더와 사이드바를 표시하지 않는 독립 라우트다.
 
 ## 디렉터리 구조
 

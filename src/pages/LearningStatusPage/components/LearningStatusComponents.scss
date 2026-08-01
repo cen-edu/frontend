@@ -123,39 +123,15 @@
   &__header-controls { display: flex; align-items: center; gap: 16px; }
   &__links { display: flex; align-items: center; gap: 11px; a { color: #3487bd; font-size: 11px; font-weight: 750; text-decoration: none; white-space: nowrap; transition: color 140ms ease; &:hover { color: #086fac; } } }
   &__table-wrap { overflow-x: auto; }
-  &__table { width: 100%; min-width: 850px; border-collapse: collapse; table-layout: fixed; th, td { height: 59px; padding: 8px 8px; border-bottom: 1px solid #edf0f3; color: #617084; font-size: 13px; text-align: center; } th { height: 43px; background: #f8fafb; color: #8a95a3; font-weight: 600; } th:nth-child(1) { width: 45px; } th:nth-child(2) { width: 46px; } th:nth-child(3) { width: 80px; } th:nth-child(4) { width: 94px; } th:nth-child(5) { width: 185px; } th:nth-child(6) { width: 94px; } th:nth-child(7) { width: 88px; } th:nth-child(8) { width: 98px; } tbody tr { transition: background-color 140ms ease; &:hover { background: #f7fbfe; } &:last-child td { border-bottom: 0; } } .custom-checkbox { margin: 0 auto; } }
+  &__table { width: 100%; min-width: 760px; border-collapse: collapse; table-layout: fixed; th, td { height: 59px; padding: 8px 8px; border-bottom: 1px solid #edf0f3; color: #617084; font-size: 13px; text-align: center; } th { height: 43px; background: #f8fafb; color: #8a95a3; font-weight: 600; } th:nth-child(1) { width: 54px; } th:nth-child(2) { width: 90px; } th:nth-child(3) { width: 100px; } th:nth-child(4) { width: 200px; } th:nth-child(5) { width: 100px; } th:nth-child(6) { width: 110px; } tbody tr { transition: background-color 140ms ease; &:hover { background: #f7fbfe; } &:last-child td { border-bottom: 0; } } }
   &__name { color: #2d3b4e; font-size: 14px; font-weight: 750; text-decoration: none; &:hover { color: #168bd5; text-decoration: underline; } }
   &__status { padding: 5px 8px; display: inline-flex; border-radius: 12px; font-size: 11px; font-weight: 750; &--submitted { background: #eaf8f1; color: #26986b; } &--in-progress { background: #edf6ff; color: #2186cf; } &--not-started { background: #fff3e6; color: #d27a25; } }
   &__progress { display: flex; align-items: center; gap: 8px; > span { height: 6px; overflow: hidden; flex: 1; background: #e9edf1; border-radius: 10px; > span { height: 100%; display: block; background: #45aee6; border-radius: inherit; } } b { min-width: 64px; color: #526175; font-size: 11px; text-align: right; white-space: nowrap; } }
   &__muted { color: #98a1ac; }
   &__grading-link { color: #2586c8; font-size: 11px; font-weight: 750; text-decoration: none; white-space: nowrap; &:hover { color: #086fac; text-decoration: underline; } }
   &__grading-pending { color: #c97a30; font-size: 11px; font-weight: 750; white-space: nowrap; }
-  &__remind { min-height: 31px; padding: 0 9px; display: inline-flex; align-items: center; gap: 4px; background: #fff; border: 1px solid #ccdfeC; border-radius: 6px; color: #2586c8; font-size: 11px; font-weight: 700; cursor: pointer; transition: background-color 140ms ease, border-color 140ms ease, color 140ms ease; &:hover { background: #eaf6ff; border-color: #86c4ed; color: #0a72b8; } &--sent { background: #eef8f3; border-color: #a9dbc6; color: #278d65; } }
   &__empty-cell { height: 150px !important; color: #919ba8 !important; }
   &--empty { min-height: 300px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; color: #929ca8; i { font-size: 28px; } p { font-size: 14px; } }
-}
-
-.student-reminder-bar {
-  position: fixed;
-  right: 28px;
-  bottom: 22px;
-  min-width: 430px;
-  padding: 13px 16px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 22px;
-  background: #26394d;
-  border-radius: 13px;
-  box-shadow: 0 12px 32px rgba(24, 40, 58, .25);
-  color: #fff;
-  z-index: 20;
-
-  strong { font-size: 13px; }
-  &__actions { display: flex; align-items: center; gap: 8px; }
-  button { min-height: 32px; padding: 0 12px; border-radius: 7px; font-size: 12px; font-weight: 750; cursor: pointer; transition: background-color 140ms ease, border-color 140ms ease, color 140ms ease; }
-  &__clear { background: transparent; border: 1px solid #6b7b8d; color: #e4eaf0; &:hover { background: #344b62; border-color: #8fa0b1; } }
-  &__send { background: #199ce7; border: 1px solid #199ce7; color: #fff; i { margin-right: 4px; } &:hover { background: #087ec3; border-color: #087ec3; } &--sent { background: #2a9b72; border-color: #2a9b72; } }
 }
 
 @media (max-width: 1180px) {
@@ -169,7 +145,6 @@
   .learning-students__header { align-items: flex-start; flex-direction: column; }
   .learning-students__header-controls { width: 100%; align-items: stretch; flex-direction: column; }
   .learning-students__links { justify-content: space-between; }
-  .student-reminder-bar { left: 12px; right: 12px; min-width: 0; }
 }
 
 // DESIGN_SYSTEM.md: 업무 화면용 중립 표면과 데이터 위계를 우선한다.
@@ -182,10 +157,9 @@
 .learning-panel__count { padding: 0; background: transparent; color: #596579; font-size: 12px; }
 .learning-assignments__item { border-radius: 6px; &:hover { background: #f7f9fb; border-color: #e1e5ea; } &--active { background: #edf5fc; border-color: #e1e5ea; box-shadow: none; } }
 .learning-assignments__track { border-radius: 2px; > span { background: #377fc0; border-radius: inherit; } }
-.learning-students__table { th { background: #f5f6f8; color: #667185; } th:nth-child(3), td:nth-child(3) { text-align: left; } tbody tr:hover { background: #f7f9fb; } }
+.learning-students__table { th { background: #f5f6f8; color: #667185; } th:nth-child(2), td:nth-child(2) { text-align: left; } tbody tr:hover { background: #f7f9fb; } }
 .learning-students__class { color: #596579; font-weight: 600; }
 .learning-students__name { color: #263247; font-weight: 600; }
-.student-reminder-bar { border-radius: 8px; }
 
 // 유형은 중립색, 상태는 필요한 최소 색상만 사용한다.
 .learning-type-badge,
@@ -197,4 +171,3 @@
 .learning-students__grading-count { padding: 0; background: transparent; color: #8b692e; font-weight: 600; }
 .learning-students__status { padding: 0; align-items: center; gap: 6px; background: transparent; font-weight: 600; &::before { width: 7px; height: 7px; border-radius: 50%; background: #9aa4b1; content: ""; } &--submitted { background: transparent; color: #356c55; &::before { background: #4f806b; } } &--in-progress { background: transparent; color: #456b8b; &::before { background: #6385a1; } } &--not-started { background: transparent; color: #747f91; } }
 .learning-students__grading-pending { color: #8b692e; font-weight: 600; }
-.learning-students__remind--sent { background: #f5f6f8; border-color: #d7dde4; color: #4f6f60; }

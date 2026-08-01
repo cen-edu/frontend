@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-import CustomCheckbox from '../../../components/common/CustomCheckbox/CustomCheckbox';
 import CustomSelect from '../../../components/common/CustomSelect/CustomSelect';
 import { getProgress, getProgressLabel, learningTypeLabels } from '../learningStatusUtils';
 
@@ -15,11 +14,6 @@ function StudentProgressTable({
     status,
     statusOptions,
     onStatusChange,
-    remindedIds,
-    onRemind,
-    selectedIds,
-    onToggleStudent,
-    onToggleAll,
 }) {
     if (!assignment) {
         return (
@@ -31,8 +25,6 @@ function StudentProgressTable({
     }
 
     const worksheetId = assignment.analysisWorksheetId ?? assignment.id;
-    const selectableStudents = students.filter((student) => student.status !== 'submitted');
-    const allSelected = selectableStudents.length > 0 && selectableStudents.every((student) => selectedIds.includes(student.id));
     const gradingPending = assignment.students.filter((student) => student.grading === 'pending').length;
 
     return (
@@ -60,23 +52,19 @@ function StudentProgressTable({
                 <table className="learning-students__table">
                     <thead>
                         <tr>
-                            <th><CustomCheckbox label="미제출 학생 전체 선택" checked={allSelected} disabled={selectableStudents.length === 0} onChange={onToggleAll} /></th>
                             <th>번호</th>
                             <th>이름</th>
                             <th>학습 상태</th>
                             <th>진행률</th>
                             <th>채점</th>
                             <th>제출 일시</th>
-                            <th><span className="learning-status__sr-only">관리</span></th>
                         </tr>
                     </thead>
                     <tbody>
                         {students.map((student) => {
                             const progress = getProgress(assignment, student);
-                            const isSubmitted = student.status === 'submitted';
                             return (
                                 <tr key={student.id}>
-                                    <td><CustomCheckbox label={`${student.name} 선택`} checked={selectedIds.includes(student.id)} disabled={isSubmitted} onChange={() => onToggleStudent(student.id)} /></td>
                                     <td>{student.number}</td>
                                     <td><Link className="learning-students__name" to={`/learning/weaknesses/students/${student.id}?worksheet=${worksheetId}`}>{student.name}</Link></td>
                                     <td><span className={`learning-students__status learning-students__status--${student.status}`}>{statusLabels[student.status]}</span></td>
@@ -92,18 +80,10 @@ function StudentProgressTable({
                                         {student.grading === null && <span className="learning-students__muted">-</span>}
                                     </td>
                                     <td><span className="learning-students__muted">{student.submittedAt}</span></td>
-                                    <td>
-                                        {!isSubmitted && (
-                                            <button type="button" className={`learning-students__remind${remindedIds.includes(student.id) ? ' learning-students__remind--sent' : ''}`} onClick={() => onRemind(student.id)}>
-                                                <i className={`bi ${remindedIds.includes(student.id) ? 'bi-check2' : 'bi-bell'}`} aria-hidden="true" />
-                                                {remindedIds.includes(student.id) ? '알림 완료' : '학습 알림'}
-                                            </button>
-                                        )}
-                                    </td>
                                 </tr>
                             );
                         })}
-                        {students.length === 0 && <tr><td className="learning-students__empty-cell" colSpan="8">조건에 맞는 학생이 없습니다.</td></tr>}
+                        {students.length === 0 && <tr><td className="learning-students__empty-cell" colSpan="6">조건에 맞는 학생이 없습니다.</td></tr>}
                     </tbody>
                 </table>
             </div>
