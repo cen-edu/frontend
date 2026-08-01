@@ -1,0 +1,25 @@
+import TimeScoreQuadrant from './TimeScoreQuadrant';
+function DetailSidePanel({ worksheet, selection, onQuadrantSelect }) {
+    if (worksheet.type === 'assessment') {
+        if (selection?.type === 'question') {
+            const question = worksheet.questions.find((item) => item.no === selection.questionNo);
+            const responses = worksheet.students.map((student) => student.responses.find((item) => item.no === selection.questionNo)).filter((item) => item.gradedBy !== null);
+            const correct = responses.filter((item) => item.score === item.maxScore); const incorrect = responses.filter((item) => item.score < item.maxScore);
+            const averageTime = (items) => Math.round(items.reduce((sum, item) => sum + item.seconds, 0) / Math.max(items.length, 1));
+            return <aside className="diagnosis-card detail-panel"><span className="detail-panel__kicker">QUESTION {question.no}</span><h2>문항 상세</h2><span className="detail-panel__format">{question.format}</span><strong className="detail-panel__rate">{Math.round(correct.length / Math.max(responses.length, 1) * 100)}%</strong><small>득점률</small><div className="detail-panel__compare"><div><span>정답자 평균</span><strong>{averageTime(correct)}초</strong></div><div><span>오답자 평균</span><strong>{averageTime(incorrect)}초</strong></div></div><p>{question.prompt}</p></aside>;
+        }
+        return <aside className="diagnosis-card detail-panel"><span className="detail-panel__kicker">TIME × SCORE</span><h2>시간 × 득점 분포</h2><p>사분면을 선택하면 학생 목록을 좁혀 볼 수 있어요.</p><TimeScoreQuadrant onSelect={onQuadrantSelect} /></aside>;
+    }
+
+    if (selection?.type === 'cell') {
+        const student = worksheet.students.find((item) => item.id === selection.studentId); const concept = worksheet.concepts.find((item) => item.id === selection.conceptId); const chat = student.chatLogs.find((item) => item.conceptId === selection.conceptId);
+        return <aside className="diagnosis-card detail-panel"><span className="detail-panel__kicker">STUDENT RESPONSE</span><h2>{student.name} · {concept.label}</h2><p>빈칸에 입력한 오답을 문항 순서대로 확인합니다.</p><ul className="detail-panel__inputs">{selection.result.inputs.length ? selection.result.inputs.map((input, index) => <li key={`${input}-${index}`}><span>{index + 1}</span><strong>{input}</strong><i className="bi bi-x-circle-fill" /></li>) : <li className="detail-panel__empty">오답 입력값이 없습니다.</li>}</ul>{chat && <div className="detail-panel__chat"><strong><i className="bi bi-chat-square-dots" /> 챗봇 질문 {chat.count}회</strong><p>{chat.question}</p></div>}</aside>;
+    }
+    if (selection?.type === 'concept') {
+        const concept = worksheet.concepts.find((item) => item.id === selection.conceptId); const inputs = worksheet.students.flatMap((student) => { const results = worksheet.questions.flatMap((question) => question.steps.filter((step) => step.conceptId === concept.id).map((step) => student.responses.find((response) => response.no === question.no)?.steps.find((value) => value.order === step.order))).filter(Boolean); return results.filter((item) => !item.correct && item.input).map((item) => item.input); }); const counts = Object.entries(inputs.reduce((all, input) => ({ ...all, [input]: (all[input] ?? 0) + 1 }), {})).sort((a, b) => b[1] - a[1]);
+        return <aside className="diagnosis-card detail-panel"><span className="detail-panel__kicker">CONCEPT DETAIL</span><h2>{concept.label}</h2><p>오답 입력값을 같은 표현끼리 묶었습니다.</p><ul className="detail-panel__ranking">{counts.map(([input, count]) => <li key={input}><strong>{input}</strong><span>{count}명</span></li>)}</ul></aside>;
+    }
+    const ranks = worksheet.concepts.map((concept) => { const weak = worksheet.students.filter((student) => worksheet.questions.some((question) => question.steps.some((step) => step.conceptId === concept.id && student.responses.find((response) => response.no === question.no)?.steps.some((result) => result.order === step.order && !result.correct)))).length; return { ...concept, weak }; }).sort((a, b) => b.weak - a.weak);
+    return <aside className="diagnosis-card detail-panel"><span className="detail-panel__kicker">WEAKNESS RANK</span><h2>개념별 취약 인원</h2><p>개념 열이나 학생 셀을 선택해 상세 응답을 확인하세요.</p><ol className="detail-panel__ranking">{ranks.map((concept, index) => <li key={concept.id}><span className="detail-panel__rank">{index + 1}</span><strong>{concept.label}</strong><span>{concept.weak}명 <i className="bi bi-chevron-right" /></span></li>)}</ol></aside>;
+}
+export default DetailSidePanel;

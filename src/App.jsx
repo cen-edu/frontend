@@ -10,6 +10,8 @@ import StudentManagementLayout from './pages/StudentManagementPage/StudentManage
 import SectionLayout from './components/SectionLayout/SectionLayout';
 import FeatureIntro from './components/FeatureIntro/FeatureIntro';
 import LearningStatusPage from './pages/LearningStatusPage/LearningStatusPage';
+import WeaknessAnalysisPage from './pages/WeaknessAnalysisPage/WeaknessAnalysisPage';
+import StudentDiagnosisPage from './pages/WeaknessAnalysisPage/StudentDiagnosisPage';
 
 function App() {
   return (
@@ -26,7 +28,8 @@ function App() {
           <Route index element={<LearningStatusPage />} />
           <Route path="results" element={<FeatureIntro title="평가 결과" description="종합평가 채점 결과와 문항별 성취도를 확인합니다." />} />
           <Route path="wrong-answers" element={<FeatureIntro title="오답 학습" description="오답 문항의 해설과 관련 개념, 학생별 복습 이력을 관리합니다." />} />
-          <Route path="weaknesses" element={<FeatureIntro title="취약점 분석" description="반과 학생의 취약 단원 및 개념을 분석하고 맞춤 출제로 연결합니다." />} />
+          <Route path="weaknesses" element={<WeaknessAnalysisPage />} />
+          <Route path="weaknesses/students/:id" element={<StudentDiagnosisPage />} />
         </Route>
         <Route path="/students/classes/:classId/edit" element={<ClassEditRoutePage />} />
         <Route path="/students" element={<StudentManagementLayout />}>

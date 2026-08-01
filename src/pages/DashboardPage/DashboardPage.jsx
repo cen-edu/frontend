@@ -3,7 +3,7 @@ import Header from '../../components/Header/Header';
 import { dashboardFilterOptions, dashboardWorksheets } from '../../mocks/teacherDashboard';
 import AccuracyAnalysis from './components/AccuracyAnalysis';
 import AchievementDistribution from './components/AchievementDistribution';
-import DashboardFilters from './components/DashboardFilters';
+import AnalysisFilters from '../../components/common/AnalysisFilters/AnalysisFilters';
 import DashboardSummaryCards from './components/DashboardSummaryCards';
 import StudentResultsTable from './components/StudentResultsTable';
 import SubmissionStatus from './components/SubmissionStatus';
@@ -33,7 +33,7 @@ function DashboardPage() {
                     <p className="dashboard-page__description">{dashboard.updatedAt}</p>
                 </div>
 
-                <DashboardFilters filters={filters} options={dashboardFilterOptions} onChange={changeFilter} />
+                <AnalysisFilters filters={filters} options={dashboardFilterOptions} onChange={changeFilter} />
                 <DashboardSummaryCards summaries={dashboard.summaries} />
 
                 <div className="dashboard-page__content-grid">

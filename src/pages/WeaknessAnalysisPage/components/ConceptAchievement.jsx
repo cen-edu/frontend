@@ -1,0 +1,5 @@
+function ConceptAchievement({ worksheet, student }) {
+    const items = worksheet.concepts.map((concept) => { const results = worksheet.questions.flatMap((question) => question.steps.filter((step) => step.conceptId === concept.id).map((step) => student.responses.find((response) => response.no === question.no)?.steps.find((item) => item.order === step.order))).filter((item) => item?.input); const rate = results.length ? Math.round(results.filter((item) => item.correct).length / results.length * 100) : 0; return { ...concept, rate }; });
+    return <section className="student-section"><div className="student-section__heading"><span>CONCEPT</span><h2>개념별 성취</h2></div><div className="concept-achievement">{items.map((item) => <div className="concept-achievement__row" key={item.id}><strong>{item.label}</strong><span className="concept-achievement__track"><i style={{ width: `${item.rate}%` }} /></span><b className={item.rate < 50 ? 'concept-achievement__rate concept-achievement__rate--weak' : 'concept-achievement__rate'}>{item.rate}% {item.rate < 50 && <i className="bi bi-exclamation-triangle-fill" />}</b></div>)}</div></section>;
+}
+export default ConceptAchievement;
