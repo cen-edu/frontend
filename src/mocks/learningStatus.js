@@ -1,8 +1,12 @@
 export const learningFilterOptions = {
+    grades: [
+        { value: 'all', label: '전체 학년' },
+        { value: 'middle-1', label: '중학교 1학년' },
+    ],
     classes: [
         { value: 'all', label: '전체 반' },
-        { value: 'class-1', label: '중학교 1학년 1반' },
-        { value: 'class-2', label: '중학교 1학년 2반' },
+        { value: 'middle-1-1', label: '1반' },
+        { value: 'middle-1-2', label: '2반' },
     ],
     studentStatuses: [
         { value: 'all', label: '전체 상태' },
@@ -17,8 +21,9 @@ export const learningAssignments = [
     {
         id: 'linear-equation-quiz',
         analysisWorksheetId: 'factor-assessment',
-        classId: 'class-1',
-        className: '중1 1반',
+        gradeId: 'middle-1',
+        classId: 'middle-1-1',
+        className: '중학교 1학년 1반',
         title: '1학기 종합평가',
         subject: '수학',
         type: 'assessment',
@@ -41,8 +46,9 @@ export const learningAssignments = [
     {
         id: 'coordinate-plane-practice',
         analysisWorksheetId: 'factor-practice',
-        classId: 'class-1',
-        className: '중1 1반',
+        gradeId: 'middle-1',
+        classId: 'middle-1-1',
+        className: '중학교 1학년 1반',
         title: '3단원 좌표평면 개념 학습',
         subject: '수학',
         type: 'practice',
@@ -65,8 +71,9 @@ export const learningAssignments = [
     {
         id: 'integer-unit-test',
         analysisWorksheetId: 'factor-assessment',
-        classId: 'class-2',
-        className: '중1 2반',
+        gradeId: 'middle-1',
+        classId: 'middle-1-2',
+        className: '중학교 1학년 2반',
         title: '1단원 정수와 유리수 종합평가',
         subject: '수학',
         type: 'assessment',
@@ -86,8 +93,9 @@ export const learningAssignments = [
     {
         id: 'expressions-review',
         analysisWorksheetId: 'factor-custom',
-        classId: 'class-2',
-        className: '중1 2반',
+        gradeId: 'middle-1',
+        classId: 'middle-1-2',
+        className: '중학교 1학년 2반',
         title: '문자와 식 맞춤 복습',
         subject: '수학',
         type: 'practice',

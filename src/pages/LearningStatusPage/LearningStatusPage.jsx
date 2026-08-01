@@ -23,6 +23,7 @@ function LearningStatusPage() {
     const requestedAssignment = learningAssignments.find((assignment) =>
         assignment.id === requestedWorksheet || assignment.analysisWorksheetId === requestedWorksheet);
     const initialDateRange = useMemo(getDefaultAssignmentDateRange, []);
+    const [gradeId, setGradeId] = useState(requestedAssignment?.gradeId ?? 'all');
     const [classId, setClassId] = useState(requestedAssignment?.classId ?? 'all');
     const [period, setPeriod] = useState('all');
     const [customStartDate, setCustomStartDate] = useState(initialDateRange.startDate);
@@ -36,11 +37,12 @@ function LearningStatusPage() {
     const filteredAssignments = useMemo(() => {
         const keyword = searchTerm.trim().toLowerCase();
         return learningAssignments.filter((assignment) =>
-            (classId === 'all' || assignment.classId === classId)
+            (gradeId === 'all' || assignment.gradeId === gradeId)
+                && (classId === 'all' || assignment.classId === classId)
                 && isAssignedWithinPeriod(assignment.assignedAt, period, customStartDate, customEndDate)
                 && (assignmentStatus === 'all' || assignment.status === assignmentStatus)
                 && (!keyword || assignment.title.toLowerCase().includes(keyword)));
-    }, [assignmentStatus, classId, customEndDate, customStartDate, period, searchTerm]);
+    }, [assignmentStatus, classId, customEndDate, customStartDate, gradeId, period, searchTerm]);
 
     useEffect(() => {
         if (!filteredAssignments.some((assignment) => assignment.id === selectedId)) {
@@ -93,7 +95,8 @@ function LearningStatusPage() {
             </header>
             <div className="learning-status__toolbar">
                 <div className="learning-status__filters">
-                    <CustomSelect label="반 선택" value={classId} options={learningFilterOptions.classes} onChange={setClassId} width={158} />
+                    <CustomSelect label="학년 선택" value={gradeId} options={learningFilterOptions.grades} onChange={(value) => { setGradeId(value); setClassId('all'); }} width={148} />
+                    <CustomSelect label="반 선택" value={classId} options={learningFilterOptions.classes} onChange={setClassId} width={104} />
                     <AssignmentPeriodFilter period={period} startDate={customStartDate} endDate={customEndDate} onPeriodChange={setPeriod} onStartDateChange={setCustomStartDate} onEndDateChange={setCustomEndDate} />
                     <div className="learning-status__tabs" role="group" aria-label="학습 진행 상태">
                         {assignmentTabs.map((tab) => (

@@ -1,7 +1,8 @@
 export const weaknessFilterOptions = {
     years: [{ value: '2026', label: '2026학년도' }, { value: '2025', label: '2025학년도' }],
+    grades: [{ value: 'middle-1', label: '중학교 1학년' }],
     terms: [{ value: 'first', label: '1학기' }, { value: 'second', label: '2학기' }],
-    classes: [{ value: 'class-1', label: '중학교 1학년 3반' }, { value: 'class-2', label: '중학교 1학년 4반' }],
+    classes: [{ value: 'middle-1-1', label: '1반' }, { value: 'middle-1-2', label: '2반' }],
     worksheets: [
         { value: 'factor-practice', label: '2단원 소인수분해 연습' },
         { value: 'factor-assessment', label: '2단원 소인수분해 종합평가' },
@@ -77,9 +78,9 @@ const customStudents = practiceStudents.map((student, index) => ({
 }));
 
 export const weaknessWorksheets = {
-    'factor-practice': { id: 'factor-practice', type: 'practice', origin: 'standard', title: '2단원 소인수분해 연습', className: '1학년 3반', date: '오늘 11:30', concepts, questions: practiceQuestions, students: practiceStudents },
-    'factor-assessment': { id: 'factor-assessment', type: 'assessment', origin: 'standard', title: '2단원 소인수분해 종합평가', className: '1학년 3반', date: '오늘 11:30', concepts: [], questions: assessmentQuestions, students: assessmentStudents },
-    'factor-custom': { id: 'factor-custom', type: 'practice', origin: 'custom', title: '공통소인수 맞춤 학습', className: '1학년 3반', date: '오늘 11:30', concepts, questions: practiceQuestions, students: customStudents },
+    'factor-practice': { id: 'factor-practice', gradeId: 'middle-1', classId: 'middle-1-1', type: 'practice', origin: 'standard', title: '2단원 소인수분해 연습', className: '중학교 1학년 1반', date: '오늘 11:30', concepts, questions: practiceQuestions, students: practiceStudents },
+    'factor-assessment': { id: 'factor-assessment', gradeId: 'middle-1', classId: 'middle-1-1', type: 'assessment', origin: 'standard', title: '2단원 소인수분해 종합평가', className: '중학교 1학년 1반', date: '오늘 11:30', concepts: [], questions: assessmentQuestions, students: assessmentStudents },
+    'factor-custom': { id: 'factor-custom', gradeId: 'middle-1', classId: 'middle-1-1', type: 'practice', origin: 'custom', title: '공통소인수 맞춤 학습', className: '중학교 1학년 1반', date: '오늘 11:30', concepts, questions: practiceQuestions, students: customStudents },
 };
 
 export const statusLabels = { priority: '우선 지도', review: '추가 확인', stable: '안정', insufficient: '자료 부족' };

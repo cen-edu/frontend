@@ -1,6 +1,6 @@
 export const dashboardClassOptions = [
-    { value: 'class-1', label: '중학교 1학년 1반' },
-    { value: 'class-2', label: '중학교 1학년 2반' },
+    { value: 'middle-1-1', label: '중학교 1학년 1반' },
+    { value: 'middle-1-2', label: '중학교 1학년 2반' },
     { value: 'all', label: '전체 반' },
 ];
 
@@ -30,7 +30,7 @@ const sharedActivities = [
 ];
 
 const dashboardData = {
-    'class-1': {
+    'middle-1-1': {
         summaries: [
             { id: 'students', label: '학생 수', value: '24명', support: '오늘 학습 참여 18명' },
             { id: 'assignments', label: '출제한 문제 · 평가', value: '12개', support: '이번 달 신규 4개' },
@@ -45,7 +45,7 @@ const dashboardData = {
         activities: sharedActivities,
         students: classOneStudents,
     },
-    'class-2': {
+    'middle-1-2': {
         summaries: [
             { id: 'students', label: '학생 수', value: '22명', support: '오늘 학습 참여 15명' },
             { id: 'assignments', label: '출제한 문제 · 평가', value: '9개', support: '이번 달 신규 3개' },

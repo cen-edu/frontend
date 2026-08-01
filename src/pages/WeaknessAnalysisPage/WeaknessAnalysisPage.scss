@@ -9,4 +9,13 @@
   &__analysis-grid { margin-bottom: 18px; display: grid; grid-template-columns: minmax(0,2fr) minmax(300px,.78fr); gap: 16px; align-items: stretch; }
 }
 @media (max-width:1100px) { .weakness-page__analysis-grid { grid-template-columns:1fr; } }
-@media (max-width:720px) { .weakness-page__page-header { padding:19px 16px 16px; align-items:flex-start; flex-direction:column; gap:10px; } }
+@media (max-width:720px) {
+  .weakness-page {
+    &__page-header { padding:19px 16px 16px; align-items:flex-start; flex-direction:column; gap:10px; }
+    &__filters.analysis-filters {
+      .custom-select:nth-child(3),
+      .custom-select:nth-child(4) { grid-column: auto; }
+      .custom-select:nth-child(5) { grid-column: 1 / -1; }
+    }
+  }
+}

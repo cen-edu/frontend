@@ -293,6 +293,12 @@
     &__main { width: calc(100% - 32px); padding-top: 26px; }
     &__heading { align-items: flex-start; flex-direction: column; gap: 8px; }
     &__description { padding: 0; }
+
+    &__filters.analysis-filters {
+      .custom-select:nth-child(3),
+      .custom-select:nth-child(4) { grid-column: auto; }
+      .custom-select:nth-child(5) { grid-column: 1 / -1; }
+    }
   }
 
   .summary-card { min-height: 132px; > .ant-card-body { min-height: 130px; } }

@@ -10,16 +10,20 @@ const students = [
 ];
 
 export const wrongAnswerFilterOptions = {
+    grades: [
+        { value: 'all', label: '전체 학년' },
+        { value: 'middle-1', label: '중학교 1학년' },
+    ],
     classes: [
         { value: 'all', label: '전체 반' },
-        { value: 'class-1', label: '중학교 1학년 3반' },
-        { value: 'class-2', label: '중학교 1학년 4반' },
+        { value: 'middle-1-1', label: '1반' },
+        { value: 'middle-1-2', label: '2반' },
     ],
 };
 
 export const wrongAnswerWorksheets = [
     {
-        id: 'factor-assessment', classId: 'class-1', assignedAt: '2026.07.29', type: 'assessment', title: '2단원 소인수분해 종합평가', className: '중학교 1학년 3반', assignStatus: 'none',
+        id: 'factor-assessment', gradeId: 'middle-1', classId: 'middle-1-1', assignedAt: '2026.07.29', type: 'assessment', title: '2단원 소인수분해 종합평가', className: '중학교 1학년 1반', assignStatus: 'none',
         wrongItems: [
             { id: 'q9', no: 9, conceptId: 'multiple', conceptLabel: '최소공배수', prompt: '18과 24의 최소공배수를 구하세요.', answer: '72', explanation: '18=2×3², 24=2³×3이므로 각 소인수의 큰 지수를 곱해 2³×3²=72입니다.', explanationReady: true, wrongStudentIds: [101, 102, 103, 105, 107, 108], commonWrongInputs: [{ input: '36', count: 4 }, { input: '42', count: 2 }] },
             { id: 'q4', no: 4, conceptId: 'common', conceptLabel: '공통 소인수 선택', prompt: '12와 18의 최대공약수를 구하세요.', answer: '6', explanation: '12=2²×3, 18=2×3²으로 소인수분해합니다. 두 수에 공통인 소인수의 작은 지수를 곱하면 2×3=6입니다.', explanationReady: true, wrongStudentIds: [101, 103, 105, 108], commonWrongInputs: [{ input: '2×6', count: 3 }, { input: '36', count: 1 }] },
@@ -29,7 +33,7 @@ export const wrongAnswerWorksheets = [
         assignments: [],
     },
     {
-        id: 'factor-practice', classId: 'class-1', assignedAt: '2026.07.31', type: 'practice', title: '2단원 소인수분해 연습', className: '중학교 1학년 3반', assignStatus: 'reviewing',
+        id: 'factor-practice', gradeId: 'middle-1', classId: 'middle-1-1', assignedAt: '2026.07.31', type: 'practice', title: '2단원 소인수분해 연습', className: '중학교 1학년 1반', assignStatus: 'reviewing',
         wrongItems: [
             { id: 'c-common', conceptId: 'common', conceptLabel: '공통 소인수 선택', prompt: '두 수의 공통인 소인수를 고르는 학습입니다.', answer: '두 수 모두의 인수인 소수', explanation: '각 수를 소인수분해한 뒤 두 식에 공통으로 들어 있는 소인수를 찾습니다.', explanationReady: true, wrongStudentIds: [101, 103, 105, 108], commonWrongInputs: [{ input: '2×6', count: 3 }] },
             { id: 'c-prime', conceptId: 'prime', conceptLabel: '소인수분해', prompt: '합성수를 소수의 곱으로 나타내는 학습입니다.', answer: '소수만 남을 때까지 나누기', explanation: '가장 작은 소수부터 차례로 나누고 같은 소수는 지수로 정리합니다.', explanationReady: true, wrongStudentIds: [103, 107, 108], commonWrongInputs: [{ input: '2×30', count: 2 }] },
@@ -42,7 +46,7 @@ export const wrongAnswerWorksheets = [
         ],
     },
     {
-        id: 'factor-custom', classId: 'class-1', assignedAt: '2026.07.21', type: 'practice', title: '공통소인수 맞춤 학습', className: '중학교 1학년 3반', assignStatus: 'done',
+        id: 'factor-custom', gradeId: 'middle-1', classId: 'middle-1-1', assignedAt: '2026.07.21', type: 'practice', title: '공통소인수 맞춤 학습', className: '중학교 1학년 1반', assignStatus: 'done',
         wrongItems: [
             { id: 'custom-common', conceptId: 'common', conceptLabel: '공통 소인수 적용', prompt: '서로 다른 구조에서 공통 소인수를 찾는 학습입니다.', answer: '공통인 소수와 지수 확인', explanation: '수의 크기보다 소인수분해한 식에서 공통 요소를 먼저 확인합니다.', explanationReady: true, wrongStudentIds: [102, 103, 108], commonWrongInputs: [{ input: '공배수 선택', count: 2 }] },
         ],

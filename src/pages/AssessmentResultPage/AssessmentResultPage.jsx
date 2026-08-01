@@ -17,6 +17,7 @@ function AssessmentResultPage() {
     const navigate = useNavigate();
     const [results, setResults] = useState(getAssessmentResults);
     const initialDateRange = useMemo(getDefaultAssignmentDateRange, []);
+    const [gradeId, setGradeId] = useState('all');
     const [classId, setClassId] = useState('all');
     const [period, setPeriod] = useState('all');
     const [customStartDate, setCustomStartDate] = useState(initialDateRange.startDate);
@@ -33,10 +34,11 @@ function AssessmentResultPage() {
     }, []);
 
     const filtered = useMemo(() => results.filter((worksheet) =>
-        (classId === 'all' || worksheet.classId === classId)
+        (gradeId === 'all' || worksheet.gradeId === gradeId)
+        && (classId === 'all' || worksheet.classId === classId)
         && isAssignedWithinPeriod(worksheet.assignedAt, period, customStartDate, customEndDate)
         && (status === 'all' || worksheet.status === status)
-        && worksheet.title.toLowerCase().includes(searchTerm.trim().toLowerCase())), [classId, customEndDate, customStartDate, period, results, searchTerm, status]);
+        && worksheet.title.toLowerCase().includes(searchTerm.trim().toLowerCase())), [classId, customEndDate, customStartDate, gradeId, period, results, searchTerm, status]);
     useEffect(() => { if (!filtered.some((worksheet) => worksheet.id === selectedId)) setSelectedId(filtered[0]?.id ?? ''); }, [filtered, selectedId]);
     const worksheet = filtered.find((item) => item.id === selectedId);
 
@@ -63,7 +65,8 @@ function AssessmentResultPage() {
             <div className="assessment-results__toolbar">
                 <div className="assessment-results__filters">
                     <AnalysisFilters showContext={false} className="analysis-filters--results" controls={[
-                        { key: 'class', label: '반 선택', value: classId, options: assessmentResultFilterOptions.classes, onChange: setClassId, width: 150 },
+                        { key: 'grade', label: '학년 선택', value: gradeId, options: assessmentResultFilterOptions.grades, onChange: (value) => { setGradeId(value); setClassId('all'); }, width: 148 },
+                        { key: 'class', label: '반 선택', value: classId, options: assessmentResultFilterOptions.classes, onChange: setClassId, width: 104 },
                         { key: 'period', render: <AssignmentPeriodFilter period={period} startDate={customStartDate} endDate={customEndDate} onPeriodChange={setPeriod} onStartDateChange={setCustomStartDate} onEndDateChange={setCustomEndDate} selectWidth={116} /> },
                     ]} />
                     <div className="assessment-results__tabs" role="group" aria-label="채점 상태">{statusTabs.map((tab) => <button key={tab.value} type="button" className={status === tab.value ? 'assessment-results__tab assessment-results__tab--active' : 'assessment-results__tab'} onClick={() => setStatus(tab.value)}>{tab.label}</button>)}</div>
