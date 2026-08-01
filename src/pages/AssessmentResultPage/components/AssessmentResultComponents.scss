@@ -13,4 +13,9 @@
 .score-table { &__toggle { padding: 3px; background: #f2f5f7; border-radius: 7px; } &__toggle-button { height: 29px; border-radius: 5px; &--active { background: #fff; box-shadow: 0 1px 4px rgba(37,54,73,.12); color: #176fc1; } } table { color: #465166; } thead th { background: #f5f6f8; color: #667185; font-size: 12px; } thead th:first-child, thead th:last-child { border-radius: 0; } td button:hover { background: #edf5fc; color: #176fc1; } &__total { color: #176fc1; } }
 .grading-answer-card { border-color: #dde2e8; border-radius: 8px; box-shadow: none; &--active { background: #edf5fc; border-color: #dde2e8; box-shadow: none; } }
 .grading-question-list__item--selected { border-color: transparent; }
+.result-worksheet-list__status { color: #667185; font-weight: 600; &--grading { color: #8b692e; } &--graded { color: #4f6f86; } &--confirmed { color: #356c55; } }
+.result-summary__modified { background: #f1f3f5; color: #667185; }
+.grading-question-list__item { &--auto span:last-child, &--done span:last-child { color: #4f806b; } &--pending span:last-child { color: #8b692e; } &--active span:last-child { color: #5c7891; } }
+.grading-answer-card__result { color: #4f6f86 !important; i { color: #4f806b; } }
+.grading-answer-card__auto { color: #8b692e; }
 .grading-rubric-panel__eyebrow { color: #596579; font-weight: 600; letter-spacing: 0; }

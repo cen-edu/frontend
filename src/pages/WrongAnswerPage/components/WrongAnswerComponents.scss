@@ -94,3 +94,12 @@
 .wrong-question-list__item-button b, .review-progress__name { color: #263247; }
 .assign-review__items { background: #f7f9fb; border-radius: 6px; }
 .explanation-panel__header { span { color: #596579; font-weight: 600; } h2 { color: #172033; } }
+
+.wrong-answer-type { background: #f1f3f5; color: #596579; font-weight: 600; &--practice, &--assessment { background: #f1f3f5; color: #596579; } }
+.wrong-answer-status { padding: 0; background: transparent; color: #667185; font-weight: 600; &--none { background: transparent; color: #8b692e; } &--reviewing { background: transparent; color: #4f6f86; } &--done { background: transparent; color: #356c55; } }
+.explanation-badge { background: transparent; font-weight: 600; &--ready { background: transparent; color: #356c55; } &--warning { background: transparent; color: #8b692e; } }
+.review-state { padding: 0; background: transparent; color: #667185; font-weight: 600; &--not-started { background: transparent; color: #747f91; } &--reviewing { background: transparent; color: #4f6f86; } &--done { background: transparent; color: #356c55; } }
+.assign-review__items em { background: #e9edf1; color: #596579; }
+.explanation-panel__answer { background: #f1f4f7; color: #34465a; }
+.explanation-panel__concepts span { background: #f1f3f5; color: #596579; }
+.explanation-panel__wrong-inputs > div { background: #f5f3f1; }

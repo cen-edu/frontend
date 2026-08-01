@@ -186,3 +186,15 @@
 .learning-students__class { color: #596579; font-weight: 600; }
 .learning-students__name { color: #263247; font-weight: 600; }
 .student-reminder-bar { border-radius: 8px; }
+
+// 유형은 중립색, 상태는 필요한 최소 색상만 사용한다.
+.learning-type-badge,
+.learning-origin-badge { background: #f1f3f5; color: #596579; font-weight: 600; }
+.learning-type-badge--practice,
+.learning-type-badge--assessment { background: #f1f3f5; color: #596579; }
+.learning-assignments__state { padding: 0; background: transparent; color: #667185; font-weight: 600; &--ongoing { background: transparent; color: #3d6f5a; } &--completed { background: transparent; color: #747f91; } }
+.learning-assignments__deadline { padding: 0; background: transparent; &--today, &--overdue { background: transparent; color: #ad4b43; } &--soon { background: transparent; color: #8b692e; } }
+.learning-students__grading-count { padding: 0; background: transparent; color: #8b692e; font-weight: 600; }
+.learning-students__status { padding: 0; align-items: center; gap: 6px; background: transparent; font-weight: 600; &::before { width: 7px; height: 7px; border-radius: 50%; background: #9aa4b1; content: ""; } &--submitted { background: transparent; color: #356c55; &::before { background: #4f806b; } } &--in-progress { background: transparent; color: #456b8b; &::before { background: #6385a1; } } &--not-started { background: transparent; color: #747f91; } }
+.learning-students__grading-pending { color: #8b692e; font-weight: 600; }
+.learning-students__remind--sent { background: #f5f6f8; border-color: #d7dde4; color: #4f6f60; }

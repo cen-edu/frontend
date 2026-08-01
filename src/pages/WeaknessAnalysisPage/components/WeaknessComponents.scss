@@ -38,3 +38,10 @@
 .student-diagnosis { &__header > div:first-child span { color: #596579; font-weight: 600; letter-spacing: 0; } h2 { color: #172033; font-size: 18px; } table th { background: #f5f6f8; color: #667185; } table tbody tr:hover { background: #f7f9fb; } }
 .diagnosis-tabs { padding: 3px; background: #f2f5f7; border-radius: 7px; &__button { min-height: 31px; border-radius: 5px; &--active { background: #fff; box-shadow: 0 1px 4px rgba(37,54,73,.12); color: #176fc1; } } }
 .diagnosis-selection-bar { border-radius: 8px; }
+
+.grading-notice { background: #f7f5ef; border-color: #ded7c5; color: #6f6248; > a { color: #65583f; } }
+.matrix-cell { &--full { background: #e9f1ed; color: #356c55; } &--partial { background: #f3efe5; color: #80652f; } &--weak { background: #f4eae9; color: #9a4f49; } &--empty { background: #f1f3f5; color: #747f91; } }
+.detail-panel__inputs li { background: #f5f3f2; color: #9a5b55; strong { color: #594a49; } }
+.quadrant__area { &:hover { filter: brightness(.98); } &--struggle { background: #f4eae9; } &--uncertain { background: #f3efe5; } &--giveup { background: #f1f3f5; } &--mastered { background: #e9f1ed; } }
+.status-badge { padding: 0; display: inline-flex; align-items: center; gap: 6px; background: transparent; color: #667185; font-weight: 600; &::before { width: 7px; height: 7px; border-radius: 50%; background: #9aa4b1; content: ""; } &--priority, &--unresolved { background: transparent; color: #8f4d48; &::before { background: #a96762; } } &--review, &--pending { background: transparent; color: #80652f; &::before { background: #a58a55; } } &--stable, &--resolved { background: transparent; color: #356c55; &::before { background: #4f806b; } } }
+.prescription-table table button { border-color: #d7dde4; color: #596579; &:hover { background: #f5f6f8; } }
