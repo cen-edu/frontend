@@ -9,6 +9,7 @@ import StudentListPage from './pages/StudentManagementPage/StudentListPage';
 import StudentManagementLayout from './pages/StudentManagementPage/StudentManagementLayout';
 import SectionLayout from './components/SectionLayout/SectionLayout';
 import FeatureIntro from './components/FeatureIntro/FeatureIntro';
+import LearningStatusPage from './pages/LearningStatusPage/LearningStatusPage';
 
 function App() {
   return (
@@ -22,7 +23,7 @@ function App() {
           <Route path="library" element={<FeatureIntro title="문제 보관함" description="생성한 문제와 평가를 조회하고 수정하거나 출제합니다." />} />
         </Route>
         <Route path="/learning" element={<SectionLayout section="learning" />}>
-          <Route index element={<FeatureIntro title="학습 현황" description="반과 학생별 문제 풀이, 제출 여부와 학습 진행 상황을 확인합니다." />} />
+          <Route index element={<LearningStatusPage />} />
           <Route path="results" element={<FeatureIntro title="평가 결과" description="종합평가 채점 결과와 문항별 성취도를 확인합니다." />} />
           <Route path="wrong-answers" element={<FeatureIntro title="오답 학습" description="오답 문항의 해설과 관련 개념, 학생별 복습 이력을 관리합니다." />} />
           <Route path="weaknesses" element={<FeatureIntro title="취약점 분석" description="반과 학생의 취약 단원 및 개념을 분석하고 맞춤 출제로 연결합니다." />} />

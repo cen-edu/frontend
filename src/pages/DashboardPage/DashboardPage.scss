@@ -380,8 +380,8 @@
     span { margin-top: 3px; color: #c9d3de; white-space: nowrap; }
   }
 
-  &__legend { margin-top: 2px; display: flex; justify-content: center; gap: 14px; color: #7e8997; font-size: 9px; span { display: flex; align-items: center; gap: 5px; } }
-  &__legend-dot { width: 7px; height: 7px; display: inline-block; border-radius: 50%; &--weak { background: #eb665c; } &--average { background: #eeaa3f; } &--good { background: #30af77; } }
+  &__legend { margin-top: 2px; display: flex; justify-content: center; flex-wrap: wrap; gap: 8px 13px; color: #7e8997; font-size: 9px; span { display: flex; align-items: center; gap: 5px; } }
+  &__legend-dot { width: 7px; height: 7px; display: inline-block; border-radius: 50%; &--priority { background: #eb665c; } &--reinforce { background: #eeaa3f; } &--encourage { background: #4f9fe5; } &--good { background: #30af77; } }
 }
 
 .weak-action-list {
