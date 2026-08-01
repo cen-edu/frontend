@@ -36,7 +36,7 @@ function AssignmentList({ assignments, selectedId, onSelect }) {
                             <strong>{assignment.title}</strong>
                             <span className="learning-assignments__due">
                                 <span><i className="bi bi-calendar3" aria-hidden="true" /> 마감 {assignment.dueAt}</span>
-                                {dueStatus && <b className={`learning-assignments__deadline learning-assignments__deadline--${dueStatus.tone}`}><i className="bi bi-exclamation-triangle-fill" aria-hidden="true" /> {dueStatus.label}</b>}
+                                {dueStatus && <b className={`learning-assignments__deadline learning-assignments__deadline--${dueStatus.tone}`}>{dueStatus.label}</b>}
                             </span>
                             <span className="learning-assignments__progress">
                                 <span><b>제출 {submitted}/{assignment.students.length}명</b><em>{rate}%</em></span>
