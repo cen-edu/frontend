@@ -90,7 +90,15 @@ function StudentListPage() {
     };
 
     return (
-        <section className="student-list" aria-label="학생 목록">
+        <section className="student-list" aria-labelledby="student-list-title">
+            <header className="student-list__header">
+                <div>
+                    <h1 id="student-list-title">학생 목록</h1>
+                    <p>등록 학생의 기본 정보와 서비스 이용 상태를 관리합니다.</p>
+                </div>
+                <span className="student-list__count">검색 결과 <strong>{filteredStudents.length}</strong>명</span>
+            </header>
+
             <StudentToolbar
                 sortOrder={sortOrder}
                 onSortChange={setSortOrder}

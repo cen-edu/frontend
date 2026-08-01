@@ -3,15 +3,15 @@ function StudentOptionalFields({ form, onChange }) {
         <>
             <label className="student-form-modal__field">
                 <span>학생 연락처</span>
-                <input name="studentPhone" value={form.studentPhone} type="tel" placeholder="숫자만 입력해주세요." onChange={onChange} />
+                <input name="studentPhone" value={form.studentPhone} type="tel" placeholder="숫자만 입력" onChange={onChange} />
             </label>
             <label className="student-form-modal__field">
                 <span>학부모 연락처</span>
-                <input name="parentPhone" value={form.parentPhone} type="tel" placeholder="숫자만 입력해주세요." onChange={onChange} />
+                <input name="parentPhone" value={form.parentPhone} type="tel" placeholder="숫자만 입력" onChange={onChange} />
             </label>
             <label className="student-form-modal__field">
                 <span>학교</span>
-                <input name="school" value={form.school} placeholder="학교명을 입력해주세요." onChange={onChange} />
+                <input name="school" value={form.school} placeholder="학교명 입력" onChange={onChange} />
             </label>
             <label className="student-form-modal__field">
                 <span>수업 시작일</span>
@@ -33,18 +33,18 @@ function StudentOptionalFields({ form, onChange }) {
             </label>
             <label className="student-form-modal__field">
                 <span>집 주소</span>
-                <input name="address" value={form.address} placeholder="주소를 입력해주세요." onChange={onChange} />
+                <input name="address" value={form.address} placeholder="주소 입력" onChange={onChange} />
             </label>
             <label className="student-form-modal__field">
                 <span>집 전화</span>
-                <input name="homePhone" value={form.homePhone} type="tel" placeholder="숫자만 입력해주세요." onChange={onChange} />
+                <input name="homePhone" value={form.homePhone} type="tel" placeholder="숫자만 입력" onChange={onChange} />
             </label>
             <label className="student-form-modal__field student-form-modal__field--wide">
                 <span>비고 및<br />학생 특이사항</span>
                 <textarea
                     name="note"
                     value={form.note}
-                    placeholder="내용을 입력해주세요.&#10;예시) 문제를 빨리 풀어서 실수가 잦음, 분수 계산이 약함"
+                    placeholder="학생 지도에 참고할 내용을 입력하세요.&#10;예: 문제를 빨리 풀어 실수가 잦음"
                     onChange={onChange}
                 />
             </label>

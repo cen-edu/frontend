@@ -11,23 +11,23 @@
       border-bottom: 0;
     }
 
-    strong {
+    h3 {
       display: block;
       margin-bottom: 7px;
-      color: #079ff5;
-      font-size: 12px;
-      font-weight: 800;
+      color: #263247;
+      font-size: 13px;
+      font-weight: 700;
     }
 
     p {
       margin-bottom: 5px;
-      color: #3e4856;
+      color: #465166;
       font-size: 13px;
     }
 
     small {
       display: block;
-      color: #8a94a2;
+      color: #747f91;
       font-size: 11px;
     }
   }
@@ -37,16 +37,16 @@
     height: 40px;
     background-color: #ffffff;
     border: 1px solid #d7dde4;
-    border-radius: 5px;
+    border-radius: 6px;
     color: #465160;
     font-size: 13px;
     cursor: pointer;
     transition: background-color 140ms ease, border-color 140ms ease, color 140ms ease;
 
     &:hover {
-      background-color: #edf8ff;
-      border-color: #91cff5;
-      color: #0786d3;
+      background-color: #edf5fc;
+      border-color: #8eb7dc;
+      color: #176fc1;
     }
   }
 
@@ -83,7 +83,7 @@
     overflow: hidden;
     background-color: #ffffff;
     border: 1px solid #dce2e8;
-    border-radius: 5px;
+    border-radius: 6px;
     color: #b0b8c2;
     font-size: 12px;
 
@@ -94,10 +94,10 @@
     }
 
     &--selected {
-      border-color: #91cff5;
+      border-color: #8eb7dc;
       color: #344054;
 
-      i { color: #079ff5; }
+      i { color: #176fc1; }
     }
   }
 
@@ -114,9 +114,9 @@
     button {
       width: 100px;
       height: 40px;
-      background-color: #079ff5;
-      border: 1px solid #079ff5;
-      border-radius: 5px;
+      background-color: #176fc1;
+      border: 1px solid #176fc1;
+      border-radius: 6px;
       color: #ffffff;
       font-size: 13px;
       font-weight: 700;
@@ -124,8 +124,8 @@
       transition: background-color 140ms ease, border-color 140ms ease;
 
       &:not(:disabled):hover {
-        background-color: #0788d8;
-        border-color: #0788d8;
+        background-color: #0f5fa8;
+        border-color: #0f5fa8;
       }
 
       &:disabled {

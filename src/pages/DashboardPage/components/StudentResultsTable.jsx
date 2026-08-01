@@ -35,9 +35,8 @@ function StudentResultsTable({ students }) {
         <section className="dashboard-section dashboard-section--results" aria-labelledby="student-results-title">
             <div className="dashboard-section__header dashboard-section__header--inline">
                 <div>
-                    <span className="dashboard-section__kicker">상세 결과</span>
                     <h2 id="student-results-title">학생별 학습 결과</h2>
-                    <p>정답률이 낮은 학생부터 확인할 수 있어요.</p>
+                    <p>열 제목을 선택해 정렬할 수 있습니다.</p>
                 </div>
                 <button type="button" className="student-results__more" onClick={() => navigate('/learning')}>전체 학습 현황 <i className="bi bi-arrow-right" aria-hidden="true" /></button>
             </div>

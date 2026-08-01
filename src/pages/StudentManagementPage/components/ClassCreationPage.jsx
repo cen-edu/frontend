@@ -26,10 +26,7 @@ function SearchField({ label, placeholder, value, onChange }) {
 function EmptySelection({ type }) {
     return (
         <div className="class-creation__empty">
-            <p>
-                왼쪽의 <i className="class-creation__plus-icon class-creation__plus-icon--muted" aria-hidden="true" /> 를 눌러<br />
-                {type}을 선택하세요.
-            </p>
+            <p>왼쪽 목록에서 {type}을 선택하세요.</p>
         </div>
     );
 }
@@ -85,7 +82,10 @@ function ClassCreationPage({ onClose, onRegister, initialClass = null, title = '
     return (
         <section className="class-creation" aria-labelledby="class-creation-title">
             <header className="class-creation__header">
-                <h2 id="class-creation-title">{title}</h2>
+                <div>
+                    <h1 id="class-creation-title">{title}</h1>
+                    <p>반 이름을 입력하고 소속 학생을 선택합니다.</p>
+                </div>
                 <button type="button" aria-label={`${title} 닫기`} onClick={onClose}>
                     <i className="bi bi-x-lg" aria-hidden="true" />
                 </button>
@@ -97,7 +97,7 @@ function ClassCreationPage({ onClose, onRegister, initialClass = null, title = '
                         <span>반 이름</span>
                         <input
                             type="text"
-                            placeholder="반 이름을 입력해주세요."
+                            placeholder="예: 중학교 1학년 1반"
                             maxLength={30}
                             value={className}
                             autoFocus
@@ -145,7 +145,7 @@ function ClassCreationPage({ onClose, onRegister, initialClass = null, title = '
                                                     </button>
                                                 ))}
                                             </div>
-                                        )) : <div className="class-creation__all-added">모든 학생을 추가하였습니다.</div>}
+                                        )) : <div className="class-creation__all-added">추가할 수 있는 학생이 없습니다.</div>}
                                     </div>
                                 </div>
 

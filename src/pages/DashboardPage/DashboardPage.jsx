@@ -18,6 +18,7 @@ function DashboardPage() {
         worksheet: 'linear-equation',
     });
     const dashboard = useMemo(() => dashboardWorksheets[filters.worksheet], [filters.worksheet]);
+    const selectedClassLabel = dashboardFilterOptions.classes.find((option) => option.value === filters.classId)?.label;
     const changeFilter = (key, value) => setFilters((current) => ({ ...current, [key]: value }));
 
     return (
@@ -27,20 +28,23 @@ function DashboardPage() {
             <main className="dashboard-page__main">
                 <div className="dashboard-page__heading">
                     <div>
-                        <p className="dashboard-page__eyebrow">TODAY</p>
-                        <h1>이하영 선생님, 우리 반 학습 현황이에요.</h1>
+                        <h1>학급 대시보드</h1>
+                        <p className="dashboard-page__context">{selectedClassLabel} · {dashboard.title}</p>
                     </div>
                     <p className="dashboard-page__description">{dashboard.updatedAt}</p>
                 </div>
 
-                <AnalysisFilters filters={filters} options={dashboardFilterOptions} onChange={changeFilter} />
+                <AnalysisFilters className="dashboard-page__filters" filters={filters} options={dashboardFilterOptions} onChange={changeFilter} showContext={false} />
                 <DashboardSummaryCards summaries={dashboard.summaries} />
 
-                <div className="dashboard-page__content-grid">
+                <div className="dashboard-page__analysis-grid">
                     <AccuracyAnalysis concepts={dashboard.concepts} questions={dashboard.questions} worksheetId={filters.worksheet} />
+                    <SubmissionStatus submission={dashboard.submission} />
+                </div>
+
+                <div className="dashboard-page__support-grid">
                     <AchievementDistribution students={dashboard.students} />
                     <WeakConceptActions concepts={dashboard.concepts} worksheetId={filters.worksheet} />
-                    <SubmissionStatus submission={dashboard.submission} />
                 </div>
 
                 <StudentResultsTable students={dashboard.students} />

@@ -12,9 +12,8 @@ function WeakConceptActions({ concepts, worksheetId }) {
         <section className="dashboard-section dashboard-section--weakness" aria-labelledby="weak-concepts-title">
             <div className="dashboard-section__header">
                 <div>
-                    <span className="dashboard-section__kicker">맞춤 학습 연결</span>
-                    <h2 id="weak-concepts-title">취약 개념 TOP 3</h2>
-                    <p>분석 결과를 확인하고 필요한 문제를 바로 출제하세요.</p>
+                    <h2 id="weak-concepts-title">우선 보완 개념</h2>
+                    <p>정답률이 낮은 순서입니다. 개념별 보충 문제를 바로 만들 수 있습니다.</p>
                 </div>
             </div>
 
@@ -28,7 +27,7 @@ function WeakConceptActions({ concepts, worksheetId }) {
                         </div>
                         <div className="weak-action-list__actions">
                             <button type="button" className="weak-action-list__detail" onClick={() => navigate('/learning/weaknesses')}>상세 보기</button>
-                            <button type="button" className="weak-action-list__create" onClick={() => moveToProblems(concept)}><i className="bi bi-stars" aria-hidden="true" />문제 만들기</button>
+                            <button type="button" className="weak-action-list__create" onClick={() => moveToProblems(concept)}>문제 만들기</button>
                         </div>
                     </li>
                 ))}

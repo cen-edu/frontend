@@ -40,7 +40,7 @@ function App() {
           <Route index element={<StudentListPage />} />
           <Route path="classes" element={<ClassManagementPage />} />
           <Route path="classes/new" element={<ClassCreationRoutePage />} />
-          <Route path="reports" element={<FeatureIntro title="학생별 학습 리포트" description="학생을 선택해 학습 이력, 평가 결과와 취약 개념을 한눈에 확인합니다." />} />
+          <Route path="reports" element={<FeatureIntro title="학생별 학습 리포트" description="학생별 학습 이력, 평가 결과와 취약 개념을 조회합니다." />} />
         </Route>
       </Routes>
   )

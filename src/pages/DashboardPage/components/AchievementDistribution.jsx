@@ -78,9 +78,8 @@ function AchievementDistribution({ students }) {
         <section className="dashboard-section dashboard-section--distribution" aria-labelledby="achievement-title">
             <div className="dashboard-section__header">
                 <div>
-                    <span className="dashboard-section__kicker">학생 분포</span>
                     <h2 id="achievement-title">학생 성취 분포</h2>
-                    <p>가로는 단원 진행률, 세로는 정답률을 나타내요.</p>
+                    <p>가로축은 단원 진행률, 세로축은 정답률입니다. 점을 선택하면 개인 리포트로 이동합니다.</p>
                 </div>
             </div>
 

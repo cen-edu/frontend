@@ -29,9 +29,9 @@ function StudentBulkRegistrationModal({ onClose, onRegister }) {
                 if (selectedFile) onRegister(selectedFile);
             }}>
                 <section className="student-bulk-modal__step">
-                    <strong>STEP 01</strong>
-                    <p>양식 파일을 다운로드하여 학생 정보를 입력해주세요.</p>
-                    <small>(내용 형식을 수정할 경우 등록이 불가능합니다.)</small>
+                    <h3>1. 등록 양식 내려받기</h3>
+                    <p>양식 파일에 학생 정보를 입력합니다.</p>
+                    <small>열 이름과 파일 형식을 변경하면 등록할 수 없습니다.</small>
                     <button type="button" className="student-bulk-modal__download-button" onClick={downloadTemplate}>
                         <i className="bi bi-download" aria-hidden="true" />
                         파일 다운로드
@@ -39,8 +39,8 @@ function StudentBulkRegistrationModal({ onClose, onRegister }) {
                 </section>
 
                 <section className="student-bulk-modal__step student-bulk-modal__step--upload">
-                    <strong>STEP 02</strong>
-                    <p>내용 입력된 엑셀 또는 CSV 파일을 첨부해 주세요.</p>
+                    <h3>2. 작성한 파일 첨부</h3>
+                    <p>입력을 마친 엑셀 또는 CSV 파일을 선택합니다.</p>
                     <input
                         ref={fileInputRef}
                         className="student-bulk-modal__file-input"
@@ -52,7 +52,7 @@ function StudentBulkRegistrationModal({ onClose, onRegister }) {
                     <div className="student-bulk-modal__upload-row">
                         <div className={`student-bulk-modal__filename${selectedFile ? ' student-bulk-modal__filename--selected' : ''}`}>
                             <i className="bi bi-file-earmark-spreadsheet" aria-hidden="true" />
-                            <span>{selectedFile?.name ?? '엑셀 파일을 업로드하세요.'}</span>
+                            <span>{selectedFile?.name ?? '선택한 파일 없음'}</span>
                         </div>
                         <button type="button" className="student-bulk-modal__attach-button" onClick={() => fileInputRef.current?.click()}>
                             파일첨부

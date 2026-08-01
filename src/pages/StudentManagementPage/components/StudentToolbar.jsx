@@ -69,11 +69,9 @@ function StudentToolbar({
                     <i className="bi bi-search" aria-hidden="true" />
                 </label>
                 <button type="button" className="student-list__outline-button" onClick={onOpenBulkRegistration}>
-                    <i className="bi bi-people-fill" aria-hidden="true" />
                     학생 일괄 등록
                 </button>
                 <button type="button" className="student-list__primary-button" onClick={onOpenRegistration}>
-                    <i className="bi bi-person-fill-add" aria-hidden="true" />
                     학생 개별 등록
                 </button>
             </div>

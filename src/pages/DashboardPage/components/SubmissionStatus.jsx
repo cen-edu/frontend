@@ -15,9 +15,8 @@ function SubmissionStatus({ submission }) {
         <section className="dashboard-section dashboard-section--submission" aria-labelledby="submission-title">
             <div className="dashboard-section__header">
                 <div>
-                    <span className="dashboard-section__kicker">진행 상태</span>
                     <h2 id="submission-title">제출·채점 현황</h2>
-                    <p>전체 {submission.total}명 기준이에요.</p>
+                    <p>재적 {submission.total}명 기준</p>
                 </div>
                 <span className="submission-status__rate">{submittedPercent}%</span>
             </div>

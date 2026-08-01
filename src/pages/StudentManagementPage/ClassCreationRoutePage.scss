@@ -4,7 +4,7 @@
   background-color: #f6f8fa;
 
   .class-creation { min-height: calc(100vh - 24px); }
-  .class-creation__form { min-height: calc(100vh - 97px); }
+  .class-creation__form { min-height: calc(100vh - 109px); }
 
   &--nested {
     min-height: auto;
@@ -12,7 +12,7 @@
     background-color: transparent;
 
     .class-creation { min-height: calc(100vh - 112px); }
-    .class-creation__form { min-height: calc(100vh - 185px); }
+    .class-creation__form { min-height: calc(100vh - 197px); }
   }
 
   &--missing {
@@ -34,13 +34,13 @@
       height: 40px;
       margin-top: 20px;
       padding: 0 20px;
-      background-color: #079ff5;
-      border: 1px solid #079ff5;
-      border-radius: 5px;
+      background-color: #176fc1;
+      border: 1px solid #176fc1;
+      border-radius: 6px;
       color: #ffffff;
       cursor: pointer;
 
-      &:hover { background-color: #0788d8; border-color: #0788d8; }
+      &:hover { background-color: #0f5fa8; border-color: #0f5fa8; }
     }
   }
 }
@@ -53,7 +53,7 @@
     }
 
     .class-creation__form {
-      height: calc(100vh - 185px);
+      height: calc(100vh - 197px);
       min-height: 0;
     }
 
@@ -90,13 +90,13 @@
     padding: 8px;
 
     .class-creation { min-height: calc(100vh - 16px); }
-    .class-creation__form { min-height: calc(100vh - 89px); }
+    .class-creation__form { min-height: calc(100vh - 101px); }
 
     &--nested {
       padding: 0;
 
       .class-creation { min-height: calc(100vh - 96px); }
-      .class-creation__form { min-height: calc(100vh - 169px); }
+      .class-creation__form { min-height: calc(100vh - 181px); }
     }
   }
 }

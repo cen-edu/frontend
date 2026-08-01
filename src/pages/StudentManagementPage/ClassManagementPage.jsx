@@ -65,7 +65,15 @@ function ClassManagementPage() {
     };
 
     return (
-        <section className="class-management" aria-label="반 관리">
+        <section className="class-management" aria-labelledby="class-management-title">
+            <header className="class-management__header">
+                <div>
+                    <h1 id="class-management-title">반 관리</h1>
+                    <p>목록 순서는 수업과 수업 준비 화면에도 동일하게 반영됩니다.</p>
+                </div>
+                <span className="class-management__count">검색 결과 <strong>{filteredClasses.length}</strong>개</span>
+            </header>
+
             <ClassToolbar
                 searchTerm={searchTerm}
                 onSearchTermChange={setSearchTerm}

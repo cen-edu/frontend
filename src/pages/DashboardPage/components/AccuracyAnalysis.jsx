@@ -22,9 +22,8 @@ function AccuracyAnalysis({ concepts, questions, worksheetId }) {
         <section className="dashboard-section dashboard-section--analysis" aria-labelledby="accuracy-analysis-title">
             <div className="dashboard-section__header">
                 <div>
-                    <span className="dashboard-section__kicker">핵심 분석</span>
                     <h2 id="accuracy-analysis-title">개념·문항별 정답률</h2>
-                    <p>막대를 선택하면 취약 학생 수와 맞춤 출제 기능을 확인할 수 있어요.</p>
+                    <p>항목을 선택하면 취약 학생 수와 출제 기능을 확인할 수 있습니다.</p>
                 </div>
                 <div className="dashboard-tabs" role="tablist" aria-label="정답률 분석 기준">
                     <button type="button" role="tab" aria-selected={activeTab === 'concepts'} className={activeTab === 'concepts' ? 'dashboard-tabs__button dashboard-tabs__button--active' : 'dashboard-tabs__button'} onClick={() => changeTab('concepts')}>개념별 분석</button>
@@ -52,11 +51,11 @@ function AccuracyAnalysis({ concepts, questions, worksheetId }) {
             {selectedItem && (
                 <div className="accuracy-chart__selection">
                     <div>
-                        <span>현재 선택</span>
+                        <span>선택 항목</span>
                         <strong>{selectedItem.label}</strong>
                         <small>정답률 {selectedItem.accuracy}% · 취약 학생 {selectedItem.weakStudents}명</small>
                     </div>
-                    <button type="button" onClick={createProblems}><i className="bi bi-stars" aria-hidden="true" />이 항목으로 문제 만들기</button>
+                    <button type="button" onClick={createProblems}>이 항목으로 문제 만들기</button>
                 </div>
             )}
         </section>

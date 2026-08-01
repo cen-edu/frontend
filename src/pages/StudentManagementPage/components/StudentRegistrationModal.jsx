@@ -24,7 +24,7 @@ function StudentRegistrationModal({ onClose, onRegister }) {
                 <div className="student-form-modal__fields student-form-modal__fields--required">
                     <label className="student-form-modal__field">
                         <span>학생 이름 <em>(필수)</em></span>
-                        <input autoFocus name="name" value={form.name} placeholder="이름을 입력해주세요." required onChange={updateField} />
+                        <input autoFocus name="name" value={form.name} placeholder="학생 이름 입력" required onChange={updateField} />
                     </label>
 
                     <div className="student-form-modal__field">
@@ -39,7 +39,7 @@ function StudentRegistrationModal({ onClose, onRegister }) {
 
                     <label className="student-form-modal__field">
                         <span>출결 번호 <em>(필수)</em></span>
-                        <input name="attendanceNumber" value={form.attendanceNumber} inputMode="numeric" placeholder="출결 번호를 입력해주세요." required onChange={updateField} />
+                        <input name="attendanceNumber" value={form.attendanceNumber} inputMode="numeric" placeholder="출결 번호 입력" required onChange={updateField} />
                     </label>
                 </div>
 
