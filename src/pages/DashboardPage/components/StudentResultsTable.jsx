@@ -50,7 +50,7 @@ function StudentResultsTable({ students }) {
                                 return (
                                     <th key={column.key} scope="col" aria-sort={active ? sort.direction : 'none'}>
                                         <button type="button" onClick={() => changeSort(column)}>
-                                            {column.label}
+                                            <span>{column.label}</span>
                                             <i className={`bi ${active ? (sort.direction === 'ascending' ? 'bi-arrow-up' : 'bi-arrow-down') : 'bi-arrow-down-up'}`} aria-hidden="true" />
                                         </button>
                                     </th>
