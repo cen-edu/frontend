@@ -109,7 +109,14 @@ function LearningStatusPage() {
         : ({ submitted: 'submitted', 'in-progress': 'inProgress', unsubmitted: 'unsubmitted' }[studentStatus] ?? '');
 
     return (
-        <section className="learning-status" aria-label="학습 현황">
+        <section className="learning-status" aria-labelledby="learning-status-title">
+            <header className="learning-status__page-header">
+                <div>
+                    <h1 id="learning-status-title">학습 현황</h1>
+                    <p>배정한 학습의 제출 상태와 학생별 진행 상황을 확인합니다.</p>
+                </div>
+                <span>검색 결과 <strong>{filteredAssignments.length}</strong>개</span>
+            </header>
             <div className="learning-status__toolbar">
                 <div className="learning-status__filters">
                     <CustomSelect label="반 선택" value={classId} options={learningFilterOptions.classes} onChange={setClassId} width={158} />

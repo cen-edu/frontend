@@ -1,7 +1,7 @@
 function GradingRubricPanel({ question }) {
     return (
         <aside className="grading-rubric-panel" aria-label="채점 기준">
-            <span className="grading-rubric-panel__eyebrow">GRADING GUIDE</span>
+            <span className="grading-rubric-panel__eyebrow">문항별 기준</span>
             <h2>채점 기준</h2>
             <section><h3>모범답안</h3><p>{question.answer}</p></section>
             <section><h3>배점</h3>{question.rubric.length ? <ul>{question.rubric.map((item) => <li key={item.label}><span>{item.label}</span><strong>{item.score}</strong></li>)}</ul> : <p>정답 일치 시 {question.maxScore}점</p>}</section>

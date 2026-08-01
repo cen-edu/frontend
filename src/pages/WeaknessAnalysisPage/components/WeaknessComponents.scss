@@ -7,7 +7,7 @@
 .matrix-table { width: 100%; min-width: 650px; border-collapse: separate; border-spacing: 4px; th { height: 40px; color: #7c8997; font-size: 12px; font-weight: 700; text-align: center; button { padding: 8px; background: transparent; border: 0; color: inherit; font-weight: inherit; cursor: pointer; &:hover { color: #1683ce; } } } th:first-child { width: 92px; text-align: left; } tbody th { padding-left: 8px; color: #34475c; font-size: 13px; } td { height: 50px; }
   &--questions { min-width: 850px; th:first-child { width: 80px; } }
 }
-.matrix-cell, .question-cell { width: 100%; min-width: 66px; height: 46px; display: inline-flex; align-items: center; justify-content: center; gap: 5px; border: 1px solid transparent; border-radius: 8px; color: #355169; font-size: 13px; cursor: pointer; transition: transform .14s, border-color .14s; &:hover { border-color: #6bb9e8; transform: translateY(-1px); } &:focus-visible { outline: 2px solid #55aee3; } }
+.matrix-cell, .question-cell { width: 100%; min-width: 66px; height: 46px; display: inline-flex; align-items: center; justify-content: center; gap: 5px; border: 1px solid transparent; border-radius: 8px; color: #355169; font-size: 13px; cursor: pointer; transition: border-color .14s; &:hover { border-color: #6bb9e8; } &:focus-visible { outline: 2px solid #55aee3; } }
 .matrix-cell { &--full { background: #dff4ec; color: #27815f; } &--partial { background: #fff1c9; color: #9b6b18; } &--weak { background: #fee4e2; color: #b64f49; } &--empty { background: #f1f3f5; color: #9ca5ae; } &--selected { border-color: #268fd4; box-shadow: 0 0 0 2px rgba(38,143,212,.12); } i { font-size: 11px; } &__chat { padding-left: 5px; border-left: 1px solid currentColor; font-size: 11px; } }
 .question-cell { background: #f5f8fa; color: #3d5267; font-size: 15px; background-color: rgba(77, 151, 206, var(--time-opacity, .06)); &--selected { border-color: #278fd3; } }
 .matrix-legend { margin: -8px 0 12px; display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 10px; color: #7e8b99; font-size: 11px; }
@@ -26,3 +26,15 @@
 .diagnosis-button { min-height: 36px; padding: 0 13px; border-radius: 8px; font-size: 12px; font-weight: 750; cursor: pointer; &--secondary { background: transparent; border: 1px solid #8090a0; color: #fff; &:hover { background: #344a60; } } &--primary { background: #2c9ee7; border: 1px solid #2c9ee7; color: #fff; &:hover { background: #1588d2; } } }
 .prescription-table { margin-bottom: 18px; table { width: 100%; min-width: 650px; border-collapse: collapse; th, td { height: 44px; padding: 7px 12px; border-top: 1px solid #edf0f3; color: #667487; font-size: 12px; text-align: center; } th { background: #f8fafb; color: #8793a0; } td:first-child { color: #304357; font-weight: 700; } button { padding: 6px 10px; background: #fff; border: 1px solid #efb2ac; border-radius: 6px; color: #bb5149; font-size: 11px; font-weight: 700; cursor: pointer; &:hover { background: #fff0ee; } } } }
 @media (max-width: 800px) { .student-diagnosis__header { align-items: flex-start; flex-direction: column; } .diagnosis-tabs { width: 100%; overflow-x: auto; &__button { flex: 1; white-space: nowrap; } } .diagnosis-selection-bar { left: 12px; right: 12px; min-width: 0; } }
+
+// DESIGN_SYSTEM.md: 색면과 카드 장식을 줄이고 분석표의 위계를 우선한다.
+.diagnosis-card { padding: 20px; border-color: #dde2e8; border-radius: 10px; box-shadow: none; }
+.diagnosis-card__heading { h2 { color: #172033; font-size: 18px; } span { color: #596579; font-weight: 600; letter-spacing: 0; } }
+.diagnosis-summary { gap: 0; &__card { height: 104px; border-color: #dde2e8 !important; border-radius: 10px !important; box-shadow: none; .ant-card-body { padding: 18px 20px; } .ant-statistic-title { color: #596579; font-size: 12px; } .ant-statistic-content { color: #172033; font-size: 24px; font-weight: 700; } } }
+.grading-notice { border-radius: 8px; }
+.matrix-table { border-collapse: collapse; border-spacing: 0; th { border-bottom: 1px solid #ebeef2; } td { padding: 3px; } }
+.matrix-cell, .question-cell { border-radius: 5px; transition: border-color .14s; &:hover { transform: none; } }
+.detail-panel { &__kicker { color: #596579; font-weight: 600; letter-spacing: 0; } &__format { border-radius: 5px; } &__ranking li { background: #f7f9fb; border-radius: 6px; } &__rank { background: transparent; border-radius: 0; color: #596579; } &__chat { background: #f7f5fa; border-color: #ded9e6; border-radius: 6px; color: #5f536f; } }
+.student-diagnosis { &__header > div:first-child span { color: #596579; font-weight: 600; letter-spacing: 0; } h2 { color: #172033; font-size: 18px; } table th { background: #f5f6f8; color: #667185; } table tbody tr:hover { background: #f7f9fb; } }
+.diagnosis-tabs { padding: 3px; background: #f2f5f7; border-radius: 7px; &__button { min-height: 31px; border-radius: 5px; &--active { background: #fff; box-shadow: 0 1px 4px rgba(37,54,73,.12); color: #176fc1; } } }
+.diagnosis-selection-bar { border-radius: 8px; }

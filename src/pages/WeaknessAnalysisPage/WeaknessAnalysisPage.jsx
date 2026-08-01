@@ -24,8 +24,9 @@ function WeaknessAnalysisPage() {
     const toggleStudent = (studentId) => setSelectedStudents((current) => current.includes(studentId) ? current.filter((id) => id !== studentId) : [...current, studentId]);
     const typeLabel = worksheet.origin === 'custom' ? '맞춤 문제 · 챗봇 연계' : worksheet.type === 'assessment' ? '종합평가' : '일반 학습';
 
-    return <section className="weakness-page" aria-label="취약점 분석">
-        <AnalysisFilters filters={filters} options={weaknessFilterOptions} onChange={changeFilter} badge={{ label: typeLabel, tone: worksheet.origin === 'custom' ? 'purple' : worksheet.type === 'assessment' ? 'orange' : 'blue' }} />
+    return <section className="weakness-page" aria-labelledby="weakness-page-title">
+        <header className="weakness-page__page-header"><div><h1 id="weakness-page-title">취약점 분석</h1><p>개념·문항별 결과를 비교하고 우선 지도할 학생을 확인합니다.</p></div><span>{worksheet.className} · {typeLabel}</span></header>
+        <AnalysisFilters className="weakness-page__filters" filters={filters} options={weaknessFilterOptions} onChange={changeFilter} showContext={false} />
         <GradingNotice count={metrics.pending} /><DiagnosisSummaryCards worksheet={worksheet} metrics={metrics} />
         {worksheet.origin === 'custom' && <PrescriptionTable worksheet={displayedWorksheet} />}
         <div className="weakness-page__analysis-grid">{worksheet.type === 'assessment' ? <QuestionMatrix worksheet={displayedWorksheet} view={matrixView} onViewChange={setMatrixView} onSelect={setSelection} selection={selection} /> : <ConceptMatrix worksheet={displayedWorksheet} sortBy={sortBy} onSortChange={setSortBy} onSelect={setSelection} selection={selection} />}<DetailSidePanel worksheet={worksheet} selection={selection} onQuadrantSelect={() => setStatusFilter('priority')} /></div>

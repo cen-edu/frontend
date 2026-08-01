@@ -52,10 +52,10 @@
   &__items { min-height: 58px; padding: 12px 14px; display: flex; align-items: center; gap: 10px; background: #f5f9fc; border: 1px solid #e4edf3; border-radius: 8px; span { color: #8793a0; font-size: 12px; } strong { flex: 1; color: #324257; font-size: 14px; } em { padding: 4px 7px; background: #e1f2fd; border-radius: 10px; color: #1687cf; font-size: 11px; font-style: normal; font-weight: 750; } }
   &__section { margin-top: 21px; border: 0; legend { margin-bottom: 9px; color: #344256; font-size: 14px; font-weight: 750; } }
   &__options { display: grid; gap: 7px; &--columns { grid-template-columns: 1fr 1fr; } }
-  &__radio-card { min-height: 58px; padding: 11px 13px; display: flex; align-items: center; gap: 10px; border: 1px solid #dfe5ea; border-radius: 8px; cursor: pointer; transition: background-color 140ms ease, border-color 140ms ease; input { position: absolute; opacity: 0; pointer-events: none; } > span:last-child { display: grid; gap: 3px; } strong { color: #465468; font-size: 13px; } small { color: #929ca8; font-size: 11px; } &:hover { background: #f7fbfe; border-color: #a6d5f2; } &--checked { background: #f2f9fe; border-color: #7cc5ef; } }
+  &__radio-card { min-height: 58px; padding: 11px 13px; display: flex; align-items: center; gap: 10px; border: 1px solid #dfe5ea; border-radius: 8px; cursor: pointer; transition: background-color 140ms ease, border-color 140ms ease; input { position: absolute; opacity: 0; pointer-events: none; } > span:last-child { display: grid; gap: 3px; } strong { color: #465468; font-size: 13px; } small { color: #929ca8; font-size: 11px; } &:hover { background: #f7fbfe; border-color: #a6d5f2; } &--checked { background: #f2f9fe; border-color: #dfe5ea; } }
   &__radio { width: 17px; height: 17px; flex: 0 0 17px; border: 1px solid #c4ccd5; border-radius: 50%; box-shadow: inset 0 0 0 4px #fff; .assign-review__radio-card--checked & { background: #1599e6; border-color: #1599e6; } }
   &__students { margin-top: 8px; padding: 8px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; background: #f8fafb; border-radius: 8px; }
-  &__student { min-height: 36px; padding: 0 8px; display: flex; align-items: center; gap: 7px; background: #fff; border: 1px solid #e2e6ea; border-radius: 6px; color: #586678; font-size: 12px; transition: border-color 140ms ease, background-color 140ms ease; &:hover { border-color: #a5d5f2; } > button { min-width: 0; padding: 10px 0; flex: 1; background: transparent; border: 0; color: inherit; font-size: inherit; text-align: left; cursor: pointer; } &--selected { background: #eff8ff; border-color: #8bcaf0; color: #1986ca; } }
+  &__student { min-height: 36px; padding: 0 8px; display: flex; align-items: center; gap: 7px; background: #fff; border: 1px solid #e2e6ea; border-radius: 6px; color: #586678; font-size: 12px; transition: border-color 140ms ease, background-color 140ms ease; &:hover { border-color: #a5d5f2; } > button { min-width: 0; padding: 10px 0; flex: 1; background: transparent; border: 0; color: inherit; font-size: inherit; text-align: left; cursor: pointer; } &--selected { background: #eff8ff; border-color: #e2e6ea; color: #1986ca; } }
   &__deadline { display: flex; align-items: center; gap: 8px; label { flex: 1; } input { width: 100%; height: 40px; padding: 0 12px; border: 1px solid #dce2e8; border-radius: 5px; color: #465468; outline: none; &:focus { border-color: #159ef4; box-shadow: 0 0 0 2px rgba(21,158,244,.1); } } }
 }
 
@@ -85,3 +85,12 @@
 @media (max-width: 600px) {
   .assign-review { &__options--columns { grid-template-columns: 1fr; } &__students { grid-template-columns: repeat(2, 1fr); } }
 }
+
+// DESIGN_SYSTEM.md: 목록과 표의 근거를 강조하고 장식성 카드 효과를 제거한다.
+.wrong-answer-panel { border-color: #dde2e8; border-radius: 10px; box-shadow: none; &__header { min-height: 78px; padding: 18px 20px; h2 { color: #172033; font-size: 17px; } p { color: #747f91; } } &__count { padding: 0; background: transparent; color: #596579; } }
+.wrong-answer-worksheets__item { border-radius: 6px; &:hover { background: #f7f9fb; border-color: #e1e5ea; } &--active { background: #edf5fc; border-color: #e1e5ea; box-shadow: none; } }
+.wrong-answer-button { font-weight: 600; &--primary { background: #176fc1; border-color: #176fc1; &:not(:disabled):hover { background: #0f5fa8; border-color: #0f5fa8; } } &--secondary { border-color: #8eb7dc; color: #176fc1; &:not(:disabled):hover { background: #edf5fc; border-color: #176fc1; } } }
+.wrong-question-list__table, .review-progress__table { th { background: #f5f6f8; color: #667185; } tbody tr:hover { background: #f7f9fb; } }
+.wrong-question-list__item-button b, .review-progress__name { color: #263247; }
+.assign-review__items { background: #f7f9fb; border-radius: 6px; }
+.explanation-panel__header { span { color: #596579; font-weight: 600; } h2 { color: #172033; } }

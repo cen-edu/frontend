@@ -6,7 +6,7 @@ function AssignmentList({ assignments, selectedId, onSelect }) {
             <div className="learning-panel__header">
                 <div>
                     <h2 id="assignment-list-title">학습 목록</h2>
-                    <p>과제를 선택하면 학생별 현황을 확인할 수 있어요.</p>
+                    <p>학습을 선택하면 학생별 진행 상황을 표시합니다.</p>
                 </div>
                 <span className="learning-panel__count">{assignments.length}개</span>
             </div>

@@ -9,7 +9,7 @@ function ReviewProgressTable({ worksheet, selectedIds, remindedIds, onToggle, on
     return (
         <section className="review-progress" aria-labelledby="review-progress-title">
             <div className="review-progress__heading">
-                <div><h3 id="review-progress-title">복습 진행</h3><span>학생별 해설 확인과 재시도를 추적해요.</span></div>
+                <div><h3 id="review-progress-title">복습 진행</h3><span>학생별 해설 확인과 재시도 상태를 표시합니다.</span></div>
                 <button type="button" className="wrong-answer-button wrong-answer-button--secondary" disabled={!selectedIds.length} onClick={onRemind}><i className="bi bi-bell" aria-hidden="true" /> {selectedIds.length > 0 && selectedIds.every((id) => remindedIds.includes(id)) ? '알림 전송됨' : '알림 보내기'}{selectedIds.length > 0 && <span>{selectedIds.length}</span>}</button>
             </div>
             <div className="review-progress__table-wrap">

@@ -42,7 +42,14 @@ function AssessmentResultPage() {
     };
 
     return (
-        <section className="assessment-results" aria-label="평가 결과">
+        <section className="assessment-results" aria-labelledby="assessment-results-title">
+            <header className="assessment-results__page-header">
+                <div>
+                    <h1 id="assessment-results-title">평가 결과</h1>
+                    <p>학습별 채점 진행 상태와 학생·문항별 점수를 확인합니다.</p>
+                </div>
+                <span>검색 결과 <strong>{filtered.length}</strong>건</span>
+            </header>
             <div className="assessment-results__toolbar">
                 <div className="assessment-results__filters">
                     <AnalysisFilters showContext={false} className="analysis-filters--results" controls={[

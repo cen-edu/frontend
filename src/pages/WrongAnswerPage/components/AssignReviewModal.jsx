@@ -43,8 +43,8 @@ function AssignReviewModal({ items, initialStudentIds, onClose, onAssign }) {
                 <div className="assign-review__items"><span>배정 항목</span><strong>{itemLabels}</strong><em>{items.length}개</em></div>
                 <fieldset className="assign-review__section"><legend>대상</legend>
                     <div className="assign-review__options">
-                        <RadioCard name="target" value="all" checked={target === 'all'} onChange={setTarget} title={`해당 항목을 틀린 학생 전체 (${wrongStudentIds.length}명)`} description="선택한 항목 중 하나라도 틀린 학생에게 배정해요." />
-                        <RadioCard name="target" value="selected" checked={target === 'selected'} onChange={setTarget} title={`선택한 학생만 (${selectedStudentIds.length}명)`} description="배정할 학생을 직접 선택해요." />
+                        <RadioCard name="target" value="all" checked={target === 'all'} onChange={setTarget} title={`해당 항목을 틀린 학생 전체 (${wrongStudentIds.length}명)`} description="선택한 항목 중 하나라도 틀린 학생에게 배정합니다." />
+                        <RadioCard name="target" value="selected" checked={target === 'selected'} onChange={setTarget} title={`선택한 학생만 (${selectedStudentIds.length}명)`} description="배정할 학생을 직접 선택합니다." />
                     </div>
                     {target === 'selected' && <div className="assign-review__students" aria-label="배정 학생 선택">{availableStudents.map((student) => {
                         const toggleStudent = () => setSelectedStudentIds((current) => current.includes(student.id) ? current.filter((id) => id !== student.id) : [...current, student.id]);
