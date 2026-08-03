@@ -20,7 +20,20 @@ const baseAssessmentQuestions = [
     { no: 2, unitId: 'm1s1-prime-factor', difficulty: 'low', prompt: '12의 약수의 개수를 고르세요.', format: 'choice', choices: ['2', '3', '4', '5', '6'], maxScore: 5, answer: '4', rubric: [], gradingStatus: 'auto' },
     { no: 3, unitId: 'm1s1-gcd-lcm', difficulty: 'mid', prompt: '12와 18의 공통 소인수의 곱을 구하세요.', format: 'short', maxScore: 3, answer: '2×3', rubric: [{ label: '정답과 동치인 표현', score: 3 }], gradingStatus: 'pending' },
     { no: 4, unitId: 'm1s1-prime-factor', difficulty: 'mid', prompt: '60의 소인수 개수를 고르세요.', format: 'choice', choices: ['2개', '3개', '4개', '5개', '6개'], maxScore: 5, answer: '2', rubric: [], gradingStatus: 'auto' },
-    { no: 5, unitId: 'm1s1-gcd-lcm', difficulty: 'high', prompt: '최대공약수를 구하는 과정을 설명하세요.', format: 'essay', maxScore: 5, answer: '두 수를 각각 소인수분해한 뒤 공통 소인수를 곱한다.', rubric: [{ label: '소인수분해 서술', score: 2 }, { label: '공통 소인수 언급', score: 2 }, { label: '최종 답 정확', score: 1 }], gradingStatus: 'pending' },
+    {
+        no: 5,
+        unitId: 'm1s1-gcd-lcm',
+        difficulty: 'high',
+        prompt: '최대공약수를 구하는 과정을 설명하세요.',
+        format: 'essay',
+        maxScore: 5,
+        answer: '두 수를 각각 소인수분해한 뒤 공통 소인수를 골라 곱한다.',
+        rubric: [
+            { label: '두 수를 각각 소인수분해한 수식이 포함되어 있음', score: 2 },
+            { label: '공통 소인수를 골라 곱하는 절차가 포함되어 있음', score: 3 },
+        ],
+        gradingStatus: 'auto',
+    },
 ];
 
 const additionalAssessmentQuestions = Array.from({ length: 15 }, (_, index) => {
@@ -49,7 +62,7 @@ const baseStudents = [
             { no: 2, input: '4', score: 5, autoScore: 5, gradedBy: 'auto' },
             { no: 3, input: '2*3', score: null, autoScore: 0, gradedBy: null },
             { no: 4, input: '2', score: 5, autoScore: 5, gradedBy: 'auto' },
-            { no: 5, input: '12=2²×3, 18=2×3²이므로 공통인 2와 3을 곱하면 6이다.', score: null, autoScore: null, gradedBy: null },
+            { no: 5, input: '12=2²×3, 18=2×3²이므로 공통인 2와 3을 곱하면 6이다.', score: 5, autoScore: 5, gradedBy: 'auto', rubricResults: [{ satisfied: true, evidence: '12=2²×3, 18=2×3²' }, { satisfied: true, evidence: '공통인 2와 3을 곱하면 6이다' }] },
         ],
     },
     {
@@ -59,7 +72,7 @@ const baseStudents = [
             { no: 2, input: '3', score: 0, autoScore: 0, gradedBy: 'auto' },
             { no: 3, input: '6', score: null, autoScore: 0, gradedBy: null },
             { no: 4, input: '2', score: 5, autoScore: 5, gradedBy: 'auto' },
-            { no: 5, input: '2와 3을 곱해서 6', score: 2, autoScore: null, gradedBy: 'teacher' },
+            { no: 5, input: '2와 3을 곱해서 6', score: 3, autoScore: 3, gradedBy: 'auto', rubricResults: [{ satisfied: false, evidence: '' }, { satisfied: true, evidence: '2와 3을 곱해서 6' }] },
         ],
     },
     {
@@ -69,7 +82,7 @@ const baseStudents = [
             { no: 2, input: '4', score: 5, autoScore: 5, gradedBy: 'auto' },
             { no: 3, input: '2 × 3', score: null, autoScore: 0, gradedBy: null },
             { no: 4, input: '1', score: 0, autoScore: 0, gradedBy: 'auto' },
-            { no: 5, input: '두 수를 소인수분해하고 공통 소인수를 곱한다.', score: null, autoScore: null, gradedBy: null },
+            { no: 5, input: '두 수를 소인수분해하고 공통 소인수를 곱한다.', score: 3, autoScore: 3, gradedBy: 'auto', rubricResults: [{ satisfied: false, evidence: '' }, { satisfied: true, evidence: '공통 소인수를 곱한다' }] },
         ],
     },
     {
@@ -79,7 +92,7 @@ const baseStudents = [
             { no: 2, input: '4', score: 5, autoScore: 5, gradedBy: 'auto' },
             { no: 3, input: '2×3', score: 3, autoScore: 3, gradedBy: 'auto' },
             { no: 4, input: '2', score: 5, autoScore: 5, gradedBy: 'auto' },
-            { no: 5, input: '2와 3을 곱해서 6', score: 2, autoScore: null, gradedBy: 'teacher' },
+            { no: 5, input: '2와 3을 곱해서 6', score: 3, autoScore: 3, gradedBy: 'auto', rubricResults: [{ satisfied: false, evidence: '' }, { satisfied: true, evidence: '2와 3을 곱해서 6' }] },
         ],
     },
 ];
@@ -129,7 +142,7 @@ export const initialAssessmentResults = [
     },
 ];
 
-const STORAGE_KEY = 'assessment-results-v2';
+const STORAGE_KEY = 'assessment-results-v3';
 
 export const getAssessmentResults = () => {
     try {
