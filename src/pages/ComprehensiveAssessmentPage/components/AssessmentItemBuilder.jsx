@@ -1,24 +1,18 @@
 import CustomSelect from '../../../components/common/CustomSelect/CustomSelect';
-import { defaultScores, questionFormats } from '../../../mocks/assessmentCreation';
+import { questionFormats } from '../../../mocks/assessmentCreation';
 import { difficultyLabels, difficultyLevels } from '../../../mocks/problemCreation';
 
 const difficultyOptions = difficultyLevels.map((value) => ({ value, label: difficultyLabels[value] }));
 
-function AssessmentItemBuilder({ title, groups, totalCount, totalScore, canGenerate, onTitleChange, onAddRow, onChangeRow, onRemoveRow, onRemoveUnit, onGenerate }) {
+function AssessmentItemBuilder({ groups, totalCount, canGenerate, onAddRow, onChangeRow, onRemoveRow, onRemoveUnit, onGenerate }) {
     return (
         <div className="assessment-builder">
-            <div className="assessment-builder__title-field">
-                <label htmlFor="assessment-title">평가 제목</label>
-                <input id="assessment-title" type="text" value={title} onChange={(event) => onTitleChange(event.target.value)} aria-label="평가 제목" />
-            </div>
-
             {!groups.length ? (
                 <div className="assessment-builder__empty">왼쪽에서 소단원을 선택하면 출제 항목이 추가됩니다.</div>
             ) : (
                 <div className="assessment-builder__groups">
                     {groups.map(({ unitId, unit, rows }) => {
                         const subtotalCount = rows.reduce((sum, row) => sum + row.count, 0);
-                        const subtotalScore = rows.reduce((sum, row) => sum + row.count * defaultScores[row.format], 0);
                         return (
                             <section className="assessment-builder__group" key={unitId} aria-labelledby={`assessment-unit-${unitId}`}>
                                 <header className="assessment-builder__group-header">
@@ -27,7 +21,7 @@ function AssessmentItemBuilder({ title, groups, totalCount, totalScore, canGener
                                         <h3 id={`assessment-unit-${unitId}`}>{unit.name}</h3>
                                     </div>
                                     <div className="assessment-builder__group-actions">
-                                        <span>{subtotalCount}문항 · {subtotalScore}점</span>
+                                        <span>{subtotalCount}문항</span>
                                         <button type="button" aria-label={`${unit.name} 제외`} onClick={() => onRemoveUnit(unitId)}><i className="bi bi-x-lg" aria-hidden="true" /></button>
                                     </div>
                                 </header>
@@ -42,7 +36,6 @@ function AssessmentItemBuilder({ title, groups, totalCount, totalScore, canGener
                                                 <span>{row.count}</span>
                                                 <button type="button" aria-label="문항 수 늘리기" disabled={row.count >= 10} onClick={() => onChangeRow(unitId, row.id, 'count', row.count + 1)}>+</button>
                                             </div>
-                                            <span className="assessment-builder__row-score">{row.count * defaultScores[row.format]}점</span>
                                             <button type="button" className="assessment-builder__remove-row" aria-label={`${unit.name} ${rowIndex + 1}행 삭제`} onClick={() => onRemoveRow(unitId, row.id)}><i className="bi bi-trash3" aria-hidden="true" /></button>
                                         </div>
                                     ))}
@@ -55,7 +48,7 @@ function AssessmentItemBuilder({ title, groups, totalCount, totalScore, canGener
             )}
 
             <footer className="assessment-builder__footer">
-                <div><span>총</span><strong>{totalCount}문항 · {totalScore}점</strong></div>
+                <div><span>총</span><strong>{totalCount}문항</strong></div>
                 <button type="button" className="assessment-button assessment-button--primary" disabled={!canGenerate} onClick={onGenerate}>평가 생성</button>
             </footer>
         </div>

@@ -1,5 +1,5 @@
 .comprehensive-assessment-page {
-  min-width: 0;
+  min-width: 1160px;
   color: #465166;
 
   &__page-header {
@@ -21,9 +21,9 @@
   }
 
   > .unit-scope-filter { margin-bottom: 16px; }
-  &__configuration { height: 620px; display: grid; grid-template-columns: minmax(300px, 1fr) minmax(520px, 1.55fr); gap: 16px; align-items: stretch; }
+  &__configuration { height: 580px; display: grid; grid-template-columns: minmax(300px, 1fr) minmax(520px, 1.55fr); gap: 16px; align-items: stretch; }
 
-  &__result { height: 700px; min-height: 0; margin-top: 24px; display: flex; flex-direction: column; background: #fff; border: 1px solid #dde2e8; border-radius: 10px; overflow: hidden; }
+  &__result { height: 680px; min-height: 0; display: flex; flex-direction: column; background: #fff; border: 1px solid #dde2e8; border-radius: 10px; overflow: hidden; }
   &__result-header { min-height: 76px; flex: 0 0 76px; padding: 15px 18px; display: flex; align-items: center; justify-content: space-between; gap: 20px; border-bottom: 1px solid #ebeef2; h2 { color: #172033; font-size: 18px; } p { margin-top: 4px; color: #747f91; font-size: 12px; } }
   &__result-actions { display: flex; align-items: center; gap: 8px; }
   &__answer-toggle { min-height: 38px; padding: 0 12px; background: #fff; border: 1px solid #dde2e8; border-radius: 6px; color: #465166; font-size: 12px; font-weight: 600; cursor: pointer; &:hover { background: #f4faff; border-color: #91cff5; color: #176fc1; } &:focus-visible { outline: 2px solid rgba(23,111,193,.35); outline-offset: 1px; } i { margin-right: 5px; } }
@@ -45,21 +45,3 @@
 }
 
 .assessment-button { min-height: 38px; padding: 0 16px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; &:focus-visible { outline: 2px solid rgba(23,111,193,.35); outline-offset: 2px; } &:disabled { cursor: not-allowed; opacity: .56; } &--primary { background: #176fc1; border: 1px solid #176fc1; color: #fff; &:not(:disabled):hover { background: #105caa; border-color: #105caa; } } &--secondary { background: #fff; border: 1px solid #176fc1; color: #176fc1; &:not(:disabled):hover { background: #eff7ff; } } }
-
-@media (max-width: 1120px) {
-  .comprehensive-assessment-page {
-    &__configuration { height: auto; grid-template-columns: 1fr; }
-    &__configuration > .assessment-section { min-height: 520px; }
-    &__result { height: auto; min-height: 760px; }
-    &__preview-grid { grid-template-columns: 1fr; overflow: visible; }
-  }
-
-}
-
-@media (max-width: 720px) {
-  .comprehensive-assessment-page {
-    &__page-header, &__result-header { align-items: flex-start; flex-direction: column; }
-    &__result-header { padding-top: 14px; padding-bottom: 14px; flex-basis: auto; }
-    &__result-actions { width: 100%; flex-wrap: wrap; }
-  }
-}

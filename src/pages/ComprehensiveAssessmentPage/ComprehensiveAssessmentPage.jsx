@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import UnitScopeFilter from '../../components/common/UnitScopeFilter/UnitScopeFilter';
 import UnitTreeSelector from '../../components/common/UnitTreeSelector/UnitTreeSelector';
-import { defaultScores, generateAssessmentProblems } from '../../mocks/assessmentCreation';
+import { generateAssessmentProblems } from '../../mocks/assessmentCreation';
 import { curriculumUnits } from '../../mocks/curriculum';
 import AssessmentItemBuilder from './components/AssessmentItemBuilder';
 import AssessmentPreviewList from './components/AssessmentPreviewList';
@@ -17,7 +17,6 @@ function ComprehensiveAssessmentPage() {
     const [gradeId, setGradeId] = useState('middle-1');
     const [subjectId, setSubjectId] = useState('math');
     const [semesterId, setSemesterId] = useState('1');
-    const [title, setTitle] = useState(`${currentYear} 1학기 종합평가`);
     const [unitItems, setUnitItems] = useState([]);
     const [result, setResult] = useState(null);
     const [selectedProblemId, setSelectedProblemId] = useState('');
@@ -29,10 +28,10 @@ function ComprehensiveAssessmentPage() {
     const groups = unitItems.map((item) => ({ ...item, unit: unitIndex.get(item.unitId) })).filter((item) => item.unit);
     const selectedUnitIds = groups.map((item) => item.unitId);
     const totalCount = groups.reduce((sum, group) => sum + group.rows.reduce((rowSum, row) => rowSum + row.count, 0), 0);
-    const totalScore = groups.reduce((sum, group) => sum + group.rows.reduce((rowSum, row) => rowSum + row.count * defaultScores[row.format], 0), 0);
-    const resultScore = result?.problems.reduce((sum, problem) => sum + problem.maxScore, 0) ?? totalScore;
+    const resultScore = result?.problems.reduce((sum, problem) => sum + problem.maxScore, 0) ?? 0;
     const selectedProblem = result?.problems.find((problem) => problem.id === selectedProblemId) ?? null;
     const canGenerate = totalCount > 0;
+    const title = `${currentYear} ${semesterId}학기 종합평가`;
 
     const invalidateResult = () => {
         setResult(null);
@@ -45,10 +44,9 @@ function ComprehensiveAssessmentPage() {
         invalidateResult();
     };
 
-    const resetScope = (setter, value, nextSemester = semesterId) => {
+    const resetScope = (setter, value) => {
         setter(value);
         setUnitItems([]);
-        setTitle(`${currentYear} ${nextSemester}학기 종합평가`);
         invalidateResult();
     };
 
@@ -90,34 +88,36 @@ function ComprehensiveAssessmentPage() {
         <section className="comprehensive-assessment-page" aria-labelledby="comprehensive-assessment-title">
             <header className="comprehensive-assessment-page__page-header">
                 <div><h1 id="comprehensive-assessment-title">종합평가 생성</h1><p>단원별 문항 유형과 난이도를 구성하고 평가 문항과 채점 기준을 검토합니다.</p></div>
-                <span>총 <strong>{result?.problems.length ?? totalCount}</strong>문항 · <strong>{resultScore}</strong>점</span>
+                <span>선택 소단원 <strong>{groups.length}</strong>개 · 총 <strong>{result?.problems.length ?? totalCount}</strong>문항</span>
             </header>
 
-            <UnitScopeFilter
-                gradeId={gradeId}
-                subjectId={subjectId}
-                semesterId={semesterId}
-                onGradeChange={(value) => resetScope(setGradeId, value)}
-                onSubjectChange={(value) => resetScope(setSubjectId, value)}
-                onSemesterChange={(value) => resetScope(setSemesterId, value, value)}
-            />
-
-            <div className="comprehensive-assessment-page__configuration">
-                <section className="assessment-section" aria-labelledby="assessment-unit-selection-title">
-                    <header><div><h2 id="assessment-unit-selection-title">단원 선택</h2><p>종합평가에 포함할 소단원을 선택합니다.</p></div><span>{groups.length}개 선택</span></header>
-                    <UnitTreeSelector key={`${gradeId}-${subjectId}-${semesterId}`} majorUnits={majorUnits} selectedUnitIds={selectedUnitIds} onToggleUnit={toggleUnit} onToggleMiddleUnit={toggleMiddleUnit} />
-                </section>
-                <section className="assessment-section" aria-labelledby="assessment-builder-title">
-                    <header><div><h2 id="assessment-builder-title">출제 구성</h2><p>유형, 난이도, 문항 수를 행 단위로 설정합니다.</p></div><span>행당 1~10문항</span></header>
-                    <AssessmentItemBuilder title={title} groups={groups} totalCount={totalCount} totalScore={totalScore} canGenerate={canGenerate} onTitleChange={(value) => { setTitle(value); setSaved(false); }} onAddRow={addRow} onChangeRow={changeRow} onRemoveRow={removeRow} onRemoveUnit={toggleUnit} onGenerate={createAssessment} />
-                </section>
-            </div>
-
-            {result && (
+            {!result ? (
+                <>
+                    <UnitScopeFilter
+                        gradeId={gradeId}
+                        subjectId={subjectId}
+                        semesterId={semesterId}
+                        onGradeChange={(value) => resetScope(setGradeId, value)}
+                        onSubjectChange={(value) => resetScope(setSubjectId, value)}
+                        onSemesterChange={(value) => resetScope(setSemesterId, value)}
+                    />
+                    <div className="comprehensive-assessment-page__configuration">
+                        <section className="assessment-section" aria-labelledby="assessment-unit-selection-title">
+                            <header><div><h2 id="assessment-unit-selection-title">단원 선택</h2><p>종합평가에 포함할 소단원을 선택합니다.</p></div><span>{groups.length}개 선택</span></header>
+                            <UnitTreeSelector key={`${gradeId}-${subjectId}-${semesterId}`} majorUnits={majorUnits} selectedUnitIds={selectedUnitIds} onToggleUnit={toggleUnit} onToggleMiddleUnit={toggleMiddleUnit} />
+                        </section>
+                        <section className="assessment-section" aria-labelledby="assessment-builder-title">
+                            <header><div><h2 id="assessment-builder-title">출제 구성</h2><p>유형, 난이도, 문항 수를 행 단위로 설정합니다.</p></div><span>행당 1~10문항</span></header>
+                            <AssessmentItemBuilder groups={groups} totalCount={totalCount} canGenerate={canGenerate} onAddRow={addRow} onChangeRow={changeRow} onRemoveRow={removeRow} onRemoveUnit={toggleUnit} onGenerate={createAssessment} />
+                        </section>
+                    </div>
+                </>
+            ) : (
                 <section className="comprehensive-assessment-page__result" aria-labelledby="assessment-result-title">
                     <header className="comprehensive-assessment-page__result-header">
-                        <div><h2 id="assessment-result-title">{title || '제목 없는 종합평가'}</h2><p>총 {result.problems.length}문항 · {resultScore}점</p></div>
+                        <div><h2 id="assessment-result-title">{title}</h2><p>총 {result.problems.length}문항 · {resultScore}점</p></div>
                         <div className="comprehensive-assessment-page__result-actions">
+                            <button type="button" className="assessment-button assessment-button--secondary" onClick={() => setResult(null)}>출제 구성 수정</button>
                             <button type="button" className="comprehensive-assessment-page__answer-toggle" aria-pressed={showAnswers} onClick={() => setShowAnswers((current) => !current)}><i className={`bi bi-eye${showAnswers ? '' : '-slash'}`} aria-hidden="true" /> 정답 {showAnswers ? '숨기기' : '표시'}</button>
                             <button type="button" className="assessment-button assessment-button--secondary" onClick={() => setSaved(true)} disabled={saved}>{saved ? '저장 완료' : '문제 보관함에 저장'}</button>
                         </div>
