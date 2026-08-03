@@ -109,7 +109,7 @@ export function generateCustomProblems(student, configs) {
         const selected = templates[config.conceptId]?.[stage] ?? fallbackTemplate(config.conceptLabel, stage);
         return Array.from({ length: config.counts[stage] }, (_, index) => {
             no += 1;
-            const unique = `${student.id}-${config.unitId}-${stage}-${index + 1}`;
+            const unique = `${student.id}-${config.conceptId}-${config.unitId}-${stage}-${index + 1}`;
             return {
                 id: unique,
                 no,

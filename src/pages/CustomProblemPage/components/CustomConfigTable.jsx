@@ -25,7 +25,7 @@ function CustomConfigTable({ configs, availableUnits, reason, onCountChange, onR
             <td><button type="button" className="custom-config__remove" aria-label={`${config.conceptLabel} 제외`} onClick={() => onRemove(config.conceptId)}><i className="bi bi-x-lg" aria-hidden="true" /></button></td>
         </tr>)}</tbody></table></div>}
         <footer className="custom-config__footer">
-            <div className="custom-config__add"><CustomSelect label="추가할 개념 선택" value={selectedUnitId} options={addable.length ? addable.map((unit) => ({ value: unit.id, label: unit.name })) : [{ value: '', label: '추가 가능한 개념 없음' }]} onChange={setUnitId} width={200} disabled={!addable.length} /><button type="button" disabled={!selectedUnitId} onClick={() => onAdd(selectedUnitId)}>개념 추가</button></div>
+            <div className="custom-config__add"><CustomSelect label="추가할 개념 선택" value={selectedUnitId} options={addable.length ? addable.map((unit) => ({ value: unit.id, label: unit.name })) : [{ value: '', label: '추가 가능한 개념 없음' }]} onChange={setUnitId} width={200} disabled={!addable.length} placement="top" /><button type="button" disabled={!selectedUnitId} onClick={() => onAdd(selectedUnitId)}>개념 추가</button></div>
             <div className="custom-config__generate"><span>총 <strong>{total}</strong>문항</span><button type="button" disabled={!canGenerate} onClick={onGenerate}>문제 생성</button></div>
         </footer>
     </section>;

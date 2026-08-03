@@ -8,6 +8,7 @@ function CustomSelect({
     onChange,
     width = 124,
     disabled = false,
+    placement = 'bottom',
     className = '',
 }) {
     const [isOpen, setIsOpen] = useState(false);
@@ -40,7 +41,7 @@ function CustomSelect({
     return (
         <div
             ref={containerRef}
-            className={`custom-select${isOpen ? ' custom-select--open' : ''}${disabled ? ' custom-select--disabled' : ''}${className ? ` ${className}` : ''}`}
+            className={`custom-select custom-select--${placement}${isOpen ? ' custom-select--open' : ''}${disabled ? ' custom-select--disabled' : ''}${className ? ` ${className}` : ''}`}
             style={{ '--custom-select-width': typeof width === 'number' ? `${width}px` : width }}
         >
             <button

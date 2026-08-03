@@ -72,6 +72,7 @@
 - 드롭다운 디자인은 `src/components/common/CustomSelect/CustomSelect.scss`의 공통 스타일을 따른다.
 - 페이지별로 별도의 드롭다운 컴포넌트나 중복 스타일을 만들지 않는다.
 - 드롭다운의 높이, 글꼴, 테두리와 옵션 스타일은 `CustomSelect.scss`에서만 관리하고 페이지 SCSS에서 덮어쓰지 않는다. 너비와 비활성 상태 등 화면별 차이는 `CustomSelect`의 props로 조절한다.
+- 하단 고정 영역처럼 아래쪽 공간이 부족한 셀렉트는 `CustomSelect`의 `placement="top"`을 사용해 옵션을 위로 펼친다.
 - 학습 관리 화면의 학습명 검색은 `src/components/common/SearchInput/SearchInput.jsx`를 재사용하며, 검색창 높이와 입력·플레이스홀더 글꼴 및 테두리는 `SearchInput.scss`에서만 관리한다.
 - 테이블이나 목록의 항목 선택 체크박스는 `src/components/common/CustomCheckbox/CustomCheckbox.jsx`를 사용한다.
 - 항목 선택 체크박스의 디자인은 `src/components/common/CustomCheckbox/CustomCheckbox.scss`의 공통 스타일을 따르고 페이지에서 중복 구현하지 않는다.
@@ -80,6 +81,7 @@
 - 오답 학습 배정 모달은 `StudentFormModal` 프레임을 재사용하며, 해설 검토가 완료되지 않은 문항이나 개념은 선택 및 배정을 비활성화한다.
 - 취약점 분석 `conceptId`와 단원 트리 소단원의 매핑은 `src/mocks/customCreation.js`의 `conceptUnitMap`을 사용한다.
 - 맞춤 문제는 공통 문제 구조에 `stage: 'retrace'|'basic'|'independent'`와 `sourceQuestionNo`를 추가해 저장한다.
+- 맞춤 문제 ID는 여러 취약 개념이 같은 소단원에 매핑될 수 있으므로 학생 ID·취약 개념 ID·소단원 ID·단계·순번을 함께 사용해 고유하게 만든다.
 - 개념 챗봇 UI는 `src/components/common/ConceptChatPanel`을 재사용하고 mock 응답은 `src/mocks/conceptChat.js`에서 관리한다.
 - 맞춤 문제 생성 화면에는 개념 챗봇 UI를 표시하지 않는다.
 - 맞춤 문제 생성 화면은 학생 목록을 좌측 탐색 영역, 문항 구성을 중앙 핵심 작업 영역, 제안 근거를 우측 보조 영역에 배치한다.

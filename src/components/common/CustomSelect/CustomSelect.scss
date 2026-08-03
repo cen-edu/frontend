@@ -48,6 +48,10 @@
     }
   }
 
+  &--top#{&}--open &__toggle {
+    border-radius: 0 0 5px 5px;
+  }
+
   &--disabled &__toggle {
     background-color: #f5f6f7;
     color: #a3abb5;
@@ -65,6 +69,15 @@
     border: 1px solid #159ef4;
     border-radius: 0 0 5px 5px;
     box-shadow: 0 8px 18px rgba(31, 49, 73, 0.12);
+  }
+
+  &--top &__options {
+    top: auto;
+    bottom: calc(100% - 1px);
+    max-height: 280px;
+    overflow-y: auto;
+    border-radius: 5px 5px 0 0;
+    box-shadow: 0 -8px 18px rgba(31, 49, 73, 0.12);
   }
 
   &__option {
