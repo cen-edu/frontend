@@ -116,7 +116,7 @@ const practiceStudents = baseStudents.map((student, studentIndex) => ({
 
 export const initialAssessmentResults = [
     {
-        id: 'factor-assessment', type: 'assessment', title: '2단원 소인수분해 종합평가',
+        id: 'factor-assessment', type: 'assessment', title: '2단원 소인수분해 종합 평가',
         gradeId: 'middle-1', classId: 'middle-1-1', className: '중학교 1학년 1반', term: 'first', assignedAt: '2026.07.29', status: 'grading', modified: false,
         questions: assessmentQuestions,
         students: assessmentStudents,

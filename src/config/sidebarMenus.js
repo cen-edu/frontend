@@ -2,8 +2,8 @@ export const sidebarMenus = {
     problems: {
         ariaLabel: '문제 만들기 메뉴',
         menus: [
-            { label: '문제 생성', path: '/problems', end: true },
-            { label: '종합평가 생성', path: '/problems/comprehensive' },
+            { label: '학습 문제 생성', path: '/problems', end: true },
+            { label: '종합 평가 생성', path: '/problems/comprehensive' },
             { label: '맞춤 문제 생성', path: '/problems/custom' },
             { label: '문제 보관함', path: '/problems/library' },
         ],

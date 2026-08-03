@@ -5,7 +5,7 @@ export const weaknessFilterOptions = {
     classes: [{ value: 'middle-1-1', label: '1반' }, { value: 'middle-1-2', label: '2반' }],
     worksheets: [
         { value: 'factor-practice', label: '2단원 소인수분해 연습' },
-        { value: 'factor-assessment', label: '2단원 소인수분해 종합평가' },
+        { value: 'factor-assessment', label: '2단원 소인수분해 종합 평가' },
         { value: 'factor-custom', label: '공통소인수 맞춤 학습' },
     ],
 };
@@ -91,7 +91,7 @@ const customStudents = practiceStudents.map((student, index) => ({
 
 export const weaknessWorksheets = {
     'factor-practice': { id: 'factor-practice', gradeId: 'middle-1', classId: 'middle-1-1', term: 'first', type: 'practice', origin: 'manual', title: '2단원 소인수분해 연습', className: '중학교 1학년 1반', date: '오늘 11:30', concepts, questions: practiceQuestions, students: practiceStudents },
-    'factor-assessment': { id: 'factor-assessment', gradeId: 'middle-1', classId: 'middle-1-1', term: 'first', type: 'assessment', origin: 'manual', title: '2단원 소인수분해 종합평가', className: '중학교 1학년 1반', date: '오늘 11:30', concepts: [], questions: assessmentQuestions, students: assessmentStudents },
+    'factor-assessment': { id: 'factor-assessment', gradeId: 'middle-1', classId: 'middle-1-1', term: 'first', type: 'assessment', origin: 'manual', title: '2단원 소인수분해 종합 평가', className: '중학교 1학년 1반', date: '오늘 11:30', concepts: [], questions: assessmentQuestions, students: assessmentStudents },
     'factor-custom': { id: 'factor-custom', gradeId: 'middle-1', classId: 'middle-1-1', term: 'first', type: 'practice', origin: 'custom', title: '공통소인수 맞춤 학습', className: '중학교 1학년 1반', date: '오늘 11:30', concepts, questions: practiceQuestions, students: customStudents },
 };
 

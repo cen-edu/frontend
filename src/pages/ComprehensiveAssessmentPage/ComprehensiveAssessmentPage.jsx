@@ -37,7 +37,7 @@ function ComprehensiveAssessmentPage() {
     const resultScore = result?.problems.reduce((sum, problem) => sum + problem.maxScore, 0) ?? 0;
     const selectedProblem = result?.problems.find((problem) => problem.id === selectedProblemId) ?? null;
     const canGenerate = totalCount > 0;
-    const title = `${currentYear} ${term === 'first' ? '1' : '2'}학기 종합평가`;
+    const title = `${currentYear} ${term === 'first' ? '1' : '2'}학기 종합 평가`;
 
     useEffect(() => {
         if (initializedFromLibrary.current) return;
@@ -120,7 +120,7 @@ function ComprehensiveAssessmentPage() {
     return (
         <section className="comprehensive-assessment-page" aria-labelledby="comprehensive-assessment-title">
             <header className="comprehensive-assessment-page__page-header">
-                <div><h1 id="comprehensive-assessment-title">종합평가 생성</h1><p>단원별 문항 유형과 난이도를 구성하고 평가 문항과 채점 기준을 검토합니다.</p></div>
+                <div><h1 id="comprehensive-assessment-title">종합 평가 생성</h1><p>단원별 문항 유형과 난이도를 구성하고 평가 문항과 채점 기준을 검토합니다.</p></div>
                 <span>선택 소단원 <strong>{groups.length}</strong>개 · 총 <strong>{result?.problems.length ?? totalCount}</strong>문항</span>
             </header>
 
@@ -134,7 +134,7 @@ function ComprehensiveAssessmentPage() {
                     />
                     <div className="comprehensive-assessment-page__configuration">
                         <section className="assessment-section" aria-labelledby="assessment-unit-selection-title">
-                            <header><div><h2 id="assessment-unit-selection-title">단원 선택</h2><p>종합평가에 포함할 소단원을 선택합니다.</p></div><span>{groups.length}개 선택</span></header>
+                            <header><div><h2 id="assessment-unit-selection-title">단원 선택</h2><p>종합 평가에 포함할 소단원을 선택합니다.</p></div><span>{groups.length}개 선택</span></header>
                             <UnitTreeSelector key={`${gradeId}-${subjectId}-${term}`} majorUnits={majorUnits} selectedUnitIds={selectedUnitIds} onToggleUnit={toggleUnit} onToggleMiddleUnit={toggleMiddleUnit} />
                         </section>
                         <section className="assessment-section" aria-labelledby="assessment-builder-title">

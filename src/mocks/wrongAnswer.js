@@ -28,7 +28,7 @@ export const wrongAnswerFilterOptions = {
 
 const rawWrongAnswerWorksheets = [
     {
-        id: 'factor-assessment', gradeId: 'middle-1', classId: 'middle-1-1', term: 'first', assignedAt: '2026.07.29', type: 'assessment', title: '2단원 소인수분해 종합평가', className: '중학교 1학년 1반', assignStatus: 'none',
+        id: 'factor-assessment', gradeId: 'middle-1', classId: 'middle-1-1', term: 'first', assignedAt: '2026.07.29', type: 'assessment', title: '2단원 소인수분해 종합 평가', className: '중학교 1학년 1반', assignStatus: 'none',
         wrongItems: [
             { id: 'q9', no: 9, conceptId: 'multiple', conceptLabel: '최소공배수', prompt: '18과 24의 최소공배수를 구하세요.', finalAnswer: '72', solutionText: '18=2×3², 24=2³×3이므로 각 소인수의 큰 지수를 곱해 2³×3²=72입니다.', solutionReviewed: true, wrongStudentIds: [101, 102, 103, 105, 107, 108], commonWrongInputs: [{ input: '36', count: 4 }, { input: '42', count: 2 }] },
             { id: 'q4', no: 4, conceptId: 'common', conceptLabel: '공통 소인수 선택', prompt: '12와 18의 최대공약수를 구하세요.', finalAnswer: '6', solutionText: '12=2²×3, 18=2×3²으로 소인수분해합니다. 두 수에 공통인 소인수의 작은 지수를 곱하면 2×3=6입니다.', solutionReviewed: true, wrongStudentIds: [101, 103, 105, 108], commonWrongInputs: [{ input: '2×6', count: 3 }, { input: '36', count: 1 }] },

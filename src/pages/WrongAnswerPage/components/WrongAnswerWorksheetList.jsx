@@ -10,7 +10,7 @@ function WrongAnswerWorksheetList({ worksheets, selectedId, onSelect }) {
             <div className="wrong-answer-worksheets__list">
                 {worksheets.map((worksheet) => (
                     <button key={worksheet.id} type="button" className={`wrong-answer-worksheets__item${selectedId === worksheet.id ? ' wrong-answer-worksheets__item--active' : ''}`} onClick={() => onSelect(worksheet.id)}>
-                        <span className="wrong-answer-worksheets__meta"><span>{worksheet.className}</span><span className={`wrong-answer-type wrong-answer-type--${worksheet.type}`}>{worksheet.type === 'assessment' ? '종합평가' : '일반 학습'}</span></span>
+                        <span className="wrong-answer-worksheets__meta"><span>{worksheet.className}</span><span className={`wrong-answer-type wrong-answer-type--${worksheet.type}`}>{worksheet.type === 'assessment' ? '종합 평가' : '일반 학습'}</span></span>
                         <strong>{worksheet.title}</strong>
                         <span className="wrong-answer-worksheets__summary"><span>오답 {getWorksheetWrongCount(worksheet)}건</span><span className={`wrong-answer-status wrong-answer-status--${worksheet.assignStatus}`}>{wrongAnswerStatusLabels[worksheet.assignStatus]}</span></span>
                     </button>
@@ -22,4 +22,3 @@ function WrongAnswerWorksheetList({ worksheets, selectedId, onSelect }) {
 }
 
 export default WrongAnswerWorksheetList;
-

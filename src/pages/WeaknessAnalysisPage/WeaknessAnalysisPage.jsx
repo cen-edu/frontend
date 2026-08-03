@@ -29,7 +29,7 @@ function WeaknessAnalysisPage() {
         { key: 'worksheet', label: '학습지 선택', value: filters.worksheet, options: weaknessFilterOptions.worksheets, onChange: (value) => changeFilter('worksheet', value), width: 252 },
     ];
     const toggleStudent = (studentId) => setSelectedStudents((current) => current.includes(studentId) ? current.filter((id) => id !== studentId) : [...current, studentId]);
-    const typeLabel = worksheet.origin === 'custom' ? '맞춤 문제 · 챗봇 연계' : worksheet.type === 'assessment' ? '종합평가' : '일반 학습';
+    const typeLabel = worksheet.origin === 'custom' ? '맞춤 문제 · 챗봇 연계' : worksheet.type === 'assessment' ? '종합 평가' : '일반 학습';
 
     return <section className="weakness-page" aria-labelledby="weakness-page-title">
         <header className="weakness-page__page-header"><div><h1 id="weakness-page-title">취약점 분석</h1><p>개념·문항별 결과를 비교하고 우선 지도할 학생을 확인합니다.</p></div><span>{worksheet.className} · {typeLabel}</span></header>

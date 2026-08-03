@@ -1,6 +1,6 @@
 export const learningTypeLabels = {
     practice: '일반 학습',
-    assessment: '종합평가',
+    assessment: '종합 평가',
 };
 
 export function getProgress(assignment, student) {

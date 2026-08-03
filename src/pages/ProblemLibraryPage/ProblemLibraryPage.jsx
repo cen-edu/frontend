@@ -10,7 +10,7 @@ import LibraryTable from './components/LibraryTable';
 import './ProblemLibraryPage.scss';
 import './components/LibraryComponents.scss';
 
-const tabs = [{ value: 'all', label: '전체' }, { value: 'practice', label: '일반 학습' }, { value: 'assessment', label: '종합평가' }, { value: 'custom', label: '맞춤 문제' }];
+const tabs = [{ value: 'all', label: '전체' }, { value: 'practice', label: '일반 학습' }, { value: 'assessment', label: '종합 평가' }, { value: 'custom', label: '맞춤 문제' }];
 const gradeOptions = [{ value: 'all', label: '전체 학년' }, { value: 'middle-1', label: '1학년' }, { value: 'middle-2', label: '2학년' }, { value: 'middle-3', label: '3학년' }];
 const termOptions = [{ value: 'all', label: '전체 학기' }, { value: 'first', label: '1학기' }, { value: 'second', label: '2학기' }];
 const statusOptions = [{ value: 'all', label: '전체 출제 상태' }, { value: 'draft', label: '미출제' }, { value: 'assigned', label: '출제됨' }];

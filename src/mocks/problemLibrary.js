@@ -23,7 +23,7 @@ const customProblems = (studentId) => practiceProblems().slice(0, 3).map((proble
 }));
 
 export const libraryStatusLabels = { draft: '미출제', assigned: '출제됨' };
-export const libraryTypeLabels = { practice: '일반 학습', assessment: '종합평가', custom: '맞춤 문제' };
+export const libraryTypeLabels = { practice: '일반 학습', assessment: '종합 평가', custom: '맞춤 문제' };
 
 export const libraryWorksheets = [
     {
@@ -32,7 +32,7 @@ export const libraryWorksheets = [
         assignments: [{ classId: 'middle-1-1', className: '2026학년도 1학년 1반', assignedAt: '2026.07.29', dueAt: '2026.08.05 18:00', status: 'ongoing' }],
     },
     {
-        id: 'factor-assessment', type: 'assessment', origin: 'manual', title: '2단원 소인수분해 종합평가', gradeId: 'middle-1', subjectId: 'math', term: 'first',
+        id: 'factor-assessment', type: 'assessment', origin: 'manual', title: '2단원 소인수분해 종합 평가', gradeId: 'middle-1', subjectId: 'math', term: 'first',
         unitSummary: '수와 연산 · 소수와 합성수 외 2', createdAt: '2026.07.26', problemCount: 4, totalScore: assessmentProblems.reduce((sum, problem) => sum + problem.maxScore, 0), problems: assessmentProblems, custom: null,
         assignments: [{ classId: 'middle-1-1', className: '2026학년도 1학년 1반', assignedAt: '2026.07.29', dueAt: '2026.08.01 18:00', status: 'ongoing' }],
     },

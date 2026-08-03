@@ -23,7 +23,7 @@ const classTwoStudents = [
 ];
 
 const sharedActivities = [
-    { id: 1, title: '김민서 학생이 종합평가를 제출했습니다.', time: '10분 전', icon: 'bi-file-earmark-check-fill', tone: 'blue', path: '/learning/results' },
+    { id: 1, title: '김민서 학생이 종합 평가를 제출했습니다.', time: '10분 전', icon: 'bi-file-earmark-check-fill', tone: 'blue', path: '/learning/results' },
     { id: 2, title: '채점 대기 중인 평가가 3건 있습니다.', time: '35분 전', icon: 'bi-exclamation-circle-fill', tone: 'orange', path: '/learning/results', emphasis: true },
     { id: 3, title: '2단원 맞춤 문제지 생성이 완료됐습니다.', time: '1시간 전', icon: 'bi-stars', tone: 'purple', path: '/problems/library' },
     { id: 4, title: '박준호 학생이 오답 학습을 완료했습니다.', time: '어제', icon: 'bi-check-circle-fill', tone: 'green', path: '/learning/wrong-answers' },
@@ -58,7 +58,7 @@ const dashboardData = {
             { id: 6, name: '자료의 정리와 해석', unit: '통계', accuracy: 53, weakStudents: 6 },
         ],
         activities: [
-            { id: 5, title: '윤하준 학생이 종합평가를 제출했습니다.', time: '20분 전', icon: 'bi-file-earmark-check-fill', tone: 'blue', path: '/learning/results' },
+            { id: 5, title: '윤하준 학생이 종합 평가를 제출했습니다.', time: '20분 전', icon: 'bi-file-earmark-check-fill', tone: 'blue', path: '/learning/results' },
             { id: 6, title: '채점 대기 중인 평가가 5건 있습니다.', time: '50분 전', icon: 'bi-exclamation-circle-fill', tone: 'orange', path: '/learning/results', emphasis: true },
             { id: 7, title: '도형 단원 문제지 생성이 완료됐습니다.', time: '2시간 전', icon: 'bi-stars', tone: 'purple', path: '/problems/library' },
             { id: 8, title: '송채원 학생이 오답 학습을 완료했습니다.', time: '어제', icon: 'bi-check-circle-fill', tone: 'green', path: '/learning/wrong-answers' },
