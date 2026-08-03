@@ -88,18 +88,20 @@ function CustomProblemPage() {
 
     return <section className="custom-problem-page" aria-labelledby="custom-problem-title">
         <header className="custom-problem-page__page-header"><div><h1 id="custom-problem-title">맞춤 문제 생성</h1><p>풀이 단계별 오답을 바탕으로 비계를 줄이는 3단계 문제를 구성합니다.</p></div><span>{worksheet.className} · {worksheet.title}</span></header>
-        <AnalysisFilters className="custom-problem-page__filters" controls={filterControls} showContext={false} />
-        <div className="custom-problem-page__workspace">
-            <StudentWeaknessList students={worksheet.students} selectedId={selectedStudent.id} proposals={proposals} studentWork={workByStudentId} onSelect={selectStudent} />
-            <div className="custom-problem-page__main">
-                {!currentWork.problems.length ? <CustomConfigTable configs={currentWork.configs} availableUnits={availableUnits} reason={selectedProposal.reason} onCountChange={changeCount} onRemove={removeConfig} onAdd={addConfig} onGenerate={generate} /> : <section className="custom-problem-result" aria-labelledby="custom-result-title">
-                    <header><div><h2 id="custom-result-title">생성 결과</h2><p>{selectedStudent.name} 학생 · 총 {currentWork.problems.length}문항</p></div><div><button type="button" onClick={() => updateCurrentWork((work) => ({ ...work, problems: [], assignment: null }))}>구성 수정</button><button type="button" aria-pressed={showAnswers} onClick={() => setShowAnswers((current) => !current)}><i className={`bi bi-eye${showAnswers ? '' : '-slash'}`} aria-hidden="true" /> 정답 {showAnswers ? '숨기기' : '표시'}</button></div></header>
-                    <div className="custom-problem-result__preview"><ProblemPreviewList problems={currentWork.problems} selectedId={selectedProblem?.id} onSelect={setSelectedProblemId} /><ProblemStepView problem={selectedProblem} showAnswers={showAnswers} /></div>
-                    <CustomAssignBar student={selectedStudent} assignment={currentWork.assignment} onAssign={assign} />
-                </section>}
+        {currentWork.problems.length ? <section className="custom-problem-result" aria-labelledby="custom-result-title">
+            <header><div><h2 id="custom-result-title">생성 결과</h2><p>{selectedStudent.name} 학생 · 총 {currentWork.problems.length}문항</p></div><div><button type="button" onClick={() => updateCurrentWork((work) => ({ ...work, problems: [], assignment: null }))}>구성 수정</button><button type="button" aria-pressed={showAnswers} onClick={() => setShowAnswers((current) => !current)}><i className={`bi bi-eye${showAnswers ? '' : '-slash'}`} aria-hidden="true" /> 정답 {showAnswers ? '숨기기' : '표시'}</button></div></header>
+            <div className="custom-problem-result__preview"><ProblemPreviewList problems={currentWork.problems} selectedId={selectedProblem?.id} onSelect={setSelectedProblemId} /><ProblemStepView problem={selectedProblem} showAnswers={showAnswers} /></div>
+            <CustomAssignBar student={selectedStudent} assignment={currentWork.assignment} onAssign={assign} />
+        </section> : <>
+            <AnalysisFilters className="custom-problem-page__filters" controls={filterControls} showContext={false} />
+            <div className="custom-problem-page__workspace">
+                <StudentWeaknessList students={worksheet.students} selectedId={selectedStudent.id} proposals={proposals} studentWork={workByStudentId} onSelect={selectStudent} />
+                <div className="custom-problem-page__main">
+                    <CustomConfigTable configs={currentWork.configs} availableUnits={availableUnits} reason={selectedProposal.reason} onCountChange={changeCount} onRemove={removeConfig} onAdd={addConfig} onGenerate={generate} />
+                </div>
+                <WeaknessSummaryCard student={selectedStudent} configs={selectedProposal.configs} reason={selectedProposal.reason} />
             </div>
-            <WeaknessSummaryCard student={selectedStudent} configs={selectedProposal.configs} reason={selectedProposal.reason} />
-        </div>
+        </>}
     </section>;
 }
 
