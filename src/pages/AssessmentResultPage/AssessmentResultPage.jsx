@@ -20,7 +20,6 @@ function AssessmentResultPage() {
     const [status, setStatus] = useState('all');
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedId, setSelectedId] = useState(results[0]?.id ?? '');
-    const [view, setView] = useState('student');
 
     useEffect(() => {
         const refresh = () => setResults(getAssessmentResults());
@@ -37,10 +36,9 @@ function AssessmentResultPage() {
     useEffect(() => { if (!filtered.some((worksheet) => worksheet.id === selectedId)) setSelectedId(filtered[0]?.id ?? ''); }, [filtered, selectedId]);
     const worksheet = filtered.find((item) => item.id === selectedId);
 
-    const openGrading = (studentId, questionNo) => {
+    const openGrading = (studentId) => {
         const params = new URLSearchParams();
         if (studentId) params.set('student', studentId);
-        if (questionNo) params.set('question', questionNo);
         navigate(`/learning/results/${worksheet.id}/grading?${params}`);
     };
     const confirmResults = () => {
@@ -53,7 +51,7 @@ function AssessmentResultPage() {
             <header className="assessment-results__page-header">
                 <div>
                     <h1 id="assessment-results-title">평가 결과</h1>
-                    <p>학습별 채점 진행 상태와 학생·문항별 점수를 확인합니다.</p>
+                    <p>학습별 채점 진행 상태와 학생별 문항 결과를 확인합니다.</p>
                 </div>
                 <span>검색 결과 <strong>{filtered.length}</strong>건</span>
             </header>
@@ -71,7 +69,7 @@ function AssessmentResultPage() {
             <div className="assessment-results__content">
                 <ResultWorksheetList worksheets={filtered} selectedId={selectedId} onSelect={setSelectedId} />
                 <main className="assessment-results__detail">
-                    {worksheet ? <><ResultSummaryBar worksheet={worksheet} metrics={getWorksheetMetrics(worksheet)} onGrade={() => openGrading()} onConfirm={confirmResults} /><ScoreTable worksheet={worksheet} view={view} onViewChange={setView} onCellClick={openGrading} /></> : <div className="assessment-results__empty">표시할 평가 결과가 없습니다.</div>}
+                    {worksheet ? <><ResultSummaryBar worksheet={worksheet} metrics={getWorksheetMetrics(worksheet)} onGrade={() => openGrading()} onConfirm={confirmResults} /><ScoreTable worksheet={worksheet} onGradeStudent={openGrading} /></> : <div className="assessment-results__empty">표시할 평가 결과가 없습니다.</div>}
                 </main>
             </div>
         </section>
