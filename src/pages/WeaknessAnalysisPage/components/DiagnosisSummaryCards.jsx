@@ -1,15 +1,12 @@
 import { Card, Col, ConfigProvider, Row, Statistic } from 'antd';
 
-function DiagnosisSummaryCards({ worksheet, metrics }) {
-    const items = worksheet.type === 'assessment'
-        ? [
-            ['응답 학생', metrics.responseCount, '명'], ['평균 득점률', metrics.average, '%'],
-            ['평균 소요 시간', Math.round(metrics.averageSeconds / 60), '분'], ['힌트 사용', metrics.hintStudents, '명'], ['우선 지도', metrics.priorityCount, '명'],
-        ]
-        : [
-            ['응답 학생', metrics.responseCount, '명'], ['평균 득점률', metrics.average, '%'],
-            ['최다 취약', '공통소인수', ''], ['우선 지도', metrics.priorityCount, '명'],
-        ];
+function DiagnosisSummaryCards({ metrics }) {
+    const items = [
+        ['참여 학생', metrics.responseCount, '명'],
+        ['학급 정답률', metrics.average, '%'],
+        ['힌트 사용', metrics.hintCount, '회'],
+        ['집중 지도', metrics.priorityCount, '명'],
+    ];
 
     return (
         <ConfigProvider theme={{ token: { fontFamily: 'Pretendard, sans-serif' } }}>

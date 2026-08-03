@@ -16,6 +16,15 @@ const concepts = [
     { id: 'exponent', label: '지수 비교' },
 ];
 
+export const areaLabels = {
+    concept: '개념',
+    calculation: '계산',
+    reasoning: '추론',
+    problemSolving: '문제해결',
+};
+
+export const difficultyLabels = { low: '하', mid: '중', high: '상' };
+
 const text = (value) => ({ type: 'text', value });
 const blank = (id, answer) => ({ type: 'blank', id, answer });
 const practiceStep = (questionNo, order, conceptId, label, answer) => ({
@@ -27,10 +36,10 @@ const practiceStep = (questionNo, order, conceptId, label, answer) => ({
 });
 
 const practiceQuestions = [
-    { id: 'factor-practice-1', no: 1, unitId: 'm1s1-prime-factor', difficulty: 'low', prompt: '24를 소인수분해하세요.', maxScore: 2, steps: [practiceStep(1, 1, 'prime', '소인수분해', '2³×3')] },
-    { id: 'factor-practice-2', no: 2, unitId: 'm1s1-gcd-lcm', difficulty: 'mid', prompt: '12와 18의 최대공약수를 구하세요.', maxScore: 3, steps: [practiceStep(2, 1, 'prime', '소인수분해', '2²×3, 2×3²'), practiceStep(2, 2, 'common', '공통 소인수', '2×3'), practiceStep(2, 3, 'exponent', '지수 비교', '6')] },
-    { id: 'factor-practice-3', no: 3, unitId: 'm1s1-gcd-lcm', difficulty: 'low', prompt: '공통인 소인수를 모두 고르세요.', maxScore: 2, steps: [practiceStep(3, 1, 'common', '공통 소인수 선택', '2×5')] },
-    { id: 'factor-practice-4', no: 4, unitId: 'm1s1-gcd-lcm', difficulty: 'high', prompt: '지수를 비교해 최소공배수를 구하세요.', maxScore: 3, steps: [practiceStep(4, 1, 'exponent', '지수 비교', '2³×3²')] },
+    { id: 'factor-practice-1', no: 1, unitId: 'm1s1-prime-factor', difficulty: 'low', area: 'concept', prompt: '24를 소인수분해하세요.', correctAnswer: '2³×3', maxScore: 2, steps: [practiceStep(1, 1, 'prime', '소인수분해', '2³×3')] },
+    { id: 'factor-practice-2', no: 2, unitId: 'm1s1-gcd-lcm', difficulty: 'mid', area: 'calculation', prompt: '12와 18의 최대공약수를 구하세요.', correctAnswer: '6', maxScore: 3, steps: [practiceStep(2, 1, 'prime', '소인수분해', '2²×3, 2×3²'), practiceStep(2, 2, 'common', '공통 소인수', '2×3'), practiceStep(2, 3, 'exponent', '지수 비교', '6')] },
+    { id: 'factor-practice-3', no: 3, unitId: 'm1s1-gcd-lcm', difficulty: 'low', area: 'reasoning', prompt: '공통인 소인수를 모두 고르세요.', correctAnswer: '2×5', maxScore: 2, steps: [practiceStep(3, 1, 'common', '공통 소인수 선택', '2×5')] },
+    { id: 'factor-practice-4', no: 4, unitId: 'm1s1-gcd-lcm', difficulty: 'high', area: 'problemSolving', prompt: '지수를 비교해 최소공배수를 구하세요.', correctAnswer: '2³×3²', maxScore: 3, steps: [practiceStep(4, 1, 'exponent', '지수 비교', '2³×3²')] },
 ];
 
 const profiles = [
@@ -48,8 +57,9 @@ const makePracticeResponses = (profile) => practiceQuestions.map((question, inde
     const correct = profile.pattern[index];
     return {
         no: question.no,
-        score: correct === null ? 0 : correct ? question.maxScore : index === 1 ? 1 : 0,
+        score: correct === null ? 0 : correct ? question.maxScore : 0,
         maxScore: question.maxScore,
+        hintUsed: Boolean(correct && ((Number(profile.id) + index) % 4 === 0)),
         steps: question.steps.map((step) => ({ order: step.order, correct: Boolean(correct), input: profile.inputs[index] })),
     };
 });
@@ -63,6 +73,8 @@ const assessmentQuestions = Array.from({ length: 8 }, (_, index) => ({
     format: index % 3 === 0 ? 'choice' : index % 3 === 1 ? 'short' : 'essay',
     unitId: index < 3 ? 'm1s1-prime-factor' : 'm1s1-gcd-lcm',
     difficulty: index % 3 === 0 ? 'low' : index % 3 === 1 ? 'mid' : 'high',
+    area: ['concept', 'calculation', 'reasoning', 'problemSolving'][index % 4],
+    correctAnswer: `${index + 1}번 문항 정답`,
     grading: index === 6 ? 'pending' : 'complete',
 }));
 
@@ -95,23 +107,49 @@ export const weaknessWorksheets = {
     'factor-custom': { id: 'factor-custom', gradeId: 'middle-1', classId: 'middle-1-1', term: 'first', type: 'practice', origin: 'custom', title: '공통소인수 맞춤 학습', className: '중학교 1학년 1반', date: '오늘 11:30', concepts, questions: practiceQuestions, students: customStudents },
 };
 
-export const statusLabels = { priority: '우선 지도', review: '추가 확인', stable: '안정', insufficient: '자료 부족' };
+export const statusLabels = { priority: '집중 지도', review: '다시 확인', stable: '안정', insufficient: '자료 부족' };
 export const prescriptionLabels = { resolved: '해결', unresolved: '미해결', pending: '대기' };
 
 export function getStudentMetrics(student) {
     const graded = student.responses.filter((response) => response.gradedBy !== null);
-    const earned = graded.reduce((sum, response) => sum + response.score, 0);
-    const possible = graded.reduce((sum, response) => sum + response.maxScore, 0);
+    const correctCount = graded.filter((response) => response.score === response.maxScore).length;
     return {
-        scoreRate: possible ? Math.round((earned / possible) * 100) : 0,
+        scoreRate: graded.length ? Math.round((correctCount / graded.length) * 100) : 0,
+        solvedCount: graded.length,
+        correctCount,
+        independentCorrectCount: graded.filter((response) => response.score === response.maxScore && !response.hintUsed).length,
+        independentRate: graded.length ? Math.round(graded.filter((response) => response.score === response.maxScore && !response.hintUsed).length / graded.length * 100) : 0,
         seconds: graded.reduce((sum, response) => sum + (response.seconds ?? 0), 0),
         hints: graded.filter((response) => response.hintUsed).length,
     };
 }
 
 export function getWorksheetMetrics(worksheet) {
-    const studentMetrics = worksheet.students.map(getStudentMetrics);
-    const average = Math.round(studentMetrics.reduce((sum, item) => sum + item.scoreRate, 0) / studentMetrics.length * 10) / 10;
+    const reliableStudents = worksheet.students.filter((student) => student.status !== 'insufficient');
+    const studentMetrics = reliableStudents.map(getStudentMetrics);
+    const average = Math.round(studentMetrics.reduce((sum, item) => sum + item.scoreRate, 0) / Math.max(studentMetrics.length, 1) * 10) / 10;
     const pending = worksheet.students.filter((student) => student.responses.some((response) => response.gradedBy === null)).length;
-    return { responseCount: worksheet.students.length, average, averageSeconds: Math.round(studentMetrics.reduce((sum, item) => sum + item.seconds, 0) / studentMetrics.length), hintStudents: worksheet.students.filter((student) => student.responses.some((response) => response.hintUsed)).length, priorityCount: worksheet.students.filter((student) => student.status === 'priority').length, pending };
+    const pendingResponses = worksheet.students.flatMap((student) => student.responses).filter((response) => response.gradedBy === null).length;
+    return { responseCount: worksheet.students.length, reliableCount: reliableStudents.length, average, averageSeconds: Math.round(studentMetrics.reduce((sum, item) => sum + item.seconds, 0) / Math.max(studentMetrics.length, 1)), hintStudents: worksheet.students.filter((student) => student.responses.some((response) => response.hintUsed)).length, hintCount: worksheet.students.flatMap((student) => student.responses).filter((response) => response.hintUsed).length, priorityCount: reliableStudents.filter((student) => getStudentMetrics(student).scoreRate < 60).length, pending, pendingResponses };
+}
+
+export function getResultBreakdown(worksheet, dimension, student = null) {
+    const labels = dimension === 'area' ? areaLabels : difficultyLabels;
+    const sourceStudents = student ? [student] : worksheet.students.filter((item) => item.status !== 'insufficient');
+
+    return Object.entries(labels).map(([key, label]) => {
+        const questions = worksheet.questions.filter((question) => question[dimension] === key);
+        const responses = sourceStudents.flatMap((item) => questions.map((question) => item.responses.find((response) => response.no === question.no))).filter((response) => response && response.gradedBy !== null);
+        const correct = responses.filter((response) => response.score === response.maxScore).length;
+        return { key, label, rate: responses.length ? Math.round(correct / responses.length * 100) : 0, questionCount: questions.length };
+    });
+}
+
+export function getQuestionAccuracy(worksheet, questionNo) {
+    const responses = worksheet.students
+        .filter((student) => student.status !== 'insufficient')
+        .map((student) => student.responses.find((response) => response.no === questionNo))
+        .filter((response) => response && response.gradedBy !== null);
+    const correct = responses.filter((response) => response.score === response.maxScore).length;
+    return { correct, total: responses.length, rate: responses.length ? Math.round(correct / responses.length * 100) : 0 };
 }

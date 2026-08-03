@@ -1,8 +1,12 @@
 .sidebar {
+  position: sticky;
+  top: 72px;
   width: 220px;
-  min-height: calc(100vh - 72px);
+  height: calc(100vh - 72px);
   flex: 0 0 220px;
+  align-self: flex-start;
   padding: 24px 16px;
+  overflow-y: auto;
   background-color: #ffffff;
   border-right: 1px solid #e8edf3;
 

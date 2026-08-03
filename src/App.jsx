@@ -9,7 +9,6 @@ import SectionLayout from './components/SectionLayout/SectionLayout';
 import FeatureIntro from './components/FeatureIntro/FeatureIntro';
 import LearningStatusPage from './pages/LearningStatusPage/LearningStatusPage';
 import WeaknessAnalysisPage from './pages/WeaknessAnalysisPage/WeaknessAnalysisPage';
-import StudentDiagnosisPage from './pages/WeaknessAnalysisPage/StudentDiagnosisPage';
 import AssessmentResultPage from './pages/AssessmentResultPage/AssessmentResultPage';
 import GradingPage from './pages/AssessmentResultPage/GradingPage';
 import ProblemCreationPage from './pages/ProblemCreationPage/ProblemCreationPage';
@@ -34,7 +33,7 @@ function App() {
           <Route index element={<LearningStatusPage />} />
           <Route path="results" element={<AssessmentResultPage />} />
           <Route path="weaknesses" element={<WeaknessAnalysisPage />} />
-          <Route path="weaknesses/students/:id" element={<StudentDiagnosisPage />} />
+          <Route path="weaknesses/students/:id" element={<WeaknessAnalysisPage />} />
         </Route>
         <Route path="/learning/results/:worksheetId/grading" element={<GradingPage />} />
         <Route path="/students" element={<StudentManagementLayout />}>

@@ -38,6 +38,20 @@ function DetailSidePanel({ worksheet, selection, onQuadrantSelect }) {
         );
     }
 
+    if (selection?.type === 'question') {
+        const question = worksheet.questions.find((item) => item.no === selection.questionNo);
+        const results = worksheet.students.filter((student) => student.status !== 'insufficient').map((student) => student.responses.find((response) => response.no === question.no));
+        const correct = results.filter((response) => response.score === response.maxScore).length;
+        const inputs = results.flatMap((response) => response.steps ?? []).filter((step) => !step.correct && step.input).map((step) => step.input);
+        const counts = Object.entries(inputs.reduce((all, input) => ({ ...all, [input]: (all[input] ?? 0) + 1 }), {})).sort((a, b) => b[1] - a[1]);
+        return <aside className="diagnosis-card detail-panel">
+            <span className="detail-panel__kicker">{question.no}번 문항</span><h2>오답 입력값 집계</h2>
+            <strong className="detail-panel__rate">{Math.round(correct / Math.max(results.length, 1) * 100)}%</strong><small>학급 정답률 · 자료 부족 학생 제외</small>
+            <p>{question.prompt}</p>
+            <ul className="detail-panel__ranking">{counts.length ? counts.map(([input, count]) => <li key={input}><strong>{input}</strong><span>{count}명</span></li>) : <li className="detail-panel__empty">집계된 오답이 없습니다.</li>}</ul>
+        </aside>;
+    }
+
     if (selection?.type === 'cell') {
         const student = worksheet.students.find((item) => item.id === selection.studentId);
         const concept = worksheet.concepts.find((item) => item.id === selection.conceptId);

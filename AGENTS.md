@@ -42,6 +42,8 @@
 - 단계형 문제는 `steps[].segments[]` 구조를 사용하고 각 step에는 분석용 `conceptId`를 둔다. segment는 `{type:'text', value}` 또는 `{type:'blank', id, answer}`로 저장하며 문제 생성 미리보기, 학생 풀이, 취약점 분석, 문항 해설이 이 구조를 공유한다.
 - 학기 값은 문제 만들기와 학습 관리 모두 `term: 'first'|'second'`로 저장하고 숫자형 문자열이나 `semesterId`를 별도로 사용하지 않는다.
 - 문제 난이도 값은 `low|mid|high`로 저장하고 화면 라벨은 `difficultyLabels`의 하/중/상을 사용한다.
+- 취약점 분석의 문항 영역 값은 `concept|calculation|reasoning|problemSolving`으로 저장하고 화면에서는 개념/계산/추론/문제해결로 표시한다.
+- 취약점 분석의 정답 결과는 독립 정답, 힌트 후 정답, 오답, 채점 대기로 구분한다. 학급 평균과 영역·난이도 집계에서는 `insufficient` 상태 학생과 채점 대기 응답을 제외하되 참여 학생 수에는 자료 부족 학생을 포함한다.
 - 평가 문항 유형은 채점 화면과 동일한 `choice|short|essay`를 사용하고, 유형 라벨과 기본 배점은 `src/mocks/assessmentCreation.js`의 `questionFormats`와 `defaultScores`를 사용한다.
 - 종합평가의 총 문항 수에는 검증이나 경고를 두지 않고 교사가 자율적으로 구성할 수 있게 한다.
 - 학년·반 식별자는 학습 관리와 대시보드 간에 공통으로 사용한다. 학년은 `gradeId: 'middle-1'`, 반은 학년과 반을 포함한 `classId: 'middle-1-1'` 형식을 사용하고, 같은 `classId`를 페이지나 mock별로 다른 반에 매핑하지 않는다.
@@ -54,6 +56,7 @@
 - 학생 관리 하위 화면은 기본적으로 `src/pages/StudentManagementPage/StudentManagementLayout.jsx`의 중첩 라우트와 `Outlet` 구조를 사용한다.
 - 반 생성과 반 상세 수정은 별도 라우트로 이동하지 않고 `/students/classes` 목록 화면에서 `StudentFormModal` 프레임을 재사용한 모달로 제공한다.
 - 학습 현황과 취약점 분석 사이의 학습지 컨텍스트는 `worksheet` 쿼리로 전달한다.
+- 취약점 분석의 전체/개인 화면은 좌측 분석 대상 목록을 공유하고 개인 URL(`/learning/weaknesses/students/:id`)을 유지한 채 같은 2단 레이아웃 안에서 전환한다.
 - 평가 결과 조회(`/learning/results`)는 학습 관리의 중첩 라우트를 사용하고, 채점 화면(`/learning/results/:worksheetId/grading`)은 헤더와 사이드바가 없는 독립 라우트로 유지한다.
 
 ## 접근성
@@ -65,6 +68,7 @@
 
 - 문제 만들기, 학습 관리, 학생 관리의 좌측 메뉴는 `src/components/Sidebar/Sidebar.jsx`와 `src/config/sidebarMenus.js`를 공통으로 사용하며, 섹션별 사이드바 UI나 메뉴 배열을 페이지 내부에 중복 구현하지 않는다.
 - 헤더와 사이드바가 함께 표시되는 중첩 라우트 화면은 `src/components/SectionLayout/SectionLayout.jsx`를 재사용한다.
+- 공통 헤더는 화면 상단에, 공통 사이드바는 헤더 아래에 고정해 본문을 스크롤해도 탐색 메뉴가 계속 보이도록 유지한다.
 - 서비스의 모든 셀렉트 드롭다운은 네이티브 `<select>` 대신 `src/components/common/CustomSelect/CustomSelect.jsx`를 사용한다.
 - 문제 생성과 종합평가 생성의 단원 선택 트리와 출제 범위 필터는 각각 `src/components/common/UnitTreeSelector/UnitTreeSelector.jsx`와 `src/components/common/UnitScopeFilter/UnitScopeFilter.jsx`를 재사용한다.
 - 대시보드와 취약점 분석처럼 학년도·학기·반·학습지를 선택하는 분석 조회 영역은 `src/components/common/AnalysisFilters/AnalysisFilters.jsx`를 재사용한다.
