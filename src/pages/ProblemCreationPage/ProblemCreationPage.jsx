@@ -73,33 +73,36 @@ function ProblemCreationPage() {
                 <span>선택 소단원 <strong>{configs.length}</strong>개 · 총 <strong>{totalCount}</strong>문항</span>
             </header>
 
-            <section className="problem-creation-page__scope" aria-labelledby="problem-scope-title">
-                <div><h2 id="problem-scope-title">출제 범위</h2><p>학년, 과목, 학기를 변경하면 현재 구성이 초기화됩니다.</p></div>
-                <div className="problem-creation-page__scope-controls">
-                    <div className="problem-creation-page__scope-field"><span>학년</span><CustomSelect label="출제 학년 선택" value={gradeId} options={curriculumFilterOptions.grades} onChange={(value) => changeScope(setGradeId, value)} width={132} /></div>
-                    <span className="problem-creation-page__scope-separator" aria-hidden="true"><i className="bi bi-chevron-right" /></span>
-                    <div className="problem-creation-page__scope-field"><span>과목</span><CustomSelect label="출제 과목 선택" value={subjectId} options={curriculumFilterOptions.subjects} onChange={(value) => changeScope(setSubjectId, value)} width={132} /></div>
-                    <span className="problem-creation-page__scope-separator" aria-hidden="true"><i className="bi bi-chevron-right" /></span>
-                    <div className="problem-creation-page__scope-field"><span>학기</span><CustomSelect label="출제 학기 선택" value={semesterId} options={curriculumFilterOptions.semesters} onChange={(value) => changeScope(setSemesterId, value)} width={132} /></div>
+            {!result && (
+                <section className="problem-creation-page__scope" aria-labelledby="problem-scope-title">
+                    <div><h2 id="problem-scope-title">출제 범위</h2><p>학년, 과목, 학기를 변경하면 현재 구성이 초기화됩니다.</p></div>
+                    <div className="problem-creation-page__scope-controls">
+                        <div className="problem-creation-page__scope-field"><span>학년</span><CustomSelect label="출제 학년 선택" value={gradeId} options={curriculumFilterOptions.grades} onChange={(value) => changeScope(setGradeId, value)} width={132} /></div>
+                        <span className="problem-creation-page__scope-separator" aria-hidden="true"><i className="bi bi-chevron-right" /></span>
+                        <div className="problem-creation-page__scope-field"><span>과목</span><CustomSelect label="출제 과목 선택" value={subjectId} options={curriculumFilterOptions.subjects} onChange={(value) => changeScope(setSubjectId, value)} width={132} /></div>
+                        <span className="problem-creation-page__scope-separator" aria-hidden="true"><i className="bi bi-chevron-right" /></span>
+                        <div className="problem-creation-page__scope-field"><span>학기</span><CustomSelect label="출제 학기 선택" value={semesterId} options={curriculumFilterOptions.semesters} onChange={(value) => changeScope(setSemesterId, value)} width={132} /></div>
+                    </div>
+                </section>
+            )}
+
+            {!result ? (
+                <div className="problem-creation-page__configuration">
+                    <section className="problem-creation-section" aria-labelledby="unit-selection-title">
+                        <header><div><h2 id="unit-selection-title">단원 선택</h2><p>출제할 소단원을 선택합니다.</p></div><span>{configs.length}개 선택</span></header>
+                        <UnitTreeSelector key={`${gradeId}-${subjectId}-${semesterId}`} majorUnits={majorUnits} selectedIds={selectedIds} onToggle={toggleUnit} onToggleMiddle={toggleMiddle} />
+                    </section>
+                    <section className="problem-creation-section" aria-labelledby="unit-config-title">
+                        <header><div><h2 id="unit-config-title">출제 구성</h2><p>소단원별로 하·중·상 문항 수를 배분합니다.</p></div><span>단원당 최대 30문항</span></header>
+                        <UnitConfigTable configs={configs} totalCount={totalCount} onCountChange={changeCount} onRemove={toggleUnit} onGenerate={createProblems} canGenerate={canGenerate} />
+                    </section>
                 </div>
-            </section>
-
-            <div className="problem-creation-page__configuration">
-                <section className="problem-creation-section" aria-labelledby="unit-selection-title">
-                    <header><div><h2 id="unit-selection-title">단원 선택</h2><p>출제할 소단원을 선택합니다.</p></div><span>{configs.length}개 선택</span></header>
-                    <UnitTreeSelector key={`${gradeId}-${subjectId}-${semesterId}`} majorUnits={majorUnits} selectedIds={selectedIds} onToggle={toggleUnit} onToggleMiddle={toggleMiddle} />
-                </section>
-                <section className="problem-creation-section" aria-labelledby="unit-config-title">
-                    <header><div><h2 id="unit-config-title">출제 구성</h2><p>소단원별로 하·중·상 문항 수를 배분합니다.</p></div><span>단원당 최대 30문항</span></header>
-                    <UnitConfigTable configs={configs} totalCount={totalCount} onCountChange={changeCount} onRemove={toggleUnit} onGenerate={createProblems} canGenerate={canGenerate} />
-                </section>
-            </div>
-
-            {result && (
+            ) : (
                 <section className="problem-creation-page__result" aria-labelledby="problem-result-title">
                     <header className="problem-creation-page__result-header">
                         <div><h2 id="problem-result-title">생성 결과</h2><p>총 {result.problems.length}문항의 문제와 단계별 풀이를 검토합니다.</p></div>
                         <div className="problem-creation-page__result-actions">
+                            <button type="button" className="problem-creation-button problem-creation-button--secondary" onClick={() => setResult(null)}>출제 구성 수정</button>
                             <button type="button" className="problem-creation-page__answer-toggle" aria-pressed={showAnswers} onClick={() => setShowAnswers((current) => !current)}><i className={`bi bi-eye${showAnswers ? '' : '-slash'}`} aria-hidden="true" /> 정답 {showAnswers ? '숨기기' : '표시'}</button>
                             <button type="button" className="problem-creation-button problem-creation-button--secondary" onClick={() => setSaved(true)} disabled={saved}>{saved ? '저장 완료' : '문제 보관함에 저장'}</button>
                         </div>

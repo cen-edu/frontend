@@ -43,12 +43,12 @@
   &__scope-separator { width: 12px; height: 40px; margin-top: 20px; display: inline-flex; flex: 0 0 12px; align-items: center; justify-content: center; color: #a3abb5; font-size: 12px; line-height: 1; }
   &__configuration { height: 580px; display: grid; grid-template-columns: minmax(300px, 1fr) minmax(520px, 1.55fr); gap: 16px; align-items: stretch; }
 
-  &__result { margin-top: 20px; background: #fff; border: 1px solid #dde2e8; border-radius: 10px; overflow: hidden; }
-  &__result-header { min-height: 76px; padding: 15px 18px; display: flex; align-items: center; justify-content: space-between; gap: 20px; border-bottom: 1px solid #ebeef2; h2 { color: #172033; font-size: 18px; } p { margin-top: 4px; color: #747f91; font-size: 12px; } }
+  &__result { height: 680px; min-height: 0; display: flex; flex-direction: column; background: #fff; border: 1px solid #dde2e8; border-radius: 10px; overflow: hidden; }
+  &__result-header { min-height: 76px; flex: 0 0 76px; padding: 15px 18px; display: flex; align-items: center; justify-content: space-between; gap: 20px; border-bottom: 1px solid #ebeef2; h2 { color: #172033; font-size: 18px; } p { margin-top: 4px; color: #747f91; font-size: 12px; } }
   &__result-actions { display: flex; align-items: center; gap: 8px; }
   &__answer-toggle { min-height: 38px; padding: 0 12px; background: #fff; border: 1px solid #dde2e8; border-radius: 6px; color: #465166; font-size: 12px; font-weight: 600; cursor: pointer; &:hover { background: #f4faff; border-color: #91cff5; color: #176fc1; } &:focus-visible { outline: 2px solid rgba(23,111,193,.35); outline-offset: 1px; } i { margin-right: 5px; } }
   &__saved { padding: 9px 18px; background: #f0f9f4; border-bottom: 1px solid #d7eee0; color: #26734a; font-size: 12px; i { margin-right: 5px; } }
-  &__preview-grid { min-height: 520px; display: grid; grid-template-columns: minmax(220px, .75fr) minmax(430px, 1.9fr) minmax(230px, .85fr); }
+  &__preview-grid { min-height: 0; flex: 1; display: grid; grid-template-columns: minmax(220px, .75fr) minmax(430px, 1.9fr) minmax(230px, .85fr); overflow: hidden; }
 }
 
 .problem-creation-section { min-width: 0; min-height: 0; display: flex; flex-direction: column; background: #fff; border: 1px solid #dde2e8; border-radius: 10px; overflow: hidden; > header { min-height: 74px; flex: 0 0 74px; padding: 15px 18px; display: flex; align-items: center; justify-content: space-between; gap: 18px; border-bottom: 1px solid #ebeef2; h2 { color: #172033; font-size: 18px; } p { margin-top: 4px; color: #747f91; font-size: 12px; } > span { color: #747f91; font-size: 12px; white-space: nowrap; } } > .unit-config__empty { flex: 1; } }
