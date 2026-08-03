@@ -8,9 +8,16 @@ export const customStageLabels = {
 };
 
 export const conceptUnitMap = {
+    'prime-number': 'm1s1-prime-factor',
+    'divisor-factor': 'm1s1-prime-factor',
+    'prime-factor': 'm1s1-prime-factor',
     prime: 'm1s1-prime-factor',
+    power: 'm1s1-prime-factor',
+    'common-divisor': 'm1s1-gcd-lcm',
     common: 'm1s1-gcd-lcm',
+    gcd: 'm1s1-gcd-lcm',
     exponent: 'm1s1-gcd-lcm',
+    lcm: 'm1s1-gcd-lcm',
 };
 
 const unitIndex = new Map(curriculumUnits.flatMap((scope) => scope.majorUnits.flatMap((major) => major.middleUnits.flatMap((middle) => middle.smallUnits.map((unit) => [unit.id, {

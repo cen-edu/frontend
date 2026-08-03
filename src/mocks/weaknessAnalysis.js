@@ -10,9 +10,16 @@ export const weaknessFilterOptions = {
 };
 
 const concepts = [
+    { id: 'prime-number', label: '소수와 합성수' },
+    { id: 'divisor-factor', label: '약수와 인수' },
+    { id: 'prime-factor', label: '소인수' },
     { id: 'prime', label: '소인수분해' },
+    { id: 'power', label: '거듭제곱' },
+    { id: 'common-divisor', label: '공약수' },
     { id: 'common', label: '공통소인수' },
+    { id: 'gcd', label: '최대공약수' },
     { id: 'exponent', label: '지수 비교' },
+    { id: 'lcm', label: '최소공배수' },
 ];
 
 export const areaLabels = {
@@ -35,10 +42,10 @@ const practiceStep = (questionNo, order, conceptId, label, answer) => ({
 });
 
 const practiceQuestions = [
-    { id: 'factor-practice-1', no: 1, unitId: 'm1s1-prime-factor', difficulty: 'low', area: 'concept', prompt: '24를 소인수분해하세요.', correctAnswer: '2³×3', maxScore: 2, steps: [practiceStep(1, 1, 'prime', '소인수분해', '2³×3')] },
-    { id: 'factor-practice-2', no: 2, unitId: 'm1s1-gcd-lcm', difficulty: 'mid', area: 'calculation', prompt: '12와 18의 최대공약수를 구하세요.', correctAnswer: '6', maxScore: 3, steps: [practiceStep(2, 1, 'prime', '소인수분해', '2²×3, 2×3²'), practiceStep(2, 2, 'common', '공통 소인수', '2×3'), practiceStep(2, 3, 'exponent', '지수 비교', '6')] },
-    { id: 'factor-practice-3', no: 3, unitId: 'm1s1-gcd-lcm', difficulty: 'low', area: 'reasoning', prompt: '공통인 소인수를 모두 고르세요.', correctAnswer: '2×5', maxScore: 2, steps: [practiceStep(3, 1, 'common', '공통 소인수 선택', '2×5')] },
-    { id: 'factor-practice-4', no: 4, unitId: 'm1s1-gcd-lcm', difficulty: 'high', area: 'problemSolving', prompt: '지수를 비교해 최소공배수를 구하세요.', correctAnswer: '2³×3²', maxScore: 3, steps: [practiceStep(4, 1, 'exponent', '지수 비교', '2³×3²')] },
+    { id: 'factor-practice-1', no: 1, unitId: 'm1s1-prime-factor', difficulty: 'low', area: 'concept', prompt: '24를 소인수분해하세요.', correctAnswer: '2³×3', maxScore: 2, steps: [practiceStep(1, 1, 'prime-number', '소수와 합성수 구분', '합성수'), practiceStep(1, 2, 'divisor-factor', '약수와 인수', '2×12'), practiceStep(1, 3, 'prime-factor', '소인수 찾기', '2, 3'), practiceStep(1, 4, 'prime', '소인수분해', '2³×3'), practiceStep(1, 5, 'power', '거듭제곱 표현', '2³')] },
+    { id: 'factor-practice-2', no: 2, unitId: 'm1s1-gcd-lcm', difficulty: 'mid', area: 'calculation', prompt: '12와 18의 최대공약수를 구하세요.', correctAnswer: '6', maxScore: 3, steps: [practiceStep(2, 1, 'prime', '소인수분해', '2²×3, 2×3²'), practiceStep(2, 2, 'common-divisor', '공약수 찾기', '1, 2, 3, 6'), practiceStep(2, 3, 'common', '공통 소인수', '2×3'), practiceStep(2, 4, 'gcd', '최대공약수', '6')] },
+    { id: 'factor-practice-3', no: 3, unitId: 'm1s1-gcd-lcm', difficulty: 'low', area: 'reasoning', prompt: '공통인 소인수를 모두 고르세요.', correctAnswer: '2×5', maxScore: 2, steps: [practiceStep(3, 1, 'prime-factor', '소인수 찾기', '2, 5'), practiceStep(3, 2, 'common', '공통 소인수 선택', '2×5'), practiceStep(3, 3, 'common-divisor', '공약수 확인', '10')] },
+    { id: 'factor-practice-4', no: 4, unitId: 'm1s1-gcd-lcm', difficulty: 'high', area: 'problemSolving', prompt: '지수를 비교해 최소공배수를 구하세요.', correctAnswer: '2³×3²', maxScore: 3, steps: [practiceStep(4, 1, 'power', '거듭제곱 확인', '2³, 3²'), practiceStep(4, 2, 'exponent', '지수 비교', '2³×3²'), practiceStep(4, 3, 'lcm', '최소공배수', '72')] },
 ];
 
 const customProblem = (no, stage, difficulty, correct) => ({ no, stage, difficulty, correct });

@@ -6,6 +6,38 @@ function getConceptResult(worksheet, student, conceptId) {
     return { correct: attempts.filter((item) => item.correct).length, attempts: attempts.length, inputs: attempts.filter((item) => !item.correct).map((item) => item.input) };
 }
 function ConceptMatrix({ worksheet, sortBy, onSortChange, onSelect, selection }) {
-    return <section className="diagnosis-card matrix-card"><div className="diagnosis-card__heading"><div><span>CONCEPT MATRIX</span><h2>개념별 성취</h2></div><CustomSelect label="학생 정렬" value={sortBy} onChange={onSortChange} width={132} options={[{ value: 'score-asc', label: '득점률 낮은순' }, { value: 'score-desc', label: '득점률 높은순' }, { value: 'name', label: '이름순' }]} /></div><div className="matrix-table__wrap"><table className="matrix-table"><thead><tr><th>학생</th>{worksheet.concepts.map((concept) => <th key={concept.id}><button type="button" onClick={() => onSelect({ type: 'concept', conceptId: concept.id })}>{concept.label}</button></th>)}</tr></thead><tbody>{worksheet.students.map((student) => <tr key={student.id}><th>{student.name}</th>{worksheet.concepts.map((concept) => { const result = getConceptResult(worksheet, student, concept.id); const rate = result.attempts ? result.correct / result.attempts : null; const selected = selection?.type === 'cell' && selection.studentId === student.id && selection.conceptId === concept.id; return <td key={concept.id}><button type="button" className={`matrix-cell matrix-cell--${rate === null ? 'empty' : rate < .5 ? 'weak' : rate < 1 ? 'partial' : 'full'}${selected ? ' matrix-cell--selected' : ''}`} onClick={() => onSelect({ type: 'cell', studentId: student.id, conceptId: concept.id, result })}><strong>{rate === null ? '—' : `${result.correct}/${result.attempts}`}</strong></button></td>; })}</tr>)}</tbody></table></div></section>;
+    const hasManyConcepts = worksheet.concepts.length > 6;
+
+    return <section className="diagnosis-card matrix-card">
+        <div className="diagnosis-card__heading">
+            <div>
+                <span>CONCEPT MATRIX</span>
+                <h2>개념별 성취</h2>
+                {hasManyConcepts && <small className="matrix-card__description">{worksheet.concepts.length}개 개념 · 표를 좌우로 이동해 확인하세요.</small>}
+            </div>
+            <CustomSelect label="학생 정렬" value={sortBy} onChange={onSortChange} width={132} options={[{ value: 'score-asc', label: '득점률 낮은순' }, { value: 'score-desc', label: '득점률 높은순' }, { value: 'name', label: '이름순' }]} />
+        </div>
+        <div className="matrix-table__wrap" tabIndex={hasManyConcepts ? 0 : undefined} aria-label={hasManyConcepts ? `${worksheet.concepts.length}개 개념별 성취표, 좌우로 스크롤 가능` : undefined}>
+            <table className="matrix-table matrix-table--concepts" style={{ '--concept-count': worksheet.concepts.length }}>
+                <thead>
+                    <tr>
+                        <th>학생</th>
+                        {worksheet.concepts.map((concept) => <th key={concept.id}><button type="button" onClick={() => onSelect({ type: 'concept', conceptId: concept.id })}>{concept.label}</button></th>)}
+                    </tr>
+                </thead>
+                <tbody>
+                    {worksheet.students.map((student) => <tr key={student.id}>
+                        <th>{student.name}</th>
+                        {worksheet.concepts.map((concept) => {
+                            const result = getConceptResult(worksheet, student, concept.id);
+                            const rate = result.attempts ? result.correct / result.attempts : null;
+                            const selected = selection?.type === 'cell' && selection.studentId === student.id && selection.conceptId === concept.id;
+                            return <td key={concept.id}><button type="button" className={`matrix-cell matrix-cell--${rate === null ? 'empty' : rate < .5 ? 'weak' : rate < 1 ? 'partial' : 'full'}${selected ? ' matrix-cell--selected' : ''}`} onClick={() => onSelect({ type: 'cell', studentId: student.id, conceptId: concept.id, result })}><strong>{rate === null ? '—' : `${result.correct}/${result.attempts}`}</strong></button></td>;
+                        })}
+                    </tr>)}
+                </tbody>
+            </table>
+        </div>
+    </section>;
 }
 export default ConceptMatrix;
