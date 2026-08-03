@@ -1,10 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import AssignmentPeriodFilter from '../../components/common/AssignmentPeriodFilter/AssignmentPeriodFilter';
 import CustomSelect from '../../components/common/CustomSelect/CustomSelect';
 import SearchInput from '../../components/common/SearchInput/SearchInput';
 import { learningAssignments, learningFilterOptions } from '../../mocks/learningStatus';
-import { getDefaultAssignmentDateRange, isAssignedWithinPeriod } from '../../utils/assignmentPeriod';
 import AssignmentList from './components/AssignmentList';
 import LearningSummary from './components/LearningSummary';
 import StudentProgressTable from './components/StudentProgressTable';
@@ -22,12 +20,9 @@ function LearningStatusPage() {
     const requestedWorksheet = searchParams.get('worksheet');
     const requestedAssignment = learningAssignments.find((assignment) =>
         assignment.id === requestedWorksheet || assignment.analysisWorksheetId === requestedWorksheet);
-    const initialDateRange = useMemo(getDefaultAssignmentDateRange, []);
     const [gradeId, setGradeId] = useState(requestedAssignment?.gradeId ?? 'all');
     const [classId, setClassId] = useState(requestedAssignment?.classId ?? 'all');
-    const [period, setPeriod] = useState('all');
-    const [customStartDate, setCustomStartDate] = useState(initialDateRange.startDate);
-    const [customEndDate, setCustomEndDate] = useState(initialDateRange.endDate);
+    const [term, setTerm] = useState(requestedAssignment?.term ?? 'all');
     const [assignmentStatus, setAssignmentStatus] = useState('all');
     const [studentStatus, setStudentStatus] = useState('all');
     const [searchTerm, setSearchTerm] = useState('');
@@ -39,10 +34,10 @@ function LearningStatusPage() {
         return learningAssignments.filter((assignment) =>
             (gradeId === 'all' || assignment.gradeId === gradeId)
                 && (classId === 'all' || assignment.classId === classId)
-                && isAssignedWithinPeriod(assignment.assignedAt, period, customStartDate, customEndDate)
+                && (term === 'all' || assignment.term === term)
                 && (assignmentStatus === 'all' || assignment.status === assignmentStatus)
                 && (!keyword || assignment.title.toLowerCase().includes(keyword)));
-    }, [assignmentStatus, classId, customEndDate, customStartDate, gradeId, period, searchTerm]);
+    }, [assignmentStatus, classId, gradeId, searchTerm, term]);
 
     useEffect(() => {
         if (!filteredAssignments.some((assignment) => assignment.id === selectedId)) {
@@ -97,7 +92,7 @@ function LearningStatusPage() {
                 <div className="learning-status__filters">
                     <CustomSelect label="학년 선택" value={gradeId} options={learningFilterOptions.grades} onChange={(value) => { setGradeId(value); setClassId('all'); }} width={148} />
                     <CustomSelect label="반 선택" value={classId} options={learningFilterOptions.classes} onChange={setClassId} width={104} />
-                    <AssignmentPeriodFilter period={period} startDate={customStartDate} endDate={customEndDate} onPeriodChange={setPeriod} onStartDateChange={setCustomStartDate} onEndDateChange={setCustomEndDate} />
+                    <CustomSelect label="학기 선택" value={term} options={learningFilterOptions.terms} onChange={setTerm} width={112} />
                     <div className="learning-status__tabs" role="group" aria-label="학습 진행 상태">
                         {assignmentTabs.map((tab) => (
                             <button key={tab.value} type="button" className={assignmentStatus === tab.value ? 'learning-status__tab learning-status__tab--active' : 'learning-status__tab'} aria-pressed={assignmentStatus === tab.value} onClick={() => setAssignmentStatus(tab.value)}>{tab.label}</button>

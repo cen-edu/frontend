@@ -13,6 +13,7 @@ import './ComprehensiveAssessmentPage.scss';
 import './components/AssessmentComponents.scss';
 
 const currentYear = new Date().getFullYear();
+const subjectId = 'math';
 let nextRowId = 1;
 const createDefaultRow = () => ({ id: `assessment-row-${nextRowId++}`, format: 'choice', difficulty: 'mid', count: 1 });
 
@@ -20,7 +21,6 @@ function ComprehensiveAssessmentPage() {
     const [searchParams] = useSearchParams();
     const initializedFromLibrary = useRef(false);
     const [gradeId, setGradeId] = useState('middle-1');
-    const [subjectId, setSubjectId] = useState('math');
     const [semesterId, setSemesterId] = useState('1');
     const [unitItems, setUnitItems] = useState([]);
     const [result, setResult] = useState(null);
@@ -45,7 +45,6 @@ function ComprehensiveAssessmentPage() {
         if (!source) return;
         initializedFromLibrary.current = true;
         setGradeId(source.gradeId);
-        setSubjectId(source.subjectId);
         setSemesterId(source.term === 'second' ? '2' : '1');
         const grouped = source.problems.reduce((acc, problem) => {
             acc[problem.unitId] ??= [];
@@ -129,10 +128,8 @@ function ComprehensiveAssessmentPage() {
                 <>
                     <UnitScopeFilter
                         gradeId={gradeId}
-                        subjectId={subjectId}
                         semesterId={semesterId}
                         onGradeChange={(value) => resetScope(setGradeId, value)}
-                        onSubjectChange={(value) => resetScope(setSubjectId, value)}
                         onSemesterChange={(value) => resetScope(setSemesterId, value)}
                     />
                     <div className="comprehensive-assessment-page__configuration">

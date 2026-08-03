@@ -12,4 +12,4 @@
   &__empty { padding: 80px 24px; color: #747f91; text-align: center; font-size: 13px; }
 }
 @media (max-width:1120px) { .assessment-results { &__toolbar { align-items:stretch; flex-direction:column; } &__content { grid-template-columns:1fr; } } }
-@media (max-width:720px) { .assessment-results { &__page-header { padding:19px 16px 16px; align-items:flex-start; flex-direction:column; gap:10px; } &__filters { align-items:stretch; flex-wrap:wrap; .custom-select { flex:1; } .analysis-filters__controls > .assignment-period-filter { grid-column:1 / -1; } } &__tabs { width:100%; margin-left:0; } &__tab { flex:1; } } }
+@media (max-width:720px) { .assessment-results { &__page-header { padding:19px 16px 16px; align-items:flex-start; flex-direction:column; gap:10px; } &__filters { align-items:stretch; flex-wrap:wrap; .custom-select { flex:1; } } &__tabs { width:100%; margin-left:0; } &__tab { flex:1; } } }

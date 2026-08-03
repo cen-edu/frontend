@@ -12,11 +12,12 @@ import UnitConfigTable from './components/UnitConfigTable';
 import './ProblemCreationPage.scss';
 import './components/ProblemCreationComponents.scss';
 
+const subjectId = 'math';
+
 function ProblemCreationPage() {
     const [searchParams] = useSearchParams();
     const initializedFromLibrary = useRef(false);
     const [gradeId, setGradeId] = useState('middle-1');
-    const [subjectId, setSubjectId] = useState('math');
     const [semesterId, setSemesterId] = useState('1');
     const [unitConfigs, setUnitConfigs] = useState([]);
     const [result, setResult] = useState(null);
@@ -38,7 +39,6 @@ function ProblemCreationPage() {
         if (!source) return;
         initializedFromLibrary.current = true;
         setGradeId(source.gradeId);
-        setSubjectId(source.subjectId);
         setSemesterId(source.term === 'second' ? '2' : '1');
         const countsByUnit = source.problems.reduce((acc, problem) => {
             acc[problem.unitId] ??= { ...defaultUnitCounts };
@@ -93,7 +93,7 @@ function ProblemCreationPage() {
                 <span>선택 소단원 <strong>{configs.length}</strong>개 · 총 <strong>{totalCount}</strong>문항</span>
             </header>
 
-            {!result && <UnitScopeFilter gradeId={gradeId} subjectId={subjectId} semesterId={semesterId} onGradeChange={(value) => changeScope(setGradeId, value)} onSubjectChange={(value) => changeScope(setSubjectId, value)} onSemesterChange={(value) => changeScope(setSemesterId, value)} />}
+            {!result && <UnitScopeFilter gradeId={gradeId} semesterId={semesterId} onGradeChange={(value) => changeScope(setGradeId, value)} onSemesterChange={(value) => changeScope(setSemesterId, value)} />}
 
             {!result ? (
                 <div className="problem-creation-page__configuration">
