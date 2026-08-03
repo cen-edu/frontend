@@ -1,4 +1,5 @@
 import { difficultyLabels } from '../../../mocks/problemCreation';
+import { customStageLabels } from '../../../mocks/customCreation';
 
 function ProblemStepView({ problem, showAnswers }) {
     if (!problem) return <div className="problem-step-view problem-step-view--empty">왼쪽 목록에서 문제를 선택해 주세요.</div>;
@@ -6,7 +7,7 @@ function ProblemStepView({ problem, showAnswers }) {
     return (
         <article className="problem-step-view">
             <header className="problem-step-view__header">
-                <span>{problem.unitPath} · 난이도 {difficultyLabels[problem.difficulty]}</span>
+                <span>{problem.unitPath} · 난이도 {difficultyLabels[problem.difficulty]}{problem.stage ? ` · ${customStageLabels[problem.stage]}${problem.sourceQuestionNo ? ` · 원본 ${problem.sourceQuestionNo}번` : ''}` : ''}</span>
                 <h3>{problem.no}. {problem.prompt}</h3>
             </header>
             <div className="problem-step-view__steps">

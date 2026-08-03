@@ -78,3 +78,10 @@
 - 학생 관리 영역의 모달은 `src/pages/StudentManagementPage/components/StudentFormModal.jsx`와 `StudentFormModal.scss`의 공통 오버레이, 헤더, 닫기 동작을 재사용하고 화면별 너비는 `width` prop으로 조절한다.
 - 학생 폼의 학년 선택과 선택 입력 영역은 각각 `StudentGradeSelector.jsx`, `StudentOptionalFields.jsx`를 재사용한다.
 - 오답 학습 배정 모달은 `StudentFormModal` 프레임을 재사용하며, 해설 검토가 완료되지 않은 문항이나 개념은 선택 및 배정을 비활성화한다.
+- 취약점 분석 `conceptId`와 단원 트리 소단원의 매핑은 `src/mocks/customCreation.js`의 `conceptUnitMap`을 사용한다.
+- 맞춤 문제는 공통 문제 구조에 `stage: 'retrace'|'basic'|'independent'`와 `sourceQuestionNo`를 추가해 저장한다.
+- 개념 챗봇 UI는 `src/components/common/ConceptChatPanel`을 재사용하고 mock 응답은 `src/mocks/conceptChat.js`에서 관리한다.
+- 맞춤 문제 생성 화면에는 개념 챗봇 UI를 표시하지 않는다.
+- 맞춤 문제 생성 화면은 학생 목록을 좌측 탐색 영역, 문항 구성을 중앙 핵심 작업 영역, 제안 근거를 우측 보조 영역에 배치한다.
+- 맞춤 문제 생성 화면은 페이지 전체 스크롤을 만들지 않고 가용 화면 높이에 맞추며, 학생 목록·문항 구성/미리보기·제안 근거는 각 컨테이너 안에서 필요할 때 스크롤한다.
+- 취약점 분석에서 맞춤 문제 생성으로 이동할 때는 `worksheet`, 쉼표로 구분한 `students`, 선택 개념이 있으면 `concept` 쿼리를 전달한다.

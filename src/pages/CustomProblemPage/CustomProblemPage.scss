@@ -1,0 +1,14 @@
+.custom-problem-page { min-width: 940px; height: calc(100vh - 112px); display: flex; flex-direction: column; overflow: hidden; color: #465166;
+  &__page-header { min-height: 92px; flex: 0 0 auto; margin-bottom: 16px; padding: 22px 24px 18px; display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; background: #fff; border: 1px solid #dde2e8; border-radius: 10px; h1 { color: #172033; font-size: 24px; font-weight: 700; line-height: 1.35; letter-spacing: -.4px; } p { margin-top: 5px; color: #747f91; font-size: 13px; } > span { color: #747f91; font-size: 12px; white-space: nowrap; } }
+  &__filters { flex: 0 0 auto; margin-bottom: 16px; }
+  &__workspace { min-height: 0; flex: 1; display: grid; grid-template-columns: minmax(190px,.6fr) minmax(480px,2.2fr) minmax(230px,.85fr); gap: 14px; align-items: stretch; overflow: hidden; }
+  &__main { min-width: 0; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  &__workspace > .weakness-summary { min-height: 0; }
+}
+.custom-problem-result { min-height: 0; flex: 1; display: flex; flex-direction: column; background: #fff; border: 1px solid #dde2e8; border-radius: 10px; overflow: hidden;
+  > header { min-height: 66px; flex: 0 0 auto; padding: 12px 15px; display: flex; align-items: center; justify-content: space-between; gap: 14px; border-bottom: 1px solid #ebeef2; h2 { color: #172033; font-size: 17px; } p { margin-top: 4px; color: #747f91; font-size: 11px; } > div:last-child { display: flex; gap: 7px; } button { min-height: 34px; padding: 0 10px; background: #fff; border: 1px solid #cfd6df; border-radius: 6px; color: #465166; font-size: 12px; font-weight: 600; cursor: pointer; &:hover { background: #eff7ff; border-color: #91cff5; color: #176fc1; } &:focus-visible { outline: 2px solid rgba(23,111,193,.35); } i { margin-right: 4px; } } }
+  &__preview { min-height: 0; flex: 1; display: grid; grid-template-columns: minmax(190px,.65fr) minmax(290px,1.7fr); overflow: hidden; .problem-step-view { min-height: 0; border-right: 0; padding: 20px; overflow-y: auto; } .problem-preview-list__item { min-height: 96px; } }
+}
+
+@media (max-width: 1120px) { .custom-problem-page { min-width: 0; &__workspace { grid-template-columns: 1fr; grid-template-rows: minmax(0,.7fr) minmax(0,2fr) minmax(0,.9fr); > .weakness-summary { grid-column: auto; } } &__page-header { align-items: flex-start; flex-direction: column; } } }
+@media (max-width: 720px) { .custom-config__footer { align-items: stretch; flex-direction: column; } .custom-config__add, .custom-config__generate { justify-content: space-between; } .custom-problem-result__preview { grid-template-columns: 1fr; .problem-preview-list { max-height: 240px; border-right: 0; border-bottom: 1px solid #dde2e8; } } }
