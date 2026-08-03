@@ -3,12 +3,13 @@ import ConceptMatrix from './ConceptMatrix';
 import DetailSidePanel from './DetailSidePanel';
 import DiagnosisSummaryCards from './DiagnosisSummaryCards';
 import GradingNotice from './GradingNotice';
+import PrescriptionTable from './PrescriptionTable';
 import PriorityQuestionsTable from './PriorityQuestionsTable';
 import QuestionMatrix from './QuestionMatrix';
 import ResultBreakdown from './ResultBreakdown';
 import StudentDiagnosisTable from './StudentDiagnosisTable';
 
-function ClassAnalysisView({ worksheet, displayedWorksheet, metrics, selection, onSelection, matrixView, onMatrixView, sortBy, onSortBy, statusFilter, onStatusFilter }) {
+function ClassAnalysisView({ worksheet, displayedWorksheet, metrics, selection, onSelection, matrixView, onMatrixView, sortBy, onSortBy, statusFilter, onStatusFilter, onSelectStudent }) {
     return <div className="class-analysis-view">
         <GradingNotice count={metrics.pending} excludedCount={metrics.pendingResponses} />
         <DiagnosisSummaryCards worksheet={worksheet} metrics={metrics} />
@@ -24,6 +25,7 @@ function ClassAnalysisView({ worksheet, displayedWorksheet, metrics, selection, 
             <DetailSidePanel worksheet={worksheet} selection={selection} onQuadrantSelect={() => onStatusFilter('priority')} />
         </div>
         <PriorityQuestionsTable worksheet={worksheet} onSelect={onSelection} />
+        <PrescriptionTable worksheet={worksheet} onSelectStudent={onSelectStudent} />
         <StudentDiagnosisTable worksheet={displayedWorksheet} statusFilter={statusFilter} onStatusFilter={onStatusFilter} />
     </div>;
 }

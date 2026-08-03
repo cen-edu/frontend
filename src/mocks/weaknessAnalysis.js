@@ -6,7 +6,6 @@ export const weaknessFilterOptions = {
     worksheets: [
         { value: 'factor-practice', label: '2단원 소인수분해 연습' },
         { value: 'factor-assessment', label: '2단원 소인수분해 종합 평가' },
-        { value: 'factor-custom', label: '공통소인수 맞춤 학습' },
     ],
 };
 
@@ -42,6 +41,20 @@ const practiceQuestions = [
     { id: 'factor-practice-4', no: 4, unitId: 'm1s1-gcd-lcm', difficulty: 'high', area: 'problemSolving', prompt: '지수를 비교해 최소공배수를 구하세요.', correctAnswer: '2³×3²', maxScore: 3, steps: [practiceStep(4, 1, 'exponent', '지수 비교', '2³×3²')] },
 ];
 
+const customProblem = (no, stage, difficulty, correct) => ({ no, stage, difficulty, correct });
+const customSession = (id, conceptId, assignedAt, completedAt, problems) => ({ id, sourceWorksheetId: 'factor-practice', conceptId, assignedAt, completedAt, problems });
+
+const customSessions = {
+    '101': [
+        customSession('cs-101-1', 'common', '07.24', '07.25', [customProblem(1, 'retrace', 'low', true), customProblem(2, 'basic', 'mid', true), customProblem(3, 'independent', 'mid', false), customProblem(4, 'independent', 'high', false)]),
+        customSession('cs-101-2', 'common', '07.28', '07.30', [customProblem(1, 'retrace', 'low', true), customProblem(2, 'basic', 'mid', true), customProblem(3, 'independent', 'mid', true), customProblem(4, 'independent', 'high', true)]),
+    ],
+    '102': [customSession('cs-102-1', 'common', '07.24', '07.26', [customProblem(1, 'retrace', 'low', true), customProblem(2, 'basic', 'mid', true), customProblem(3, 'independent', 'mid', true)])],
+    '103': [customSession('cs-103-1', 'prime', '07.24', '07.26', [customProblem(1, 'retrace', 'low', true), customProblem(2, 'basic', 'mid', false), customProblem(3, 'independent', 'mid', false)])],
+    '105': [customSession('cs-105-1', 'exponent', '07.29', null, [customProblem(1, 'retrace', 'low', true), customProblem(2, 'basic', 'mid', null), customProblem(3, 'independent', 'high', null)])],
+    '108': [customSession('cs-108-1', 'common', '07.25', '07.28', [customProblem(1, 'retrace', 'low', true), customProblem(2, 'basic', 'mid', true), customProblem(3, 'independent', 'mid', false)])],
+};
+
 const profiles = [
     { id: '101', name: '김민수', status: 'priority', nextAction: '공통소인수 2문항', pattern: [1, 0, 0, 1], inputs: ['2³×3', '2×6', '2×6', '2³×3²'] },
     { id: '102', name: '박지수', status: 'review', nextAction: '다른 구조 2문항', pattern: [1, 1, 1, 0], inputs: ['2³×3', '2×3', '2×5', '2²×3²'] },
@@ -51,7 +64,7 @@ const profiles = [
     { id: '106', name: '한예린', status: 'stable', nextAction: '심화 문제', pattern: [1, 1, 1, 1], inputs: ['2³×3', '2×3', '2×5', '2³×3²'] },
     { id: '107', name: '윤하준', status: 'insufficient', nextAction: '추가 응답 확인', pattern: [1, null, null, null], inputs: ['2³×3', '', '', ''] },
     { id: '108', name: '오서아', status: 'priority', nextAction: '공통소인수 재학습', pattern: [1, 0, 0, 1], inputs: ['2³×3', '2×6', '2×6', '2³×3²'] },
-];
+].map((profile) => ({ ...profile, customSessions: customSessions[profile.id] ?? [] }));
 
 const makePracticeResponses = (profile) => practiceQuestions.map((question, index) => {
     const correct = profile.pattern[index];
@@ -64,7 +77,11 @@ const makePracticeResponses = (profile) => practiceQuestions.map((question, inde
     };
 });
 
-const practiceStudents = profiles.map((profile) => ({ ...profile, responses: makePracticeResponses(profile), chatLogs: [], prescription: null }));
+const practiceStudents = profiles.map((profile, index) => ({
+    ...profile,
+    responses: makePracticeResponses(profile),
+    chatLogs: index < 3 ? [{ conceptId: 'common', question: index === 0 ? '왜 2×6이 아니라 2×3인가요?' : '공통인 수는 어떻게 찾나요?', count: index + 1 }] : [],
+}));
 
 const assessmentQuestions = Array.from({ length: 8 }, (_, index) => ({
     no: index + 1,
@@ -92,19 +109,12 @@ const assessmentStudents = profiles.map((profile, studentIndex) => ({
             gradedBy: pending ? null : 'teacher',
         };
     }),
-    chatLogs: [], prescription: null,
-}));
-
-const customStudents = practiceStudents.map((student, index) => ({
-    ...student,
-    chatLogs: index < 3 ? [{ conceptId: 'common', question: index === 0 ? '왜 2×6이 아니라 2×3인가요?' : '공통인 수는 어떻게 찾나요?', count: index + 1 }] : [],
-    prescription: index < 5 ? { conceptId: index === 2 ? 'prime' : 'common', assignedAt: '07-24', recheckCorrect: index === 2 ? 0 : index === 1 ? 1 : 2, stageCounts: { retrace: 1, basic: 1, independent: 2 }, status: index === 2 ? 'unresolved' : index === 1 ? 'pending' : 'resolved' } : null,
+    chatLogs: [],
 }));
 
 export const weaknessWorksheets = {
     'factor-practice': { id: 'factor-practice', gradeId: 'middle-1', classId: 'middle-1-1', term: 'first', type: 'practice', origin: 'manual', title: '2단원 소인수분해 연습', className: '중학교 1학년 1반', date: '오늘 11:30', concepts, questions: practiceQuestions, students: practiceStudents },
     'factor-assessment': { id: 'factor-assessment', gradeId: 'middle-1', classId: 'middle-1-1', term: 'first', type: 'assessment', origin: 'manual', title: '2단원 소인수분해 종합 평가', className: '중학교 1학년 1반', date: '오늘 11:30', concepts: [], questions: assessmentQuestions, students: assessmentStudents },
-    'factor-custom': { id: 'factor-custom', gradeId: 'middle-1', classId: 'middle-1-1', term: 'first', type: 'practice', origin: 'custom', title: '공통소인수 맞춤 학습', className: '중학교 1학년 1반', date: '오늘 11:30', concepts, questions: practiceQuestions, students: customStudents },
 };
 
 export const statusLabels = { priority: '집중 지도', review: '다시 확인', stable: '안정', insufficient: '자료 부족' };
@@ -143,6 +153,37 @@ export function getResultBreakdown(worksheet, dimension, student = null) {
         const correct = responses.filter((response) => response.score === response.maxScore).length;
         return { key, label, rate: responses.length ? Math.round(correct / responses.length * 100) : 0, questionCount: questions.length };
     });
+}
+
+export function getConceptRate(worksheet, student, conceptId) {
+    const results = worksheet.questions
+        .flatMap((question) => (question.steps ?? [])
+            .filter((step) => step.conceptId === conceptId)
+            .map((step) => student.responses.find((response) => response.no === question.no)?.steps?.find((item) => item.order === step.order)))
+        .filter((item) => item?.input);
+    return { rate: results.length ? Math.round(results.filter((item) => item.correct).length / results.length * 100) : 0, count: results.length };
+}
+
+export function getStudentCustomSessions(worksheet, student) {
+    return (student.customSessions ?? []).filter((session) => session.sourceWorksheetId === worksheet.id);
+}
+
+export function getCustomSessionSummary(session) {
+    const stages = ['retrace', 'basic', 'independent'].map((stage) => {
+        const problems = session.problems.filter((problem) => problem.stage === stage);
+        const solved = problems.filter((problem) => problem.correct !== null);
+        return { stage, total: problems.length, solved: solved.length, correct: solved.filter((problem) => problem.correct).length };
+    });
+    const solved = session.problems.filter((problem) => problem.correct !== null);
+    const independent = stages.find((item) => item.stage === 'independent');
+    return {
+        stages,
+        independent,
+        solvedCount: solved.length,
+        totalCount: session.problems.length,
+        rate: solved.length ? Math.round(solved.filter((problem) => problem.correct).length / solved.length * 100) : 0,
+        status: solved.length < session.problems.length ? 'pending' : independent.total && independent.correct === independent.total ? 'resolved' : 'unresolved',
+    };
 }
 
 export function getQuestionAccuracy(worksheet, questionNo) {

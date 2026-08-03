@@ -64,7 +64,7 @@ function WeaknessAnalysisPage() {
                 <div className="weakness-page__content-header"><div><span>{selectedStudent ? '개인 분석' : '학급 분석'}</span><h2>{selectedStudent ? `${selectedStudent.name} 분석 결과` : `${worksheet.className} 분석 결과`}</h2><p>{worksheet.title} · {worksheet.date} 기준</p></div><button type="button" disabled title="보고서 다운로드는 다음 단계에서 제공됩니다."><i className="bi bi-download" /> {selectedStudent ? '개인 보고서' : '학급 보고서'} 다운로드</button></div>
                 {selectedStudent
                     ? <StudentAnalysisView worksheet={worksheet} student={selectedStudent} index={selectedIndex} onMove={moveStudent} />
-                    : <ClassAnalysisView worksheet={worksheet} displayedWorksheet={displayedWorksheet} metrics={metrics} selection={selection} onSelection={setSelection} matrixView={matrixView} onMatrixView={setMatrixView} sortBy={matrixSort} onSortBy={setMatrixSort} statusFilter={statusFilter} onStatusFilter={setStatusFilter} />}
+                    : <ClassAnalysisView worksheet={worksheet} displayedWorksheet={displayedWorksheet} metrics={metrics} selection={selection} onSelection={setSelection} matrixView={matrixView} onMatrixView={setMatrixView} sortBy={matrixSort} onSortBy={setMatrixSort} statusFilter={statusFilter} onStatusFilter={setStatusFilter} onSelectStudent={selectStudent} />}
             </main>
         </div>
     </section>;

@@ -100,7 +100,7 @@ export const learningAssignments = [
     },
     {
         id: 'factor-custom',
-        analysisWorksheetId: 'factor-custom',
+        analysisWorksheetId: 'factor-practice',
         gradeId: 'middle-1',
         classId: 'middle-1-1',
         term: 'first',
