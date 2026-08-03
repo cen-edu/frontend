@@ -77,10 +77,9 @@ const makePracticeResponses = (profile) => practiceQuestions.map((question, inde
     };
 });
 
-const practiceStudents = profiles.map((profile, index) => ({
+const practiceStudents = profiles.map((profile) => ({
     ...profile,
     responses: makePracticeResponses(profile),
-    chatLogs: index < 3 ? [{ conceptId: 'common', question: index === 0 ? '왜 2×6이 아니라 2×3인가요?' : '공통인 수는 어떻게 찾나요?', count: index + 1 }] : [],
 }));
 
 const assessmentQuestions = Array.from({ length: 8 }, (_, index) => ({
@@ -109,7 +108,6 @@ const assessmentStudents = profiles.map((profile, studentIndex) => ({
             gradedBy: pending ? null : 'teacher',
         };
     }),
-    chatLogs: [],
 }));
 
 export const weaknessWorksheets = {

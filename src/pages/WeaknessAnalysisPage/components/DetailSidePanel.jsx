@@ -55,8 +55,6 @@ function DetailSidePanel({ worksheet, selection, onQuadrantSelect }) {
     if (selection?.type === 'cell') {
         const student = worksheet.students.find((item) => item.id === selection.studentId);
         const concept = worksheet.concepts.find((item) => item.id === selection.conceptId);
-        const chat = student.chatLogs.find((item) => item.conceptId === selection.conceptId);
-
         return (
             <aside className="diagnosis-card detail-panel">
                 <span className="detail-panel__kicker">학생 응답</span>
@@ -67,7 +65,6 @@ function DetailSidePanel({ worksheet, selection, onQuadrantSelect }) {
                         ? selection.result.inputs.map((input, index) => <li key={`${input}-${index}`}><span>{index + 1}</span><strong>{input}</strong><i className="bi bi-x-circle-fill" /></li>)
                         : <li className="detail-panel__empty">오답 입력값이 없습니다.</li>}
                 </ul>
-                {chat && <div className="detail-panel__chat"><strong><i className="bi bi-chat-square-dots" /> 챗봇 질문 {chat.count}회</strong><p>{chat.question}</p></div>}
             </aside>
         );
     }
