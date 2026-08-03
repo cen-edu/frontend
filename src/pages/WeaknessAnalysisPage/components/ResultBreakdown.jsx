@@ -14,7 +14,7 @@ function ResultBreakdown({ title, description, items, comparisonItems = null }) 
                     </div>;
                 })}
             </div>
-            {comparisonItems && <div className="result-breakdown__legend"><span><i /> 학생</span><span><i /> 학급</span></div>}
+            {comparisonItems && <div className="analysis-legend"><span><i /> 학생</span><span><i /> 학급</span></div>}
         </section>
     );
 }

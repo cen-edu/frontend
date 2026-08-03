@@ -75,7 +75,15 @@
   &__row { display: grid; grid-template-columns: 92px 1fr; align-items: center; gap: 12px; > div:first-child { display: flex; flex-direction: column; gap: 3px; } strong { color: #38485b; font-size: 12px; } small { color: #8a94a1; font-size: 11px; } }
   &__bars { display: grid; gap: 5px; }
   &__bar { height: 20px; position: relative; display: block; background: #eef1f4; border-radius: 3px; overflow: hidden; i { height: 100%; display: block; background: #4f806b; } b { position: absolute; top: 2px; right: 6px; color: #27384b; font-size: 11px; line-height: 16px; } &--comparison i { background: #8da2b5; } }
-  &__legend { margin-top: 13px; display: flex; justify-content: flex-end; gap: 12px; color: #747f91; font-size: 11px; span { display: flex; align-items: center; gap: 5px; } i { width: 12px; height: 5px; background: #4f806b; border-radius: 1px; } span:last-child i { background: #8da2b5; } }
+}
+
+.analysis-legend { margin-top: 13px; display: flex; justify-content: flex-end; gap: 12px; color: #747f91; font-size: 11px; span { display: flex; align-items: center; gap: 5px; } i { width: 12px; height: 5px; background: #4f806b; border-radius: 1px; } span:last-child i { background: #8da2b5; } }
+
+.difficulty-radar {
+  display: flex;
+  flex-direction: column;
+  &__chart { height: 218px; margin: -6px 0 2px; }
+  &__values { margin-top: auto; padding-top: 13px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; border-top: 1px solid #ebeef2; li { display: flex; flex-direction: column; align-items: center; gap: 3px; text-align: center; } span { color: #8a94a1; font-size: 11px; } strong { color: #27384b; font-size: 17px; } small { color: #747f91; font-size: 11px; } }
 }
 
 .priority-questions { margin-bottom: 16px; &__wrap { overflow-x: auto; } table { width: 100%; min-width: 680px; border-collapse: collapse; th, td { height: 45px; padding: 8px 12px; border-top: 1px solid #ebeef2; font-size: 12px; } th { background: #f5f6f8; color: #667185; text-align: center; } th:first-child, td:first-child { text-align: left; } td:not(:first-child) { text-align: center; } tbody tr { cursor: pointer; &:hover { background: #f7f9fb; } &:focus-visible { outline: 2px solid #176fc1; outline-offset: -2px; } } td:first-child strong { margin-right: 6px; color: #27384b; } } }
@@ -83,6 +91,7 @@
 .student-analysis-view {
   display: grid;
   gap: 16px;
+  &__breakdowns { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(268px, 1fr); gap: 16px; align-items: stretch; }
   &__header { padding: 18px 20px; display: flex; align-items: center; justify-content: space-between; gap: 20px; background: #fff; border: 1px solid #dde2e8; border-radius: 10px; p { margin-top: 5px; color: #747f91; font-size: 12px; } }
   &__identity { display: flex; align-items: center; gap: 10px; h2 { color: #172033; font-size: 22px; } }
   &__navigation { display: flex; gap: 6px; button { min-height: 34px; padding: 0 10px; background: #fff; border: 1px solid #d7dde4; border-radius: 6px; color: #596579; font-size: 12px; cursor: pointer; &:hover:not(:disabled), &:focus-visible { background: #f2f7fb; border-color: #8eb9d9; color: #176fc1; } &:disabled { opacity: .4; cursor: default; } } }
@@ -100,7 +109,7 @@
 
 @media (max-width: 1180px) {
   .weakness-page__workspace { grid-template-columns: 220px minmax(0, 1fr); }
-  .weakness-page__analysis-grid, .class-analysis-view__breakdowns { grid-template-columns: 1fr; }
+  .weakness-page__analysis-grid, .class-analysis-view__breakdowns, .student-analysis-view__breakdowns { grid-template-columns: 1fr; }
   .student-priority { flex-direction: column; }
 }
 

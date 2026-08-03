@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { areaLabels, getQuestionAccuracy, getResultBreakdown, getStudentMetrics, statusLabels } from '../../../mocks/weaknessAnalysis';
 import ConceptAchievement from './ConceptAchievement';
+import DifficultyRadar from './DifficultyRadar';
 import QuestionResultCard from './QuestionResultCard';
 import ResultBreakdown from './ResultBreakdown';
 import TimeTimeline from './TimeTimeline';
@@ -47,7 +48,10 @@ function StudentAnalysisView({ worksheet, student, index, onMove }) {
             <div className="student-comparison__values"><div><span>학생 정답률</span><strong>{metrics.scoreRate}%</strong></div><div><span>학급 평균</span><strong>{classRate}%</strong></div><div><span>평균과 차이</span><strong>{metrics.scoreRate - classRate > 0 ? '+' : ''}{metrics.scoreRate - classRate}%p</strong></div></div>
             <p>이 비교는 현재 학습지 응답만을 기준으로 하며 등수나 전체 능력을 의미하지 않습니다.</p>
         </section>
-        <ResultBreakdown title="영역별 학생 vs 학급" description="학생 막대와 학급 평균 비교" items={getResultBreakdown(worksheet, 'area', student)} comparisonItems={getResultBreakdown(worksheet, 'area')} />
+        <div className="student-analysis-view__breakdowns">
+            <ResultBreakdown title="영역별 학생 vs 학급" description="학생 막대와 학급 평균 비교" items={getResultBreakdown(worksheet, 'area', student)} comparisonItems={getResultBreakdown(worksheet, 'area')} />
+            <DifficultyRadar items={getResultBreakdown(worksheet, 'difficulty', student)} comparisonItems={getResultBreakdown(worksheet, 'difficulty')} />
+        </div>
         {worksheet.type === 'practice' && <ConceptAchievement worksheet={worksheet} student={student} showLegend />}
         {worksheet.type === 'assessment' && <TimeTimeline student={student} />}
         <section className="student-analysis-view__results diagnosis-card">
