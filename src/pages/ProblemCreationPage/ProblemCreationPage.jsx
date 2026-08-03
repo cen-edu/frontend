@@ -77,9 +77,9 @@ function ProblemCreationPage() {
                 <div><h2 id="problem-scope-title">출제 범위</h2><p>학년, 과목, 학기를 변경하면 현재 구성이 초기화됩니다.</p></div>
                 <div className="problem-creation-page__scope-controls">
                     <div className="problem-creation-page__scope-field"><span>학년</span><CustomSelect label="출제 학년 선택" value={gradeId} options={curriculumFilterOptions.grades} onChange={(value) => changeScope(setGradeId, value)} width={132} /></div>
-                    <i className="bi bi-chevron-right" aria-hidden="true" />
+                    <span className="problem-creation-page__scope-separator" aria-hidden="true"><i className="bi bi-chevron-right" /></span>
                     <div className="problem-creation-page__scope-field"><span>과목</span><CustomSelect label="출제 과목 선택" value={subjectId} options={curriculumFilterOptions.subjects} onChange={(value) => changeScope(setSubjectId, value)} width={132} /></div>
-                    <i className="bi bi-chevron-right" aria-hidden="true" />
+                    <span className="problem-creation-page__scope-separator" aria-hidden="true"><i className="bi bi-chevron-right" /></span>
                     <div className="problem-creation-page__scope-field"><span>학기</span><CustomSelect label="출제 학기 선택" value={semesterId} options={curriculumFilterOptions.semesters} onChange={(value) => changeScope(setSemesterId, value)} width={132} /></div>
                 </div>
             </section>

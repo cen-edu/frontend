@@ -38,13 +38,19 @@ function UnitTreeSelector({ majorUnits, selectedIds, onToggle, onToggleMiddle })
                                     const allSelected = unitIds.length > 0 && unitIds.every((id) => selectedIds.includes(id));
                                     return (
                                         <div className="unit-tree__middle" key={middle.id}>
-                                            <div className="unit-tree__middle-header">
+                                            <div className={`unit-tree__middle-header${allSelected ? ' unit-tree__middle-header--selected' : ''}`}>
                                                 <CustomCheckbox
                                                     label={`${middle.name} 소단원 전체 선택`}
                                                     checked={allSelected}
                                                     onChange={() => onToggleMiddle(unitIds)}
                                                 />
-                                                <strong>{middle.name}</strong>
+                                                <button
+                                                    type="button"
+                                                    aria-pressed={allSelected}
+                                                    onClick={() => onToggleMiddle(unitIds)}
+                                                >
+                                                    {middle.name}
+                                                </button>
                                             </div>
                                             <div className="unit-tree__small-list">
                                                 {middle.smallUnits.map((unit) => {
