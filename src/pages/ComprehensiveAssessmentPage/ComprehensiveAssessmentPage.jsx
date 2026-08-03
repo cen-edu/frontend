@@ -1,12 +1,14 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import UnitScopeFilter from '../../components/common/UnitScopeFilter/UnitScopeFilter';
 import UnitTreeSelector from '../../components/common/UnitTreeSelector/UnitTreeSelector';
 import { generateAssessmentProblems } from '../../mocks/assessmentCreation';
 import { curriculumUnits } from '../../mocks/curriculum';
+import { libraryWorksheets } from '../../mocks/problemLibrary';
 import AssessmentItemBuilder from './components/AssessmentItemBuilder';
 import AssessmentOrderModal from './components/AssessmentOrderModal';
-import AssessmentPreviewList from './components/AssessmentPreviewList';
-import AssessmentQuestionView from './components/AssessmentQuestionView';
+import AssessmentPreviewList from '../../components/common/ProblemViewer/AssessmentPreviewList';
+import AssessmentQuestionView from '../../components/common/ProblemViewer/AssessmentQuestionView';
 import './ComprehensiveAssessmentPage.scss';
 import './components/AssessmentComponents.scss';
 
@@ -15,6 +17,8 @@ let nextRowId = 1;
 const createDefaultRow = () => ({ id: `assessment-row-${nextRowId++}`, format: 'choice', difficulty: 'mid', count: 1 });
 
 function ComprehensiveAssessmentPage() {
+    const [searchParams] = useSearchParams();
+    const initializedFromLibrary = useRef(false);
     const [gradeId, setGradeId] = useState('middle-1');
     const [subjectId, setSubjectId] = useState('math');
     const [semesterId, setSemesterId] = useState('1');
@@ -34,6 +38,25 @@ function ComprehensiveAssessmentPage() {
     const selectedProblem = result?.problems.find((problem) => problem.id === selectedProblemId) ?? null;
     const canGenerate = totalCount > 0;
     const title = `${currentYear} ${semesterId}학기 종합평가`;
+
+    useEffect(() => {
+        if (initializedFromLibrary.current) return;
+        const source = libraryWorksheets.find((item) => item.id === searchParams.get('from') && item.type === 'assessment');
+        if (!source) return;
+        initializedFromLibrary.current = true;
+        setGradeId(source.gradeId);
+        setSubjectId(source.subjectId);
+        setSemesterId(source.term === 'second' ? '2' : '1');
+        const grouped = source.problems.reduce((acc, problem) => {
+            acc[problem.unitId] ??= [];
+            const key = `${problem.format}-${problem.difficulty}`;
+            const row = acc[problem.unitId].find((item) => item.key === key);
+            if (row) row.count += 1;
+            else acc[problem.unitId].push({ id: `assessment-row-${nextRowId++}`, key, format: problem.format, difficulty: problem.difficulty, count: 1 });
+            return acc;
+        }, {});
+        setUnitItems(Object.entries(grouped).map(([unitId, rows]) => ({ unitId, rows: rows.map(({ key, ...row }) => row) })));
+    }, [searchParams]);
 
     const invalidateResult = () => {
         setResult(null);

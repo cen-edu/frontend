@@ -1,16 +1,20 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import UnitScopeFilter from '../../components/common/UnitScopeFilter/UnitScopeFilter';
 import UnitTreeSelector from '../../components/common/UnitTreeSelector/UnitTreeSelector';
 import { curriculumUnits } from '../../mocks/curriculum';
 import { defaultUnitCounts, difficultyLevels, generateProblems } from '../../mocks/problemCreation';
+import { libraryWorksheets } from '../../mocks/problemLibrary';
 import ConceptPanel from './components/ConceptPanel';
-import ProblemPreviewList from './components/ProblemPreviewList';
-import ProblemStepView from './components/ProblemStepView';
+import ProblemPreviewList from '../../components/common/ProblemViewer/ProblemPreviewList';
+import ProblemStepView from '../../components/common/ProblemViewer/ProblemStepView';
 import UnitConfigTable from './components/UnitConfigTable';
 import './ProblemCreationPage.scss';
 import './components/ProblemCreationComponents.scss';
 
 function ProblemCreationPage() {
+    const [searchParams] = useSearchParams();
+    const initializedFromLibrary = useRef(false);
     const [gradeId, setGradeId] = useState('middle-1');
     const [subjectId, setSubjectId] = useState('math');
     const [semesterId, setSemesterId] = useState('1');
@@ -27,6 +31,22 @@ function ProblemCreationPage() {
     const totalCount = configs.reduce((sum, config) => sum + difficultyLevels.reduce((unitSum, level) => unitSum + config.counts[level], 0), 0);
     const canGenerate = configs.length > 0 && configs.every((config) => difficultyLevels.some((level) => config.counts[level] > 0));
     const selectedProblem = result?.problems.find((problem) => problem.id === selectedProblemId) ?? null;
+
+    useEffect(() => {
+        if (initializedFromLibrary.current) return;
+        const source = libraryWorksheets.find((item) => item.id === searchParams.get('from') && item.type === 'practice' && item.origin !== 'custom');
+        if (!source) return;
+        initializedFromLibrary.current = true;
+        setGradeId(source.gradeId);
+        setSubjectId(source.subjectId);
+        setSemesterId(source.term === 'second' ? '2' : '1');
+        const countsByUnit = source.problems.reduce((acc, problem) => {
+            acc[problem.unitId] ??= { ...defaultUnitCounts };
+            acc[problem.unitId][problem.difficulty] += 1;
+            return acc;
+        }, {});
+        setUnitConfigs(Object.entries(countsByUnit).map(([unitId, counts]) => ({ unitId, counts })));
+    }, [searchParams]);
 
     const resetCreation = () => {
         setUnitConfigs([]);
