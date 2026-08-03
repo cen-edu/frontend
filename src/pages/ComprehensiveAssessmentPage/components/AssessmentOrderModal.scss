@@ -1,0 +1,20 @@
+.assessment-order-modal {
+  width: min(720px, calc(100vw - 48px));
+  max-height: min(760px, calc(100vh - 48px));
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border: 1px solid #dde2e8;
+  border-radius: 10px;
+  box-shadow: 0 18px 48px rgba(23, 32, 51, .18);
+  overflow: hidden;
+
+  &__overlay { position: fixed; inset: 0; z-index: 1000; padding: 24px; display: flex; align-items: center; justify-content: center; background: rgba(23, 32, 51, .46); }
+  &__header { min-height: 78px; padding: 16px 18px; display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; border-bottom: 1px solid #ebeef2; h2 { color: #172033; font-size: 18px; } p { margin-top: 4px; color: #747f91; font-size: 12px; } > button { width: 32px; height: 32px; flex: 0 0 32px; background: transparent; border: 0; border-radius: 6px; color: #747f91; cursor: pointer; &:hover { background: #f1f4f7; color: #172033; } &:focus-visible { outline: 2px solid rgba(23,111,193,.35); } } }
+  &__list { min-height: 0; flex: 1; padding: 12px 18px; display: grid; align-content: start; gap: 8px; overflow-y: auto; }
+  &__item { min-height: 74px; padding: 11px 12px; display: grid; grid-template-columns: 34px minmax(0, 1fr); align-items: center; gap: 12px; border: 1px solid #dde2e8; border-radius: 8px; cursor: grab; transition: background-color .15s ease, border-color .15s ease, opacity .15s ease; &:hover { background: #f7fbff; border-color: #b8daf5; } &:focus-visible { outline: 2px solid rgba(23,111,193,.35); outline-offset: 1px; } &:active { cursor: grabbing; } &--dragging { background: #eff7ff; border-color: #72b4e6; opacity: .56; } &--drag-over { border-color: #176fc1; } }
+  &__number { width: 30px; height: 30px; display: inline-flex; align-items: center; justify-content: center; background: #f1f5f9; border-radius: 50%; color: #172033; font-size: 12px; }
+  &__content { min-width: 0; > div { display: flex; align-items: center; gap: 6px; > span:last-child { overflow: hidden; color: #747f91; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; } } p { margin-top: 7px; overflow: hidden; color: #344054; font-size: 12px; line-height: 1.45; text-overflow: ellipsis; white-space: nowrap; } }
+  &__announcement { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; }
+  &__footer { min-height: 66px; padding: 12px 18px; display: flex; align-items: center; justify-content: flex-end; gap: 8px; background: #f8fafc; border-top: 1px solid #ebeef2; }
+}

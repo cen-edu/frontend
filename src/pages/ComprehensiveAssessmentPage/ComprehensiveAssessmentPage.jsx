@@ -4,6 +4,7 @@ import UnitTreeSelector from '../../components/common/UnitTreeSelector/UnitTreeS
 import { generateAssessmentProblems } from '../../mocks/assessmentCreation';
 import { curriculumUnits } from '../../mocks/curriculum';
 import AssessmentItemBuilder from './components/AssessmentItemBuilder';
+import AssessmentOrderModal from './components/AssessmentOrderModal';
 import AssessmentPreviewList from './components/AssessmentPreviewList';
 import AssessmentQuestionView from './components/AssessmentQuestionView';
 import './ComprehensiveAssessmentPage.scss';
@@ -22,6 +23,7 @@ function ComprehensiveAssessmentPage() {
     const [selectedProblemId, setSelectedProblemId] = useState('');
     const [showAnswers, setShowAnswers] = useState(true);
     const [saved, setSaved] = useState(false);
+    const [orderModalOpen, setOrderModalOpen] = useState(false);
 
     const majorUnits = useMemo(() => curriculumUnits.find((item) => item.gradeId === gradeId && item.subjectId === subjectId && item.semesterId === semesterId)?.majorUnits ?? [], [gradeId, semesterId, subjectId]);
     const unitIndex = useMemo(() => new Map(majorUnits.flatMap((major) => major.middleUnits.flatMap((middle) => middle.smallUnits.map((unit) => [unit.id, { ...unit, majorName: major.name, middleName: middle.name }])))), [majorUnits]);
@@ -84,6 +86,15 @@ function ComprehensiveAssessmentPage() {
         setSaved(false);
     };
 
+    const applyProblemOrder = (orderedProblems) => {
+        setResult((current) => ({
+            ...current,
+            problems: orderedProblems.map((problem, index) => ({ ...problem, no: index + 1 })),
+        }));
+        setSaved(false);
+        setOrderModalOpen(false);
+    };
+
     return (
         <section className="comprehensive-assessment-page" aria-labelledby="comprehensive-assessment-title">
             <header className="comprehensive-assessment-page__page-header">
@@ -118,6 +129,7 @@ function ComprehensiveAssessmentPage() {
                         <div><h2 id="assessment-result-title">{title}</h2><p>총 {result.problems.length}문항 · {resultScore}점</p></div>
                         <div className="comprehensive-assessment-page__result-actions">
                             <button type="button" className="assessment-button assessment-button--secondary" onClick={() => setResult(null)}>출제 구성 수정</button>
+                            <button type="button" className="assessment-button assessment-button--secondary" onClick={() => setOrderModalOpen(true)}><i className="bi bi-arrow-down-up" aria-hidden="true" /> 문항 순서 변경</button>
                             <button type="button" className="comprehensive-assessment-page__answer-toggle" aria-pressed={showAnswers} onClick={() => setShowAnswers((current) => !current)}><i className={`bi bi-eye${showAnswers ? '' : '-slash'}`} aria-hidden="true" /> 정답 {showAnswers ? '숨기기' : '표시'}</button>
                             <button type="button" className="assessment-button assessment-button--secondary" onClick={() => setSaved(true)} disabled={saved}>{saved ? '저장 완료' : '문제 보관함에 저장'}</button>
                         </div>
@@ -129,6 +141,7 @@ function ComprehensiveAssessmentPage() {
                     </div>
                 </section>
             )}
+            {orderModalOpen && result && <AssessmentOrderModal problems={result.problems} onClose={() => setOrderModalOpen(false)} onApply={applyProblemOrder} />}
         </section>
     );
 }
