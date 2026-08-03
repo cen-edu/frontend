@@ -13,7 +13,6 @@ export const sidebarMenus = {
         menus: [
             { label: '학습 현황', path: '/learning', end: true },
             { label: '평가 결과', path: '/learning/results' },
-            { label: '오답 학습', path: '/learning/wrong-answers' },
             { label: '취약점 분석', path: '/learning/weaknesses' },
         ],
     },

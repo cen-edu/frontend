@@ -12,7 +12,6 @@ import WeaknessAnalysisPage from './pages/WeaknessAnalysisPage/WeaknessAnalysisP
 import StudentDiagnosisPage from './pages/WeaknessAnalysisPage/StudentDiagnosisPage';
 import AssessmentResultPage from './pages/AssessmentResultPage/AssessmentResultPage';
 import GradingPage from './pages/AssessmentResultPage/GradingPage';
-import WrongAnswerPage from './pages/WrongAnswerPage/WrongAnswerPage';
 import ProblemCreationPage from './pages/ProblemCreationPage/ProblemCreationPage';
 import ComprehensiveAssessmentPage from './pages/ComprehensiveAssessmentPage/ComprehensiveAssessmentPage';
 import CustomProblemPage from './pages/CustomProblemPage/CustomProblemPage';
@@ -34,7 +33,6 @@ function App() {
         <Route path="/learning" element={<SectionLayout section="learning" />}>
           <Route index element={<LearningStatusPage />} />
           <Route path="results" element={<AssessmentResultPage />} />
-          <Route path="wrong-answers" element={<WrongAnswerPage />} />
           <Route path="weaknesses" element={<WeaknessAnalysisPage />} />
           <Route path="weaknesses/students/:id" element={<StudentDiagnosisPage />} />
         </Route>

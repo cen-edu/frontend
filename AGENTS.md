@@ -39,13 +39,13 @@
 - 교사용 대시보드의 학생 성취 분포 그래프는 Recharts의 `ScatterChart`를 사용하며, X축은 단원 학습 진행률, Y축은 정답률로 표현한다. 학생 점의 클릭·키보드 접근성과 개인 리포트 이동을 유지한다.
 - 학습지 유형 데이터는 `practice`(일반 학습), `assessment`(종합평가)로 통일하고, 맞춤 출제 여부는 `origin: 'custom'`으로 구분한다.
 - 단원 트리(학년>과목>학기>대>중>소)와 소단원 개념 요약은 `src/mocks/curriculum.js`에서 관리한다.
-- 단계형 문제는 `steps[].segments[]` 구조를 사용하고 각 step에는 분석용 `conceptId`를 둔다. segment는 `{type:'text', value}` 또는 `{type:'blank', id, answer}`로 저장하며 문제 생성 미리보기, 학생 풀이, 취약점 분석, 오답 학습이 이 구조를 공유한다.
+- 단계형 문제는 `steps[].segments[]` 구조를 사용하고 각 step에는 분석용 `conceptId`를 둔다. segment는 `{type:'text', value}` 또는 `{type:'blank', id, answer}`로 저장하며 문제 생성 미리보기, 학생 풀이, 취약점 분석, 문항 해설이 이 구조를 공유한다.
 - 학기 값은 문제 만들기와 학습 관리 모두 `term: 'first'|'second'`로 저장하고 숫자형 문자열이나 `semesterId`를 별도로 사용하지 않는다.
 - 문제 난이도 값은 `low|mid|high`로 저장하고 화면 라벨은 `difficultyLabels`의 하/중/상을 사용한다.
 - 평가 문항 유형은 채점 화면과 동일한 `choice|short|essay`를 사용하고, 유형 라벨과 기본 배점은 `src/mocks/assessmentCreation.js`의 `questionFormats`와 `defaultScores`를 사용한다.
 - 종합평가의 총 문항 수에는 검증이나 경고를 두지 않고 교사가 자율적으로 구성할 수 있게 한다.
 - 학년·반 식별자는 학습 관리와 대시보드 간에 공통으로 사용한다. 학년은 `gradeId: 'middle-1'`, 반은 학년과 반을 포함한 `classId: 'middle-1-1'` 형식을 사용하고, 같은 `classId`를 페이지나 mock별로 다른 반에 매핑하지 않는다.
-- 학습 관리의 탐색형 필터는 `학년 → 반 → 학기 → 상태 → 검색`을 사용하고, 학년과 반에는 전체 옵션을 제공한다. 문제 보관함, 학습 현황, 평가 결과, 오답 학습에서는 기간 필터를 사용하지 않는다. 대시보드·취약점 분석의 선택형 필터는 `학년도 → 학년 → 반 → 학기 → 학습지`를 사용하며 전체 옵션을 두지 않는다.
+- 학습 관리의 탐색형 필터는 `학년 → 반 → 학기 → 상태 → 검색`을 사용하고, 학년과 반에는 전체 옵션을 제공한다. 문제 보관함, 학습 현황, 평가 결과에서는 기간 필터를 사용하지 않는다. 대시보드·취약점 분석의 선택형 필터는 `학년도 → 학년 → 반 → 학기 → 학습지`를 사용하며 전체 옵션을 두지 않는다.
 
 ## 라우팅
 
@@ -55,7 +55,6 @@
 - 반 생성과 반 상세 수정은 별도 라우트로 이동하지 않고 `/students/classes` 목록 화면에서 `StudentFormModal` 프레임을 재사용한 모달로 제공한다.
 - 학습 현황과 취약점 분석 사이의 학습지 컨텍스트는 `worksheet` 쿼리로 전달한다.
 - 평가 결과 조회(`/learning/results`)는 학습 관리의 중첩 라우트를 사용하고, 채점 화면(`/learning/results/:worksheetId/grading`)은 헤더와 사이드바가 없는 독립 라우트로 유지한다.
-- 취약점 분석에서 오답 학습(`/learning/wrong-answers`)으로 이동할 때는 `worksheet`, 쉼표로 구분한 `students`, 선택 개념이 있으면 `concept` 쿼리를 전달해 배정 모달의 학습지·학생·항목을 미리 선택한다.
 
 ## 접근성
 
@@ -82,7 +81,7 @@
 - 항목 선택 체크박스의 디자인은 `src/components/common/CustomCheckbox/CustomCheckbox.scss`의 공통 스타일을 따르고 페이지에서 중복 구현하지 않는다.
 - 학생 관리 영역의 모달은 `src/pages/StudentManagementPage/components/StudentFormModal.jsx`와 `StudentFormModal.scss`의 공통 오버레이, 헤더, 닫기 동작을 재사용하고 화면별 너비는 `width` prop으로 조절한다.
 - 학생 폼의 학년 선택과 선택 입력 영역은 각각 `StudentGradeSelector.jsx`, `StudentOptionalFields.jsx`를 재사용한다.
-- 오답 학습은 같은 문항의 재학습으로 사용하고, 맞춤 문제는 새 문제 처방으로 구분한다. 생성 문항은 `steps[].segments[]`의 내장 풀이로 바로 배정하며, 내장 풀이가 없는 이전 문항만 검토 완료 전 선택 및 배정을 비활성화한다. 교사 입력은 내장 풀이를 대체하지 않는 보완 메모로 저장한다.
+- 오답에 대한 처방은 맞춤 문제 생성으로 일원화하고, 같은 문항을 다시 배정하는 별도 화면을 두지 않는다. 문항 풀이는 문제 보관함의 해설로 관리하고 출제 시 함께 배포한다.
 - 맞춤 학습지의 총 풀이 수는 반 단위 학습지 값이 아니라 학생별 `totalUnits`로 저장하고 진행률 계산에서도 학생 값을 우선한다.
 - 취약점 분석 `conceptId`와 단원 트리 소단원의 매핑은 `src/mocks/customCreation.js`의 `conceptUnitMap`을 사용한다.
 - 맞춤 문제는 공통 문제 구조에 `stage: 'retrace'|'basic'|'independent'`와 `sourceQuestionNo`를 추가해 저장한다.
