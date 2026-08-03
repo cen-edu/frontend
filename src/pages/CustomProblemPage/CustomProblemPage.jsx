@@ -73,7 +73,7 @@ function CustomProblemPage() {
         updateCurrentWork((work) => ({ ...work, problems, assignment: null }));
         setSelectedProblemId(problems[0]?.id ?? '');
     };
-    const assign = (dueAt) => updateCurrentWork((work) => ({ ...work, assignment: createCustomAssignment(selectedStudent, dueAt) }));
+    const assign = (dueAt) => updateCurrentWork((work) => ({ ...work, assignment: createCustomAssignment(selectedStudent, dueAt, work.problems) }));
     const selectStudent = (studentId) => { setSelectedStudentId(studentId); setSelectedProblemId(''); };
 
     const filterControls = [

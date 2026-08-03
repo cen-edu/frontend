@@ -4,14 +4,16 @@ export const learningTypeLabels = {
 };
 
 export function getProgress(assignment, student) {
-    if (!assignment.totalUnits) return 0;
-    return Math.round((student.doneUnits / assignment.totalUnits) * 100);
+    const totalUnits = student.totalUnits ?? assignment.totalUnits;
+    if (!totalUnits) return 0;
+    return Math.round((student.doneUnits / totalUnits) * 100);
 }
 
 export function getProgressLabel(assignment, student) {
     const unitLabel = assignment.type === 'assessment' ? '문항' : '풀이';
     const suffix = assignment.type === 'assessment' ? '' : '칸';
-    return `${unitLabel} ${student.doneUnits}/${assignment.totalUnits}${suffix}`;
+    const totalUnits = student.totalUnits ?? assignment.totalUnits;
+    return `${unitLabel} ${student.doneUnits}/${totalUnits}${suffix}`;
 }
 
 export function getDueStatus(dueAt, now = new Date()) {

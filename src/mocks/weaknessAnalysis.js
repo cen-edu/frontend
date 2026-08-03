@@ -16,11 +16,21 @@ const concepts = [
     { id: 'exponent', label: '지수 비교' },
 ];
 
+const text = (value) => ({ type: 'text', value });
+const blank = (id, answer) => ({ type: 'blank', id, answer });
+const practiceStep = (questionNo, order, conceptId, label, answer) => ({
+    id: `practice-${questionNo}-step-${order}`,
+    order,
+    conceptId,
+    label,
+    segments: [text(`${label} 결과는 `), blank(`practice-${questionNo}-blank-${order}`, answer), text('입니다.')],
+});
+
 const practiceQuestions = [
-    { no: 1, prompt: '24를 소인수분해하세요.', maxScore: 2, steps: [{ order: 1, conceptId: 'prime', label: '소인수분해', answer: '2³×3' }] },
-    { no: 2, prompt: '12와 18의 최대공약수를 구하세요.', maxScore: 3, steps: [{ order: 1, conceptId: 'prime', label: '소인수분해', answer: '2²×3, 2×3²' }, { order: 2, conceptId: 'common', label: '공통 소인수', answer: '2×3' }, { order: 3, conceptId: 'exponent', label: '지수 비교', answer: '6' }] },
-    { no: 3, prompt: '공통인 소인수를 모두 고르세요.', maxScore: 2, steps: [{ order: 1, conceptId: 'common', label: '공통 소인수 선택', answer: '2×5' }] },
-    { no: 4, prompt: '지수를 비교해 최소공배수를 구하세요.', maxScore: 3, steps: [{ order: 1, conceptId: 'exponent', label: '지수 비교', answer: '2³×3²' }] },
+    { id: 'factor-practice-1', no: 1, unitId: 'm1s1-prime-factor', difficulty: 'low', prompt: '24를 소인수분해하세요.', maxScore: 2, steps: [practiceStep(1, 1, 'prime', '소인수분해', '2³×3')] },
+    { id: 'factor-practice-2', no: 2, unitId: 'm1s1-gcd-lcm', difficulty: 'mid', prompt: '12와 18의 최대공약수를 구하세요.', maxScore: 3, steps: [practiceStep(2, 1, 'prime', '소인수분해', '2²×3, 2×3²'), practiceStep(2, 2, 'common', '공통 소인수', '2×3'), practiceStep(2, 3, 'exponent', '지수 비교', '6')] },
+    { id: 'factor-practice-3', no: 3, unitId: 'm1s1-gcd-lcm', difficulty: 'low', prompt: '공통인 소인수를 모두 고르세요.', maxScore: 2, steps: [practiceStep(3, 1, 'common', '공통 소인수 선택', '2×5')] },
+    { id: 'factor-practice-4', no: 4, unitId: 'm1s1-gcd-lcm', difficulty: 'high', prompt: '지수를 비교해 최소공배수를 구하세요.', maxScore: 3, steps: [practiceStep(4, 1, 'exponent', '지수 비교', '2³×3²')] },
 ];
 
 const profiles = [
@@ -50,7 +60,9 @@ const assessmentQuestions = Array.from({ length: 8 }, (_, index) => ({
     no: index + 1,
     prompt: `${index + 1}번 소인수분해 응용 문항`,
     maxScore: index % 3 === 2 ? 3 : 2,
-    format: index % 3 === 0 ? '객관식' : index % 3 === 1 ? '주관식' : '서술형',
+    format: index % 3 === 0 ? 'choice' : index % 3 === 1 ? 'short' : 'essay',
+    unitId: index < 3 ? 'm1s1-prime-factor' : 'm1s1-gcd-lcm',
+    difficulty: index % 3 === 0 ? 'low' : index % 3 === 1 ? 'mid' : 'high',
     grading: index === 6 ? 'pending' : 'complete',
 }));
 
@@ -74,13 +86,13 @@ const assessmentStudents = profiles.map((profile, studentIndex) => ({
 const customStudents = practiceStudents.map((student, index) => ({
     ...student,
     chatLogs: index < 3 ? [{ conceptId: 'common', question: index === 0 ? '왜 2×6이 아니라 2×3인가요?' : '공통인 수는 어떻게 찾나요?', count: index + 1 }] : [],
-    prescription: index < 5 ? { conceptId: index === 2 ? 'prime' : 'common', assignedAt: '07-24', recheckCorrect: index === 2 ? 0 : index === 1 ? 1 : 2, recheckTotal: 2, status: index === 2 ? 'unresolved' : index === 1 ? 'pending' : 'resolved' } : null,
+    prescription: index < 5 ? { conceptId: index === 2 ? 'prime' : 'common', assignedAt: '07-24', recheckCorrect: index === 2 ? 0 : index === 1 ? 1 : 2, stageCounts: { retrace: 1, basic: 1, independent: 2 }, status: index === 2 ? 'unresolved' : index === 1 ? 'pending' : 'resolved' } : null,
 }));
 
 export const weaknessWorksheets = {
-    'factor-practice': { id: 'factor-practice', gradeId: 'middle-1', classId: 'middle-1-1', type: 'practice', origin: 'standard', title: '2단원 소인수분해 연습', className: '중학교 1학년 1반', date: '오늘 11:30', concepts, questions: practiceQuestions, students: practiceStudents },
-    'factor-assessment': { id: 'factor-assessment', gradeId: 'middle-1', classId: 'middle-1-1', type: 'assessment', origin: 'standard', title: '2단원 소인수분해 종합평가', className: '중학교 1학년 1반', date: '오늘 11:30', concepts: [], questions: assessmentQuestions, students: assessmentStudents },
-    'factor-custom': { id: 'factor-custom', gradeId: 'middle-1', classId: 'middle-1-1', type: 'practice', origin: 'custom', title: '공통소인수 맞춤 학습', className: '중학교 1학년 1반', date: '오늘 11:30', concepts, questions: practiceQuestions, students: customStudents },
+    'factor-practice': { id: 'factor-practice', gradeId: 'middle-1', classId: 'middle-1-1', term: 'first', type: 'practice', origin: 'manual', title: '2단원 소인수분해 연습', className: '중학교 1학년 1반', date: '오늘 11:30', concepts, questions: practiceQuestions, students: practiceStudents },
+    'factor-assessment': { id: 'factor-assessment', gradeId: 'middle-1', classId: 'middle-1-1', term: 'first', type: 'assessment', origin: 'manual', title: '2단원 소인수분해 종합평가', className: '중학교 1학년 1반', date: '오늘 11:30', concepts: [], questions: assessmentQuestions, students: assessmentStudents },
+    'factor-custom': { id: 'factor-custom', gradeId: 'middle-1', classId: 'middle-1-1', term: 'first', type: 'practice', origin: 'custom', title: '공통소인수 맞춤 학습', className: '중학교 1학년 1반', date: '오늘 11:30', concepts, questions: practiceQuestions, students: customStudents },
 };
 
 export const statusLabels = { priority: '우선 지도', review: '추가 확인', stable: '안정', insufficient: '자료 부족' };

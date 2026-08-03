@@ -1,4 +1,4 @@
-const formatLabels = { choice: '객관식', short: '주관식', essay: '서술형' };
+import { formatLabels } from '../../../mocks/assessmentCreation';
 
 function GradingQuestionList({ questions, students, selectedNo, onSelect }) {
     const statusFor = (question) => {

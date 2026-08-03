@@ -1,4 +1,5 @@
 import TimeScoreQuadrant from './TimeScoreQuadrant';
+import { formatLabels } from '../../../mocks/assessmentCreation';
 
 function DetailSidePanel({ worksheet, selection, onQuadrantSelect }) {
     if (worksheet.type === 'assessment') {
@@ -15,7 +16,7 @@ function DetailSidePanel({ worksheet, selection, onQuadrantSelect }) {
                 <aside className="diagnosis-card detail-panel">
                     <span className="detail-panel__kicker">{question.no}번 문항</span>
                     <h2>문항 상세</h2>
-                    <span className="detail-panel__format">{question.format}</span>
+                    <span className="detail-panel__format">{formatLabels[question.format]}</span>
                     <strong className="detail-panel__rate">{Math.round(correct.length / Math.max(responses.length, 1) * 100)}%</strong>
                     <small>득점률</small>
                     <div className="detail-panel__compare">

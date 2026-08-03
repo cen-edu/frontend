@@ -1,16 +1,17 @@
 import CustomCheckbox from '../../../components/common/CustomCheckbox/CustomCheckbox';
+import { isWrongItemAssignable } from '../../../mocks/wrongAnswer';
 
 function WrongQuestionList({ worksheet, selectedIds, onToggle, onSelectAll, onOpen, onAssign }) {
-    const readyItems = worksheet.wrongItems.filter((item) => item.explanationReady);
+    const readyItems = worksheet.wrongItems.filter(isWrongItemAssignable);
     const allSelected = readyItems.length > 0 && readyItems.every((item) => selectedIds.includes(item.id));
 
     const handleRowClick = (event, item) => {
-        if (!item.explanationReady || event.target.closest('button, input, a, label')) return;
+        if (!isWrongItemAssignable(item) || event.target.closest('button, input, a, label')) return;
         onToggle(item.id);
     };
 
     const handleRowKeyDown = (event, item) => {
-        if (!item.explanationReady || event.target !== event.currentTarget || !['Enter', ' '].includes(event.key)) return;
+        if (!isWrongItemAssignable(item) || event.target !== event.currentTarget || !['Enter', ' '].includes(event.key)) return;
         event.preventDefault();
         onToggle(item.id);
     };
@@ -23,24 +24,24 @@ function WrongQuestionList({ worksheet, selectedIds, onToggle, onSelectAll, onOp
             </div>
             <div className="wrong-question-list__table-wrap">
                 <table className="wrong-question-list__table">
-                    <thead><tr><th><CustomCheckbox label="배정 가능한 항목 전체 선택" checked={allSelected} onChange={onSelectAll} /></th><th>{worksheet.type === 'assessment' ? '문항' : '개념'}</th><th>오답 학생</th><th>해설 상태</th><th><span className="wrong-answer-sr-only">해설 보기</span></th></tr></thead>
-                    <tbody>{worksheet.wrongItems.map((item) => (
+                    <thead><tr><th><CustomCheckbox label="배정 가능한 항목 전체 선택" checked={allSelected} onChange={onSelectAll} /></th><th>{worksheet.type === 'assessment' ? '문항' : '개념'}</th><th>오답 학생</th><th>풀이 상태</th><th><span className="wrong-answer-sr-only">풀이 보기</span></th></tr></thead>
+                    <tbody>{worksheet.wrongItems.map((item) => { const assignable = isWrongItemAssignable(item); return (
                         <tr
                             key={item.id}
-                            className={`wrong-question-list__row${selectedIds.includes(item.id) ? ' wrong-question-list__row--selected' : ''}${!item.explanationReady ? ' wrong-question-list__row--warning' : ''}`}
-                            tabIndex={item.explanationReady ? 0 : undefined}
-                            aria-selected={item.explanationReady ? selectedIds.includes(item.id) : undefined}
-                            aria-disabled={!item.explanationReady || undefined}
+                            className={`wrong-question-list__row${selectedIds.includes(item.id) ? ' wrong-question-list__row--selected' : ''}${!assignable ? ' wrong-question-list__row--warning' : ''}`}
+                            tabIndex={assignable ? 0 : undefined}
+                            aria-selected={assignable ? selectedIds.includes(item.id) : undefined}
+                            aria-disabled={!assignable || undefined}
                             onClick={(event) => handleRowClick(event, item)}
                             onKeyDown={(event) => handleRowKeyDown(event, item)}
                         >
-                            <td><CustomCheckbox label={`${item.no ? `${item.no}번 ` : ''}${item.conceptLabel} 선택`} checked={selectedIds.includes(item.id)} disabled={!item.explanationReady} onChange={() => onToggle(item.id)} /></td>
+                            <td><CustomCheckbox label={`${item.no ? `${item.no}번 ` : ''}${item.conceptLabel} 선택`} checked={selectedIds.includes(item.id)} disabled={!assignable} onChange={() => onToggle(item.id)} /></td>
                             <td><button type="button" className="wrong-question-list__item-button" onClick={() => onOpen(item)}>{item.no && <b>{item.no}번</b>}<span>{item.conceptLabel}</span></button></td>
                             <td><strong>{item.wrongStudentIds.length}명</strong></td>
-                            <td><button type="button" className={`explanation-badge explanation-badge--${item.explanationReady ? 'ready' : 'warning'}`} onClick={() => onOpen(item)}>{item.explanationReady ? '준비됨' : '검토 필요'}</button></td>
-                            <td><button type="button" className="wrong-question-list__open" aria-label={`${item.conceptLabel} 해설 열기`} onClick={() => onOpen(item)}><i className="bi bi-chevron-right" aria-hidden="true" /></button></td>
+                            <td><button type="button" className={`explanation-badge explanation-badge--${assignable ? 'ready' : 'warning'}`} onClick={() => onOpen(item)}>{item.solutionStatus === 'embedded' ? '내장 풀이' : assignable ? '검토 완료' : '검토 필요'}</button></td>
+                            <td><button type="button" className="wrong-question-list__open" aria-label={`${item.conceptLabel} 풀이 열기`} onClick={() => onOpen(item)}><i className="bi bi-chevron-right" aria-hidden="true" /></button></td>
                         </tr>
-                    ))}</tbody>
+                    ); })}</tbody>
                 </table>
             </div>
         </section>

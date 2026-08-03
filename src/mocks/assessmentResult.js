@@ -60,14 +60,14 @@ const students = [
 
 export const initialAssessmentResults = [
     {
-        id: 'semester-assessment-1', type: 'assessment', title: '1학기 종합평가',
+        id: 'factor-assessment', type: 'assessment', title: '2단원 소인수분해 종합평가',
         gradeId: 'middle-1', classId: 'middle-1-1', className: '중학교 1학년 1반', term: 'first', assignedAt: '2026.07.29', status: 'grading', modified: false,
         questions: [
-            { no: 1, format: 'choice', maxScore: 5, answer: '3', rubric: [], gradingStatus: 'auto' },
-            { no: 2, format: 'choice', maxScore: 5, answer: '12', rubric: [], gradingStatus: 'auto' },
-            { no: 3, format: 'short', maxScore: 3, answer: '2×3', rubric: [{ label: '정답과 동치인 표현', score: 3 }], gradingStatus: 'pending' },
-            { no: 4, format: 'choice', maxScore: 5, answer: '2', rubric: [], gradingStatus: 'auto' },
-            { no: 5, format: 'essay', maxScore: 5, answer: '두 수를 각각 소인수분해한 뒤 공통 소인수를 곱한다.', rubric: [{ label: '소인수분해 서술', score: 2 }, { label: '공통 소인수 언급', score: 2 }, { label: '최종 답 정확', score: 1 }], gradingStatus: 'pending' },
+            { no: 1, unitId: 'm1s1-prime-factor', difficulty: 'low', prompt: '다음 중 소수인 수를 고르세요.', format: 'choice', choices: ['1', '4', '7', '9', '15'], maxScore: 5, answer: '3', rubric: [], gradingStatus: 'auto' },
+            { no: 2, unitId: 'm1s1-prime-factor', difficulty: 'low', prompt: '12의 약수의 개수를 고르세요.', format: 'choice', choices: ['2', '3', '4', '5', '6'], maxScore: 5, answer: '4', rubric: [], gradingStatus: 'auto' },
+            { no: 3, unitId: 'm1s1-gcd-lcm', difficulty: 'mid', prompt: '12와 18의 공통 소인수의 곱을 구하세요.', format: 'short', maxScore: 3, answer: '2×3', rubric: [{ label: '정답과 동치인 표현', score: 3 }], gradingStatus: 'pending' },
+            { no: 4, unitId: 'm1s1-prime-factor', difficulty: 'mid', prompt: '60의 소인수 개수를 고르세요.', format: 'choice', choices: ['2개', '3개', '4개', '5개', '6개'], maxScore: 5, answer: '2', rubric: [], gradingStatus: 'auto' },
+            { no: 5, unitId: 'm1s1-gcd-lcm', difficulty: 'high', prompt: '최대공약수를 구하는 과정을 설명하세요.', format: 'essay', maxScore: 5, answer: '두 수를 각각 소인수분해한 뒤 공통 소인수를 곱한다.', rubric: [{ label: '소인수분해 서술', score: 2 }, { label: '공통 소인수 언급', score: 2 }, { label: '최종 답 정확', score: 1 }], gradingStatus: 'pending' },
         ],
         students,
     },
@@ -91,7 +91,8 @@ export const getAssessmentResults = () => {
     try {
         const saved = window.localStorage.getItem('assessment-results');
         if (!saved) return initialAssessmentResults;
-        return JSON.parse(saved).map((result) => {
+        return JSON.parse(saved).map((savedResult) => {
+            const result = savedResult.id === 'semester-assessment-1' ? { ...savedResult, id: 'factor-assessment', title: '2단원 소인수분해 종합평가' } : savedResult;
             const initialResult = initialAssessmentResults.find((item) => item.id === result.id);
             return {
                 ...result,
@@ -99,6 +100,7 @@ export const getAssessmentResults = () => {
                 className: initialResult?.className ?? result.className,
                 term: result.term ?? initialResult?.term ?? 'first',
                 assignedAt: result.assignedAt ?? initialResult?.assignedAt,
+                questions: result.questions.map((question) => ({ ...initialResult?.questions.find((item) => item.no === question.no), ...question })),
             };
         });
     } catch {

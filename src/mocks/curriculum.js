@@ -5,9 +5,9 @@ export const curriculumFilterOptions = {
         { value: 'middle-3', label: '3학년' },
     ],
     subjects: [{ value: 'math', label: '수학' }],
-    semesters: [
-        { value: '1', label: '1학기' },
-        { value: '2', label: '2학기' },
+    terms: [
+        { value: 'first', label: '1학기' },
+        { value: 'second', label: '2학기' },
     ],
 };
 
@@ -16,7 +16,7 @@ const small = (id, name, unitConcept) => ({ id, name, ...(unitConcept ? { concep
 
 export const curriculumUnits = [
     {
-        gradeId: 'middle-1', subjectId: 'math', semesterId: '1',
+        gradeId: 'middle-1', subjectId: 'math', term: 'first',
         majorUnits: [
             {
                 id: 'm1s1-major-1', name: '수와 연산', middleUnits: [
@@ -56,7 +56,7 @@ export const curriculumUnits = [
         ],
     },
     {
-        gradeId: 'middle-1', subjectId: 'math', semesterId: '2',
+        gradeId: 'middle-1', subjectId: 'math', term: 'second',
         majorUnits: [
             { id: 'm1s2-major-1', name: '기본 도형', middleUnits: [
                 { id: 'm1s2-mid-1', name: '기본 도형', smallUnits: [small('m1s2-point-line-plane', '점, 선, 면'), small('m1s2-angle', '각'), small('m1s2-position', '위치 관계')] },
@@ -72,7 +72,7 @@ export const curriculumUnits = [
         ],
     },
     {
-        gradeId: 'middle-2', subjectId: 'math', semesterId: '1',
+        gradeId: 'middle-2', subjectId: 'math', term: 'first',
         majorUnits: [
             { id: 'm2s1-major-1', name: '수와 식', middleUnits: [
                 { id: 'm2s1-mid-1', name: '유리수와 순환소수', smallUnits: [small('m2s1-rational-decimal', '유리수와 소수'), small('m2s1-repeating-decimal', '순환소수')] },
@@ -81,15 +81,15 @@ export const curriculumUnits = [
         ],
     },
     {
-        gradeId: 'middle-2', subjectId: 'math', semesterId: '2',
+        gradeId: 'middle-2', subjectId: 'math', term: 'second',
         majorUnits: [{ id: 'm2s2-major-1', name: '도형의 성질', middleUnits: [{ id: 'm2s2-mid-1', name: '삼각형의 성질', smallUnits: [small('m2s2-isosceles', '이등변삼각형'), small('m2s2-right-triangle', '직각삼각형의 합동')] }] }],
     },
     {
-        gradeId: 'middle-3', subjectId: 'math', semesterId: '1',
+        gradeId: 'middle-3', subjectId: 'math', term: 'first',
         majorUnits: [{ id: 'm3s1-major-1', name: '실수와 그 계산', middleUnits: [{ id: 'm3s1-mid-1', name: '제곱근과 실수', smallUnits: [small('m3s1-square-root', '제곱근의 뜻과 성질'), small('m3s1-real-number', '무리수와 실수')] }] }],
     },
     {
-        gradeId: 'middle-3', subjectId: 'math', semesterId: '2',
+        gradeId: 'middle-3', subjectId: 'math', term: 'second',
         majorUnits: [{ id: 'm3s2-major-1', name: '삼각비와 원', middleUnits: [{ id: 'm3s2-mid-1', name: '삼각비', smallUnits: [small('m3s2-trig-ratio', '삼각비'), small('m3s2-trig-use', '삼각비의 활용')] }] }],
     },
 ];

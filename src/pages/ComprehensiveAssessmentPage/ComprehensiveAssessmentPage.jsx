@@ -21,7 +21,7 @@ function ComprehensiveAssessmentPage() {
     const [searchParams] = useSearchParams();
     const initializedFromLibrary = useRef(false);
     const [gradeId, setGradeId] = useState('middle-1');
-    const [semesterId, setSemesterId] = useState('1');
+    const [term, setTerm] = useState('first');
     const [unitItems, setUnitItems] = useState([]);
     const [result, setResult] = useState(null);
     const [selectedProblemId, setSelectedProblemId] = useState('');
@@ -29,7 +29,7 @@ function ComprehensiveAssessmentPage() {
     const [saved, setSaved] = useState(false);
     const [orderModalOpen, setOrderModalOpen] = useState(false);
 
-    const majorUnits = useMemo(() => curriculumUnits.find((item) => item.gradeId === gradeId && item.subjectId === subjectId && item.semesterId === semesterId)?.majorUnits ?? [], [gradeId, semesterId, subjectId]);
+    const majorUnits = useMemo(() => curriculumUnits.find((item) => item.gradeId === gradeId && item.subjectId === subjectId && item.term === term)?.majorUnits ?? [], [gradeId, subjectId, term]);
     const unitIndex = useMemo(() => new Map(majorUnits.flatMap((major) => major.middleUnits.flatMap((middle) => middle.smallUnits.map((unit) => [unit.id, { ...unit, majorName: major.name, middleName: middle.name }])))), [majorUnits]);
     const groups = unitItems.map((item) => ({ ...item, unit: unitIndex.get(item.unitId) })).filter((item) => item.unit);
     const selectedUnitIds = groups.map((item) => item.unitId);
@@ -37,7 +37,7 @@ function ComprehensiveAssessmentPage() {
     const resultScore = result?.problems.reduce((sum, problem) => sum + problem.maxScore, 0) ?? 0;
     const selectedProblem = result?.problems.find((problem) => problem.id === selectedProblemId) ?? null;
     const canGenerate = totalCount > 0;
-    const title = `${currentYear} ${semesterId}학기 종합평가`;
+    const title = `${currentYear} ${term === 'first' ? '1' : '2'}학기 종합평가`;
 
     useEffect(() => {
         if (initializedFromLibrary.current) return;
@@ -45,7 +45,7 @@ function ComprehensiveAssessmentPage() {
         if (!source) return;
         initializedFromLibrary.current = true;
         setGradeId(source.gradeId);
-        setSemesterId(source.term === 'second' ? '2' : '1');
+        setTerm(source.term ?? 'first');
         const grouped = source.problems.reduce((acc, problem) => {
             acc[problem.unitId] ??= [];
             const key = `${problem.format}-${problem.difficulty}`;
@@ -128,14 +128,14 @@ function ComprehensiveAssessmentPage() {
                 <>
                     <UnitScopeFilter
                         gradeId={gradeId}
-                        semesterId={semesterId}
+                        term={term}
                         onGradeChange={(value) => resetScope(setGradeId, value)}
-                        onSemesterChange={(value) => resetScope(setSemesterId, value)}
+                        onTermChange={(value) => resetScope(setTerm, value)}
                     />
                     <div className="comprehensive-assessment-page__configuration">
                         <section className="assessment-section" aria-labelledby="assessment-unit-selection-title">
                             <header><div><h2 id="assessment-unit-selection-title">단원 선택</h2><p>종합평가에 포함할 소단원을 선택합니다.</p></div><span>{groups.length}개 선택</span></header>
-                            <UnitTreeSelector key={`${gradeId}-${subjectId}-${semesterId}`} majorUnits={majorUnits} selectedUnitIds={selectedUnitIds} onToggleUnit={toggleUnit} onToggleMiddleUnit={toggleMiddleUnit} />
+                            <UnitTreeSelector key={`${gradeId}-${subjectId}-${term}`} majorUnits={majorUnits} selectedUnitIds={selectedUnitIds} onToggleUnit={toggleUnit} onToggleMiddleUnit={toggleMiddleUnit} />
                         </section>
                         <section className="assessment-section" aria-labelledby="assessment-builder-title">
                             <header><div><h2 id="assessment-builder-title">출제 구성</h2><p>유형, 난이도, 문항 수를 행 단위로 설정합니다.</p></div><span>행당 1~10문항</span></header>

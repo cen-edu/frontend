@@ -1,13 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { getAssessmentResults, saveAssessmentResults } from '../../mocks/assessmentResult';
+import { formatLabels } from '../../mocks/assessmentCreation';
 import GradingQuestionList from './components/GradingQuestionList';
 import GradingAnswerCard from './components/GradingAnswerCard';
 import GradingRubricPanel from './components/GradingRubricPanel';
 import './GradingPage.scss';
 import './components/AssessmentResultComponents.scss';
-
-const formatLabels = { choice: '객관식', short: '주관식', essay: '서술형' };
 
 const deriveRubricChecks = (answer, question) => {
     if (answer?.rubricChecks?.length === question.rubric.length) return answer.rubricChecks;

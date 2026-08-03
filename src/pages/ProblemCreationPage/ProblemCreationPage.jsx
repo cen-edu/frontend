@@ -18,14 +18,14 @@ function ProblemCreationPage() {
     const [searchParams] = useSearchParams();
     const initializedFromLibrary = useRef(false);
     const [gradeId, setGradeId] = useState('middle-1');
-    const [semesterId, setSemesterId] = useState('1');
+    const [term, setTerm] = useState('first');
     const [unitConfigs, setUnitConfigs] = useState([]);
     const [result, setResult] = useState(null);
     const [selectedProblemId, setSelectedProblemId] = useState('');
     const [showAnswers, setShowAnswers] = useState(true);
     const [saved, setSaved] = useState(false);
 
-    const majorUnits = useMemo(() => curriculumUnits.find((item) => item.gradeId === gradeId && item.subjectId === subjectId && item.semesterId === semesterId)?.majorUnits ?? [], [gradeId, semesterId, subjectId]);
+    const majorUnits = useMemo(() => curriculumUnits.find((item) => item.gradeId === gradeId && item.subjectId === subjectId && item.term === term)?.majorUnits ?? [], [gradeId, subjectId, term]);
     const unitIndex = useMemo(() => new Map(majorUnits.flatMap((major) => major.middleUnits.flatMap((middle) => middle.smallUnits.map((unit) => [unit.id, { ...unit, majorName: major.name, middleName: middle.name }])))), [majorUnits]);
     const selectedIds = unitConfigs.map((config) => config.unitId);
     const configs = unitConfigs.map((config) => ({ ...config, unit: unitIndex.get(config.unitId) })).filter((config) => config.unit);
@@ -39,7 +39,7 @@ function ProblemCreationPage() {
         if (!source) return;
         initializedFromLibrary.current = true;
         setGradeId(source.gradeId);
-        setSemesterId(source.term === 'second' ? '2' : '1');
+        setTerm(source.term ?? 'first');
         const countsByUnit = source.problems.reduce((acc, problem) => {
             acc[problem.unitId] ??= { ...defaultUnitCounts };
             acc[problem.unitId][problem.difficulty] += 1;
@@ -93,13 +93,13 @@ function ProblemCreationPage() {
                 <span>선택 소단원 <strong>{configs.length}</strong>개 · 총 <strong>{totalCount}</strong>문항</span>
             </header>
 
-            {!result && <UnitScopeFilter gradeId={gradeId} semesterId={semesterId} onGradeChange={(value) => changeScope(setGradeId, value)} onSemesterChange={(value) => changeScope(setSemesterId, value)} />}
+            {!result && <UnitScopeFilter gradeId={gradeId} term={term} onGradeChange={(value) => changeScope(setGradeId, value)} onTermChange={(value) => changeScope(setTerm, value)} />}
 
             {!result ? (
                 <div className="problem-creation-page__configuration">
                     <section className="problem-creation-section" aria-labelledby="unit-selection-title">
                         <header><div><h2 id="unit-selection-title">단원 선택</h2><p>출제할 소단원을 선택합니다.</p></div><span>{configs.length}개 선택</span></header>
-                        <UnitTreeSelector key={`${gradeId}-${subjectId}-${semesterId}`} majorUnits={majorUnits} selectedUnitIds={selectedIds} onToggleUnit={toggleUnit} onToggleMiddleUnit={toggleMiddle} />
+                        <UnitTreeSelector key={`${gradeId}-${subjectId}-${term}`} majorUnits={majorUnits} selectedUnitIds={selectedIds} onToggleUnit={toggleUnit} onToggleMiddleUnit={toggleMiddle} />
                     </section>
                     <section className="problem-creation-section" aria-labelledby="unit-config-title">
                         <header><div><h2 id="unit-config-title">출제 구성</h2><p>소단원별로 하·중·상 문항 수를 배분합니다.</p></div><span>단원당 최대 30문항</span></header>

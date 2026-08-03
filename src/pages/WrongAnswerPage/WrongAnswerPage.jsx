@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import CustomSelect from '../../components/common/CustomSelect/CustomSelect';
 import SearchInput from '../../components/common/SearchInput/SearchInput';
-import { wrongAnswerFilterOptions, wrongAnswerStudents, wrongAnswerWorksheets } from '../../mocks/wrongAnswer';
+import { isWrongItemAssignable, wrongAnswerFilterOptions, wrongAnswerStudents, wrongAnswerWorksheets } from '../../mocks/wrongAnswer';
 import AssignReviewModal from './components/AssignReviewModal';
 import ExplanationPanel from './components/ExplanationPanel';
 import ReviewProgressTable from './components/ReviewProgressTable';
@@ -27,7 +27,7 @@ function WrongAnswerPage() {
     const [status, setStatus] = useState('all');
     const [search, setSearch] = useState('');
     const [selectedId, setSelectedId] = useState(initialWorksheet.id);
-    const initialItems = initialWorksheet.wrongItems.filter((item) => item.explanationReady && (!requestedConcept || item.conceptId === requestedConcept) && (!requestedStudents.length || item.wrongStudentIds.some((id) => requestedStudents.includes(id))));
+    const initialItems = initialWorksheet.wrongItems.filter((item) => isWrongItemAssignable(item) && (!requestedConcept || item.conceptId === requestedConcept) && (!requestedStudents.length || item.wrongStudentIds.some((id) => requestedStudents.includes(id))));
     const [selectedItemIds, setSelectedItemIds] = useState(initialItems.map((item) => item.id));
     const [selectedStudentIds, setSelectedStudentIds] = useState([]);
     const [assignOpen, setAssignOpen] = useState(Boolean(requestedWorksheetId && requestedStudents.length && initialItems.length));
@@ -47,7 +47,7 @@ function WrongAnswerPage() {
     const selectedItems = worksheet?.wrongItems.filter((item) => selectedItemIds.includes(item.id)) ?? [];
     const panelItem = worksheet?.wrongItems.find((item) => item.id === panelItemId);
     const toggleItem = (itemId) => setSelectedItemIds((current) => current.includes(itemId) ? current.filter((id) => id !== itemId) : [...current, itemId]);
-    const toggleAllItems = () => { const ids = worksheet.wrongItems.filter((item) => item.explanationReady).map((item) => item.id); setSelectedItemIds((current) => ids.every((id) => current.includes(id)) ? current.filter((id) => !ids.includes(id)) : [...new Set([...current, ...ids])]); };
+    const toggleAllItems = () => { const ids = worksheet.wrongItems.filter(isWrongItemAssignable).map((item) => item.id); setSelectedItemIds((current) => ids.every((id) => current.includes(id)) ? current.filter((id) => !ids.includes(id)) : [...new Set([...current, ...ids])]); };
     const toggleStudent = (studentId) => setSelectedStudentIds((current) => current.includes(studentId) ? current.filter((id) => id !== studentId) : [...current, studentId]);
     const toggleAllStudents = () => { const ids = worksheet.assignments.filter((assignment) => assignment.status !== 'done').map((assignment) => assignment.studentId); setSelectedStudentIds((current) => ids.every((id) => current.includes(id)) ? current.filter((id) => !ids.includes(id)) : [...new Set([...current, ...ids])]); };
 
@@ -56,17 +56,17 @@ function WrongAnswerPage() {
         setWorksheets((current) => current.map((item) => item.id === worksheet.id ? { ...item, assignStatus: 'reviewing', assignments: [...item.assignments.filter((assignment) => !studentIds.includes(assignment.studentId)), ...newAssignments] } : item));
         setAssignOpen(false); setSelectedItemIds([]);
     };
-    const saveExplanation = (itemId, explanation) => setWorksheets((current) => current.map((item) => item.id === worksheet.id ? { ...item, wrongItems: item.wrongItems.map((wrongItem) => wrongItem.id === itemId ? { ...wrongItem, explanation, explanationReady: true } : wrongItem) } : item));
+    const saveTeacherNote = (itemId, teacherNote) => setWorksheets((current) => current.map((item) => item.id === worksheet.id ? { ...item, wrongItems: item.wrongItems.map((wrongItem) => wrongItem.id === itemId ? { ...wrongItem, teacherNote, solutionStatus: 'reviewed' } : wrongItem) } : item));
 
     return (
         <section className="wrong-answer-page" aria-labelledby="wrong-answer-page-title">
-            <header className="wrong-answer-page__page-header"><div><h1 id="wrong-answer-page-title">오답 학습</h1><p>해설 검토가 끝난 문항을 선택해 학생에게 다시 배정합니다.</p></div><span>검색 결과 <strong>{filteredWorksheets.length}</strong>건</span></header>
+            <header className="wrong-answer-page__page-header"><div><h1 id="wrong-answer-page-title">오답 학습</h1><p>기존 문항의 풀이 단계를 확인하고 같은 문항을 다시 배정합니다.</p></div><span>검색 결과 <strong>{filteredWorksheets.length}</strong>건</span></header>
             <div className="wrong-answer-page__toolbar"><div className="wrong-answer-page__filters"><CustomSelect label="학년 선택" value={gradeId} options={wrongAnswerFilterOptions.grades} onChange={(value) => { setGradeId(value); setClassId('all'); }} width={148} /><CustomSelect label="반 선택" value={classId} options={wrongAnswerFilterOptions.classes} onChange={setClassId} width={104} /><CustomSelect label="학기 선택" value={term} options={wrongAnswerFilterOptions.terms} onChange={setTerm} width={112} /><div className="wrong-answer-page__tabs" role="group" aria-label="오답 학습 상태">{statusTabs.map((tab) => <button key={tab.value} type="button" className={`wrong-answer-page__tab${status === tab.value ? ' wrong-answer-page__tab--active' : ''}`} aria-pressed={status === tab.value} onClick={() => setStatus(tab.value)}>{tab.label}</button>)}</div></div><SearchInput value={search} placeholder="학습명 검색" onChange={setSearch} /></div>
             <div className="wrong-answer-page__content"><WrongAnswerWorksheetList worksheets={filteredWorksheets} selectedId={selectedId} onSelect={setSelectedId} />
-                {worksheet ? <main className="wrong-answer-detail"><header className="wrong-answer-detail__header"><div><span>{worksheet.className} · {worksheet.type === 'assessment' ? '종합평가' : '일반 학습'}</span><h2>{worksheet.title}</h2></div><span className="wrong-answer-detail__guide"><i className="bi bi-info-circle" aria-hidden="true" /> 해설 검토가 필요한 항목은 배정할 수 없습니다.</span></header><WrongQuestionList worksheet={worksheet} selectedIds={selectedItemIds} onToggle={toggleItem} onSelectAll={toggleAllItems} onOpen={(item) => setPanelItemId(item.id)} onAssign={() => setAssignOpen(true)} /><ReviewProgressTable worksheet={worksheet} selectedIds={selectedStudentIds} onToggle={toggleStudent} onToggleAll={toggleAllStudents} /></main> : <div className="wrong-answer-detail wrong-answer-detail--empty"><i className="bi bi-search" aria-hidden="true" /><p>조건에 맞는 학습이 없습니다.</p></div>}
+                {worksheet ? <main className="wrong-answer-detail"><header className="wrong-answer-detail__header"><div><span>{worksheet.className} · {worksheet.type === 'assessment' ? '종합평가' : '일반 학습'}</span><h2>{worksheet.title}</h2></div><span className="wrong-answer-detail__guide"><i className="bi bi-info-circle" aria-hidden="true" /> 생성 문항은 내장 풀이로 바로 배정하며, 이전 문항만 검토가 필요합니다.</span></header><WrongQuestionList worksheet={worksheet} selectedIds={selectedItemIds} onToggle={toggleItem} onSelectAll={toggleAllItems} onOpen={(item) => setPanelItemId(item.id)} onAssign={() => setAssignOpen(true)} /><ReviewProgressTable worksheet={worksheet} selectedIds={selectedStudentIds} onToggle={toggleStudent} onToggleAll={toggleAllStudents} /></main> : <div className="wrong-answer-detail wrong-answer-detail--empty"><i className="bi bi-search" aria-hidden="true" /><p>조건에 맞는 학습이 없습니다.</p></div>}
             </div>
             {assignOpen && worksheet && selectedItems.length > 0 && <AssignReviewModal items={selectedItems} initialStudentIds={requestedStudents} onClose={() => setAssignOpen(false)} onAssign={assignReview} />}
-            {panelItem && <ExplanationPanel item={panelItem} onClose={() => setPanelItemId(null)} onSave={saveExplanation} />}
+            {panelItem && <ExplanationPanel item={panelItem} onClose={() => setPanelItemId(null)} onSave={saveTeacherNote} />}
         </section>
     );
 }

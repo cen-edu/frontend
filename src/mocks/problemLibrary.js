@@ -32,9 +32,9 @@ export const libraryWorksheets = [
         assignments: [{ classId: 'middle-1-1', className: '2026학년도 1학년 1반', assignedAt: '2026.07.29', dueAt: '2026.08.05 18:00', status: 'ongoing' }],
     },
     {
-        id: 'factor-assessment', type: 'assessment', origin: 'manual', title: '1학기 수와 연산 종합평가', gradeId: 'middle-1', subjectId: 'math', term: 'first',
+        id: 'factor-assessment', type: 'assessment', origin: 'manual', title: '2단원 소인수분해 종합평가', gradeId: 'middle-1', subjectId: 'math', term: 'first',
         unitSummary: '수와 연산 · 소수와 합성수 외 2', createdAt: '2026.07.26', problemCount: 4, totalScore: assessmentProblems.reduce((sum, problem) => sum + problem.maxScore, 0), problems: assessmentProblems, custom: null,
-        assignments: [{ classId: 'middle-1-2', className: '2026학년도 1학년 2반', assignedAt: '2026.07.27', dueAt: '2026.08.01 18:00', status: 'completed' }],
+        assignments: [{ classId: 'middle-1-1', className: '2026학년도 1학년 1반', assignedAt: '2026.07.29', dueAt: '2026.08.01 18:00', status: 'ongoing' }],
     },
     {
         id: 'linear-equation-practice', type: 'practice', origin: 'manual', title: '일차방정식 개념 확인', gradeId: 'middle-1', subjectId: 'math', term: 'first',

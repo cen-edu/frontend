@@ -65,6 +65,7 @@ export function generateProblems(configs) {
                 steps: selectedTemplate.steps.map((item, stepIndex) => ({
                     ...item,
                     id: `${unit.id}-${difficulty}-${index + 1}-s${stepIndex + 1}`,
+                    conceptId: unit.id,
                     segments: item.segments.map((segment) => segment.type === 'blank' ? { ...segment, id: `${unit.id}-${difficulty}-${index + 1}-${segment.id}` } : segment),
                 })),
             };

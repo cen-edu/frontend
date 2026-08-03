@@ -2,7 +2,7 @@ import CustomSelect from '../CustomSelect/CustomSelect';
 import { curriculumFilterOptions } from '../../../mocks/curriculum';
 import './UnitScopeFilter.scss';
 
-function UnitScopeFilter({ gradeId, semesterId, onGradeChange, onSemesterChange }) {
+function UnitScopeFilter({ gradeId, term, onGradeChange, onTermChange }) {
     return (
         <section className="unit-scope-filter" aria-labelledby="unit-scope-filter-title">
             <div className="unit-scope-filter__heading">
@@ -17,7 +17,7 @@ function UnitScopeFilter({ gradeId, semesterId, onGradeChange, onSemesterChange 
                 <span className="unit-scope-filter__separator" aria-hidden="true"><i className="bi bi-chevron-right" /></span>
                 <div className="unit-scope-filter__field">
                     <span>학기</span>
-                    <CustomSelect label="출제 학기 선택" value={semesterId} options={curriculumFilterOptions.semesters} onChange={onSemesterChange} width={132} />
+                    <CustomSelect label="출제 학기 선택" value={term} options={curriculumFilterOptions.terms} onChange={onTermChange} width={132} />
                 </div>
             </div>
         </section>

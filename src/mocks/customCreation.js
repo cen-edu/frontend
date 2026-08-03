@@ -16,7 +16,7 @@ export const conceptUnitMap = {
 const unitIndex = new Map(curriculumUnits.flatMap((scope) => scope.majorUnits.flatMap((major) => major.middleUnits.flatMap((middle) => middle.smallUnits.map((unit) => [unit.id, {
     ...unit,
     gradeId: scope.gradeId,
-    semesterId: scope.semesterId,
+    term: scope.term,
     majorName: major.name,
     middleName: middle.name,
 }])))));
@@ -52,7 +52,7 @@ const fallbackTemplate = (label, stage) => ({
 });
 
 export function getAvailableCustomUnits(worksheet) {
-    const scope = curriculumUnits.find((item) => item.gradeId === worksheet.gradeId && item.semesterId === '1');
+    const scope = curriculumUnits.find((item) => item.gradeId === worksheet.gradeId && item.term === (worksheet.term ?? 'first'));
     return scope?.majorUnits.flatMap((major) => major.middleUnits.flatMap((middle) => middle.smallUnits.map((unit) => ({ ...unit, majorName: major.name, middleName: middle.name })))) ?? [];
 }
 
@@ -124,6 +124,7 @@ export function generateCustomProblems(student, configs) {
                 steps: selected.steps.map((item, stepIndex) => ({
                     ...item,
                     id: `${unique}-s${stepIndex + 1}`,
+                    conceptId: config.conceptId,
                     segments: item.segments.map((segment) => segment.type === 'blank' ? { ...segment, id: `${unique}-${segment.id}` } : segment),
                 })),
             };
@@ -131,6 +132,7 @@ export function generateCustomProblems(student, configs) {
     }));
 }
 
-export function createCustomAssignment(student, dueAt) {
-    return { studentId: student.id, mode: 'custom', dueAt, status: 'assigned', type: 'practice', origin: 'custom' };
+export function createCustomAssignment(student, dueAt, problems) {
+    const totalUnits = problems.reduce((sum, problem) => sum + problem.steps.reduce((stepSum, currentStep) => stepSum + currentStep.segments.filter((segment) => segment.type === 'blank').length, 0), 0);
+    return { studentId: student.id, mode: 'custom', dueAt, status: 'assigned', type: 'practice', origin: 'custom', totalUnits };
 }
