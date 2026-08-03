@@ -41,6 +41,8 @@
 - 단원 트리(학년>과목>학기>대>중>소)와 소단원 개념 요약은 `src/mocks/curriculum.js`에서 관리한다.
 - 단계형 문제는 `steps[].segments[]` 구조를 사용하고 segment는 `{type:'text', value}` 또는 `{type:'blank', id, answer}`로 저장한다. 문제 생성 미리보기와 학생 풀이 화면은 이 구조를 공유한다.
 - 문제 난이도 값은 `low|mid|high`로 저장하고 화면 라벨은 `difficultyLabels`의 하/중/상을 사용한다.
+- 평가 문항 유형은 채점 화면과 동일한 `choice|short|essay`를 사용하고, 유형 라벨과 기본 배점은 `src/mocks/assessmentCreation.js`의 `questionFormats`와 `defaultScores`를 사용한다.
+- 종합평가의 총 문항 수에는 검증이나 경고를 두지 않고 교사가 자율적으로 구성할 수 있게 한다.
 - 학년·반 식별자는 학습 관리와 대시보드 간에 공통으로 사용한다. 학년은 `gradeId: 'middle-1'`, 반은 학년과 반을 포함한 `classId: 'middle-1-1'` 형식을 사용하고, 같은 `classId`를 페이지나 mock별로 다른 반에 매핑하지 않는다.
 - 학습 관리의 탐색형 필터는 `학년 → 반 → 배정일 기간 → 상태 → 검색`을 사용하고, 학년과 반에는 전체 옵션을 제공한다. 대시보드·취약점 분석의 선택형 필터는 `학년도 → 학년 → 반 → 학기 → 학습지`를 사용하며 전체 옵션을 두지 않는다.
 
@@ -64,6 +66,7 @@
 - 문제 만들기, 학습 관리, 학생 관리의 좌측 메뉴는 `src/components/Sidebar/Sidebar.jsx`와 `src/config/sidebarMenus.js`를 공통으로 사용하며, 섹션별 사이드바 UI나 메뉴 배열을 페이지 내부에 중복 구현하지 않는다.
 - 헤더와 사이드바가 함께 표시되는 중첩 라우트 화면은 `src/components/SectionLayout/SectionLayout.jsx`를 재사용한다.
 - 서비스의 모든 셀렉트 드롭다운은 네이티브 `<select>` 대신 `src/components/common/CustomSelect/CustomSelect.jsx`를 사용한다.
+- 문제 생성과 종합평가 생성의 단원 선택 트리와 출제 범위 필터는 각각 `src/components/common/UnitTreeSelector/UnitTreeSelector.jsx`와 `src/components/common/UnitScopeFilter/UnitScopeFilter.jsx`를 재사용한다.
 - 대시보드와 취약점 분석처럼 학년도·학기·반·학습지를 선택하는 분석 조회 영역은 `src/components/common/AnalysisFilters/AnalysisFilters.jsx`를 재사용한다.
 - 평가 결과의 반·기간 필터도 `AnalysisFilters`의 `controls` 구성을 사용하며 학습지 선택은 좌측 학습 목록으로 대체한다.
 - 드롭다운 디자인은 `src/components/common/CustomSelect/CustomSelect.scss`의 공통 스타일을 따른다.

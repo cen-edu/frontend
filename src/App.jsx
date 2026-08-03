@@ -14,6 +14,7 @@ import AssessmentResultPage from './pages/AssessmentResultPage/AssessmentResultP
 import GradingPage from './pages/AssessmentResultPage/GradingPage';
 import WrongAnswerPage from './pages/WrongAnswerPage/WrongAnswerPage';
 import ProblemCreationPage from './pages/ProblemCreationPage/ProblemCreationPage';
+import ComprehensiveAssessmentPage from './pages/ComprehensiveAssessmentPage/ComprehensiveAssessmentPage';
 
 function App() {
   return (
@@ -22,7 +23,7 @@ function App() {
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/problems" element={<SectionLayout section="problems" />}>
           <Route index element={<ProblemCreationPage />} />
-          <Route path="comprehensive" element={<FeatureIntro title="종합평가 생성" description="여러 단원과 난이도를 조합해 10~20문항의 종합평가를 구성합니다." />} />
+          <Route path="comprehensive" element={<ComprehensiveAssessmentPage />} />
           <Route path="custom" element={<FeatureIntro title="맞춤 문제 생성" description="학생과 반의 취약점 분석 결과를 바탕으로 맞춤 문제를 만들고 검토합니다." />} />
           <Route path="library" element={<FeatureIntro title="문제 보관함" description="생성한 문제와 평가를 조회하고 수정하거나 출제합니다." />} />
         </Route>

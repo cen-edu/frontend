@@ -1,12 +1,12 @@
 import { useMemo, useState } from 'react';
-import CustomSelect from '../../components/common/CustomSelect/CustomSelect';
-import { curriculumFilterOptions, curriculumUnits } from '../../mocks/curriculum';
+import UnitScopeFilter from '../../components/common/UnitScopeFilter/UnitScopeFilter';
+import UnitTreeSelector from '../../components/common/UnitTreeSelector/UnitTreeSelector';
+import { curriculumUnits } from '../../mocks/curriculum';
 import { defaultUnitCounts, difficultyLevels, generateProblems } from '../../mocks/problemCreation';
 import ConceptPanel from './components/ConceptPanel';
 import ProblemPreviewList from './components/ProblemPreviewList';
 import ProblemStepView from './components/ProblemStepView';
 import UnitConfigTable from './components/UnitConfigTable';
-import UnitTreeSelector from './components/UnitTreeSelector';
 import './ProblemCreationPage.scss';
 import './components/ProblemCreationComponents.scss';
 
@@ -73,24 +73,13 @@ function ProblemCreationPage() {
                 <span>선택 소단원 <strong>{configs.length}</strong>개 · 총 <strong>{totalCount}</strong>문항</span>
             </header>
 
-            {!result && (
-                <section className="problem-creation-page__scope" aria-labelledby="problem-scope-title">
-                    <div><h2 id="problem-scope-title">출제 범위</h2><p>학년, 과목, 학기를 변경하면 현재 구성이 초기화됩니다.</p></div>
-                    <div className="problem-creation-page__scope-controls">
-                        <div className="problem-creation-page__scope-field"><span>학년</span><CustomSelect label="출제 학년 선택" value={gradeId} options={curriculumFilterOptions.grades} onChange={(value) => changeScope(setGradeId, value)} width={132} /></div>
-                        <span className="problem-creation-page__scope-separator" aria-hidden="true"><i className="bi bi-chevron-right" /></span>
-                        <div className="problem-creation-page__scope-field"><span>과목</span><CustomSelect label="출제 과목 선택" value={subjectId} options={curriculumFilterOptions.subjects} onChange={(value) => changeScope(setSubjectId, value)} width={132} /></div>
-                        <span className="problem-creation-page__scope-separator" aria-hidden="true"><i className="bi bi-chevron-right" /></span>
-                        <div className="problem-creation-page__scope-field"><span>학기</span><CustomSelect label="출제 학기 선택" value={semesterId} options={curriculumFilterOptions.semesters} onChange={(value) => changeScope(setSemesterId, value)} width={132} /></div>
-                    </div>
-                </section>
-            )}
+            {!result && <UnitScopeFilter gradeId={gradeId} subjectId={subjectId} semesterId={semesterId} onGradeChange={(value) => changeScope(setGradeId, value)} onSubjectChange={(value) => changeScope(setSubjectId, value)} onSemesterChange={(value) => changeScope(setSemesterId, value)} />}
 
             {!result ? (
                 <div className="problem-creation-page__configuration">
                     <section className="problem-creation-section" aria-labelledby="unit-selection-title">
                         <header><div><h2 id="unit-selection-title">단원 선택</h2><p>출제할 소단원을 선택합니다.</p></div><span>{configs.length}개 선택</span></header>
-                        <UnitTreeSelector key={`${gradeId}-${subjectId}-${semesterId}`} majorUnits={majorUnits} selectedIds={selectedIds} onToggle={toggleUnit} onToggleMiddle={toggleMiddle} />
+                        <UnitTreeSelector key={`${gradeId}-${subjectId}-${semesterId}`} majorUnits={majorUnits} selectedUnitIds={selectedIds} onToggleUnit={toggleUnit} onToggleMiddleUnit={toggleMiddle} />
                     </section>
                     <section className="problem-creation-section" aria-labelledby="unit-config-title">
                         <header><div><h2 id="unit-config-title">출제 구성</h2><p>소단원별로 하·중·상 문항 수를 배분합니다.</p></div><span>단원당 최대 30문항</span></header>
