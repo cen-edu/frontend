@@ -11,6 +11,8 @@ function StudentAnalysisView({ worksheet, student, index, onMove }) {
     const metrics = getStudentMetrics(student);
     const classStudents = worksheet.students.filter((item) => item.status !== 'insufficient');
     const classRate = Math.round(classStudents.reduce((sum, item) => sum + getStudentMetrics(item).scoreRate, 0) / Math.max(classStudents.length, 1));
+    const classGap = metrics.scoreRate - classRate;
+    const classGapTone = classGap > 0 ? 'above' : classGap < 0 ? 'below' : 'even';
     const questions = worksheet.questions.filter((question) => {
         const response = student.responses.find((item) => item.no === question.no);
         if (resultFilter === 'wrong') return response.score < response.maxScore && response.gradedBy !== null;
@@ -45,7 +47,7 @@ function StudentAnalysisView({ worksheet, student, index, onMove }) {
         </section>
         <section className="student-comparison diagnosis-card">
             <div className="diagnosis-card__heading"><div><span>같은 학습지 기준</span><h2>학급 비교</h2></div></div>
-            <div className="student-comparison__values"><div><span>학생 정답률</span><strong>{metrics.scoreRate}%</strong></div><div><span>학급 평균</span><strong>{classRate}%</strong></div><div><span>평균과 차이</span><strong>{metrics.scoreRate - classRate > 0 ? '+' : ''}{metrics.scoreRate - classRate}%p</strong></div></div>
+            <div className="student-comparison__values"><div><span>학생 정답률</span><strong className={`student-comparison__value student-comparison__value--${classGapTone}`}>{metrics.scoreRate}%</strong></div><div><span>학급 평균</span><strong>{classRate}%</strong></div><div><span>평균과 차이</span><strong className={`student-comparison__value student-comparison__value--${classGapTone}`}>{classGap > 0 ? '+' : ''}{classGap}%p</strong></div></div>
             <p>이 비교는 현재 학습지 응답만을 기준으로 하며 등수나 전체 능력을 의미하지 않습니다.</p>
         </section>
         <div className="student-analysis-view__breakdowns">
