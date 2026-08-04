@@ -1,23 +1,37 @@
 import CustomCheckbox from '../../../components/common/CustomCheckbox/CustomCheckbox';
 import { formatLabels } from '../../../mocks/assessmentCreation';
 
-function GradingAnswerCard({ student, answer, question, rubricChecks, onScore, onRubric }) {
+const practiceResults = [
+    { value: 'correct', label: 'O', description: '정답' },
+    { value: 'partial', label: '△', description: '부분 정답' },
+    { value: 'wrong', label: 'X', description: '오답' },
+];
+
+function GradingAnswerCard({ student, answer, question, rubricChecks, onScore, onRubric, isPractice = false, onPracticeResult }) {
     const isUnsubmitted = !answer?.input;
-    const isAuto = question.gradingStatus === 'auto';
+    const isAuto = !isPractice && question.gradingStatus === 'auto';
     const isAutoEssay = question.format === 'essay' && isAuto;
     const selectedChoice = question.format === 'choice' ? question.choices?.[Number(answer?.input) - 1] : null;
+    const practiceResult = answer?.result ?? (typeof answer?.isCorrect === 'boolean' ? (answer.isCorrect ? 'correct' : 'wrong') : null);
 
     return (
         <article className={`grading-answer-card${isAuto ? ' grading-answer-card--auto' : ''}`}>
             <div className="grading-answer-card__header">
                 <div><span>{question.no}번</span><strong>{formatLabels[question.format]}</strong>{isAuto && <em>자동 채점</em>}</div>
-                {typeof answer?.score === 'number' && <span className="grading-answer-card__result">{answer.score}/{question.maxScore} <i className="bi bi-check-circle-fill" aria-hidden="true" /></span>}
+                {isPractice && practiceResult && <span className={`grading-answer-card__practice-current grading-answer-card__practice-current--${practiceResult}`}>{practiceResults.find((item) => item.value === practiceResult)?.description}</span>}
+                {!isPractice && typeof answer?.score === 'number' && <span className="grading-answer-card__result">{answer.score}/{question.maxScore} <i className="bi bi-check-circle-fill" aria-hidden="true" /></span>}
             </div>
             <p className="grading-answer-card__prompt">{question.prompt}</p>
             <div className="grading-answer-card__response"><span>{student.name}의 답</span><p className={isUnsubmitted ? 'grading-answer-card__answer grading-answer-card__answer--empty' : 'grading-answer-card__answer'}>{isUnsubmitted ? '미제출' : answer.input}</p></div>
-            {selectedChoice && <p className="grading-answer-card__auto-result">선택 보기: {selectedChoice}</p>}
-            {question.format === 'short' && typeof answer?.autoScore === 'number' && answer.autoScore !== question.maxScore && <p className="grading-answer-card__auto-result"><i className="bi bi-exclamation-triangle-fill" aria-hidden="true" /> 자동 채점 오답 · 정답 “{question.answer}”</p>}
-            {isAutoEssay && <div className="grading-answer-card__auto-grading">
+            {!isPractice && selectedChoice && <p className="grading-answer-card__auto-result">선택 보기: {selectedChoice}</p>}
+            {!isPractice && question.format === 'short' && typeof answer?.autoScore === 'number' && answer.autoScore !== question.maxScore && <p className="grading-answer-card__auto-result"><i className="bi bi-exclamation-triangle-fill" aria-hidden="true" /> 자동 채점 오답 · 정답 “{question.answer}”</p>}
+            {isPractice && <div className="grading-answer-card__grading grading-answer-card__grading--practice">
+                <div className="grading-answer-card__model"><span>정답</span><p>{question.answer}</p></div>
+                <div className="grading-answer-card__practice-results" role="group" aria-label={`${student.name} ${question.no}번 채점 결과`}>
+                    {practiceResults.map((result) => <button key={result.value} type="button" className={`grading-answer-card__practice-result grading-answer-card__practice-result--${result.value}${practiceResult === result.value ? ' grading-answer-card__practice-result--selected' : ''}`} disabled={isUnsubmitted} aria-label={result.description} aria-pressed={practiceResult === result.value} onClick={() => onPracticeResult(result.value)}><strong>{result.label}</strong><span>{result.description}</span></button>)}
+                </div>
+            </div>}
+            {!isPractice && isAutoEssay && <div className="grading-answer-card__auto-grading">
                 <div className="grading-answer-card__auto-heading">
                     <div><i className="bi bi-stars" aria-hidden="true" /><strong>서술형 자동 채점 결과</strong></div>
                     <span>루브릭별 부분 점수를 합산했습니다.</span>
@@ -41,7 +55,7 @@ function GradingAnswerCard({ student, answer, question, rubricChecks, onScore, o
                     })}
                 </div>
             </div>}
-            {!isAuto && <div className="grading-answer-card__grading">
+            {!isPractice && !isAuto && <div className="grading-answer-card__grading">
                 <div className="grading-answer-card__model"><span>모범답안</span><p>{question.answer}</p></div>
                 <div className="grading-answer-card__scores" aria-label={`${student.name} ${question.no}번 점수 선택`}>
                     {Array.from({ length: question.maxScore + 1 }, (_, score) => <button key={score} type="button" className={answer?.score === score ? 'grading-answer-card__score grading-answer-card__score--selected' : 'grading-answer-card__score'} disabled={isUnsubmitted} onClick={() => onScore(score)}>{score}점</button>)}

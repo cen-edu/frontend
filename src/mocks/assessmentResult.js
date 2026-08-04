@@ -159,8 +159,15 @@ const practiceStudents = allStudents.map((student, studentIndex) => ({
     number: student.number,
     name: student.name,
     answers: practiceQuestions.map((question) => {
-        const isCorrect = (question.no + studentIndex) % 5 !== 0;
-        return { no: question.no, input: isCorrect ? question.answer : '오답', isCorrect, gradedBy: 'auto' };
+        const isPartial = question.format === 'short' && (question.no + studentIndex) % 7 === 0;
+        const isCorrect = !isPartial && (question.no + studentIndex) % 5 !== 0;
+        return {
+            no: question.no,
+            input: isCorrect ? question.answer : isPartial ? '풀이 과정 일부 정답' : '오답',
+            isCorrect,
+            result: isPartial ? 'partial' : isCorrect ? 'correct' : 'wrong',
+            gradedBy: 'auto',
+        };
     }),
 }));
 
@@ -197,7 +204,7 @@ export const initialAssessmentResults = [
     },
 ];
 
-const STORAGE_KEY = 'assessment-results-v4';
+const STORAGE_KEY = 'assessment-results-v5';
 
 export const getAssessmentResults = () => {
     try {
@@ -222,13 +229,13 @@ export const getWorksheetMetrics = (worksheet) => {
             const answer = student.answers.find((candidate) => candidate.no === question.no);
             return sum + (answer?.isCorrect ? 1 : 0);
         }, 0));
-        const percentages = totals.map((total) => Math.round((total / worksheet.questions.length) * 100));
+        const average = totals.length ? Math.round((totals.reduce((sum, value) => sum + value, 0) / totals.length) * 10) / 10 : 0;
         return {
             totals,
             maxTotal: worksheet.questions.length,
-            average: percentages.length ? Math.round(percentages.reduce((sum, value) => sum + value, 0) / percentages.length) : 0,
-            highest: percentages.length ? Math.max(...percentages) : 0,
-            lowest: percentages.length ? Math.min(...percentages) : 0,
+            average,
+            highest: totals.length ? Math.max(...totals) : 0,
+            lowest: totals.length ? Math.min(...totals) : 0,
             pendingCount: 0,
         };
     }

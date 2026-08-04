@@ -1,5 +1,6 @@
 function ResultSummaryBar({ worksheet, metrics, onGrade, onConfirm }) {
-    const unit = worksheet.type === 'assessment' ? '점' : '%';
+    const unit = worksheet.type === 'assessment' ? '점' : '개';
+    const canGrade = worksheet.type === 'practice' || metrics.pendingCount > 0;
     return (
         <div className="result-summary">
             <div>
@@ -8,7 +9,7 @@ function ResultSummaryBar({ worksheet, metrics, onGrade, onConfirm }) {
                 <p>평균 <strong>{metrics.average}{unit}</strong><span />최고 {metrics.highest}{unit}<span />최저 {metrics.lowest}{unit}</p>
             </div>
             <div className="result-summary__actions">
-                <button type="button" className="result-summary__grade" disabled={!metrics.pendingCount} onClick={onGrade}>채점하기</button>
+                <button type="button" className="result-summary__grade" disabled={!canGrade} onClick={onGrade}>채점</button>
                 <button type="button" className="result-summary__confirm" disabled={metrics.pendingCount > 0 || worksheet.status === 'confirmed'} onClick={onConfirm}>{worksheet.status === 'confirmed' ? '확정됨' : '확정하기'}</button>
             </div>
         </div>
