@@ -35,9 +35,20 @@ function Header({ hideOnWheel = false, onHiddenChange }) {
             }
         };
 
-        window.addEventListener("wheel", handleWheel, { passive: true });
+        const handleScroll = () => {
+            if (window.scrollY <= 0) {
+                downwardWheelCount.current = 0;
+                updateVisibility(false);
+            }
+        };
 
-        return () => window.removeEventListener("wheel", handleWheel);
+        window.addEventListener("wheel", handleWheel, { passive: true });
+        window.addEventListener("scroll", handleScroll, { passive: true });
+
+        return () => {
+            window.removeEventListener("wheel", handleWheel);
+            window.removeEventListener("scroll", handleScroll);
+        };
     }, [hideOnWheel, updateVisibility]);
 
     const revealForKeyboard = () => {
