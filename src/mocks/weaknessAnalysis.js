@@ -86,12 +86,12 @@ const practiceStudents = profiles.map((profile) => ({
     responses: makePracticeResponses(profile),
 }));
 
-const assessmentQuestions = Array.from({ length: 8 }, (_, index) => ({
+const assessmentQuestions = Array.from({ length: 20 }, (_, index) => ({
     no: index + 1,
     prompt: `${index + 1}번 소인수분해 응용 문항`,
     maxScore: index % 3 === 2 ? 3 : 2,
     format: index % 3 === 0 ? 'choice' : index % 3 === 1 ? 'short' : 'essay',
-    unitId: index < 3 ? 'm1s1-prime-factor' : 'm1s1-gcd-lcm',
+    unitId: index < 8 ? 'm1s1-prime-factor' : 'm1s1-gcd-lcm',
     difficulty: index % 3 === 0 ? 'low' : index % 3 === 1 ? 'mid' : 'high',
     area: ['concept', 'calculation', 'reasoning', 'problemSolving'][index % 4],
     correctAnswer: `${index + 1}번 문항 정답`,
