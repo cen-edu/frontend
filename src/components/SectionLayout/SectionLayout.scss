@@ -1,6 +1,12 @@
 .section-layout {
+  --section-header-height: 72px;
+
   min-height: 100vh;
   background-color: #f6f8fa;
+
+  &--header-hidden {
+    --section-header-height: 0px;
+  }
 
   &__body {
     min-height: calc(100vh - 72px);

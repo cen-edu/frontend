@@ -1,10 +1,55 @@
+import { useCallback, useEffect, useRef, useState } from "react";
 import { NavLink } from "react-router-dom";
 import logoSymbol from "../../assets/images/logo-symbol.png";
 import "./Header.scss";
 
-function Header() {
+function Header({ hideOnWheel = false, onHiddenChange }) {
+    const [isHidden, setIsHidden] = useState(false);
+    const downwardWheelCount = useRef(0);
+    const updateVisibility = useCallback((hidden) => {
+        setIsHidden(hidden);
+        onHiddenChange?.(hidden);
+    }, [onHiddenChange]);
+
+    useEffect(() => {
+        if (!hideOnWheel) {
+            downwardWheelCount.current = 0;
+            updateVisibility(false);
+            return undefined;
+        }
+
+        const handleWheel = ({ deltaY }) => {
+            if (deltaY > 0) {
+                downwardWheelCount.current += 1;
+
+                if (downwardWheelCount.current >= 2) {
+                    updateVisibility(true);
+                }
+
+                return;
+            }
+
+            if (deltaY < 0) {
+                downwardWheelCount.current = 0;
+                updateVisibility(false);
+            }
+        };
+
+        window.addEventListener("wheel", handleWheel, { passive: true });
+
+        return () => window.removeEventListener("wheel", handleWheel);
+    }, [hideOnWheel, updateVisibility]);
+
+    const revealForKeyboard = () => {
+        downwardWheelCount.current = 0;
+        updateVisibility(false);
+    };
+
     return (
-        <header className="header">
+        <header
+            className={`header ${isHidden ? "header--hidden" : ""}`}
+            onFocusCapture={revealForKeyboard}
+        >
             <div className="header__inner">
                 <div className="header__left">
                     <NavLink to="/dashboard" className="header__brand">

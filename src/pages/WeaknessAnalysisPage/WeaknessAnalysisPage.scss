@@ -52,20 +52,27 @@
 
 .analysis-targets {
   position: sticky;
-  top: 88px;
-  max-height: calc(100vh - 104px);
+  top: calc(var(--section-header-height, 72px) + 16px);
+  max-height: calc(100vh - var(--section-header-height, 72px) - 32px);
   padding: 16px 12px 12px;
   display: flex;
   flex-direction: column;
   background: #fff;
   border: 1px solid #dde2e8;
   border-radius: 10px;
+  transition: top 220ms ease, max-height 220ms ease;
 
   &__heading { padding: 0 4px 12px; display: flex; align-items: center; justify-content: space-between; h2 { color: #172033; font-size: 16px; } span { color: #747f91; font-size: 11px; } }
   &__all { width: 100%; min-height: 68px; padding: 11px; display: flex; align-items: center; justify-content: space-between; gap: 10px; background: #f7f9fb; border: 1px solid #e4e8ed; border-radius: 7px; color: #465166; text-align: left; cursor: pointer; span { display: flex; flex-direction: column; gap: 3px; &:last-child { align-items: flex-end; } } strong { color: #27364a; font-size: 13px; } small { color: #7b8696; font-size: 11px; } &:hover, &:focus-visible { border-color: #7eafd5; background: #f2f7fb; } &--active { border-color: #4b8fc5; background: #eef6fc; } }
   &__tools { padding: 12px 0; display: grid; gap: 8px; border-bottom: 1px solid #ebeef2; .common-search-input, .custom-select { width: 100%; flex-basis: auto; } }
   &__list { min-height: 0; margin-top: 6px; overflow-y: auto; li > button { width: 100%; min-height: 52px; padding: 8px 9px; display: flex; align-items: center; justify-content: space-between; gap: 8px; background: transparent; border: 1px solid transparent; border-radius: 6px; color: #465166; text-align: left; cursor: pointer; > span { display: flex; flex-direction: column; align-items: flex-start; gap: 5px; } > b { color: #356c55; font-size: 13px; &.low { color: #9a4f49; } } &:hover, &:focus-visible { background: #f5f8fa; border-color: #dce4eb; } &.active { background: #eef6fc; border-color: #8eb9d9; } } }
   &__empty { padding: 24px 6px; color: #747f91; font-size: 12px; text-align: center; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .analysis-targets {
+    transition: none;
+  }
 }
 
 .analysis-disclaimer { margin: -6px 0 16px; color: #747f91; font-size: 11px; line-height: 1.55; }

@@ -32,7 +32,7 @@ function DashboardPage() {
 
     return (
         <div className="dashboard-page">
-            <Header />
+            <Header hideOnWheel />
 
             <main className="dashboard-page__main">
                 <div className="dashboard-page__heading">
