@@ -97,7 +97,37 @@ const baseStudents = [
     },
 ];
 
-const assessmentStudents = baseStudents.map((student, studentIndex) => ({
+const additionalStudents = [
+    { id: 105, number: 5, name: '정하은' },
+    { id: 106, number: 6, name: '윤도현' },
+    { id: 107, number: 7, name: '한유진' },
+    { id: 108, number: 8, name: '강시우' },
+    { id: 109, number: 9, name: '조예린' },
+    { id: 110, number: 10, name: '임건우' },
+].map((student, studentIndex) => ({
+    ...student,
+    answers: [
+        { no: 1, input: studentIndex % 4 === 0 ? '2' : '3', score: studentIndex % 4 === 0 ? 0 : 5, autoScore: studentIndex % 4 === 0 ? 0 : 5, gradedBy: 'auto' },
+        { no: 2, input: studentIndex % 3 === 0 ? '3' : '4', score: studentIndex % 3 === 0 ? 0 : 5, autoScore: studentIndex % 3 === 0 ? 0 : 5, gradedBy: 'auto' },
+        { no: 3, input: studentIndex % 2 === 0 ? '2×3' : '6', score: studentIndex < 3 ? null : 3, autoScore: studentIndex < 3 ? 0 : 3, gradedBy: studentIndex < 3 ? null : 'auto' },
+        { no: 4, input: studentIndex % 5 === 0 ? '1' : '2', score: studentIndex % 5 === 0 ? 0 : 5, autoScore: studentIndex % 5 === 0 ? 0 : 5, gradedBy: 'auto' },
+        {
+            no: 5,
+            input: studentIndex % 2 === 0 ? '두 수를 소인수분해하고 공통 소인수를 곱한다.' : '공통인 2와 3을 곱하면 6이다.',
+            score: 3,
+            autoScore: 3,
+            gradedBy: 'auto',
+            rubricResults: [
+                { satisfied: false, evidence: '' },
+                { satisfied: true, evidence: studentIndex % 2 === 0 ? '공통 소인수를 곱한다' : '2와 3을 곱하면 6이다' },
+            ],
+        },
+    ],
+}));
+
+const allStudents = [...baseStudents, ...additionalStudents];
+
+const assessmentStudents = allStudents.map((student, studentIndex) => ({
     ...student,
     answers: [
         ...student.answers,
@@ -106,6 +136,13 @@ const assessmentStudents = baseStudents.map((student, studentIndex) => ({
             return { no: question.no, input: isCorrect ? '1' : '2', score: isCorrect ? 5 : 0, autoScore: isCorrect ? 5 : 0, gradedBy: 'auto' };
         }),
     ],
+}));
+
+const completedAssessmentStudents = assessmentStudents.map((student) => ({
+    ...student,
+    answers: student.answers.map((answer) => answer.score === null
+        ? { ...answer, score: answer.autoScore, gradedBy: 'teacher' }
+        : answer),
 }));
 
 const practiceQuestions = Array.from({ length: 20 }, (_, index) => ({
@@ -117,7 +154,7 @@ const practiceQuestions = Array.from({ length: 20 }, (_, index) => ({
     gradingStatus: 'auto',
 }));
 
-const practiceStudents = baseStudents.map((student, studentIndex) => ({
+const practiceStudents = allStudents.map((student, studentIndex) => ({
     id: student.id,
     number: student.number,
     name: student.name,
@@ -140,9 +177,27 @@ export const initialAssessmentResults = [
         questions: practiceQuestions,
         students: practiceStudents,
     },
+    {
+        id: 'factor-practice-review', type: 'practice', title: '소인수분해 개념 복습',
+        gradeId: 'middle-1', classId: 'middle-1-2', className: '중학교 1학년 2반', term: 'first', assignedAt: '2026.07.17', status: 'confirmed', modified: false,
+        questions: practiceQuestions,
+        students: practiceStudents,
+    },
+    {
+        id: 'gcd-lcm-assessment', type: 'assessment', title: '최대공약수와 최소공배수 평가',
+        gradeId: 'middle-1', classId: 'middle-1-2', className: '중학교 1학년 2반', term: 'first', assignedAt: '2026.07.11', status: 'grading', modified: false,
+        questions: assessmentQuestions,
+        students: assessmentStudents,
+    },
+    {
+        id: 'first-term-final-assessment', type: 'assessment', title: '1학기 학기말 종합 평가',
+        gradeId: 'middle-1', classId: 'middle-1-1', className: '중학교 1학년 1반', term: 'first', assignedAt: '2026.07.04', status: 'confirmed', modified: true,
+        questions: assessmentQuestions,
+        students: completedAssessmentStudents,
+    },
 ];
 
-const STORAGE_KEY = 'assessment-results-v3';
+const STORAGE_KEY = 'assessment-results-v4';
 
 export const getAssessmentResults = () => {
     try {

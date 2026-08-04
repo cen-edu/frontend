@@ -118,12 +118,7 @@ function ComprehensiveAssessmentPage() {
     };
 
     return (
-        <section className="comprehensive-assessment-page" aria-labelledby="comprehensive-assessment-title">
-            <header className="comprehensive-assessment-page__page-header">
-                <div><h1 id="comprehensive-assessment-title">종합 평가 생성</h1><p>단원별 문항 유형과 난이도를 구성하고 평가 문항과 채점 기준을 검토합니다.</p></div>
-                <span>선택 소단원 <strong>{groups.length}</strong>개 · 총 <strong>{result?.problems.length ?? totalCount}</strong>문항</span>
-            </header>
-
+        <section className="comprehensive-assessment-page" aria-labelledby={result ? 'assessment-result-title' : 'assessment-unit-selection-title'}>
             {!result ? (
                 <>
                     <UnitScopeFilter

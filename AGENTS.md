@@ -104,6 +104,7 @@
 - 취약점 분석에서 맞춤 문제 생성으로 이동할 때는 `worksheet`, 쉼표로 구분한 `students`, 선택 개념이 있으면 `concept` 쿼리를 전달한다.
 - 보관함 학습지 데이터는 `src/mocks/problemLibrary.js`에서 관리하고, 학습 관리 mock과 같은 학습지는 동일한 학습지 id를 사용한다.
 - 문제 미리보기 렌더러는 `src/components/common/ProblemViewer`를 재사용하고 페이지별로 중복 구현하지 않는다.
+- 문제 생성 결과 화면의 AI 문제 수정 요청 영역은 `src/pages/ProblemCreationPage/components/ProblemRevisePanel.jsx`를 사용하고 추천 요청 문구는 `src/mocks/problemRevision.js`의 `revisionPresets`에서 관리한다. LLM 연동 전까지는 요청 내용을 문항별로 기록만 하고 문제 데이터를 변형하지 않는다.
 - 문제 보관함에서는 제목만 직접 수정하며, 내용 변경은 `from` 쿼리로 문제 생성 또는 종합평가 생성 화면에 구성값을 전달해 재구성한다.
 - 문제 보관함의 출제 상태는 별도 필드로 저장하지 않고 `assignments` 배열의 길이에서 파생한다.
 - 문제 보관함의 맞춤 문제는 `custom.sourceWorksheetId`로 원본 일반 학습 또는 종합 평가에 연결하고, 원본 학습지 행 아래의 접을 수 있는 하위 항목으로 표시한다. 유형 탭 분류도 맞춤 문제 자체의 `type`이 아니라 연결된 원본 학습지 유형을 기준으로 한다.

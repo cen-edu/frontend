@@ -25,7 +25,6 @@
   h2 { margin-top: 5px; color: #172033; font-size: 20px; }
   p { margin-top: 10px; color: #747f91; font-size: 12px; strong { color: #176fc1; font-size: 16px; } span { width: 1px; height: 10px; margin: 0 9px; display: inline-block; background: #dce2e8; vertical-align: middle; } }
   &__actions { display: flex; align-items: center; gap: 7px; button { height: 36px; padding: 0 13px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; transition: .14s; &:disabled { opacity: .45; cursor: not-allowed; } &:focus-visible { outline: 2px solid rgba(23,111,193,.35); outline-offset: 2px; } } }
-  &__modified { padding: 5px 8px; background: #f1f3f5; border-radius: 5px; color: #667185; font-size: 11px; font-weight: 700; }
   &__grade { background: #fff; border: 1px solid #8eb7dc; color: #176fc1; &:not(:disabled):hover { background: #edf5fc; border-color: #176fc1; } }
   &__confirm { background: #176fc1; border: 1px solid #176fc1; color: #fff; &:not(:disabled):hover { background: #0f5fa8; border-color: #0f5fa8; } }
 }

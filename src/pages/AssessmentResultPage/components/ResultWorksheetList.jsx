@@ -9,7 +9,7 @@ function ResultWorksheetList({ worksheets, selectedId, onSelect }) {
                     <button key={worksheet.id} type="button" className={`result-worksheet-list__item${selectedId === worksheet.id ? ' result-worksheet-list__item--active' : ''}`} onClick={() => onSelect(worksheet.id)}>
                         <span className="result-worksheet-list__meta">{worksheet.className} · {worksheet.type === 'assessment' ? '종합 평가' : '일반 학습'}</span>
                         <strong>{worksheet.title}</strong>
-                        <span className={`result-worksheet-list__status result-worksheet-list__status--${worksheet.status}`}>{statusLabels[worksheet.status]}{worksheet.modified ? ' · 수정됨' : ''}</span>
+                        <span className={`result-worksheet-list__status result-worksheet-list__status--${worksheet.status}`}>{statusLabels[worksheet.status]}</span>
                     </button>
                 ))}
                 {!worksheets.length && <p className="result-worksheet-list__empty">조건에 맞는 학습이 없습니다.</p>}
