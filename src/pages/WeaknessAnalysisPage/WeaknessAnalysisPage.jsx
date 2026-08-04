@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import AnalysisFilters from '../../components/common/AnalysisFilters/AnalysisFilters';
 import { getStudentMetrics, getWorksheetMetrics, weaknessFilterOptions, weaknessWorksheets } from '../../mocks/weaknessAnalysis';
@@ -30,6 +30,8 @@ function WeaknessAnalysisPage() {
     }) }), [worksheet, matrixSort]);
     const selectedIndex = worksheet.students.findIndex((student) => student.id === studentId);
     const selectedStudent = selectedIndex >= 0 ? worksheet.students[selectedIndex] : null;
+
+    useEffect(() => { window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }); }, [studentId]);
 
     const changeFilter = (key, value) => {
         setFilters((current) => ({ ...current, [key]: value }));
