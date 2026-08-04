@@ -52,23 +52,6 @@ function DetailSidePanel({ worksheet, selection, onQuadrantSelect }) {
         </aside>;
     }
 
-    if (selection?.type === 'cell') {
-        const student = worksheet.students.find((item) => item.id === selection.studentId);
-        const concept = worksheet.concepts.find((item) => item.id === selection.conceptId);
-        return (
-            <aside className="diagnosis-card detail-panel">
-                <span className="detail-panel__kicker">학생 응답</span>
-                <h2>{student.name} · {concept.label}</h2>
-                <p>빈칸에 입력한 오답을 문항 순서대로 표시합니다.</p>
-                <ul className="detail-panel__inputs">
-                    {selection.result.inputs.length
-                        ? selection.result.inputs.map((input, index) => <li key={`${input}-${index}`}><span>{index + 1}</span><strong>{input}</strong><i className="bi bi-x-circle-fill" /></li>)
-                        : <li className="detail-panel__empty">오답 입력값이 없습니다.</li>}
-                </ul>
-            </aside>
-        );
-    }
-
     if (selection?.type === 'concept') {
         const concept = worksheet.concepts.find((item) => item.id === selection.conceptId);
         const inputs = worksheet.students.flatMap((student) => {
@@ -99,13 +82,28 @@ function DetailSidePanel({ worksheet, selection, onQuadrantSelect }) {
         return { ...concept, weak };
     }).sort((a, b) => b.weak - a.weak);
 
+    const total = worksheet.students.length;
+
     return (
         <aside className="diagnosis-card detail-panel">
             <span className="detail-panel__kicker">취약 순위</span>
             <h2>개념별 취약 인원</h2>
-            <p>개념 열이나 학생 셀을 선택하면 상세 응답을 표시합니다.</p>
-            <ol className="detail-panel__ranking">
-                {ranks.map((concept, index) => <li key={concept.id}><span className="detail-panel__rank">{index + 1}</span><strong>{concept.label}</strong><span>{concept.weak}명 <i className="bi bi-chevron-right" /></span></li>)}
+            <p>전체 {total}명 중 해당 개념에서 오답이 있었던 학생 수입니다.</p>
+            <ol className="concept-bars">
+                {ranks.map((concept, index) => {
+                    const share = Math.round(concept.weak / Math.max(total, 1) * 100);
+                    const level = share >= 50 ? 'high' : share >= 25 ? 'mid' : 'low';
+                    return (
+                        <li key={concept.id}>
+                            <div className="concept-bars__row" aria-label={`${concept.label} 취약 ${concept.weak}명, 전체 ${total}명의 ${share}%`}>
+                                <span className="concept-bars__rank">{index + 1}</span>
+                                <strong className="concept-bars__label">{concept.label}</strong>
+                                <span className="concept-bars__value">{concept.weak}명 <small>{share}%</small></span>
+                                <span className={`concept-bars__track concept-bars__track--${level}`}><i style={{ width: `${share}%` }} /></span>
+                            </div>
+                        </li>
+                    );
+                })}
             </ol>
         </aside>
     );

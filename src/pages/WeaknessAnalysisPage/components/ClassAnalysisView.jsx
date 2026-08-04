@@ -21,7 +21,7 @@ function ClassAnalysisView({ worksheet, displayedWorksheet, metrics, selection, 
         <div className="weakness-page__analysis-grid">
             {worksheet.type === 'assessment'
                 ? <QuestionMatrix worksheet={displayedWorksheet} view={matrixView} onViewChange={onMatrixView} onSelect={onSelection} selection={selection} />
-                : <ConceptMatrix worksheet={displayedWorksheet} sortBy={sortBy} onSortChange={onSortBy} onSelect={onSelection} selection={selection} />}
+                : <ConceptMatrix worksheet={displayedWorksheet} sortBy={sortBy} onSortChange={onSortBy} onSelect={onSelection} />}
             <DetailSidePanel worksheet={worksheet} selection={selection} onQuadrantSelect={() => onStatusFilter('priority')} />
         </div>
         <PriorityQuestionsTable worksheet={worksheet} onSelect={onSelection} />

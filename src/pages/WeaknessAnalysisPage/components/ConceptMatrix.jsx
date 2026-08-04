@@ -5,7 +5,7 @@ function getConceptResult(worksheet, student, conceptId) {
     const attempts = questionSteps.map(({ no, step }) => student.responses.find((response) => response.no === no)?.steps.find((item) => item.order === step.order)).filter((item) => item?.input);
     return { correct: attempts.filter((item) => item.correct).length, attempts: attempts.length, inputs: attempts.filter((item) => !item.correct).map((item) => item.input) };
 }
-function ConceptMatrix({ worksheet, sortBy, onSortChange, onSelect, selection }) {
+function ConceptMatrix({ worksheet, sortBy, onSortChange, onSelect }) {
     const hasManyConcepts = worksheet.concepts.length > 6;
 
     return <section className="diagnosis-card matrix-card">
@@ -31,8 +31,7 @@ function ConceptMatrix({ worksheet, sortBy, onSortChange, onSelect, selection })
                         {worksheet.concepts.map((concept) => {
                             const result = getConceptResult(worksheet, student, concept.id);
                             const rate = result.attempts ? result.correct / result.attempts : null;
-                            const selected = selection?.type === 'cell' && selection.studentId === student.id && selection.conceptId === concept.id;
-                            return <td key={concept.id}><button type="button" className={`matrix-cell matrix-cell--${rate === null ? 'empty' : rate < .5 ? 'weak' : rate < 1 ? 'partial' : 'full'}${selected ? ' matrix-cell--selected' : ''}`} onClick={() => onSelect({ type: 'cell', studentId: student.id, conceptId: concept.id, result })}><strong>{rate === null ? '—' : `${result.correct}/${result.attempts}`}</strong></button></td>;
+                            return <td key={concept.id}><span className={`matrix-cell matrix-cell--${rate === null ? 'empty' : rate < .5 ? 'weak' : rate < 1 ? 'partial' : 'full'}`}><strong>{rate === null ? '—' : `${result.correct}/${result.attempts}`}</strong></span></td>;
                         })}
                     </tr>)}
                 </tbody>

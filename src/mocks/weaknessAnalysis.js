@@ -10,12 +10,9 @@ export const weaknessFilterOptions = {
 };
 
 const concepts = [
-    { id: 'prime-number', label: '소수와 합성수' },
-    { id: 'divisor-factor', label: '약수와 인수' },
     { id: 'prime-factor', label: '소인수' },
     { id: 'prime', label: '소인수분해' },
     { id: 'power', label: '거듭제곱' },
-    { id: 'common-divisor', label: '공약수' },
     { id: 'common', label: '공통소인수' },
     { id: 'gcd', label: '최대공약수' },
     { id: 'exponent', label: '지수 비교' },
