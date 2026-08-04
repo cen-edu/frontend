@@ -1,11 +1,14 @@
 .sidebar {
+  --sidebar-inline-padding: 16px;
+  --sidebar-menu-inline-padding: 16px;
+
   position: sticky;
   top: 72px;
   width: 220px;
   height: calc(100vh - 72px);
   flex: 0 0 220px;
   align-self: flex-start;
-  padding: 24px 16px;
+  padding: 24px var(--sidebar-inline-padding);
   overflow-y: auto;
   background-color: #ffffff;
   border-right: 1px solid #e8edf3;
@@ -19,42 +22,60 @@
   &__menu {
     width: 100%;
     min-height: 52px;
-    padding: 0 16px;
+    padding: 0 var(--sidebar-menu-inline-padding);
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    border: 2px solid transparent;
     border-radius: 9px;
     color: #4d596a;
+    font-family: '학교안심 분필', cursive;
     font-size: 15px;
     font-weight: 600;
-    transition: background-color 160ms ease, color 160ms ease;
-
-    &:hover {
-      background-color: #f2f7fd;
-      color: #1478f2;
-    }
-
     &:focus-visible {
       outline: 2px solid #1478f2;
       outline-offset: 2px;
     }
 
     &--active {
-      background-color: #e5f3ff;
-      color: #1478f2;
-      font-weight: 700;
+      width: auto;
+      margin-inline: calc(0px - var(--sidebar-inline-padding));
+      padding-inline: calc(var(--sidebar-menu-inline-padding) + var(--sidebar-inline-padding));
+      background-color: #24483e;
+      border-color: #76583b;
+      border-radius: 0;
+      color: #ffffff;
+      font-size: 17px;
+      font-weight: 400;
+      letter-spacing: 0.025em;
+
+      &:hover {
+        background-color: #315b4f;
+        border-color: #8b6a49;
+        color: #ffffff;
+      }
+
+      &:focus-visible {
+        outline-color: #76583b;
+      }
     }
   }
+
 }
 
 @media (max-width: 720px) {
   .sidebar {
+    --sidebar-inline-padding: 12px;
+    --sidebar-menu-inline-padding: 14px;
+
     width: 176px;
     flex-basis: 176px;
-    padding: 16px 12px;
+    padding: 16px var(--sidebar-inline-padding);
 
     &__menu {
       min-height: 48px;
-      padding: 0 14px;
+      padding: 0 var(--sidebar-menu-inline-padding);
       font-size: 14px;
     }
   }

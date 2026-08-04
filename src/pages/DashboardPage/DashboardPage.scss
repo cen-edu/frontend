@@ -10,11 +10,16 @@
   }
 
   &__heading {
+    min-height: 92px;
     margin-bottom: 20px;
+    padding: 22px 24px 18px;
     display: flex;
     align-items: flex-end;
     justify-content: space-between;
     gap: 24px;
+    background: #fff;
+    border: 1px solid #dde2e8;
+    border-radius: 10px;
 
     h1 {
       color: #172033;
@@ -36,6 +41,7 @@
     padding-bottom: 2px;
     color: #747f91;
     font-size: 12px;
+    white-space: nowrap;
   }
 
   &__filters.analysis-filters {
@@ -291,7 +297,7 @@
 @media (max-width: 700px) {
   .dashboard-page {
     &__main { width: calc(100% - 32px); padding-top: 26px; }
-    &__heading { align-items: flex-start; flex-direction: column; gap: 8px; }
+    &__heading { padding: 19px 16px 16px; align-items: flex-start; flex-direction: column; gap: 8px; }
     &__description { padding: 0; }
 
     &__filters.analysis-filters {
