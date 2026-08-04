@@ -1,11 +1,13 @@
 import { Card, Col, ConfigProvider, Row, Statistic } from 'antd';
 
-function DiagnosisSummaryCards({ metrics }) {
+function DiagnosisSummaryCards({ worksheet, metrics }) {
     const items = [
         ['참여 학생', metrics.responseCount, '명'],
         ['학급 정답률', metrics.average, '%'],
-        ['힌트 사용', metrics.hintCount, '회'],
-        ['집중 지도', metrics.priorityCount, '명'],
+        worksheet.type === 'assessment'
+            ? ['평균 소요 시간', Math.round(metrics.averageSeconds / 60), '분']
+            : ['힌트 사용', metrics.hintCount, '회'],
+        ['취약 학생', metrics.priorityCount, '명'],
     ];
 
     return (
