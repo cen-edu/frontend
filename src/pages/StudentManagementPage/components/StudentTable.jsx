@@ -1,6 +1,6 @@
 import CustomCheckbox from '../../../components/common/CustomCheckbox/CustomCheckbox';
 
-function StudentTable({ students, selectedIds, getClassLabel, onToggleAll, onToggleStudent, onOpenDetail }) {
+function StudentTable({ wrapRef, students, selectedIds, getClassLabel, onToggleAll, onToggleStudent, onOpenDetail }) {
     const visibleIds = students.map((student) => student.id);
     const isAllSelected = visibleIds.length > 0 && visibleIds.every((id) => selectedIds.includes(id));
 
@@ -16,7 +16,7 @@ function StudentTable({ students, selectedIds, getClassLabel, onToggleAll, onTog
     };
 
     return (
-        <div className="student-list__table-wrap">
+        <div className="student-list__table-wrap" ref={wrapRef}>
             <table className="student-list__table">
                 <thead>
                     <tr>

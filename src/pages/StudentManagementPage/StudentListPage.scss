@@ -1,13 +1,17 @@
 .student-list {
   position: relative;
-  min-height: calc(100vh - 112px);
+  // 페이지 전체가 아니라 표 영역만 스크롤되도록 뷰포트 높이에 고정한다.
+  height: calc(100vh - 112px);
   padding-bottom: 76px;
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
   background: #fff;
   border: 1px solid #dde2e8;
   border-radius: 10px;
 
   &__header {
+    flex: none;
     min-height: 92px;
     padding: 22px 24px 18px;
     display: flex;
@@ -30,6 +34,7 @@
   }
 
   &__toolbar {
+    flex: none;
     min-height: 72px;
     padding: 15px 24px;
     display: flex;
@@ -102,7 +107,8 @@
   &__outline-button:focus-visible,
   &__primary-button:focus-visible { outline: 2px solid rgba(23, 111, 193, .35); outline-offset: 2px; }
 
-  &__table-wrap { overflow-x: auto; }
+  // 세로로 넘치는 행은 페이지네이션이 나눠 담으므로 가로 스크롤만 허용한다.
+  &__table-wrap { min-height: 0; flex: 1; overflow-x: auto; overflow-y: hidden; }
 
   &__table {
     width: 100%;
@@ -188,17 +194,17 @@
 
   &__selection-bar {
     position: absolute;
-    right: 16px;
-    bottom: 16px;
-    left: 16px;
+    right: 0;
+    bottom: 0;
+    left: 0;
     min-height: 56px;
-    padding: 0 18px;
+    padding: 0 24px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     background: #263247;
-    border-radius: 8px;
-    box-shadow: 0 8px 24px rgba(23, 32, 51, .18);
+    border-radius: 0;
+    box-shadow: 0 -6px 18px rgba(23, 32, 51, .14);
     color: #fff;
     z-index: 2;
     strong { font-size: 13px; }
@@ -256,7 +262,7 @@
     &__filters, &__actions { width: 100%; flex-wrap: wrap; }
     &__search { width: 100%; flex-basis: 100%; }
     &__outline-button, &__primary-button { flex: 1; }
-    &__selection-bar { padding: 0 12px; }
+    &__selection-bar { padding: 0 16px; }
     &__selection-actions button span { display: none; }
   }
 }
