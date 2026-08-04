@@ -24,7 +24,6 @@ function ProblemCreationPage() {
     const [unitConfigs, setUnitConfigs] = useState([]);
     const [result, setResult] = useState(null);
     const [selectedProblemId, setSelectedProblemId] = useState('');
-    const [showAnswers, setShowAnswers] = useState(true);
     const [saved, setSaved] = useState(false);
     const [revisionRequests, setRevisionRequests] = useState({});
 
@@ -131,7 +130,6 @@ function ProblemCreationPage() {
                         <div><h2 id="problem-result-title">생성 결과</h2><p>총 {result.problems.length}문항의 문제와 단계별 풀이를 검토하고 문항별 수정 요청을 작성합니다.</p></div>
                         <div className="problem-creation-page__result-actions">
                             <button type="button" className="problem-creation-button problem-creation-button--secondary" onClick={closeResult}>출제 구성 수정</button>
-                            <button type="button" className="problem-creation-page__answer-toggle" aria-pressed={showAnswers} onClick={() => setShowAnswers((current) => !current)}><i className={`bi bi-eye${showAnswers ? '' : '-slash'}`} aria-hidden="true" /> 정답 {showAnswers ? '숨기기' : '표시'}</button>
                             <button type="button" className="problem-creation-button problem-creation-button--secondary" onClick={() => setSaved(true)} disabled={saved}>{saved ? '저장 완료' : '문제 보관함에 저장'}</button>
                         </div>
                     </header>
@@ -139,7 +137,7 @@ function ProblemCreationPage() {
                     <div className="problem-creation-page__preview-grid">
                         <ProblemPreviewList problems={result.problems} selectedId={selectedProblemId} onSelect={setSelectedProblemId} />
                         <div className="problem-creation-page__problem-column">
-                            <ProblemStepView problem={selectedProblem} showAnswers={showAnswers} />
+                            <ProblemStepView problem={selectedProblem} />
                             <ProblemRevisePanel key={selectedProblemId} problem={selectedProblem} requests={revisionRequests[selectedProblemId] ?? []} onAddRequest={addRevisionRequest} onRemoveRequest={removeRevisionRequest} />
                         </div>
                         <ConceptPanel problem={selectedProblem} />

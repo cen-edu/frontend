@@ -27,7 +27,6 @@ function ComprehensiveAssessmentPage() {
     const [unitItems, setUnitItems] = useState([]);
     const [result, setResult] = useState(null);
     const [selectedProblemId, setSelectedProblemId] = useState('');
-    const [showAnswers, setShowAnswers] = useState(true);
     const [saved, setSaved] = useState(false);
     const [orderModalOpen, setOrderModalOpen] = useState(false);
     const [revisionRequests, setRevisionRequests] = useState({});
@@ -165,7 +164,6 @@ function ComprehensiveAssessmentPage() {
                         <div className="comprehensive-assessment-page__result-actions">
                             <button type="button" className="assessment-button assessment-button--secondary" onClick={invalidateResult}>출제 구성 수정</button>
                             <button type="button" className="assessment-button assessment-button--secondary" onClick={() => setOrderModalOpen(true)}><i className="bi bi-arrow-down-up" aria-hidden="true" /> 문항 순서 변경</button>
-                            <button type="button" className="comprehensive-assessment-page__answer-toggle" aria-pressed={showAnswers} onClick={() => setShowAnswers((current) => !current)}><i className={`bi bi-eye${showAnswers ? '' : '-slash'}`} aria-hidden="true" /> 정답 {showAnswers ? '숨기기' : '표시'}</button>
                             <button type="button" className="assessment-button assessment-button--secondary" onClick={() => setSaved(true)} disabled={saved}>{saved ? '저장 완료' : '문제 보관함에 저장'}</button>
                         </div>
                     </header>
@@ -173,7 +171,7 @@ function ComprehensiveAssessmentPage() {
                     <div className="comprehensive-assessment-page__preview-grid">
                         <AssessmentPreviewList problems={result.problems} selectedId={selectedProblemId} onSelect={setSelectedProblemId} />
                         <div className="comprehensive-assessment-page__question-column">
-                            <AssessmentQuestionView problem={selectedProblem} showAnswers={showAnswers} onScoreChange={changeScore} />
+                            <AssessmentQuestionView problem={selectedProblem} onScoreChange={changeScore} />
                             <ProblemRevisePanel key={selectedProblemId} problem={selectedProblem} requests={revisionRequests[selectedProblemId] ?? []} onAddRequest={addRevisionRequest} onRemoveRequest={removeRevisionRequest} />
                         </div>
                     </div>
