@@ -8,9 +8,8 @@
 | --- | --- | --- |
 | `/students` | `StudentListPage` | 학생 목록 조회, 필터링, 선택, 등록, 수정 |
 | `/students/classes` | `ClassManagementPage` | 반 목록 조회, 검색, 선택, 순서 변경, 생성, 수정 |
-| `/students/reports` | `FeatureIntro` | 대시보드에서 학생별 결과를 선택해 진입하는 초기 안내 화면 |
 
-`/students`, `/students/classes`, `/students/reports`는 `StudentManagementLayout`을 공통 부모로 사용한다. `StudentManagementLayout`은 공용 `SectionLayout`에 학생 관리 메뉴 설정을 전달하며, 자식 화면은 `SectionLayout`의 `Outlet` 위치에 렌더링된다. `/students/reports`는 학생 관리 사이드바 메뉴에는 노출하지 않고 대시보드의 학생별 결과에서 진입한다. 반 생성과 상세 수정은 별도 경로로 이동하지 않고 `/students/classes` 목록 위에 모달로 표시한다.
+`/students`, `/students/classes`는 `StudentManagementLayout`을 공통 부모로 사용한다. `StudentManagementLayout`은 공용 `SectionLayout`에 학생 관리 메뉴 설정을 전달하며, 자식 화면은 `SectionLayout`의 `Outlet` 위치에 렌더링된다. 반 생성과 상세 수정은 별도 경로로 이동하지 않고 `/students/classes` 목록 위에 모달로 표시한다.
 
 ## 디렉터리 구조
 
@@ -219,7 +218,6 @@ StudentManagementPage/
 - `src/components/Header/Header.jsx`: 서비스 공통 헤더
 - `src/components/SectionLayout/SectionLayout.jsx`: 헤더, 공용 사이드바와 중첩 화면을 배치하는 섹션 공통 레이아웃
 - `src/components/Sidebar/Sidebar.jsx`: 섹션별 메뉴 배열을 렌더링하는 공용 사이드바
-- `src/components/FeatureIntro/FeatureIntro.jsx`: 아직 구현되지 않은 하위 메뉴의 초기 안내 화면
 - `src/config/sidebarMenus.js`: 문제 만들기, 학습 관리, 학생 관리의 사이드바 메뉴 설정
 - `src/components/common/CustomSelect/CustomSelect.jsx`: 공통 드롭다운
 - `src/components/common/CustomCheckbox/CustomCheckbox.jsx`: 목록 선택용 공통 체크박스

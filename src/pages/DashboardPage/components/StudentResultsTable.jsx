@@ -29,8 +29,6 @@ function StudentResultsTable({ students }) {
         }));
     };
 
-    const openReport = (studentId) => navigate(`/students/reports?student=${studentId}`);
-
     return (
         <section className="dashboard-section dashboard-section--results" aria-labelledby="student-results-title">
             <div className="dashboard-section__header dashboard-section__header--inline">
@@ -61,12 +59,7 @@ function StudentResultsTable({ students }) {
                     </thead>
                     <tbody>
                         {sortedStudents.map((student) => (
-                            <tr key={student.id} tabIndex={0} role="link" aria-label={`${student.name} 학생 개인 리포트 보기`} onClick={() => openReport(student.id)} onKeyDown={(event) => {
-                                if (event.key === 'Enter' || event.key === ' ') {
-                                    event.preventDefault();
-                                    openReport(student.id);
-                                }
-                            }}>
+                            <tr key={student.id}>
                                 <td><span className="student-results__avatar">{student.name.slice(0, 1)}</span><strong>{student.name}</strong></td>
                                 <td><b>{student.score}</b>점</td>
                                 <td><span className={`student-results__accuracy${student.accuracy < 60 ? ' student-results__accuracy--low' : student.accuracy >= 80 ? ' student-results__accuracy--high' : ''}`}>{student.accuracy}%</span></td>

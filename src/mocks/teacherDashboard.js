@@ -47,7 +47,7 @@ const linearEquation = {
     summaries: [
         { id: 'submissions', label: '제출 현황', value: '18/24명', support: '미제출 학생 6명' },
         { id: 'score', label: '평균 점수', value: '72점', support: '지난 평가보다 3점 상승', trend: 'up' },
-        { id: 'accuracy', label: '평균 정답률', value: '68%', support: '목표 정답률까지 7%' },
+        { id: 'accuracy', label: '평균 정답률', value: '68%', support: '지난 평가보다 4%p 상승', trend: 'up' },
         { id: 'atRisk', label: '취약 학생 수', value: '6명', support: '맞춤 학습이 필요해요' },
     ],
     concepts: [
@@ -72,7 +72,7 @@ const coordinatePlane = {
     summaries: [
         { id: 'submissions', label: '제출 현황', value: '21/24명', support: '미제출 학생 3명' },
         { id: 'score', label: '평균 점수', value: '78점', support: '지난 평가보다 5점 상승', trend: 'up' },
-        { id: 'accuracy', label: '평균 정답률', value: '74%', support: '목표 정답률까지 1%' },
+        { id: 'accuracy', label: '평균 정답률', value: '74%', support: '지난 평가보다 6%p 상승', trend: 'up' },
         { id: 'atRisk', label: '취약 학생 수', value: '4명', support: '지난 평가보다 2명 감소' },
     ],
     concepts: [

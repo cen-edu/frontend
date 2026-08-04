@@ -1,5 +1,4 @@
 import { useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
 import {
     CartesianGrid,
     ReferenceArea,
@@ -26,10 +25,8 @@ const getLevel = (progress, accuracy) => {
     return 'good';
 };
 
-function StudentPoint({ cx, cy, payload, onOpenReport }) {
+function StudentPoint({ cx, cy, payload }) {
     if (typeof cx !== 'number' || typeof cy !== 'number' || !payload) return null;
-
-    const openReport = () => onOpenReport(payload.id);
 
     return (
         <circle
@@ -40,16 +37,8 @@ function StudentPoint({ cx, cy, payload, onOpenReport }) {
             fill={levelColors[payload.level]}
             stroke="#ffffff"
             strokeWidth="2"
-            tabIndex={0}
-            role="link"
-            aria-label={`${payload.name}, 진행률 ${payload.progress}%, 정답률 ${payload.accuracy}%, 개인 리포트 보기`}
-            onClick={openReport}
-            onKeyDown={(event) => {
-                if (event.key === 'Enter' || event.key === ' ') {
-                    event.preventDefault();
-                    openReport();
-                }
-            }}
+            role="img"
+            aria-label={`${payload.name}, 진행률 ${payload.progress}%, 정답률 ${payload.accuracy}%`}
         />
     );
 }
@@ -68,7 +57,6 @@ function StudentTooltip({ active, payload }) {
 }
 
 function AchievementDistribution({ students }) {
-    const navigate = useNavigate();
     const chartData = useMemo(() => students.map((student) => ({
         ...student,
         level: getLevel(student.progress, student.accuracy),
@@ -79,7 +67,7 @@ function AchievementDistribution({ students }) {
             <div className="dashboard-section__header">
                 <div>
                     <h2 id="achievement-title">학생 성취 분포</h2>
-                    <p>가로축은 단원 진행률, 세로축은 정답률입니다. 점을 선택하면 개인 리포트로 이동합니다.</p>
+                    <p>가로축은 단원 진행률, 세로축은 정답률입니다.</p>
                 </div>
             </div>
 
@@ -120,7 +108,7 @@ function AchievementDistribution({ students }) {
                         <Scatter
                             data={chartData}
                             isAnimationActive={false}
-                            shape={(props) => <StudentPoint {...props} onOpenReport={(studentId) => navigate(`/students/reports?student=${studentId}`)} />}
+                            shape={(props) => <StudentPoint {...props} />}
                         />
                     </ScatterChart>
                 </ResponsiveContainer>

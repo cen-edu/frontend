@@ -6,7 +6,6 @@ import ClassManagementPage from './pages/StudentManagementPage/ClassManagementPa
 import StudentListPage from './pages/StudentManagementPage/StudentListPage';
 import StudentManagementLayout from './pages/StudentManagementPage/StudentManagementLayout';
 import SectionLayout from './components/SectionLayout/SectionLayout';
-import FeatureIntro from './components/FeatureIntro/FeatureIntro';
 import LearningStatusPage from './pages/LearningStatusPage/LearningStatusPage';
 import WeaknessAnalysisPage from './pages/WeaknessAnalysisPage/WeaknessAnalysisPage';
 import AssessmentResultPage from './pages/AssessmentResultPage/AssessmentResultPage';
@@ -39,7 +38,6 @@ function App() {
         <Route path="/students" element={<StudentManagementLayout />}>
           <Route index element={<StudentListPage />} />
           <Route path="classes" element={<ClassManagementPage />} />
-          <Route path="reports" element={<FeatureIntro title="학생별 학습 리포트" description="학생별 학습 이력, 평가 결과와 취약 개념을 조회합니다." />} />
         </Route>
       </Routes>
   )
