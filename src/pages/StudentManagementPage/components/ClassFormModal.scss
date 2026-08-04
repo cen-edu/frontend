@@ -32,6 +32,13 @@
     &:focus { border-color: #176fc1; box-shadow: 0 0 0 2px rgba(23, 111, 193, .1); }
   }
 
+  &__readonly {
+    background: #f5f6f8;
+    color: #667185 !important;
+    cursor: not-allowed;
+    &:focus { border-color: #d7dde4; box-shadow: none; }
+  }
+
   &__students { padding: 22px 24px 24px; }
   &__students h3 { margin-bottom: 12px; color: #263247; font-size: 15px; font-weight: 700; }
   &__pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }

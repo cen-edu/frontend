@@ -1,4 +1,5 @@
 import CustomSelect from '../../../components/common/CustomSelect/CustomSelect';
+import { UNASSIGNED_CLASS } from './classFormConfig';
 
 const sortOptions = [
     { value: 'newest', label: '최신 등록순' },
@@ -20,6 +21,9 @@ function StudentToolbar({
     students,
     gradeFilter,
     onGradeFilterChange,
+    classFilter,
+    onClassFilterChange,
+    classes,
     searchTerm,
     onSearchTermChange,
     onOpenBulkRegistration,
@@ -30,6 +34,12 @@ function StudentToolbar({
         ...[...new Set(students.map(({ registrationYear }) => registrationYear))]
             .sort((first, second) => Number(second) - Number(first))
             .map((year) => ({ value: year, label: `${year}년` })),
+    ];
+
+    const classOptions = [
+        { value: 'all', label: '전체 반' },
+        ...classes.map(({ id, name }) => ({ value: String(id), label: name })),
+        { value: UNASSIGNED_CLASS, label: '미배정' },
     ];
 
     return (
@@ -49,6 +59,13 @@ function StudentToolbar({
                     onChange={onGradeFilterChange}
                     width={112}
                     options={gradeOptions}
+                />
+                <CustomSelect
+                    label="반 필터"
+                    value={classFilter}
+                    onChange={onClassFilterChange}
+                    width={132}
+                    options={classOptions}
                 />
             </div>
 

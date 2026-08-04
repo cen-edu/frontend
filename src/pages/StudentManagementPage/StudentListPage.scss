@@ -106,7 +106,7 @@
 
   &__table {
     width: 100%;
-    min-width: 930px;
+    min-width: 990px;
     border-collapse: collapse;
     table-layout: fixed;
 
@@ -115,26 +115,25 @@
       height: 54px;
       padding: 8px 13px;
       border-bottom: 1px solid #ebeef2;
+      text-align: center;
       vertical-align: middle;
       white-space: nowrap;
     }
 
-    th { height: 42px; background: #f5f6f8; color: #667185; font-size: 12px; font-weight: 600; text-align: left; }
-    td { color: #465166; font-size: 13px; text-align: left; }
-    th:nth-child(1) { width: 52px; }
-    th:nth-child(2) { width: 76px; }
-    th:nth-child(3) { width: 90px; }
-    th:nth-child(4) { width: 116px; }
-    th:nth-child(5) { width: 150px; }
-    th:nth-child(6) { width: 130px; }
-    th:nth-child(7) { width: 142px; }
-    th:nth-child(8) { width: 96px; }
-    th:nth-child(1), td:nth-child(1),
-    th:nth-child(2), td:nth-child(2),
-    th:nth-child(3), td:nth-child(3),
-    th:nth-child(7), td:nth-child(7),
-    th:nth-child(8), td:nth-child(8) { text-align: center; }
-    td:nth-child(4) { color: #263247; font-weight: 600; }
+    th { height: 42px; background: #f5f6f8; color: #667185; font-size: 12px; font-weight: 600; }
+    td { color: #465166; font-size: 13px; }
+    // 고정 px로 두면 남는 폭이 비율대로 분배돼 짧은 열이 과하게 넓어진다.
+    // 내용 길이에 맞춘 비율로 지정해 어떤 화면 폭에서도 간격이 일정하게 유지된다.
+    th:nth-child(1) { width: 5%; }
+    th:nth-child(2) { width: 11%; }
+    th:nth-child(3) { width: 8%; }
+    th:nth-child(4) { width: 9%; }
+    th:nth-child(5) { width: 13%; }
+    th:nth-child(6) { width: 11%; }
+    th:nth-child(7) { width: 15%; }
+    th:nth-child(8) { width: 16%; }
+    th:nth-child(9) { width: 12%; }
+    td:nth-child(5) { color: #263247; font-weight: 600; }
   }
 
   &__row {
@@ -145,6 +144,8 @@
   }
 
   &__check-cell .custom-checkbox { margin: 0 auto; }
+
+  &__unassigned { color: #949eaa; }
 
   &__table-button {
     min-height: 34px;

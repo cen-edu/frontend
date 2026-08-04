@@ -1,9 +1,7 @@
 export const CURRENT_ACADEMIC_YEAR = String(new Date().getFullYear());
 
-export const ACADEMIC_YEAR_OPTIONS = Array.from({ length: 5 }, (_, index) => {
-    const year = String(Number(CURRENT_ACADEMIC_YEAR) + 1 - index);
-    return { value: year, label: `${year}학년도` };
-});
+// 어느 반에도 속하지 않은 학생을 가리키는 필터 값이다.
+export const UNASSIGNED_CLASS = 'unassigned';
 
 export function formatClassLabel(classItem) {
     return `${classItem.year}학년도 ${classItem.grade}학년 ${classItem.name}`;

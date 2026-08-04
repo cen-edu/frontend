@@ -46,21 +46,11 @@
     }
   }
 
-  &__section-title {
-    margin: 22px 24px 0;
-    padding-bottom: 9px;
-    border-bottom: 1px solid #dde2e8;
-    color: #263247;
-    font-size: 13px;
-    font-weight: 700;
-  }
-
   &__fields {
     padding: 16px 24px 24px;
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 16px 28px;
-    &--required { padding-bottom: 4px; }
     // 위아래 구분선과의 간격을 16px로 동일하게 맞춘다.
     &--stacked { grid-template-columns: 1fr; padding-bottom: 16px; }
   }
@@ -74,11 +64,12 @@
     font-size: 12px;
     font-weight: 600;
 
-    > span { line-height: 1.4; em { color: #b94343; font-style: normal; font-weight: 400; } }
+    > span { line-height: 1.4; }
 
-    input,
-    textarea {
+    input {
       width: 100%;
+      height: 40px;
+      padding: 0 11px;
       background: #fff;
       border: 1px solid #d7dde4;
       border-radius: 6px;
@@ -89,20 +80,10 @@
       &::placeholder { color: #949eaa; }
       &:focus { border-color: #176fc1; box-shadow: 0 0 0 2px rgba(23, 111, 193, .1); }
     }
-
-    input { height: 40px; padding: 0 11px; }
-    textarea { min-height: 72px; padding: 10px 11px; resize: vertical; }
-    &--wide { grid-column: 1 / -1; }
   }
 
   &__readonly { background: #f5f6f8 !important; color: #667185 !important; cursor: not-allowed; }
   &__grade-controls { display: flex; align-items: center; }
-
-  &__icon-input {
-    position: relative;
-    i { position: absolute; top: 50%; left: 11px; color: #747f91; font-size: 12px; transform: translateY(-50%); }
-    input { padding-left: 34px; }
-  }
 
   &__footer {
     min-height: 80px;
@@ -141,13 +122,11 @@
   .student-form-modal {
     &__overlay { align-items: flex-start; padding: 16px; }
     &__fields { grid-template-columns: 1fr; }
-    &__field--wide { grid-column: auto; }
   }
 }
 
 @media (max-width: 480px) {
   .student-form-modal {
-    &__section-title { margin-inline: 16px; }
     &__fields { padding-inline: 16px; }
     &__field { grid-template-columns: 1fr; gap: 7px; }
     &__footer--split { align-items: stretch; flex-direction: column; }

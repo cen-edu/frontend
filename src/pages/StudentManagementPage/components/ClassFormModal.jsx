@@ -4,7 +4,7 @@ import students from '../../../mocks/students';
 import teachers from '../../../mocks/teachers';
 import StudentFormModal from './StudentFormModal';
 import { GRADE_OPTIONS } from './studentFormConfig';
-import { ACADEMIC_YEAR_OPTIONS, CURRENT_ACADEMIC_YEAR } from './classFormConfig';
+import { CURRENT_ACADEMIC_YEAR } from './classFormConfig';
 import './ClassFormModal.scss';
 
 function SearchField({ value, onChange }) {
@@ -28,7 +28,7 @@ function SearchField({ value, onChange }) {
 }
 
 function ClassFormModal({ initialClass = null, onClose, onSave }) {
-    const [year, setYear] = useState(initialClass?.year ?? CURRENT_ACADEMIC_YEAR);
+    const year = initialClass?.year ?? CURRENT_ACADEMIC_YEAR;
     const [grade, setGrade] = useState(initialClass?.grade ?? '1');
     const [className, setClassName] = useState(initialClass?.name ?? '');
     const [studentSearch, setStudentSearch] = useState('');
@@ -76,16 +76,15 @@ function ClassFormModal({ initialClass = null, onClose, onSave }) {
         >
             <form className="class-form-modal" onSubmit={handleSubmit}>
                 <div className="class-form-modal__fields">
-                    <div className="class-form-modal__select-field">
+                    <label className="class-form-modal__name-field">
                         <span>학년도</span>
-                        <CustomSelect
-                            label="반 학년도 선택"
-                            value={year}
-                            options={ACADEMIC_YEAR_OPTIONS}
-                            onChange={setYear}
-                            width="100%"
+                        <input
+                            className="class-form-modal__readonly"
+                            value={`${year}학년도`}
+                            readOnly
+                            aria-readonly="true"
                         />
-                    </div>
+                    </label>
                     <div className="class-form-modal__select-field">
                         <span>학년</span>
                         <CustomSelect

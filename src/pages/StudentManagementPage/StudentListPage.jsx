@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import classes from '../../mocks/classes';
 import initialStudents from '../../mocks/students';
 import StudentBulkRegistrationModal from './components/StudentBulkRegistrationModal';
 import StudentDetailModal from './components/StudentDetailModal';
@@ -6,6 +7,7 @@ import StudentRegistrationModal from './components/StudentRegistrationModal';
 import StudentSelectionBar from './components/StudentSelectionBar';
 import StudentTable from './components/StudentTable';
 import StudentToolbar from './components/StudentToolbar';
+import { UNASSIGNED_CLASS } from './components/classFormConfig';
 import './StudentListPage.scss';
 
 function StudentListPage() {
@@ -13,24 +15,36 @@ function StudentListPage() {
     const [selectedIds, setSelectedIds] = useState([]);
     const [yearFilter, setYearFilter] = useState('all');
     const [gradeFilter, setGradeFilter] = useState('all');
+    const [classFilter, setClassFilter] = useState('all');
     const [sortOrder, setSortOrder] = useState('newest');
     const [searchTerm, setSearchTerm] = useState('');
     const [isBulkRegistrationOpen, setIsBulkRegistrationOpen] = useState(false);
     const [isRegistrationOpen, setIsRegistrationOpen] = useState(false);
     const [detailStudent, setDetailStudent] = useState(null);
 
+    // 학생의 반은 반 목록의 studentIds에서 거꾸로 찾는다. 어느 반에도 없으면 미배정이다.
+    const classByStudentId = useMemo(() => new Map(
+        classes.flatMap((classItem) => classItem.studentIds.map((id) => [id, classItem])),
+    ), []);
+
+    const getClassLabel = (student) => classByStudentId.get(student.id)?.name ?? null;
+
     const filteredStudents = useMemo(() => {
         const keyword = searchTerm.trim().toLowerCase();
         const matches = students.filter((student) => {
+            const studentClass = classByStudentId.get(student.id);
             return (yearFilter === 'all' || student.registrationYear === yearFilter)
                 && (gradeFilter === 'all' || student.grade === gradeFilter)
+                && (classFilter === 'all' || (classFilter === UNASSIGNED_CLASS
+                    ? !studentClass
+                    : String(studentClass?.id) === classFilter))
                 && (!keyword || student.name.toLowerCase().includes(keyword));
         });
 
         return sortOrder === 'name'
             ? [...matches].sort((first, second) => first.name.localeCompare(second.name, 'ko'))
             : matches;
-    }, [gradeFilter, searchTerm, sortOrder, students, yearFilter]);
+    }, [classByStudentId, classFilter, gradeFilter, searchTerm, sortOrder, students, yearFilter]);
 
     const visibleIds = filteredStudents.map((student) => student.id);
     const isAllSelected = visibleIds.length > 0 && visibleIds.every((id) => selectedIds.includes(id));
@@ -60,7 +74,6 @@ function StudentListPage() {
                 registrationYear: student.registrationYear,
                 grade: student.grade,
                 name: student.name,
-                phone: '-',
                 studentId: `S${String(Date.now()).slice(-8)}`,
                 attendanceNumber: student.attendanceNumber,
             }, ...current];
@@ -79,7 +92,7 @@ function StudentListPage() {
             <header className="student-list__header">
                 <div>
                     <h1 id="student-list-title">학생 목록</h1>
-                    <p>등록 연도와 학년별로 학생의 기본 정보를 관리합니다.</p>
+                    <p>등록 연도, 학년과 반별로 학생의 기본 정보를 관리합니다.</p>
                 </div>
                 <span className="student-list__count">검색 결과 <strong>{filteredStudents.length}</strong>명</span>
             </header>
@@ -92,6 +105,9 @@ function StudentListPage() {
                 students={students}
                 gradeFilter={gradeFilter}
                 onGradeFilterChange={setGradeFilter}
+                classFilter={classFilter}
+                onClassFilterChange={setClassFilter}
+                classes={classes}
                 searchTerm={searchTerm}
                 onSearchTermChange={setSearchTerm}
                 onOpenBulkRegistration={() => setIsBulkRegistrationOpen(true)}
@@ -101,6 +117,7 @@ function StudentListPage() {
             <StudentTable
                 students={filteredStudents}
                 selectedIds={selectedIds}
+                getClassLabel={getClassLabel}
                 onToggleAll={toggleAll}
                 onToggleStudent={toggleStudent}
                 onOpenDetail={setDetailStudent}
