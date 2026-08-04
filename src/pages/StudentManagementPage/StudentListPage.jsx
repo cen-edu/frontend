@@ -60,15 +60,9 @@ function StudentListPage() {
                 registrationYear: student.registrationYear,
                 grade: student.grade,
                 name: student.name,
-                phone: student.studentPhone || '-',
+                phone: '-',
                 studentId: `S${String(Date.now()).slice(-8)}`,
                 attendanceNumber: student.attendanceNumber,
-                parentPhone: student.parentPhone,
-                birthDate: student.birthDate,
-                email: student.email,
-                address: student.address,
-                homePhone: student.homePhone,
-                note: student.note,
             }, ...current];
         });
         setIsRegistrationOpen(false);

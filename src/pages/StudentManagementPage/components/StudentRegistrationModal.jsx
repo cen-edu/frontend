@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import StudentFormModal from './StudentFormModal';
 import StudentGradeSelector from './StudentGradeSelector';
-import StudentOptionalFields from './StudentOptionalFields';
 import { EMPTY_STUDENT_FORM } from './studentFormConfig';
 
 function StudentRegistrationModal({ onClose, onRegister }) {
@@ -15,37 +14,31 @@ function StudentRegistrationModal({ onClose, onRegister }) {
     };
 
     return (
-        <StudentFormModal title="학생 개별 등록" closeLabel="학생 등록 창 닫기" onClose={onClose}>
+        <StudentFormModal title="학생 개별 등록" closeLabel="학생 등록 창 닫기" onClose={onClose} width={440}>
             <form onSubmit={(event) => {
                 event.preventDefault();
                 onRegister({ ...form, grade, registrationYear });
             }}>
-                <div className="student-form-modal__section-title">필수 입력 사항</div>
-                <div className="student-form-modal__fields student-form-modal__fields--required">
+                <div className="student-form-modal__fields student-form-modal__fields--stacked">
                     <label className="student-form-modal__field">
-                        <span>등록 연도 <em>(필수)</em></span>
+                        <span>등록 연도</span>
                         <input className="student-form-modal__readonly" value={registrationYear} readOnly aria-readonly="true" />
                     </label>
 
                     <label className="student-form-modal__field">
-                        <span>학생 이름 <em>(필수)</em></span>
+                        <span>학생 이름</span>
                         <input autoFocus name="name" value={form.name} placeholder="학생 이름 입력" required onChange={updateField} />
                     </label>
 
                     <div className="student-form-modal__field">
-                        <span>학년 <em>(필수)</em></span>
+                        <span>학년</span>
                         <StudentGradeSelector value={grade} onChange={setGrade} />
                     </div>
 
                     <label className="student-form-modal__field">
-                        <span>출결 번호 <em>(필수)</em></span>
+                        <span>출결 번호</span>
                         <input name="attendanceNumber" value={form.attendanceNumber} inputMode="numeric" placeholder="출결 번호 입력" required onChange={updateField} />
                     </label>
-                </div>
-
-                <div className="student-form-modal__section-title">선택 입력 사항</div>
-                <div className="student-form-modal__fields">
-                    <StudentOptionalFields form={form} onChange={updateField} />
                 </div>
 
                 <footer className="student-form-modal__footer">

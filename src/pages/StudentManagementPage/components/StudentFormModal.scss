@@ -61,6 +61,8 @@
     grid-template-columns: 1fr 1fr;
     gap: 16px 28px;
     &--required { padding-bottom: 4px; }
+    // 위아래 구분선과의 간격을 16px로 동일하게 맞춘다.
+    &--stacked { grid-template-columns: 1fr; padding-bottom: 16px; }
   }
 
   &__field {
