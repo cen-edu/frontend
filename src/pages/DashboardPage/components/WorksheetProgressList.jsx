@@ -1,0 +1,61 @@
+import { useNavigate } from 'react-router-dom';
+import { worksheetTypeLabels } from '../../../mocks/teacherDashboard';
+
+function WorksheetProgressList({ worksheets }) {
+    const navigate = useNavigate();
+
+    const moveToAction = (worksheet) => {
+        if (worksheet.type === 'assessment') {
+            navigate(worksheet.resultId && worksheet.gradingCount > 0 ? `/learning/results/${worksheet.resultId}/grading` : '/learning/results');
+            return;
+        }
+        navigate(`/learning/weaknesses?worksheet=${worksheet.analysisId}`);
+    };
+
+    return (
+        <section className="dashboard-section" aria-labelledby="worksheet-progress-title">
+            <div className="dashboard-section__header">
+                <div>
+                    <h2 id="worksheet-progress-title">학습지별 현황</h2>
+                    {worksheets.length > 0 && <p>배정 순서대로 정렬했습니다. 앞의 번호는 학생별 학습 현황의 결과 칸 순서와 같습니다.</p>}
+                </div>
+            </div>
+
+            {worksheets.length === 0
+                ? <p className="dashboard-empty">이번 학기에 배정한 학습지가 없습니다.</p>
+                : <ol className="worksheet-list">
+                    {worksheets.map((worksheet, index) => (
+                        <li key={worksheet.id} className="worksheet-list__item">
+                            <span className="worksheet-list__order">{index + 1}</span>
+
+                            <div className="worksheet-list__content">
+                                <div className="worksheet-list__title">
+                                    <strong>{worksheet.title}</strong>
+                                    <span className={`worksheet-list__type worksheet-list__type--${worksheet.type}`}>{worksheetTypeLabels[worksheet.type]}</span>
+                                    {worksheet.origin === 'custom' && <span className="worksheet-list__type worksheet-list__type--custom">맞춤</span>}
+                                </div>
+                                <span className="worksheet-list__meta">
+                                    {worksheet.assignedAt} ~ {worksheet.dueAt} · {worksheet.status === 'ongoing' ? '진행 중' : '마감'} · 제출 {worksheet.submittedCount}/{worksheet.assignedCount}명
+                                </span>
+                            </div>
+
+                            <div className="worksheet-list__metric">
+                                {worksheet.type === 'assessment'
+                                    ? <><strong>{worksheet.score === null ? '-' : `${worksheet.score}점`}</strong><span>평균 점수</span></>
+                                    : <><strong>{worksheet.accuracy === null ? '-' : `${worksheet.accuracy}%`}</strong><span>평균 정답률</span></>}
+                            </div>
+
+                            <div className="worksheet-list__action">
+                                {worksheet.gradingCount > 0 && <span className="worksheet-list__pending">채점 대기 {worksheet.gradingCount}명</span>}
+                                <button type="button" onClick={() => moveToAction(worksheet)}>
+                                    {worksheet.type === 'assessment' ? (worksheet.gradingCount > 0 ? '채점하기' : '결과 보기') : '분석 보기'}
+                                </button>
+                            </div>
+                        </li>
+                    ))}
+                </ol>}
+        </section>
+    );
+}
+
+export default WorksheetProgressList;

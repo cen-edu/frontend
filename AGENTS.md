@@ -41,7 +41,7 @@
 - 맞춤 학습 결과는 상단 학습지 필터를 늘리지 않고, 원 학습지 개인 분석 화면 안의 `CustomLearningResult` 섹션(전후 비교·단계별 결과·회차 선택)과 학급 분석의 `PrescriptionTable`에서 조회한다. 맞춤 학습지를 취약점 분석의 학습지 선택 항목으로 따로 두지 않고, 학습 현황의 맞춤 학습 배포는 `analysisWorksheetId`로 원 학습지를 가리킨다.
 - 취약점 분석 개인 뷰의 영역별 결과는 막대(`ResultBreakdown`), 난이도별 결과는 Recharts `RadarChart`(`DifficultyRadar`)로 표시하고 같은 행에 나란히 배치한다. 두 표현에 같은 집계 기준을 중복해 넣지 않는다.
 - 학생과 학급을 함께 표시하는 그래프의 범례는 공통 클래스 `analysis-legend`를 사용하고, 학생은 `#4f806b`, 학급은 `#8da2b5`로 통일한다.
-- 교사용 대시보드의 학생 성취 분포 그래프는 Recharts의 `ScatterChart`를 사용하며, X축은 단원 학습 진행률, Y축은 정답률로 표현한다.
+- 교사용 대시보드의 학생 성취 분포 그래프는 Recharts의 `ScatterChart`를 사용하며, X축은 학기 학습 참여율, Y축은 학기 누적 정답률로 표현한다.
 - 학습지 유형 데이터는 `practice`(일반 학습), `assessment`(종합평가)로 통일하고, 맞춤 출제 여부는 `origin: 'custom'`으로 구분한다.
 - 단원 트리(학년>과목>학기>대>중>소)와 소단원 개념 요약은 `src/mocks/curriculum.js`에서 관리한다.
 - 단계형 문제는 `steps[].segments[]` 구조를 사용하고 각 step에는 분석용 `conceptId`를 둔다. segment는 `{type:'text', value}` 또는 `{type:'blank', id, answer}`로 저장하며 문제 생성 미리보기, 학생 풀이, 취약점 분석, 문항 해설이 이 구조를 공유한다.
@@ -52,7 +52,11 @@
 - 평가 문항 유형은 채점 화면과 동일한 `choice|short|essay`를 사용하고, 유형 라벨과 기본 배점은 `src/mocks/assessmentCreation.js`의 `questionFormats`와 `defaultScores`를 사용한다.
 - 종합평가의 총 문항 수에는 검증이나 경고를 두지 않고 교사가 자율적으로 구성할 수 있게 한다.
 - 학년·반 식별자는 학습 관리와 대시보드 간에 공통으로 사용한다. 학년은 `gradeId: 'middle-1'`, 반은 학년과 반을 포함한 `classId: 'middle-1-1'` 형식을 사용하고, 같은 `classId`를 페이지나 mock별로 다른 반에 매핑하지 않는다.
-- 학습 관리의 탐색형 필터는 `학년 → 반 → 학기 → 상태 → 검색`을 사용하고, 학년과 반에는 전체 옵션을 제공한다. 문제 보관함, 학습 현황, 평가 결과에서는 기간 필터를 사용하지 않는다. 대시보드·취약점 분석의 선택형 필터는 `학년도 → 학년 → 반 → 학기 → 학습지`를 사용하며 전체 옵션을 두지 않는다.
+- 학습 관리의 탐색형 필터는 `학년 → 반 → 학기 → 상태 → 검색`을 사용하고, 학년과 반에는 전체 옵션을 제공한다. 문제 보관함, 학습 현황, 평가 결과에서는 기간 필터를 사용하지 않는다. 취약점 분석의 선택형 필터는 `학년도 → 학년 → 반 → 학기 → 학습지`, 교사용 대시보드는 `학년도 → 학년 → 반 → 학기`를 사용하며 전체 옵션을 두지 않는다.
+- 교사용 대시보드는 학습지 하나가 아니라 반 × 학기 단위로 집계한다. 학습지 단위 상세는 학습 현황, 평가 결과, 취약점 분석이 담당하므로 대시보드에 문항 단위 분석이나 학습지 선택 필터를 두지 않는다.
+- 교사용 대시보드의 데이터와 파생 로직은 `src/mocks/teacherDashboard.js`의 `dashboardClassTerms`와 `getStudentProgress` / `getWorksheetSummary` / `getWeakConcepts` / `getDashboardSummaries` 셀렉터에서 관리하고 컴포넌트에서 다시 집계하지 않는다.
+- 대시보드에서 학습지 유형 차등은 `학습지별 현황` 섹션에서만 둔다. `practice`는 평균 정답률과 취약점 분석 이동, `assessment`는 평균 점수·채점 대기와 채점 화면 이동을 제공하고, 학생·개념 축은 유형과 무관하게 정답률로 통일한다.
+- 맞춤 문제 생성으로 이동할 때 `concept`에는 라벨이 아니라 `conceptId`를 넘긴다. `CustomProblemPage`는 `worksheet`, `students`, `concept`만 읽으므로 다른 이름의 파라미터를 추가하지 않고, `worksheet`에는 `weaknessWorksheets`에 실재하는 `practice` 학습지 id를 넘긴다.
 
 ## 라우팅
 
