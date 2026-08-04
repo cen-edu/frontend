@@ -16,7 +16,6 @@ function WeaknessAnalysisPage() {
     const initialWorksheet = weaknessWorksheets[searchParams.get('worksheet')] ? searchParams.get('worksheet') : 'factor-practice';
     const [filters, setFilters] = useState({ year: '2026', grade: 'middle-1', classId: 'middle-1-1', term: 'first', worksheet: initialWorksheet });
     const [selection, setSelection] = useState(null);
-    const [statusFilter, setStatusFilter] = useState('all');
     const [matrixView, setMatrixView] = useState('score');
     const [matrixSort, setMatrixSort] = useState('score-asc');
     const [targetSort, setTargetSort] = useState('status');
@@ -37,7 +36,6 @@ function WeaknessAnalysisPage() {
         setFilters((current) => ({ ...current, [key]: value }));
         if (key === 'worksheet') {
             setSelection(null);
-            setStatusFilter('all');
             setMatrixView('score');
             navigate(`/learning/weaknesses${selectedStudent ? `/students/${selectedStudent.id}` : ''}?worksheet=${value}`);
         }
@@ -66,7 +64,7 @@ function WeaknessAnalysisPage() {
                 <div className="weakness-page__content-header"><div><span>{selectedStudent ? '개인 분석' : '학급 분석'}</span><h2>{selectedStudent ? `${selectedStudent.name} 분석 결과` : `${worksheet.className} 분석 결과`}</h2><p>{worksheet.title} · {worksheet.date} 기준</p></div><button type="button" disabled title="보고서 다운로드는 다음 단계에서 제공됩니다."><i className="bi bi-download" /> {selectedStudent ? '개인 보고서' : '학급 보고서'} 다운로드</button></div>
                 {selectedStudent
                     ? <StudentAnalysisView worksheet={worksheet} student={selectedStudent} index={selectedIndex} onMove={moveStudent} />
-                    : <ClassAnalysisView worksheet={worksheet} displayedWorksheet={displayedWorksheet} metrics={metrics} selection={selection} onSelection={setSelection} matrixView={matrixView} onMatrixView={setMatrixView} sortBy={matrixSort} onSortBy={setMatrixSort} statusFilter={statusFilter} onStatusFilter={setStatusFilter} onSelectStudent={selectStudent} />}
+                    : <ClassAnalysisView worksheet={worksheet} displayedWorksheet={displayedWorksheet} metrics={metrics} selection={selection} onSelection={setSelection} matrixView={matrixView} onMatrixView={setMatrixView} sortBy={matrixSort} onSortBy={setMatrixSort} onSelectStudent={selectStudent} />}
             </main>
         </div>
     </section>;

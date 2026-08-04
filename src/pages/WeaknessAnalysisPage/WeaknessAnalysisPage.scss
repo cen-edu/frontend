@@ -79,6 +79,16 @@
 
 .analysis-legend { margin-top: 13px; display: flex; justify-content: flex-end; gap: 12px; color: #747f91; font-size: 11px; span { display: flex; align-items: center; gap: 5px; } i { width: 12px; height: 5px; background: #4f806b; border-radius: 1px; } span:last-child i { background: #8da2b5; } }
 
+.student-scatter {
+  margin: 16px 0;
+  &__chart { height: 330px; margin: 0 -6px; }
+  &__dot { cursor: pointer; transition: r .12s; &:hover { r: 9; } }
+  &__legend { margin-top: 4px; display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 14px; color: #747f91; font-size: 11px; span { display: flex; align-items: center; gap: 6px; } }
+  &__key { width: 9px; height: 9px; border-radius: 50%; background: #9aa4b1; &--priority { background: #a96762; } &--review { background: #a58a55; } &--stable { background: #4f806b; } &--insufficient { background: #9aa4b1; } }
+  &__note { margin-top: 12px; padding-top: 12px; border-top: 1px solid #ebeef2; color: #747f91; font-size: 11px; }
+  &__tooltip { padding: 10px 12px; display: grid; gap: 7px; background: #fff; border: 1px solid #dde2e8; border-radius: 8px; box-shadow: 0 6px 18px rgba(34,54,76,.12); strong { color: #172033; font-size: 13px; } dl { display: grid; gap: 4px; } dl > div { display: flex; justify-content: space-between; gap: 18px; font-size: 11px; } dt { color: #747f91; } dd { color: #27384b; font-weight: 600; font-variant-numeric: tabular-nums; } }
+}
+
 .difficulty-radar {
   display: flex;
   flex-direction: column;

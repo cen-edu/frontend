@@ -4,7 +4,7 @@
 .grading-notice { margin-bottom: 16px; padding: 12px 15px; display: flex; align-items: center; gap: 10px; background: #fff8e9; border: 1px solid #f0d99e; border-radius: 10px; color: #846328; font-size: 13px; > span { flex: 1; } > a { color: #9a6505; font-weight: 750; &:hover { color: #714a00; } } }
 .matrix-card { overflow: hidden; }
 .matrix-card__description { margin-top: 6px; display: block; color: #7d8998; font-size: 11px; }
-.matrix-table__wrap, .student-diagnosis__wrap, .prescription-table__wrap { overflow-x: auto; }
+.matrix-table__wrap { overflow-x: auto; }
 .matrix-table__wrap:focus-visible { outline: 2px solid rgba(23, 111, 193, .35); outline-offset: 3px; }
 .matrix-table { width: 100%; min-width: 650px; border-collapse: separate; border-spacing: 4px; th { height: 40px; color: #7c8997; font-size: 12px; font-weight: 700; text-align: center; button { padding: 8px; background: transparent; border: 0; color: inherit; font-weight: inherit; cursor: pointer; &:hover { color: #1683ce; } } } th:first-child { width: 92px; text-align: left; } tbody th { padding-left: 8px; color: #34475c; font-size: 13px; } td { height: 50px; }
   &--concepts { min-width: max(650px, calc(104px + (var(--concept-count) * 116px))); table-layout: fixed; th:first-child { width: 104px; min-width: 104px; position: sticky; left: 0; z-index: 2; background: #fff; } thead th:first-child { z-index: 3; } thead th:not(:first-child) { width: 116px; } }
@@ -20,15 +20,12 @@
   &__empty { color: #8a95a2 !important; background: #f6f8fa !important; }
   &__compare { margin: 16px 0; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; div { padding: 12px; background: #f6f8fa; border-radius: 9px; } span, strong { display: block; } span { color: #8b96a3; font-size: 11px; } strong { margin-top: 4px; color: #34475b; font-size: 16px; } }
 }
-.quadrant { margin-top: 24px; &__axis { display: block; color: #8995a1; font-size: 11px; text-align: center; } &__grid { margin: 7px 0; display: grid; grid-template-columns: 1fr 1fr; border: 1px solid #d8e0e7; } &__area { min-height: 82px; padding: 9px; border: 0; color: #4d5e70; font-size: 12px; font-weight: 700; cursor: pointer; &:nth-child(odd) { border-right: 1px solid #d8e0e7; } &:nth-child(-n+2) { border-bottom: 1px solid #d8e0e7; } &:hover { filter: saturate(1.35); } &--struggle { background: #fee7e3; } &--uncertain { background: #fff0cf; } &--giveup { background: #f1f3f5; } &--mastered { background: #dff4eb; } } }
-.student-diagnosis { margin-top: 0; padding: 0; overflow: hidden; &__header { padding: 20px 22px 14px; display: flex; align-items: center; justify-content: space-between; gap: 16px; > div:first-child span { color: #258bd2; font-size: 11px; font-weight: 850; letter-spacing: 1px; } h2 { margin-top: 3px; font-size: 20px; } } table { width: 100%; min-width: 850px; border-collapse: collapse; th, td { height: 50px; padding: 8px 12px; border-top: 1px solid #edf0f3; color: #687587; font-size: 12px; text-align: center; } th { height: 40px; background: #f8fafb; color: #88939f; } td:nth-child(2) { color: #304358; text-align: center; } tbody tr { cursor: pointer; &:hover { background: #f5faff; } &:focus-visible { outline: 2px solid #56abe0; outline-offset: -2px; } } } }
 .diagnosis-tabs { display: flex; padding: 3px; background: #f1f4f7; border-radius: 8px; &__button { min-height: 31px; padding: 0 10px; background: transparent; border: 0; border-radius: 6px; color: #7e8a98; font-size: 11px; font-weight: 700; cursor: pointer; &:hover { color: #1c80c5; } &--active { background: #fff; box-shadow: 0 2px 6px rgba(34,54,76,.09); color: #1a80c6; } } }
 .status-badge { padding: 5px 8px; border-radius: 12px; background: #eef2f5; color: #6d7987; font-size: 11px; font-weight: 750; white-space: nowrap; &--priority, &--unresolved { background: #fde8e5; color: #be534a; } &--review, &--pending { background: #fff1d3; color: #a46c13; } &--stable, &--resolved { background: #e5f5ed; color: #27805e; } }
 .score-rate { color: #279268; &--low { color: #d65b53; } }
 .diagnosis-selection-bar { position: fixed; right: 28px; bottom: 22px; min-width: 460px; padding: 13px 16px; display: flex; align-items: center; justify-content: space-between; gap: 22px; background: #26394d; border-radius: 13px; box-shadow: 0 12px 32px rgba(24,40,58,.25); color: #fff; z-index: 20; strong { font-size: 13px; } > div { display: flex; gap: 8px; } }
 .diagnosis-button { min-height: 36px; padding: 0 13px; border-radius: 8px; font-size: 12px; font-weight: 750; cursor: pointer; &--secondary { background: transparent; border: 1px solid #8090a0; color: #fff; &:hover { background: #344a60; } } &--primary { background: #2c9ee7; border: 1px solid #2c9ee7; color: #fff; &:hover { background: #1588d2; } } }
-.prescription-table { margin-bottom: 18px; table { width: 100%; min-width: 650px; border-collapse: collapse; th, td { height: 44px; padding: 7px 12px; border-top: 1px solid #edf0f3; color: #667487; font-size: 12px; text-align: center; } th { background: #f8fafb; color: #8793a0; } td:first-child { color: #304357; font-weight: 700; } td > a { padding: 6px 10px; display: inline-flex; background: #fff; border: 1px solid #efb2ac; border-radius: 6px; color: #bb5149; font-size: 11px; font-weight: 700; cursor: pointer; &:hover { background: #fff0ee; } &:focus-visible { outline: 2px solid rgba(23,111,193,.35); outline-offset: 2px; } } } }
-@media (max-width: 800px) { .student-diagnosis__header { align-items: flex-start; flex-direction: column; } .diagnosis-tabs { width: 100%; overflow-x: auto; &__button { flex: 1; white-space: nowrap; } } .diagnosis-selection-bar { left: 12px; right: 12px; min-width: 0; } }
+@media (max-width: 800px) { .diagnosis-tabs { width: 100%; overflow-x: auto; &__button { flex: 1; white-space: nowrap; } } .diagnosis-selection-bar { left: 12px; right: 12px; min-width: 0; } }
 
 // DESIGN_SYSTEM.md: 색면과 카드 장식을 줄이고 분석표의 위계를 우선한다.
 .diagnosis-card { padding: 20px; border-color: #dde2e8; border-radius: 10px; box-shadow: none; }
@@ -39,13 +36,11 @@
 .matrix-cell, .question-cell { border-radius: 5px; }
 .question-cell { transition: border-color .14s; &:hover { transform: none; } }
 .detail-panel { &__kicker { color: #596579; font-weight: 600; letter-spacing: 0; } &__format { border-radius: 5px; } &__ranking li { background: #f7f9fb; border-radius: 6px; } }
-.student-diagnosis { &__header > div:first-child span { color: #596579; font-weight: 600; letter-spacing: 0; } h2 { color: #172033; font-size: 18px; } table th { background: #f5f6f8; color: #667185; } table tbody tr:hover { background: #f7f9fb; } }
 .diagnosis-tabs { padding: 3px; background: #f2f5f7; border-radius: 7px; &__button { min-height: 31px; border-radius: 5px; &--active { background: #fff; box-shadow: 0 1px 4px rgba(37,54,73,.12); color: #176fc1; } } }
 .diagnosis-selection-bar { border-radius: 8px; }
 
 .grading-notice { background: #f7f5ef; border-color: #ded7c5; color: #6f6248; > a { color: #65583f; } }
 .matrix-cell { &--full { background: #e9f1ed; color: #356c55; } &--partial { background: #f3efe5; color: #80652f; } &--weak { background: #f4eae9; color: #9a4f49; } &--empty { background: #f1f3f5; color: #747f91; } }
-.quadrant__area { &:hover { filter: brightness(.98); } &--struggle { background: #f4eae9; } &--uncertain { background: #f3efe5; } &--giveup { background: #f1f3f5; } &--mastered { background: #e9f1ed; } }
 .status-badge { padding: 0; display: inline-flex; align-items: center; gap: 6px; background: transparent; color: #667185; font-weight: 600; &::before { width: 7px; height: 7px; border-radius: 50%; background: #9aa4b1; content: ""; } &--priority, &--unresolved { background: transparent; color: #8f4d48; &::before { background: #a96762; } } &--review, &--pending { background: transparent; color: #80652f; &::before { background: #a58a55; } } &--stable, &--resolved { background: transparent; color: #356c55; &::before { background: #4f806b; } } }
 .concept-bars { margin-top: 18px; display: grid; gap: 4px; list-style: none;
   &__row { padding: 9px 8px; display: grid; grid-template-columns: 16px 1fr auto; align-items: center; gap: 8px; }
@@ -55,4 +50,3 @@
   &__track { grid-column: 2 / -1; height: 6px; margin-top: 6px; background: #eef0f3; border-radius: 2px; i { height: 100%; display: block; background: #8a94a3; border-radius: inherit; }
     &--high i { background: #a96762; } &--mid i { background: #a58a55; } }
 }
-.prescription-table { margin-bottom: 16px; table td small { margin-left: 2px; color: #747f91; font-size: 11px; } table td > a { border-color: #d7dde4; color: #596579; &:hover { background: #f5f6f8; } } table td:first-child > button { padding: 0; background: transparent; border: 0; color: inherit; font-size: inherit; font-weight: inherit; cursor: pointer; &:hover { color: #176fc1; text-decoration: underline; } &:focus-visible { outline: 2px solid rgba(23,111,193,.35); outline-offset: 2px; } } }

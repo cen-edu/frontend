@@ -3,13 +3,12 @@ import ConceptMatrix from './ConceptMatrix';
 import DetailSidePanel from './DetailSidePanel';
 import DiagnosisSummaryCards from './DiagnosisSummaryCards';
 import GradingNotice from './GradingNotice';
-import PrescriptionTable from './PrescriptionTable';
 import PriorityQuestionsTable from './PriorityQuestionsTable';
 import QuestionMatrix from './QuestionMatrix';
 import ResultBreakdown from './ResultBreakdown';
-import StudentDiagnosisTable from './StudentDiagnosisTable';
+import StudentTimeScoreScatter from './StudentTimeScoreScatter';
 
-function ClassAnalysisView({ worksheet, displayedWorksheet, metrics, selection, onSelection, matrixView, onMatrixView, sortBy, onSortBy, statusFilter, onStatusFilter, onSelectStudent }) {
+function ClassAnalysisView({ worksheet, displayedWorksheet, metrics, selection, onSelection, matrixView, onMatrixView, sortBy, onSortBy, onSelectStudent }) {
     return <div className="class-analysis-view">
         <GradingNotice count={metrics.pending} excludedCount={metrics.pendingResponses} />
         <DiagnosisSummaryCards worksheet={worksheet} metrics={metrics} />
@@ -18,15 +17,16 @@ function ClassAnalysisView({ worksheet, displayedWorksheet, metrics, selection, 
             <ResultBreakdown title="영역별 결과" description="사고 유형 기준" items={getResultBreakdown(worksheet, 'area')} />
             <ResultBreakdown title="난이도별 결과" description="문항 난이도 기준" items={getResultBreakdown(worksheet, 'difficulty')} />
         </div>
-        <div className="weakness-page__analysis-grid">
-            {worksheet.type === 'assessment'
-                ? <QuestionMatrix worksheet={displayedWorksheet} view={matrixView} onViewChange={onMatrixView} onSelect={onSelection} selection={selection} />
-                : <ConceptMatrix worksheet={displayedWorksheet} sortBy={sortBy} onSortChange={onSortBy} onSelect={onSelection} />}
-            <DetailSidePanel worksheet={worksheet} selection={selection} onQuadrantSelect={() => onStatusFilter('priority')} />
-        </div>
+        {worksheet.type === 'assessment'
+            ? <>
+                <QuestionMatrix worksheet={displayedWorksheet} view={matrixView} onViewChange={onMatrixView} onSelect={onSelection} selection={selection} />
+                <StudentTimeScoreScatter worksheet={worksheet} onSelectStudent={onSelectStudent} />
+            </>
+            : <div className="weakness-page__analysis-grid">
+                <ConceptMatrix worksheet={displayedWorksheet} sortBy={sortBy} onSortChange={onSortBy} onSelect={onSelection} />
+                <DetailSidePanel worksheet={worksheet} selection={selection} />
+            </div>}
         <PriorityQuestionsTable worksheet={worksheet} onSelect={onSelection} />
-        <PrescriptionTable worksheet={worksheet} onSelectStudent={onSelectStudent} />
-        <StudentDiagnosisTable worksheet={displayedWorksheet} statusFilter={statusFilter} onStatusFilter={onStatusFilter} />
     </div>;
 }
 

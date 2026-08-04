@@ -1,43 +1,4 @@
-import TimeScoreQuadrant from './TimeScoreQuadrant';
-import { formatLabels } from '../../../mocks/assessmentCreation';
-
-function DetailSidePanel({ worksheet, selection, onQuadrantSelect }) {
-    if (worksheet.type === 'assessment') {
-        if (selection?.type === 'question') {
-            const question = worksheet.questions.find((item) => item.no === selection.questionNo);
-            const responses = worksheet.students
-                .map((student) => student.responses.find((item) => item.no === selection.questionNo))
-                .filter((item) => item.gradedBy !== null);
-            const correct = responses.filter((item) => item.score === item.maxScore);
-            const incorrect = responses.filter((item) => item.score < item.maxScore);
-            const averageTime = (items) => Math.round(items.reduce((sum, item) => sum + item.seconds, 0) / Math.max(items.length, 1));
-
-            return (
-                <aside className="diagnosis-card detail-panel">
-                    <span className="detail-panel__kicker">{question.no}번 문항</span>
-                    <h2>문항 상세</h2>
-                    <span className="detail-panel__format">{formatLabels[question.format]}</span>
-                    <strong className="detail-panel__rate">{Math.round(correct.length / Math.max(responses.length, 1) * 100)}%</strong>
-                    <small>득점률</small>
-                    <div className="detail-panel__compare">
-                        <div><span>정답자 평균</span><strong>{averageTime(correct)}초</strong></div>
-                        <div><span>오답자 평균</span><strong>{averageTime(incorrect)}초</strong></div>
-                    </div>
-                    <p>{question.prompt}</p>
-                </aside>
-            );
-        }
-
-        return (
-            <aside className="diagnosis-card detail-panel">
-                <span className="detail-panel__kicker">분석 기준</span>
-                <h2>시간 × 득점 분포</h2>
-                <p>사분면을 선택하면 해당 학생만 목록에 표시합니다.</p>
-                <TimeScoreQuadrant onSelect={onQuadrantSelect} />
-            </aside>
-        );
-    }
-
+function DetailSidePanel({ worksheet, selection }) {
     if (selection?.type === 'question') {
         const question = worksheet.questions.find((item) => item.no === selection.questionNo);
         const results = worksheet.students.filter((student) => student.status !== 'insufficient').map((student) => student.responses.find((response) => response.no === question.no));
