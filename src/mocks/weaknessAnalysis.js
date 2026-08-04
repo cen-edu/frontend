@@ -76,7 +76,7 @@ const makePracticeResponses = (profile) => practiceQuestions.map((question, inde
         no: question.no,
         score: correct === null ? 0 : correct ? question.maxScore : 0,
         maxScore: question.maxScore,
-        hintUsed: Boolean(correct && ((Number(profile.id) + index) % 4 === 0)),
+        hintUsed: false,
         steps: question.steps.map((step) => ({ order: step.order, correct: Boolean(correct), input: profile.inputs[index] })),
     };
 });
@@ -142,7 +142,11 @@ export function getWorksheetMetrics(worksheet) {
     const average = Math.round(studentMetrics.reduce((sum, item) => sum + item.scoreRate, 0) / Math.max(studentMetrics.length, 1) * 10) / 10;
     const pending = worksheet.students.filter((student) => student.responses.some((response) => response.gradedBy === null)).length;
     const pendingResponses = worksheet.students.flatMap((student) => student.responses).filter((response) => response.gradedBy === null).length;
-    return { responseCount: worksheet.students.length, reliableCount: reliableStudents.length, average, averageSeconds: Math.round(studentMetrics.reduce((sum, item) => sum + item.seconds, 0) / Math.max(studentMetrics.length, 1)), hintStudents: worksheet.students.filter((student) => student.responses.some((response) => response.hintUsed)).length, hintCount: worksheet.students.flatMap((student) => student.responses).filter((response) => response.hintUsed).length, priorityCount: reliableStudents.filter((student) => getStudentMetrics(student).scoreRate < 60).length, pending, pendingResponses };
+    const weakConcepts = worksheet.concepts.filter((concept) => {
+        const result = getConceptClassRate(worksheet, concept.id);
+        return result.count > 0 && result.rate < 60;
+    });
+    return { responseCount: worksheet.students.length, reliableCount: reliableStudents.length, average, weakConceptCount: weakConcepts.length, averageSeconds: Math.round(studentMetrics.reduce((sum, item) => sum + item.seconds, 0) / Math.max(studentMetrics.length, 1)), hintStudents: worksheet.students.filter((student) => student.responses.some((response) => response.hintUsed)).length, hintCount: worksheet.students.flatMap((student) => student.responses).filter((response) => response.hintUsed).length, priorityCount: reliableStudents.filter((student) => getStudentMetrics(student).scoreRate < 60).length, pending, pendingResponses };
 }
 
 export function getResultBreakdown(worksheet, dimension, student = null) {
@@ -155,6 +159,16 @@ export function getResultBreakdown(worksheet, dimension, student = null) {
         const correct = responses.filter((response) => response.score === response.maxScore).length;
         return { key, label, rate: responses.length ? Math.round(correct / responses.length * 100) : 0, questionCount: questions.length };
     });
+}
+
+export function getConceptClassRate(worksheet, conceptId) {
+    const results = worksheet.students
+        .filter((student) => student.status !== 'insufficient')
+        .flatMap((student) => worksheet.questions.flatMap((question) => (question.steps ?? [])
+            .filter((step) => step.conceptId === conceptId)
+            .map((step) => student.responses.find((response) => response.no === question.no)?.steps?.find((item) => item.order === step.order))))
+        .filter((item) => item?.input);
+    return { rate: results.length ? Math.round(results.filter((item) => item.correct).length / results.length * 100) : 0, count: results.length };
 }
 
 export function getConceptRate(worksheet, student, conceptId) {

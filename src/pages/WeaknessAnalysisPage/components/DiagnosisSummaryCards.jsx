@@ -6,7 +6,7 @@ function DiagnosisSummaryCards({ worksheet, metrics }) {
         ['학급 정답률', metrics.average, '%'],
         worksheet.type === 'assessment'
             ? ['평균 소요 시간', Math.round(metrics.averageSeconds / 60), '분']
-            : ['힌트 사용', metrics.hintCount, '회'],
+            : ['취약 개념', metrics.weakConceptCount, '개'],
         ['취약 학생', metrics.priorityCount, '명'],
     ];
 
