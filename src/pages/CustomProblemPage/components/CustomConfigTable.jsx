@@ -20,7 +20,7 @@ function CustomConfigTable({ configs, availableUnits, reason, onCountChange, onR
     return <section className="custom-config" aria-labelledby="custom-config-title">
         <header><div><h2 id="custom-config-title">문항 구성</h2><p>자동 제안을 검토하고 단계별 문항 수를 조정합니다.</p></div><span>개념당 단계별 최대 5문항</span></header>
         {configs.length === 0 ? <p className="custom-config__empty">{reason}</p> : <div className="custom-config__table-wrap"><table><thead><tr><th>취약 개념</th>{customStages.map((stage) => <th key={stage}>{customStageLabels[stage]}</th>)}<th><span className="custom-sr-only">제외</span></th></tr></thead><tbody>{configs.map((config) => <tr key={config.conceptId}>
-            <td><strong>{config.conceptLabel}</strong><span>{config.manual ? '수동 추가 · 되짚기 제외' : `원본 ${config.sourceQuestionNo}번`}</span></td>
+            <td><strong>{config.conceptLabel}</strong><span>{config.manual ? '수동 추가 · 복습 제외' : `원본 ${config.sourceQuestionNo}번`}</span></td>
             {customStages.map((stage) => <td key={stage}><Stepper label={`${config.conceptLabel} ${customStageLabels[stage]}`} value={config.counts[stage]} disabled={config.manual && stage === 'retrace'} onChange={(value) => onCountChange(config.conceptId, stage, value)} /></td>)}
             <td><button type="button" className="custom-config__remove" aria-label={`${config.conceptLabel} 제외`} onClick={() => onRemove(config.conceptId)}><i className="bi bi-x-lg" aria-hidden="true" /></button></td>
         </tr>)}</tbody></table></div>}

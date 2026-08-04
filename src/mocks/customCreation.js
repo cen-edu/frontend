@@ -2,9 +2,9 @@ import { curriculumUnits } from './curriculum';
 
 export const customStages = ['retrace', 'basic', 'independent'];
 export const customStageLabels = {
-    retrace: '① 되짚기',
-    basic: '② 기본',
-    independent: '③ 자립',
+    retrace: '① 복습',
+    basic: '② 유사',
+    independent: '③ 응용',
 };
 
 export const conceptUnitMap = {

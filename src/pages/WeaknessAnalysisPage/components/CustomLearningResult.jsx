@@ -57,8 +57,8 @@ function CustomLearningResult({ worksheet, student }) {
                 })}
             </ul>
             <p className="custom-learning__note">
-                {summary.status === 'resolved' && '자립 단계까지 모두 해결해 취약 개념이 해소된 것으로 봅니다.'}
-                {summary.status === 'unresolved' && '자립 단계에서 오답이 남아 있어 같은 개념의 재처방이 필요합니다.'}
+                {summary.status === 'resolved' && '응용 단계까지 모두 해결해 취약 개념이 해소된 것으로 봅니다.'}
+                {summary.status === 'unresolved' && '응용 단계에서 오답이 남아 있어 같은 개념의 재처방이 필요합니다.'}
                 {summary.status === 'pending' && '아직 풀지 않은 문항이 있어 해소 여부를 판단하지 않았습니다.'}
                 {summary.status === 'unresolved' && <Link to={`/problems/custom?worksheet=${worksheet.id}&students=${student.id}&concept=${session.conceptId}`}>새 문제 재처방</Link>}
             </p>

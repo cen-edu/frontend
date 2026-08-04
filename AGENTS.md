@@ -37,7 +37,7 @@
 - 학습 관리 화면의 상태 배지·보조 정보는 최소 11px, 탭·표·버튼·일반 본문은 12px 이상을 유지해 한눈에 읽을 수 있는 가독성을 확보한다.
 - 교사용 대시보드의 상단 요약 카드는 Ant Design의 `Row`, `Col`, `Card`, `Statistic`과 페이지 전용 SCSS를 사용한다.
 - 힌트는 종합 평가에서만 사용하는 개념이므로 맞춤 학습 데이터와 화면에는 힌트 필드나 표시를 두지 않는다.
-- 맞춤 학습 결과는 학생별 회차 배열 `student.customSessions[]`(`sourceWorksheetId`, `conceptId`, `assignedAt`, `completedAt`, `problems[{ no, stage, difficulty, correct }]`)로 저장한다. `correct: null`은 미풀이를 뜻하고, 해소 판정은 미풀이가 있으면 `pending`, ③ 자립 문항을 모두 맞히면 `resolved`, 아니면 `unresolved`로 파생한다.
+- 맞춤 학습 결과는 학생별 회차 배열 `student.customSessions[]`(`sourceWorksheetId`, `conceptId`, `assignedAt`, `completedAt`, `problems[{ no, stage, difficulty, correct }]`)로 저장한다. `correct: null`은 미풀이를 뜻하고, 해소 판정은 미풀이가 있으면 `pending`, ③ 응용 문항을 모두 맞히면 `resolved`, 아니면 `unresolved`로 파생한다.
 - 맞춤 학습 결과는 상단 학습지 필터를 늘리지 않고, 원 학습지 개인 분석 화면 안의 `CustomLearningResult` 섹션(전후 비교·단계별 결과·회차 선택)과 학급 분석의 `PrescriptionTable`에서 조회한다. 맞춤 학습지를 취약점 분석의 학습지 선택 항목으로 따로 두지 않고, 학습 현황의 맞춤 학습 배포는 `analysisWorksheetId`로 원 학습지를 가리킨다.
 - 취약점 분석 개인 뷰의 영역별 결과는 막대(`ResultBreakdown`), 난이도별 결과는 Recharts `RadarChart`(`DifficultyRadar`)로 표시하고 같은 행에 나란히 배치한다. 두 표현에 같은 집계 기준을 중복해 넣지 않는다.
 - 학생과 학급을 함께 표시하는 그래프의 범례는 공통 클래스 `analysis-legend`를 사용하고, 학생은 `#4f806b`, 학급은 `#8da2b5`로 통일한다.
