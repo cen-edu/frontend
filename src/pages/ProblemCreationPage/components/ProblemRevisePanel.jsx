@@ -1,5 +1,6 @@
 import { useLayoutEffect, useRef, useState } from 'react';
 import { revisionPresets } from '../../../mocks/problemRevision';
+import './ProblemRevisePanel.scss';
 
 function ProblemRevisePanel({ problem, requests, onAddRequest, onRemoveRequest }) {
     const [prompt, setPrompt] = useState('');
@@ -47,7 +48,7 @@ function ProblemRevisePanel({ problem, requests, onAddRequest, onRemoveRequest }
                     placeholder="예) 난이도를 한 단계 낮추고 풀이 단계를 더 나눠 주세요"
                     onChange={(event) => setPrompt(event.target.value)}
                 />
-                <button type="submit" className="problem-creation-button problem-creation-button--primary" disabled={!problem || !prompt.trim()}>요청 추가</button>
+                <button type="submit" className="problem-revise__submit" disabled={!problem || !prompt.trim()}>요청 추가</button>
             </form>
             <p className="problem-revise__notice">
                 <i className="bi bi-info-circle" aria-hidden="true" />

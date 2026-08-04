@@ -9,12 +9,14 @@ import AssessmentItemBuilder from './components/AssessmentItemBuilder';
 import AssessmentOrderModal from './components/AssessmentOrderModal';
 import AssessmentPreviewList from '../../components/common/ProblemViewer/AssessmentPreviewList';
 import AssessmentQuestionView from '../../components/common/ProblemViewer/AssessmentQuestionView';
+import ProblemRevisePanel from '../ProblemCreationPage/components/ProblemRevisePanel';
 import './ComprehensiveAssessmentPage.scss';
 import './components/AssessmentComponents.scss';
 
 const currentYear = new Date().getFullYear();
 const subjectId = 'math';
 let nextRowId = 1;
+let nextRevisionRequestId = 1;
 const createDefaultRow = () => ({ id: `assessment-row-${nextRowId++}`, format: 'choice', difficulty: 'mid', count: 1 });
 
 function ComprehensiveAssessmentPage() {
@@ -28,6 +30,7 @@ function ComprehensiveAssessmentPage() {
     const [showAnswers, setShowAnswers] = useState(true);
     const [saved, setSaved] = useState(false);
     const [orderModalOpen, setOrderModalOpen] = useState(false);
+    const [revisionRequests, setRevisionRequests] = useState({});
 
     const majorUnits = useMemo(() => curriculumUnits.find((item) => item.gradeId === gradeId && item.subjectId === subjectId && item.term === term)?.majorUnits ?? [], [gradeId, subjectId, term]);
     const unitIndex = useMemo(() => new Map(majorUnits.flatMap((major) => major.middleUnits.flatMap((middle) => middle.smallUnits.map((unit) => [unit.id, { ...unit, majorName: major.name, middleName: middle.name }])))), [majorUnits]);
@@ -61,6 +64,7 @@ function ComprehensiveAssessmentPage() {
         setResult(null);
         setSelectedProblemId('');
         setSaved(false);
+        setRevisionRequests({});
     };
 
     const updateUnitItems = (updater) => {
@@ -99,6 +103,22 @@ function ComprehensiveAssessmentPage() {
         setResult({ problems });
         setSelectedProblemId(problems[0]?.id ?? '');
         setSaved(false);
+        setRevisionRequests({});
+    };
+
+    const addRevisionRequest = (prompt) => {
+        if (!selectedProblem) return;
+        setRevisionRequests((current) => ({
+            ...current,
+            [selectedProblem.id]: [...(current[selectedProblem.id] ?? []), { id: `assessment-revision-${nextRevisionRequestId++}`, prompt }],
+        }));
+    };
+
+    const removeRevisionRequest = (requestId) => {
+        setRevisionRequests((current) => ({
+            ...current,
+            [selectedProblemId]: (current[selectedProblemId] ?? []).filter((request) => request.id !== requestId),
+        }));
     };
 
     const changeScore = (problemId, value) => {
@@ -143,7 +163,7 @@ function ComprehensiveAssessmentPage() {
                     <header className="comprehensive-assessment-page__result-header">
                         <div><h2 id="assessment-result-title">{title}</h2><p>총 {result.problems.length}문항 · {resultScore}점</p></div>
                         <div className="comprehensive-assessment-page__result-actions">
-                            <button type="button" className="assessment-button assessment-button--secondary" onClick={() => setResult(null)}>출제 구성 수정</button>
+                            <button type="button" className="assessment-button assessment-button--secondary" onClick={invalidateResult}>출제 구성 수정</button>
                             <button type="button" className="assessment-button assessment-button--secondary" onClick={() => setOrderModalOpen(true)}><i className="bi bi-arrow-down-up" aria-hidden="true" /> 문항 순서 변경</button>
                             <button type="button" className="comprehensive-assessment-page__answer-toggle" aria-pressed={showAnswers} onClick={() => setShowAnswers((current) => !current)}><i className={`bi bi-eye${showAnswers ? '' : '-slash'}`} aria-hidden="true" /> 정답 {showAnswers ? '숨기기' : '표시'}</button>
                             <button type="button" className="assessment-button assessment-button--secondary" onClick={() => setSaved(true)} disabled={saved}>{saved ? '저장 완료' : '문제 보관함에 저장'}</button>
@@ -152,7 +172,10 @@ function ComprehensiveAssessmentPage() {
                     {saved && <p className="comprehensive-assessment-page__saved" role="status"><i className="bi bi-check-circle-fill" aria-hidden="true" /> 문제 보관함에 저장했습니다.</p>}
                     <div className="comprehensive-assessment-page__preview-grid">
                         <AssessmentPreviewList problems={result.problems} selectedId={selectedProblemId} onSelect={setSelectedProblemId} />
-                        <AssessmentQuestionView problem={selectedProblem} showAnswers={showAnswers} onScoreChange={changeScore} />
+                        <div className="comprehensive-assessment-page__question-column">
+                            <AssessmentQuestionView problem={selectedProblem} showAnswers={showAnswers} onScoreChange={changeScore} />
+                            <ProblemRevisePanel key={selectedProblemId} problem={selectedProblem} requests={revisionRequests[selectedProblemId] ?? []} onAddRequest={addRevisionRequest} onRemoveRequest={removeRevisionRequest} />
+                        </div>
                     </div>
                 </section>
             )}
