@@ -8,6 +8,7 @@ import './components/AssessmentResultComponents.scss';
 
 const deriveRubricChecks = (answer, question) => {
     if (answer?.rubricChecks?.length === question.rubric.length) return answer.rubricChecks;
+    if (answer?.rubricResults?.length === question.rubric.length) return answer.rubricResults.map((result) => result.satisfied === true);
     let accumulated = 0;
     return question.rubric.map((item) => {
         accumulated += item.score;
@@ -32,7 +33,7 @@ function GradingPage() {
 
     const studentProgress = useMemo(() => {
         if (!worksheet || !student) return { completed: 0, total: 0 };
-        const manualQuestions = isPractice ? worksheet.questions : worksheet.questions.filter((question) => question.gradingStatus !== 'auto');
+        const manualQuestions = worksheet.questions;
         return {
             total: manualQuestions.length,
             completed: manualQuestions.filter((question) => {
@@ -49,11 +50,19 @@ function GradingPage() {
                 const question = item.questions.find((candidate) => candidate.no === questionNo);
                 const nextStudents = item.students.map((candidate, index) => index !== studentIndex ? candidate : {
                     ...candidate,
-                    answers: candidate.answers.map((answer) => answer.no !== questionNo ? answer : {
-                        ...answer,
-                        score,
-                        gradedBy: 'teacher',
-                        rubricChecks: selectedRubricChecks ?? deriveRubricChecks({ score }, question),
+                    answers: candidate.answers.map((answer) => {
+                        if (answer.no !== questionNo) return answer;
+                        const rubricChecks = selectedRubricChecks ?? (answer.score === score ? deriveRubricChecks(answer, question) : deriveRubricChecks({ score }, question));
+                        return {
+                            ...answer,
+                            score,
+                            gradedBy: 'teacher',
+                            rubricChecks,
+                            rubricResults: question.rubric.map((_, rubricIndex) => ({
+                                ...(answer.rubricResults?.[rubricIndex] ?? {}),
+                                satisfied: rubricChecks[rubricIndex] === true,
+                            })),
+                        };
                     }),
                 });
                 const allComplete = nextStudents.every((candidate) => candidate.answers.every((answer) => answer.score !== null));
@@ -115,7 +124,7 @@ function GradingPage() {
                 <section className="grading-page__answers" aria-label={`${student.name} 학생 전체 답안 채점`}>
                     <div className="grading-page__student-title">
                         <div><span>{student.number}번</span><h1>{student.name}</h1></div>
-                        <p>{isPractice ? '문항 채점' : '수동 채점'} <strong>{studentProgress.completed}/{studentProgress.total}</strong></p>
+                        <p>{isPractice ? '문항 채점' : '전체 문항 채점'} <strong>{studentProgress.completed}/{studentProgress.total}</strong></p>
                     </div>
                     <div className="grading-page__answer-list">
                         {worksheet.questions.map((question) => {
