@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { getAssessmentResults, saveAssessmentResults } from '../../mocks/assessmentResult';
 import GradingAnswerCard from './components/GradingAnswerCard';
@@ -30,18 +30,6 @@ function GradingPage() {
     const firstPendingIndex = worksheet?.students.findIndex((student) => student.answers.some((answer) => isPractice ? !isPracticeAnswerGraded(answer) : answer.score === null));
     const [studentIndex, setStudentIndex] = useState(requestedIndex >= 0 ? requestedIndex : Math.max(firstPendingIndex ?? 0, 0));
     const student = worksheet?.students[studentIndex];
-
-    const studentProgress = useMemo(() => {
-        if (!worksheet || !student) return { completed: 0, total: 0 };
-        const manualQuestions = worksheet.questions;
-        return {
-            total: manualQuestions.length,
-            completed: manualQuestions.filter((question) => {
-                const answer = student.answers.find((candidate) => candidate.no === question.no);
-                return isPractice ? isPracticeAnswerGraded(answer) : answer?.score !== null;
-            }).length,
-        };
-    }, [isPractice, student, worksheet]);
 
     const updateScore = (questionNo, score, selectedRubricChecks) => {
         setResults((current) => {
@@ -110,6 +98,13 @@ function GradingPage() {
         setStudentIndex(Math.min(Math.max(nextIndex, 0), worksheet.students.length - 1));
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
+    const completeGrading = () => {
+        if (studentIndex < worksheet.students.length - 1) {
+            moveStudent(studentIndex + 1);
+            return;
+        }
+        navigate('/learning/results');
+    };
 
     return (
         <main className="grading-page">
@@ -124,7 +119,7 @@ function GradingPage() {
                 <section className="grading-page__answers" aria-label={`${student.name} 학생 전체 답안 채점`}>
                     <div className="grading-page__student-title">
                         <div><span>{student.number}번</span><h1>{student.name}</h1></div>
-                        <p>{isPractice ? '문항 채점' : '전체 문항 채점'} <strong>{studentProgress.completed}/{studentProgress.total}</strong></p>
+                        <button type="button" className="grading-page__complete" onClick={completeGrading}>채점 완료</button>
                     </div>
                     <div className="grading-page__answer-list">
                         {worksheet.questions.map((question) => {

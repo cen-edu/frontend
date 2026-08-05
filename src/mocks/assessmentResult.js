@@ -1,3 +1,7 @@
+// 학생이 필기로 제출한 원본 답안 이미지. 실제 서비스에서는 서버가 저장한 이미지 URL이 내려온다.
+const essayAnswerScan = '/answer-scans/essay-answer.png';
+const shortAnswerScan = '/answer-scans/short-answer.png';
+
 export const assessmentResultFilterOptions = {
     grades: [
         { value: 'all', label: '전체 학년' },
@@ -60,9 +64,9 @@ const baseStudents = [
         answers: [
             { no: 1, input: '3', score: 5, autoScore: 5, gradedBy: 'auto' },
             { no: 2, input: '4', score: 5, autoScore: 5, gradedBy: 'auto' },
-            { no: 3, input: '2*3', score: null, autoScore: 0, gradedBy: null },
+            { no: 3, input: '2*3', answerImage: shortAnswerScan, score: null, autoScore: 0, gradedBy: null },
             { no: 4, input: '2', score: 5, autoScore: 5, gradedBy: 'auto' },
-            { no: 5, input: '12=2²×3, 18=2×3²이므로 공통인 2와 3을 곱하면 6이다.', score: 5, autoScore: 5, gradedBy: 'auto', rubricResults: [{ satisfied: true, evidence: '12=2²×3, 18=2×3²' }, { satisfied: true, evidence: '공통인 2와 3을 곱하면 6이다' }] },
+            { no: 5, input: '12=2²×3, 18=2×3²이므로 공통인 2와 3을 곱하면 6이다.', answerImage: essayAnswerScan, score: 5, autoScore: 5, gradedBy: 'auto', rubricResults: [{ satisfied: true, evidence: '12=2²×3, 18=2×3²' }, { satisfied: true, evidence: '공통인 2와 3을 곱하면 6이다' }] },
         ],
     },
     {
@@ -70,9 +74,9 @@ const baseStudents = [
         answers: [
             { no: 1, input: '3', score: 5, autoScore: 5, gradedBy: 'auto' },
             { no: 2, input: '3', score: 0, autoScore: 0, gradedBy: 'auto' },
-            { no: 3, input: '6', score: null, autoScore: 0, gradedBy: null },
+            { no: 3, input: '6', answerImage: shortAnswerScan, score: null, autoScore: 0, gradedBy: null },
             { no: 4, input: '2', score: 5, autoScore: 5, gradedBy: 'auto' },
-            { no: 5, input: '2와 3을 곱해서 6', score: 3, autoScore: 3, gradedBy: 'auto', rubricResults: [{ satisfied: false, evidence: '' }, { satisfied: true, evidence: '2와 3을 곱해서 6' }] },
+            { no: 5, input: '2와 3을 곱해서 6', answerImage: essayAnswerScan, score: 3, autoScore: 3, gradedBy: 'auto', rubricResults: [{ satisfied: false, evidence: '' }, { satisfied: true, evidence: '2와 3을 곱해서 6' }] },
         ],
     },
     {
@@ -80,9 +84,9 @@ const baseStudents = [
         answers: [
             { no: 1, input: '3', score: 5, autoScore: 5, gradedBy: 'auto' },
             { no: 2, input: '4', score: 5, autoScore: 5, gradedBy: 'auto' },
-            { no: 3, input: '2 × 3', score: null, autoScore: 0, gradedBy: null },
+            { no: 3, input: '2 × 3', answerImage: shortAnswerScan, score: null, autoScore: 0, gradedBy: null },
             { no: 4, input: '1', score: 0, autoScore: 0, gradedBy: 'auto' },
-            { no: 5, input: '두 수를 소인수분해하고 공통 소인수를 곱한다.', score: 3, autoScore: 3, gradedBy: 'auto', rubricResults: [{ satisfied: false, evidence: '' }, { satisfied: true, evidence: '공통 소인수를 곱한다' }] },
+            { no: 5, input: '두 수를 소인수분해하고 공통 소인수를 곱한다.', answerImage: essayAnswerScan, score: 3, autoScore: 3, gradedBy: 'auto', rubricResults: [{ satisfied: false, evidence: '' }, { satisfied: true, evidence: '공통 소인수를 곱한다' }] },
         ],
     },
     {
@@ -90,9 +94,9 @@ const baseStudents = [
         answers: [
             { no: 1, input: '3', score: 5, autoScore: 5, gradedBy: 'auto' },
             { no: 2, input: '4', score: 5, autoScore: 5, gradedBy: 'auto' },
-            { no: 3, input: '2×3', score: 3, autoScore: 3, gradedBy: 'auto' },
+            { no: 3, input: '2×3', answerImage: shortAnswerScan, score: 3, autoScore: 3, gradedBy: 'auto' },
             { no: 4, input: '2', score: 5, autoScore: 5, gradedBy: 'auto' },
-            { no: 5, input: '2와 3을 곱해서 6', score: 3, autoScore: 3, gradedBy: 'auto', rubricResults: [{ satisfied: false, evidence: '' }, { satisfied: true, evidence: '2와 3을 곱해서 6' }] },
+            { no: 5, input: '2와 3을 곱해서 6', answerImage: essayAnswerScan, score: 3, autoScore: 3, gradedBy: 'auto', rubricResults: [{ satisfied: false, evidence: '' }, { satisfied: true, evidence: '2와 3을 곱해서 6' }] },
         ],
     },
 ];
@@ -109,11 +113,12 @@ const additionalStudents = [
     answers: [
         { no: 1, input: studentIndex % 4 === 0 ? '2' : '3', score: studentIndex % 4 === 0 ? 0 : 5, autoScore: studentIndex % 4 === 0 ? 0 : 5, gradedBy: 'auto' },
         { no: 2, input: studentIndex % 3 === 0 ? '3' : '4', score: studentIndex % 3 === 0 ? 0 : 5, autoScore: studentIndex % 3 === 0 ? 0 : 5, gradedBy: 'auto' },
-        { no: 3, input: studentIndex % 2 === 0 ? '2×3' : '6', score: studentIndex < 3 ? null : 3, autoScore: studentIndex < 3 ? 0 : 3, gradedBy: studentIndex < 3 ? null : 'auto' },
+        { no: 3, input: studentIndex % 2 === 0 ? '2×3' : '6', answerImage: shortAnswerScan, score: studentIndex < 3 ? null : 3, autoScore: studentIndex < 3 ? 0 : 3, gradedBy: studentIndex < 3 ? null : 'auto' },
         { no: 4, input: studentIndex % 5 === 0 ? '1' : '2', score: studentIndex % 5 === 0 ? 0 : 5, autoScore: studentIndex % 5 === 0 ? 0 : 5, gradedBy: 'auto' },
         {
             no: 5,
             input: studentIndex % 2 === 0 ? '두 수를 소인수분해하고 공통 소인수를 곱한다.' : '공통인 2와 3을 곱하면 6이다.',
+            answerImage: essayAnswerScan,
             score: 3,
             autoScore: 3,
             gradedBy: 'auto',
@@ -204,7 +209,7 @@ export const initialAssessmentResults = [
     },
 ];
 
-const STORAGE_KEY = 'assessment-results-v5';
+const STORAGE_KEY = 'assessment-results-v6';
 
 export const getAssessmentResults = () => {
     try {
