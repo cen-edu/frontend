@@ -220,8 +220,6 @@ function orderWorksheets(worksheets) {
 
 // 학기에 배정된 모든 학습지를 학생 단위로 누적한다.
 export function getStudentProgress(classTerm) {
-    const conceptsByAccuracy = [...classTerm.concepts].sort((first, second) => first.accuracy - second.accuracy);
-
     const orderedWorksheets = orderWorksheets(classTerm.worksheets);
 
     return classTerm.roster.map((student) => {
@@ -248,7 +246,6 @@ export function getStudentProgress(classTerm) {
         const submitted = assigned.filter((result) => result.status === 'submitted');
         const overdue = assigned.filter((result) => result.overdue);
         const accuracy = average(results.filter((result) => result.accuracy !== null).map((result) => result.accuracy));
-        const weakConcept = conceptsByAccuracy.find((concept) => concept.weakStudentIds.includes(student.id)) ?? null;
         const lastActivity = submitted.map((result) => result.completedAt).sort().at(-1) ?? null;
 
         return {
@@ -260,7 +257,6 @@ export function getStudentProgress(classTerm) {
             overdueCount: overdue.length,
             participation: assigned.length === 0 ? 0 : Math.round((submitted.length / assigned.length) * 100),
             accuracy,
-            weakConcept,
             lastActivity,
             status: overdue.length > 0 ? 'overdue' : accuracy === null ? 'noData' : accuracy < weakAccuracyThreshold ? 'weak' : 'steady',
         };

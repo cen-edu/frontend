@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { resultStatusLabels, studentStatusLabels, weakAccuracyThreshold, worksheetTypeLabels } from '../../../mocks/teacherDashboard';
+import { resultStatusLabels, weakAccuracyThreshold, worksheetTypeLabels } from '../../../mocks/teacherDashboard';
 
 const columns = [
     { key: 'name', label: '학생', direction: 'ascending' },
@@ -97,7 +97,11 @@ function ClassStudentProgress({ students, worksheets }) {
                                     {columns.map((column) => {
                                         const active = sort.key === column.key;
                                         return (
-                                            <th key={column.key} scope="col" aria-sort={active ? sort.direction : 'none'}>
+                                            <th
+                                                key={column.key}
+                                                scope="col"
+                                                aria-sort={active ? sort.direction : 'none'}
+                                            >
                                                 <button type="button" onClick={() => changeSort(column)}>
                                                     <span>{column.label}</span>
                                                     <i className={`bi ${active ? (sort.direction === 'ascending' ? 'bi-arrow-up' : 'bi-arrow-down') : 'bi-arrow-down-up'}`} aria-hidden="true" />
@@ -105,26 +109,23 @@ function ClassStudentProgress({ students, worksheets }) {
                                             </th>
                                         );
                                     })}
-                                    <th scope="col">학습지별 결과</th>
-                                    <th scope="col">주요 취약 개념</th>
+                                    <th scope="col" className="student-progress__heading--left">학습지별 결과</th>
                                     <th scope="col">최근 학습</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {rows.map((student) => (
                                     <tr key={student.id} onClick={() => openStudent(student)}>
-                                        <td>
+                                        <td className="student-progress__cell--center">
                                             <button type="button" className="student-progress__name" onClick={(event) => { event.stopPropagation(); openStudent(student); }}>
-                                                <span className="student-progress__number">{student.number}</span>
                                                 <strong>{student.name}</strong>
                                             </button>
-                                            <span className={`student-progress__status student-progress__status--${student.status}`}>{studentStatusLabels[student.status]}</span>
                                         </td>
-                                        <td>
+                                        <td className="student-progress__cell--center">
                                             <span className="student-progress__count">{student.submittedCount}<small> / {student.assignedCount}</small></span>
                                             <span className="student-progress__track"><span className="student-progress__bar" style={{ width: `${student.participation}%` }} /></span>
                                         </td>
-                                        <td>
+                                        <td className="student-progress__cell--center">
                                             {student.accuracy === null
                                                 ? <span className="student-progress__none">자료 없음</span>
                                                 : <span className={`student-progress__accuracy student-progress__accuracy--${accuracyLevel(student.accuracy)}`}>{student.accuracy}%</span>}
@@ -143,8 +144,7 @@ function ClassStudentProgress({ students, worksheets }) {
                                                 ))}
                                             </span>
                                         </td>
-                                        <td>{student.weakConcept ? student.weakConcept.label : <span className="student-progress__none">없음</span>}</td>
-                                        <td>{student.lastActivity ?? <span className="student-progress__none">-</span>}</td>
+                                        <td className="student-progress__cell--center">{student.lastActivity ?? <span className="student-progress__none">-</span>}</td>
                                     </tr>
                                 ))}
                             </tbody>

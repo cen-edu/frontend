@@ -50,11 +50,14 @@
 
   &__table {
     width: 100%;
-    min-width: 880px;
+    min-width: 780px;
     border-collapse: collapse;
 
     th, td { height: 56px; padding: 8px 12px; border-bottom: 1px solid #ebeef2; color: #596579; font-size: 12px; text-align: left; vertical-align: middle; }
-    th { height: 42px; background: #f5f6f8; color: #667185; font-weight: 600; }
+    th { height: 42px; background: #f5f6f8; color: #667185; font-weight: 600; text-align: center; }
+    th:first-child, td:first-child { width: 130px; }
+    th:nth-child(2), td:nth-child(2) { width: 120px; }
+    th:nth-child(3), td:nth-child(3) { width: 110px; }
 
     th button {
       padding: 7px 0;
@@ -77,6 +80,9 @@
     tbody tr { cursor: pointer; &:hover { background: #f7f9fb; } }
   }
 
+  &__cell--center { text-align: center !important; }
+  &__heading--left { text-align: left !important; }
+
   &__name {
     display: inline-flex;
     align-items: center;
@@ -92,35 +98,8 @@
     &:focus-visible { outline: 2px solid rgba(23, 111, 193, .35); outline-offset: 2px; border-radius: 4px; }
   }
 
-  &__number {
-    width: 24px;
-    height: 24px;
-    flex: 0 0 24px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background: #e7edf3;
-    border-radius: 50%;
-    color: #556071;
-    font-size: 11px;
-    font-weight: 700;
-  }
-
-  &__status {
-    margin-top: 4px;
-    margin-left: 32px;
-    display: block;
-    font-size: 11px;
-    font-weight: 600;
-
-    &--overdue { color: #b23f3f; }
-    &--weak { color: #a16b20; }
-    &--steady { color: #287650; }
-    &--noData { color: #747f91; }
-  }
-
   &__count { display: block; color: #263247; font-size: 12px; font-weight: 700; small { color: #747f91; font-size: 11px; font-weight: 400; } }
-  &__track { width: 84px; height: 6px; margin-top: 6px; overflow: hidden; display: block; background: #e9edf1; border-radius: 2px; }
+  &__track { width: 84px; height: 6px; margin: 6px auto 0; overflow: hidden; display: block; background: #e9edf1; border-radius: 2px; }
   &__bar { height: 100%; display: block; background: #6b7c90; border-radius: inherit; }
 
   &__accuracy { font-size: 13px; font-weight: 700; &--critical { color: #b94343; } &--warning { color: #a16b20; } &--good { color: #287650; } }
