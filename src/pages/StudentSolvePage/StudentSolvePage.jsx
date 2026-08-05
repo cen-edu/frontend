@@ -46,6 +46,16 @@ function StudentSolvePage() {
         ? Math.round((answeredCount / problems.length) * 100)
         : Math.round((completedPracticeStepCount / practiceStepCount) * 100);
 
+    const moveToProblem = (index) => {
+        setCurrentIndex(index);
+        window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+    };
+
+    const moveByProblem = (offset) => {
+        setCurrentIndex((index) => index + offset);
+        window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+    };
+
     const updateAnswer = (value) => {
         setAnswers((current) => {
             const next = { ...current };
@@ -125,8 +135,8 @@ function StudentSolvePage() {
                         problem={problem}
                         currentIndex={currentIndex}
                         problemCount={problems.length}
-                        onPrevious={() => setCurrentIndex((index) => index - 1)}
-                        onNext={() => setCurrentIndex((index) => index + 1)}
+                        onPrevious={() => moveByProblem(-1)}
+                        onNext={() => moveByProblem(1)}
                         onStepAnswerChange={updatePracticeAnswer}
                         isCustom={isCustom}
                     />
@@ -144,7 +154,7 @@ function StudentSolvePage() {
                                     aria-label={`${item.no}번${answers[index] ? ', 답변 완료' : ''}`}
                                     aria-current={currentIndex === index ? 'step' : undefined}
                                     className={`${answers[index] ? 'student-solve__question-number student-solve__question-number--answered' : 'student-solve__question-number'}${currentIndex === index ? ' student-solve__question-number--current' : ''}`}
-                                    onClick={() => setCurrentIndex(index)}
+                                    onClick={() => moveToProblem(index)}
                                 >
                                     {item.no}
                                     {bookmarked.includes(item.no) && <i className="bi bi-bookmark-fill" aria-hidden="true" />}
@@ -185,11 +195,11 @@ function StudentSolvePage() {
                         </div>
 
                         <footer className="student-solve__controls">
-                            <button type="button" disabled={currentIndex === 0} onClick={() => setCurrentIndex((index) => index - 1)}>
+                            <button type="button" disabled={currentIndex === 0} onClick={() => moveByProblem(-1)}>
                                 <i className="bi bi-chevron-left" aria-hidden="true" /> 이전 문제
                             </button>
                             <span>{problem.no} / {problems.length}</span>
-                            <button type="button" disabled={currentIndex === problems.length - 1} className="student-solve__next" onClick={() => setCurrentIndex((index) => index + 1)}>
+                            <button type="button" disabled={currentIndex === problems.length - 1} className="student-solve__next" onClick={() => moveByProblem(1)}>
                                 다음 문제 <i className="bi bi-chevron-right" aria-hidden="true" />
                             </button>
                         </footer>
