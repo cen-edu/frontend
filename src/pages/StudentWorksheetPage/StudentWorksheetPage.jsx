@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import Header from '../../components/Header/Header';
 import {
     getStudentAssignments,
@@ -64,6 +64,7 @@ function FilterButtons({ label, options, value, onChange }) {
 }
 
 function StudentWorksheetPage() {
+    const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const requestedStudentId = Number(searchParams.get('student'));
     const student = students.find((item) => item.id === requestedStudentId) ?? students[0];
@@ -120,7 +121,15 @@ function StudentWorksheetPage() {
                                                 {studentAssignmentStatusLabels[assignment.status]}
                                             </span>
                                         </td>
-                                        <td className="student-worksheets__title">{assignment.title}</td>
+                                        <td className="student-worksheets__title">
+                                            <button
+                                                type="button"
+                                                onClick={() => navigate(`/student/worksheets/${assignment.id}/solve?student=${student.id}`)}
+                                            >
+                                                {assignment.title}
+                                                <i className="bi bi-chevron-right" aria-hidden="true" />
+                                            </button>
+                                        </td>
                                         <td className="student-worksheets__result">{getResult(assignment)}</td>
                                         <td>{formatRelativeDueDate(assignment.dueAt)}</td>
                                     </tr>

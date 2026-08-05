@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import Header from '../../components/Header/Header';
 import { getStudentAssignments } from '../../mocks/studentAssignments';
 import students from '../../mocks/students';
@@ -7,12 +7,12 @@ import AssignmentBrowser from './components/AssignmentBrowser';
 import './StudentHomePage.scss';
 
 function StudentHomePage() {
+    const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const requestedStudentId = Number(searchParams.get('student'));
     const student = students.find((item) => item.id === requestedStudentId) ?? students[0];
     const assignments = useMemo(() => getStudentAssignments(student.id), [student.id]);
     const [activeFilter, setActiveFilter] = useState('all');
-    const [selectedAssignmentId, setSelectedAssignmentId] = useState(null);
     const visibleAssignments = assignments.filter((assignment) => assignment.status !== 'submitted');
     const inProgressCount = visibleAssignments.filter((assignment) => assignment.status === 'in-progress').length;
     const availableCount = visibleAssignments.filter((assignment) => assignment.status === 'not-started').length;
@@ -32,10 +32,9 @@ function StudentHomePage() {
                     activeFilter={activeFilter}
                     onFilterChange={(filter) => {
                         setActiveFilter(filter);
-                        setSelectedAssignmentId(null);
                     }}
-                    selectedId={selectedAssignmentId}
-                    onSelect={setSelectedAssignmentId}
+                    selectedId={null}
+                    onSelect={(assignmentId) => navigate(`/student/worksheets/${assignmentId}/solve?student=${student.id}`)}
                 />
             </main>
         </div>

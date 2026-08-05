@@ -162,6 +162,28 @@
     font-weight: 700;
     text-overflow: ellipsis;
     white-space: nowrap;
+
+    button {
+      max-width: 100%;
+      min-height: 50px;
+      padding: 0 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      overflow: hidden;
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      color: inherit;
+      font-weight: inherit;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      cursor: pointer;
+
+      .bi { flex: 0 0 auto; color: #8a94a3; font-size: 14px; }
+      &:hover { background: #f2f7fc; border-color: #b8d3ea; color: #176fc1; }
+      &:focus-visible { outline: 3px solid rgba(23, 111, 193, .25); outline-offset: 2px; }
+    }
   }
 
   &__result {
