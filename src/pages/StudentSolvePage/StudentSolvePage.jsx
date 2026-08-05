@@ -4,6 +4,7 @@ import Header from '../../components/Header/Header';
 import { getStudentAssignments } from '../../mocks/studentAssignments';
 import { getStudentWorksheetProblems } from '../../mocks/studentWorksheetSolving';
 import students from '../../mocks/students';
+import HandwritingAnswer from './HandwritingAnswer';
 import './StudentSolvePage.scss';
 
 function StudentSolvePage() {
@@ -65,39 +66,12 @@ function StudentSolvePage() {
             );
         }
 
-        if (problem.type === 'multi') {
-            const values = typeof answers[currentIndex] === 'object' ? answers[currentIndex] : {};
-            return (
-                <div className="student-solve__multi-answer">
-                    {problem.fields.map((field) => (
-                        <label key={field.id}>
-                            <span>{field.label}</span>
-                            <span className="student-solve__input-wrap">
-                                <input
-                                    inputMode="numeric"
-                                    aria-label={field.label}
-                                    value={values[field.id] ?? ''}
-                                    onChange={(event) => updateAnswer({ ...values, [field.id]: event.target.value })}
-                                />
-                                <strong>{field.suffix}</strong>
-                            </span>
-                        </label>
-                    ))}
-                </div>
-            );
-        }
-
         return (
-            <label className="student-solve__text-answer">
-                <span>답</span>
-                <input
-                    value={answers[currentIndex] === 'answered' ? '' : (answers[currentIndex] ?? '')}
-                    placeholder="답을 입력하세요"
-                    aria-describedby={problem.guide ? 'answer-guide' : undefined}
-                    onChange={(event) => updateAnswer(event.target.value)}
-                />
-                {problem.guide && <small id="answer-guide">{problem.guide}</small>}
-            </label>
+            <HandwritingAnswer
+                key={`${assignment.id}-${problem.no}`}
+                storageKey={`${student.id}:${assignment.id}:${problem.no}`}
+                onAnswerChange={(hasAnswer) => updateAnswer(hasAnswer ? 'handwriting' : '')}
+            />
         );
     };
 

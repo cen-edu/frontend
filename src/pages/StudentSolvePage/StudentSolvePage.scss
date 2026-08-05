@@ -273,6 +273,75 @@
   button:focus-visible { outline: 3px solid rgba(23, 111, 193, .25); outline-offset: 2px; }
 }
 
+.handwriting-answer {
+  &__toolbar {
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+
+    > div { display: flex; flex-wrap: wrap; gap: 8px; }
+
+    button {
+      min-height: 50px;
+      padding: 0 15px;
+      background: #fff;
+      border: 1px solid #d7dde4;
+      border-radius: 8px;
+      color: #465166;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+
+      .bi { margin-right: 5px; }
+      &:hover:not(:disabled) { background: #f2f7fc; border-color: #8eb7dc; color: #176fc1; }
+      &[aria-pressed='true'] { background: #176fc1; border-color: #176fc1; color: #fff; }
+      &:disabled { color: #aeb5bf; cursor: not-allowed; }
+    }
+  }
+
+  &__save-state {
+    color: #667185;
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+
+    .bi { margin-right: 3px; color: #2f7357; }
+    &--error { color: #a3483f; }
+  }
+
+  &__paper {
+    position: relative;
+    height: 300px;
+    overflow: hidden;
+    background-color: #fff;
+    background-image: linear-gradient(#e8edf2 1px, transparent 1px);
+    background-size: 100% 42px;
+    border: 1px solid #bfc7d1;
+    border-radius: 8px;
+
+    canvas {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      display: block;
+      cursor: crosshair;
+      touch-action: none;
+    }
+
+    p {
+      position: absolute;
+      top: 22px;
+      left: 22px;
+      color: #9aa3af;
+      font-size: 16px;
+      pointer-events: none;
+    }
+  }
+}
+
 @media (max-width: 900px) {
   .student-solve {
     &__main { padding-inline: 24px; }
@@ -299,5 +368,10 @@
     &__question-copy h2 { font-size: 21px; }
     &__multi-answer, &__choices { grid-template-columns: 1fr; }
     &__controls button { min-width: 0; }
+  }
+
+  .handwriting-answer {
+    &__toolbar { align-items: flex-start; flex-direction: column; }
+    &__paper { height: 360px; }
   }
 }
