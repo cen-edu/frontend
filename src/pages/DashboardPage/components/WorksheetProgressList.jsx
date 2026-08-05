@@ -26,21 +26,33 @@ function WorksheetProgressList({ worksheets }) {
             {worksheets.length === 0
                 ? <p className="dashboard-empty">이번 학기에 배정한 학습지가 없습니다.</p>
                 : <ol className="worksheet-list">
+                    <li className="worksheet-list__header" aria-hidden="true">
+                        <span>학습지</span>
+                        <span>학습 기간</span>
+                        <span>상태</span>
+                        <span>제출</span>
+                        <span>학습 결과</span>
+                        <span>동작</span>
+                    </li>
                     {worksheets.map((worksheet) => (
                         <li key={worksheet.id} className={`worksheet-list__item${worksheet.depth > 0 ? ' worksheet-list__item--child' : ''}`}>
-                            <span className="worksheet-list__order">{worksheet.orderLabel}</span>
-
                             <div className="worksheet-list__content">
-                                <div className="worksheet-list__title">
-                                    <strong>{worksheet.title}</strong>
-                                    <span className={`worksheet-list__type worksheet-list__type--${worksheet.type}`}>{worksheetTypeLabels[worksheet.type]}</span>
-                                    {worksheet.origin === 'custom' && <span className="worksheet-list__type worksheet-list__type--custom">맞춤</span>}
-                                    {worksheet.childCount > 0 && <span className="worksheet-list__custom-count">맞춤 {worksheet.childCount}</span>}
+                                <span className="worksheet-list__order">{worksheet.orderLabel}</span>
+                                <div className="worksheet-list__title-block">
+                                    <div className="worksheet-list__title">
+                                        <strong>{worksheet.title}</strong>
+                                        <span className={`worksheet-list__type worksheet-list__type--${worksheet.type}`}>{worksheetTypeLabels[worksheet.type]}</span>
+                                        {worksheet.origin === 'custom' && <span className="worksheet-list__type worksheet-list__type--custom">맞춤</span>}
+                                        {worksheet.childCount > 0 && <span className="worksheet-list__custom-count">맞춤 {worksheet.childCount}</span>}
+                                    </div>
                                 </div>
-                                <span className="worksheet-list__meta">
-                                    {worksheet.assignedAt} ~ {worksheet.dueAt} · {worksheet.status === 'ongoing' ? '진행 중' : '마감'} · 제출 {worksheet.submittedCount}/{worksheet.assignedCount}명
-                                </span>
                             </div>
+
+                            <span className="worksheet-list__period">{worksheet.assignedAt} ~ {worksheet.dueAt}</span>
+                            <span className={`worksheet-list__status worksheet-list__status--${worksheet.status}`}>
+                                {worksheet.status === 'ongoing' ? '진행 중' : '마감'}
+                            </span>
+                            <span className="worksheet-list__submission">{worksheet.submittedCount}/{worksheet.assignedCount}명</span>
 
                             <div className="worksheet-list__metric">
                                 {worksheet.type === 'assessment'
