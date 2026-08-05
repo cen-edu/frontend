@@ -3,11 +3,12 @@ import { loadHandwriting, saveHandwriting } from './handwritingStorage';
 
 const DRAW_COLOR = '#172033';
 
-function HandwritingAnswer({ storageKey, onAnswerChange }) {
+function HandwritingAnswer({ storageKey, onAnswerChange, onStrokesChange, compact = false, saveMode = 'auto' }) {
     const canvasRef = useRef(null);
     const strokesRef = useRef([]);
     const activeStrokeRef = useRef(null);
     const onAnswerChangeRef = useRef(onAnswerChange);
+    const onStrokesChangeRef = useRef(onStrokesChange);
     const [strokes, setStrokes] = useState([]);
     const [tool, setTool] = useState('pen');
     const [saveState, setSaveState] = useState('saved');
@@ -15,6 +16,10 @@ function HandwritingAnswer({ storageKey, onAnswerChange }) {
     useEffect(() => {
         onAnswerChangeRef.current = onAnswerChange;
     }, [onAnswerChange]);
+
+    useEffect(() => {
+        onStrokesChangeRef.current = onStrokesChange;
+    }, [onStrokesChange]);
 
     const drawStroke = useCallback((context, stroke, width, height) => {
         if (stroke.points.length < 2) return;
@@ -59,6 +64,7 @@ function HandwritingAnswer({ storageKey, onAnswerChange }) {
                 strokesRef.current = storedStrokes;
                 setStrokes(storedStrokes);
                 onAnswerChangeRef.current(storedStrokes.length > 0);
+                onStrokesChangeRef.current?.(storedStrokes);
                 setSaveState('saved');
             })
             .catch(() => {
@@ -87,14 +93,14 @@ function HandwritingAnswer({ storageKey, onAnswerChange }) {
     }, [redraw]);
 
     useEffect(() => {
-        if (saveState !== 'dirty') return undefined;
+        if (saveMode !== 'auto' || saveState !== 'dirty') return undefined;
         const timeout = window.setTimeout(() => {
             saveHandwriting(storageKey, strokesRef.current)
                 .then(() => setSaveState('saved'))
                 .catch(() => setSaveState('error'));
         }, 350);
         return () => window.clearTimeout(timeout);
-    }, [saveState, storageKey, strokes]);
+    }, [saveMode, saveState, storageKey, strokes]);
 
     useEffect(() => redraw(), [redraw, strokes]);
 
@@ -103,6 +109,7 @@ function HandwritingAnswer({ storageKey, onAnswerChange }) {
         setStrokes(nextStrokes);
         setSaveState('dirty');
         onAnswerChange(nextStrokes.length > 0);
+        onStrokesChangeRef.current?.(nextStrokes);
     };
 
     const getPoint = (event) => {
@@ -143,28 +150,32 @@ function HandwritingAnswer({ storageKey, onAnswerChange }) {
     };
 
     return (
-        <div className="handwriting-answer">
+        <div className={`handwriting-answer${compact ? ' handwriting-answer--compact' : ''}`}>
             <div className="handwriting-answer__toolbar" aria-label="필기 도구">
                 <div>
-                    <button type="button" aria-pressed={tool === 'pen'} onClick={() => setTool('pen')}>
+                    <button
+                        type="button"
+                        aria-pressed={tool === 'pen'}
+                        onPointerDown={() => setTool('pen')}
+                        onClick={() => setTool('pen')}
+                    >
                         <i className="bi bi-pen" aria-hidden="true" /> 펜
                     </button>
-                    <button type="button" aria-pressed={tool === 'eraser'} onClick={() => setTool('eraser')}>
+                    <button
+                        type="button"
+                        aria-pressed={tool === 'eraser'}
+                        onPointerDown={() => setTool('eraser')}
+                        onClick={() => setTool('eraser')}
+                    >
                         <i className="bi bi-eraser" aria-hidden="true" /> 지우개
                     </button>
                     <button type="button" disabled={strokes.length === 0} onClick={() => commitStrokes(strokesRef.current.slice(0, -1))}>
                         <i className="bi bi-arrow-counterclockwise" aria-hidden="true" /> 실행 취소
                     </button>
-                    <button type="button" disabled={strokes.length === 0} onClick={() => commitStrokes([])}>
+                    {!compact && <button type="button" disabled={strokes.length === 0} onClick={() => commitStrokes([])}>
                         <i className="bi bi-trash3" aria-hidden="true" /> 전체 지우기
-                    </button>
+                    </button>}
                 </div>
-                <span className={`handwriting-answer__save-state handwriting-answer__save-state--${saveState}`}>
-                    {saveState === 'dirty' && '저장 중'}
-                    {saveState === 'loading' && '답안 불러오는 중'}
-                    {saveState === 'saved' && <><i className="bi bi-check2" aria-hidden="true" /> 기기에 저장됨</>}
-                    {saveState === 'error' && '임시 저장 실패'}
-                </span>
             </div>
             <div className="handwriting-answer__paper">
                 <canvas
@@ -175,7 +186,7 @@ function HandwritingAnswer({ storageKey, onAnswerChange }) {
                     onPointerUp={handlePointerUp}
                     onPointerCancel={handlePointerUp}
                 />
-                {strokes.length === 0 && <p aria-hidden="true">태블릿 펜이나 손가락으로 풀이와 답을 작성하세요.</p>}
+                {strokes.length === 0 && <p aria-hidden="true">{compact ? '이곳에 답을 쓰세요.' : '태블릿 펜이나 손가락으로 풀이와 답을 작성하세요.'}</p>}
             </div>
         </div>
     );

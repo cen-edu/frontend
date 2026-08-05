@@ -2,9 +2,10 @@ import { useMemo, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import Header from '../../components/Header/Header';
 import { getStudentAssignments } from '../../mocks/studentAssignments';
-import { getStudentWorksheetProblems } from '../../mocks/studentWorksheetSolving';
+import { getStudentPracticeProblems, getStudentWorksheetProblems } from '../../mocks/studentWorksheetSolving';
 import students from '../../mocks/students';
 import HandwritingAnswer from './HandwritingAnswer';
+import PracticeLearningView from './PracticeLearningView';
 import './StudentSolvePage.scss';
 
 function StudentSolvePage() {
@@ -18,18 +19,27 @@ function StudentSolvePage() {
             ?? getStudentAssignments(student.id)[0],
         [assignmentId, student.id],
     );
-    const problems = useMemo(() => getStudentWorksheetProblems(assignment.id), [assignment.id]);
-    const initialIndex = assignment.status === 'in-progress'
+    const isAssessment = assignment.type === 'assessment';
+    const problems = useMemo(
+        () => isAssessment ? getStudentWorksheetProblems(assignment.id) : getStudentPracticeProblems(assignment.id),
+        [assignment.id, isAssessment],
+    );
+    const initialIndex = isAssessment && assignment.status === 'in-progress'
         ? Math.min(assignment.doneUnits, problems.length - 1)
         : 0;
     const [currentIndex, setCurrentIndex] = useState(initialIndex);
     const [answers, setAnswers] = useState(() => Object.fromEntries(
-        Array.from({ length: Math.min(assignment.doneUnits, problems.length) }, (_, index) => [index, 'answered']),
+        Array.from({ length: isAssessment ? Math.min(assignment.doneUnits, problems.length) : 0 }, (_, index) => [index, 'answered']),
     ));
     const [bookmarked, setBookmarked] = useState([]);
+    const [practiceAnswers, setPracticeAnswers] = useState({});
     const problem = problems[currentIndex];
     const answeredCount = Object.keys(answers).length;
-    const progress = Math.round((answeredCount / problems.length) * 100);
+    const practiceStepCount = problems.reduce((total, item) => total + (item.steps?.length ?? 0), 0);
+    const completedPracticeStepCount = Object.values(practiceAnswers).filter(Boolean).length;
+    const progress = isAssessment
+        ? Math.round((answeredCount / problems.length) * 100)
+        : Math.round((completedPracticeStepCount / practiceStepCount) * 100);
 
     const updateAnswer = (value) => {
         setAnswers((current) => {
@@ -43,6 +53,11 @@ function StudentSolvePage() {
     const toggleBookmark = () => setBookmarked((current) => current.includes(problem.no)
         ? current.filter((number) => number !== problem.no)
         : [...current, problem.no]);
+
+    const updatePracticeAnswer = (stepId, hasAnswer) => {
+        const key = `${problem.id}:${stepId}`;
+        setPracticeAnswers((current) => ({ ...current, [key]: hasAnswer }));
+    };
 
     const renderAnswer = () => {
         if (problem.type === 'choice') {
@@ -85,17 +100,31 @@ function StudentSolvePage() {
                     </button>
                     <div className="student-solve__title-group">
                         <h1>{assignment.title}</h1>
-                        <span>자동 임시 저장</span>
                     </div>
                     <button type="button" className="student-solve__submit">학습 제출</button>
                 </header>
 
                 <div className="student-solve__progress" aria-label={`전체 진행률 ${progress}%`}>
                     <div><span style={{ width: `${progress}%` }} /></div>
-                    <strong>{answeredCount}/{problems.length}문항 완료</strong>
+                    <strong>
+                        {isAssessment
+                            ? `${answeredCount}/${problems.length}문항 완료`
+                            : `풀이 과정 ${completedPracticeStepCount}개 완료`}
+                    </strong>
                 </div>
 
-                <div className="student-solve__workspace">
+                {!isAssessment ? (
+                    <PracticeLearningView
+                        assignment={assignment}
+                        student={student}
+                        problem={problem}
+                        currentIndex={currentIndex}
+                        problemCount={problems.length}
+                        onPrevious={() => setCurrentIndex((index) => index - 1)}
+                        onNext={() => setCurrentIndex((index) => index + 1)}
+                        onStepAnswerChange={updatePracticeAnswer}
+                    />
+                ) : <div className="student-solve__workspace">
                     <aside className="student-solve__navigator" aria-label="문항 바로가기">
                         <div className="student-solve__navigator-heading">
                             <strong>문항</strong>
@@ -159,7 +188,7 @@ function StudentSolvePage() {
                             </button>
                         </footer>
                     </section>
-                </div>
+                </div>}
             </main>
         </div>
     );
