@@ -5,7 +5,10 @@ import "./Header.scss";
 
 function Header({ hideOnWheel = false, onHiddenChange, mode = 'teacher', userName }) {
     const location = useLocation();
-    const studentHomePath = `${location.pathname}${location.search}`;
+    const studentId = new URLSearchParams(location.search).get('student');
+    const studentQuery = studentId ? `?student=${encodeURIComponent(studentId)}` : '';
+    const studentHomePath = `/student${studentQuery}`;
+    const studentWorksheetsPath = `/student/worksheets${studentQuery}`;
     const [isHidden, setIsHidden] = useState(false);
     const downwardWheelCount = useRef(0);
     const updateVisibility = useCallback((hidden) => {
@@ -115,11 +118,20 @@ function Header({ hideOnWheel = false, onHiddenChange, mode = 'teacher', userNam
                         <nav className="header__navigation" aria-label="학생 메뉴">
                             <NavLink
                                 to={studentHomePath}
+                                end
                                 className={({ isActive }) =>
                                     `header__menu ${isActive ? "header__menu--active" : ""}`
                                 }
                             >
                                 내 학습
+                            </NavLink>
+                            <NavLink
+                                to={studentWorksheetsPath}
+                                className={({ isActive }) =>
+                                    `header__menu ${isActive ? "header__menu--active" : ""}`
+                                }
+                            >
+                                학습지
                             </NavLink>
                         </nav>
                     )}

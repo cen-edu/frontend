@@ -1,0 +1,223 @@
+.student-worksheets {
+  min-height: 100vh;
+  background: #f5f6f8;
+  color: #172033;
+  font-family: '학교안심 분필', cursive;
+
+  .header__brand-name { font-size: 25px; }
+  .header__menu { font-size: 19px; }
+  .header__student-name { font-size: 17px; }
+  .header__return-link { font-size: 15px; }
+
+  &__main {
+    width: min(100%, 1344px);
+    margin: 0 auto;
+    padding: 34px 32px 56px;
+  }
+
+  &__heading {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 20px;
+
+    h1 {
+      font-size: 28px;
+      font-weight: 700;
+      line-height: 1.4;
+    }
+
+    p {
+      margin-top: 5px;
+      color: #747f91;
+      font-size: 16px;
+      line-height: 1.5;
+    }
+
+    > span {
+      color: #667185;
+      font-size: 16px;
+      font-weight: 600;
+    }
+  }
+
+  &__filters {
+    margin-top: 24px;
+    padding: 20px 22px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 32px;
+    background: #fff;
+    border: 1px solid #dde2e8;
+    border-radius: 10px;
+  }
+
+  &__filter-group {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+
+  }
+
+  &__filter-label {
+    color: #465166;
+    font-size: 15px;
+    font-weight: 700;
+  }
+
+  &__filter-options {
+    display: flex;
+    gap: 8px;
+  }
+
+  &__filter-button {
+    min-width: 76px;
+    min-height: 50px;
+    padding: 0 16px;
+    background: #fff;
+    border: 1px solid #d7dde4;
+    border-radius: 8px;
+    color: #667185;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 140ms ease, border-color 140ms ease, color 140ms ease;
+
+    &:hover {
+      background: #f2f7fc;
+      border-color: #8eb7dc;
+      color: #176fc1;
+    }
+
+    &:focus-visible {
+      outline: 3px solid rgba(23, 111, 193, .25);
+      outline-offset: 2px;
+    }
+
+    &--active {
+      background: #176fc1;
+      border-color: #176fc1;
+      color: #fff;
+
+      &:hover {
+        background: #0f5fa8;
+        border-color: #0f5fa8;
+        color: #fff;
+      }
+    }
+  }
+
+  &__table-section {
+    margin-top: 20px;
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid #dde2e8;
+    border-radius: 10px;
+  }
+
+  &__table-scroll { overflow-x: auto; }
+
+  &__table {
+    width: 100%;
+    min-width: 850px;
+    border-collapse: collapse;
+    table-layout: fixed;
+
+    th,
+    td {
+      padding: 0 20px;
+      border-bottom: 1px solid #ebeef2;
+      font-size: 16px;
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    th {
+      height: 54px;
+      background: #f8f9fb;
+      color: #465166;
+      font-weight: 700;
+    }
+
+    td {
+      height: 72px;
+      color: #667185;
+    }
+
+    th:nth-child(1), td:nth-child(1) { width: 15%; }
+    th:nth-child(2), td:nth-child(2) { width: 15%; text-align: center; }
+    th:nth-child(3), td:nth-child(3) { width: 40%; }
+    th:nth-child(4), td:nth-child(4) { width: 13%; text-align: right; }
+    th:nth-child(5), td:nth-child(5) { width: 17%; padding-inline: 10px; text-align: center; }
+
+    tbody tr:last-child td { border-bottom: 0; }
+  }
+
+  &__title {
+    overflow: hidden;
+    color: #172033 !important;
+    font-size: 17px !important;
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__result {
+    color: #172033 !important;
+    font-weight: 700;
+  }
+
+  &__status {
+    min-height: 30px;
+    padding: 0 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: #edf5fc;
+    color: #176fc1;
+    font-size: 14px;
+    font-weight: 700;
+    white-space: nowrap;
+
+    &--in-progress {
+      background: #fff4dc;
+      color: #8a5a00;
+    }
+
+    &--submitted {
+      background: #eaf5ef;
+      color: #2f7357;
+    }
+  }
+
+  &__empty {
+    height: 180px !important;
+    color: #747f91 !important;
+    text-align: center !important;
+  }
+}
+
+@media (max-width: 1060px) {
+  .student-worksheets {
+    &__main { padding-inline: 24px; }
+    &__filters { align-items: stretch; flex-direction: column; gap: 18px; }
+    &__filter-options { flex-wrap: wrap; }
+  }
+}
+
+@media (max-width: 760px) {
+  .student-worksheets {
+    .header__return-link { display: none; }
+    .header__inner { padding-inline: 18px; }
+    .header__brand { margin-right: 24px; }
+    .header__navigation { gap: 18px; }
+
+    &__main { padding: 24px 18px 40px; }
+    &__heading { align-items: flex-start; flex-direction: column; gap: 6px; }
+    &__filters { padding: 18px; }
+    &__filter-button { flex: 1 1 auto; }
+  }
+}

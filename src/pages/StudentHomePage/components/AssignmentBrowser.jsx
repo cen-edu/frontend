@@ -2,6 +2,7 @@ import {
     studentAssignmentStatusLabels,
     studentAssignmentTypeLabels,
 } from '../../../mocks/studentAssignments';
+import formatRelativeDueDate from '../../../utils/formatRelativeDueDate';
 
 const filters = [
     { value: 'all', label: '전체' },
@@ -75,7 +76,7 @@ function AssignmentBrowser({ assignments, activeFilter, onFilterChange, selected
                             <span className="student-home__worksheet-meta">
                                 {assignment.totalUnits}문항
                             </span>
-                            <span className="student-home__worksheet-due">마감 {assignment.dueAt}</span>
+                            <span className="student-home__worksheet-due">마감 {formatRelativeDueDate(assignment.dueAt)}</span>
                             <span className="student-home__worksheet-progress">
                                 <span className="student-home__worksheet-progress-label">
                                     <span>진행률</span>
