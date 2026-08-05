@@ -13,22 +13,22 @@ function StudentHomePage() {
     const assignments = useMemo(() => getStudentAssignments(student.id), [student.id]);
     const [activeFilter, setActiveFilter] = useState('all');
     const [selectedAssignmentId, setSelectedAssignmentId] = useState(null);
-    const activeAssignments = assignments.filter((assignment) => assignment.status !== 'submitted');
-    const completedAssignments = assignments.filter((assignment) => assignment.status === 'submitted');
-    const inProgressCount = activeAssignments.filter((assignment) => assignment.status === 'in-progress').length;
+    const visibleAssignments = assignments.filter((assignment) => assignment.status !== 'submitted');
+    const inProgressCount = visibleAssignments.filter((assignment) => assignment.status === 'in-progress').length;
+    const availableCount = visibleAssignments.filter((assignment) => assignment.status === 'not-started').length;
 
     return (
         <div className="student-home">
             <Header mode="student" userName={student.name} />
             <main className="student-home__main">
                 <section className="student-home__summary" aria-label="학습 요약">
-                    <div><span>진행 중</span><strong>{inProgressCount}<small>개</small></strong></div>
-                    <div><span>시작 전</span><strong>{activeAssignments.length - inProgressCount}<small>개</small></strong></div>
-                    <div><span>완료한 학습</span><strong>{completedAssignments.length}<small>개</small></strong></div>
+                    <div><span>전체 학습</span><strong>{visibleAssignments.length}<small>개</small></strong></div>
+                    <div><span>학습 가능</span><strong>{availableCount}<small>개</small></strong></div>
+                    <div><span>풀이 중</span><strong>{inProgressCount}<small>개</small></strong></div>
                 </section>
 
                 <AssignmentBrowser
-                    assignments={assignments}
+                    assignments={visibleAssignments}
                     activeFilter={activeFilter}
                     onFilterChange={(filter) => {
                         setActiveFilter(filter);

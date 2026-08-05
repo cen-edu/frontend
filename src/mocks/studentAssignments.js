@@ -71,9 +71,8 @@ export const studentAssignmentTypeLabels = {
 };
 
 export const studentAssignmentStatusLabels = {
-    'not-started': '미시작',
-    'in-progress': '학습 중',
-    submitted: '제출 완료',
+    'not-started': '학습 가능',
+    'in-progress': '풀이 중',
 };
 
 export const customStageLabels = {
