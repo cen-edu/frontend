@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import AnalysisFilters from '../../components/common/AnalysisFilters/AnalysisFilters';
 import SearchInput from '../../components/common/SearchInput/SearchInput';
 import { assessmentResultFilterOptions, getAssessmentResults, getWorksheetMetrics, saveAssessmentResults } from '../../mocks/assessmentResult';
@@ -13,13 +13,17 @@ const statusTabs = [{ value: 'all', label: '전체' }, { value: 'grading', label
 
 function AssessmentResultPage() {
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
     const [results, setResults] = useState(getAssessmentResults);
     const [gradeId, setGradeId] = useState('all');
     const [classId, setClassId] = useState('all');
     const [term, setTerm] = useState('all');
     const [status, setStatus] = useState('all');
     const [searchTerm, setSearchTerm] = useState('');
-    const [selectedId, setSelectedId] = useState(results[0]?.id ?? '');
+    const [selectedId, setSelectedId] = useState(() => {
+        const requestedWorksheetId = searchParams.get('worksheet');
+        return results.some((worksheet) => worksheet.id === requestedWorksheetId) ? requestedWorksheetId : results[0]?.id ?? '';
+    });
 
     useEffect(() => {
         const refresh = () => setResults(getAssessmentResults());

@@ -5,8 +5,10 @@ function WorksheetProgressList({ worksheets }) {
     const navigate = useNavigate();
 
     const moveToAction = (worksheet) => {
-        if (worksheet.type === 'assessment') {
-            navigate(worksheet.resultId && worksheet.gradingCount > 0 ? `/learning/results/${worksheet.resultId}/grading` : '/learning/results');
+        if (worksheet.type === 'assessment' && worksheet.resultStatus !== 'confirmed') {
+            const params = new URLSearchParams();
+            params.set('worksheet', worksheet.resultId ?? worksheet.id);
+            navigate(`/learning/results?${params}`);
             return;
         }
         navigate(`/learning/weaknesses?worksheet=${worksheet.analysisId}`);
@@ -47,8 +49,12 @@ function WorksheetProgressList({ worksheets }) {
                             </div>
 
                             <div className="worksheet-list__action">
-                                <button type="button" onClick={() => moveToAction(worksheet)}>
-                                    {worksheet.type === 'assessment' ? (worksheet.gradingCount > 0 ? '채점하기' : '결과 보기') : '분석 보기'}
+                                <button
+                                    type="button"
+                                    className={worksheet.type === 'assessment' && worksheet.resultStatus !== 'confirmed' ? 'worksheet-list__action-button worksheet-list__action-button--grading' : 'worksheet-list__action-button'}
+                                    onClick={() => moveToAction(worksheet)}
+                                >
+                                    {worksheet.type === 'assessment' && worksheet.resultStatus !== 'confirmed' ? '채점하기' : '분석 보기'}
                                 </button>
                             </div>
                         </li>

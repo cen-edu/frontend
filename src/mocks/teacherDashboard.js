@@ -1,3 +1,5 @@
+import { getAssessmentResults } from './assessmentResult';
+
 export const dashboardFilterOptions = {
     years: [
         { value: '2026', label: '2026학년도' },
@@ -267,6 +269,8 @@ export function getStudentProgress(classTerm) {
 
 // 학습지 한 개의 반 전체 진행 상태. 유형에 따라 대표 지표가 달라진다.
 export function getWorksheetSummary(classTerm) {
+    const assessmentStatuses = new Map(getAssessmentResults().map((result) => [result.id, result.status]));
+
     return orderWorksheets(classTerm.worksheets).map((worksheet) => {
         const results = Object.values(worksheet.results);
         const submitted = results.filter((result) => result.status === 'submitted');
@@ -280,6 +284,7 @@ export function getWorksheetSummary(classTerm) {
             accuracy: average(graded.map((result) => result.accuracy)),
             score: worksheet.type === 'assessment' ? average(graded.map((result) => result.score)) : null,
             gradingCount: submitted.filter((result) => result.grading === 'pending').length,
+            resultStatus: worksheet.type === 'assessment' ? assessmentStatuses.get(worksheet.resultId) ?? null : null,
             overdue: isOverdue(worksheet),
         };
     });

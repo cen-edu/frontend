@@ -263,7 +263,7 @@
     align-items: center;
     gap: 8px;
 
-    button {
+    &-button {
       min-height: 34px;
       padding: 0 11px;
       background: #fff;
@@ -277,6 +277,14 @@
 
       &:hover { background: #edf5fc; border-color: #8eb7dc; color: #176fc1; }
       &:focus-visible { outline: 2px solid rgba(23, 111, 193, .35); outline-offset: 1px; }
+
+      &--grading {
+        background: #176fc1;
+        border-color: #176fc1;
+        color: #fff;
+
+        &:hover { background: #0f5fa8; border-color: #0f5fa8; color: #fff; }
+      }
     }
   }
 
