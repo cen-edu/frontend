@@ -24,11 +24,12 @@ const cellState = (result) => {
 };
 
 const cellDescription = (result) => {
-    const type = worksheetTypeLabels[result.type];
-    if (result.status === 'unassigned') return `${result.title} · ${type} · 미배정`;
-    if (result.status !== 'submitted') return `${result.title} · ${type} · ${resultStatusLabels[result.status]}${result.overdue ? ' · 기한 초과' : ''}`;
-    if (result.accuracy === null) return `${result.title} · ${type} · 채점 대기`;
-    return `${result.title} · ${type} · ${result.type === 'assessment' ? `${result.score}점` : `정답률 ${result.accuracy}%`}`;
+    const type = `${worksheetTypeLabels[result.type]}${result.origin === 'custom' ? ' · 맞춤' : ''}`;
+    const prefix = `${result.orderLabel}. ${result.title} · ${type}`;
+    if (result.status === 'unassigned') return `${prefix} · 미배정`;
+    if (result.status !== 'submitted') return `${prefix} · ${resultStatusLabels[result.status]}${result.overdue ? ' · 기한 초과' : ''}`;
+    if (result.accuracy === null) return `${prefix} · 채점 대기`;
+    return `${prefix} · ${result.type === 'assessment' ? `${result.score}점` : `정답률 ${result.accuracy}%`}`;
 };
 
 function ClassStudentProgress({ students, worksheets }) {
@@ -130,14 +131,14 @@ function ClassStudentProgress({ students, worksheets }) {
                                         </td>
                                         <td>
                                             <span className="worksheet-strip">
-                                                {student.results.map((result, index) => (
+                                                {student.results.map((result) => (
                                                     <span
                                                         key={result.worksheetId}
                                                         className={`worksheet-strip__cell worksheet-strip__cell--${cellState(result)}`}
                                                         title={cellDescription(result)}
                                                         aria-label={cellDescription(result)}
                                                     >
-                                                        {index + 1}
+                                                        {result.orderLabel}
                                                     </span>
                                                 ))}
                                             </span>

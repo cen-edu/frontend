@@ -54,7 +54,7 @@ const classOneFirstTerm = {
     roster: classOneRoster,
     worksheets: [
         {
-            id: 'unit-2-practice', title: '2단원 연습', type: 'practice', origin: 'manual',
+            id: 'unit-2-practice', title: '2단원 연습', type: 'practice', origin: 'manual', sourceWorksheetId: null,
             analysisId: 'factor-practice', resultId: 'unit-2-practice',
             assignedAt: '2026.06.24', dueAt: '2026.06.27', status: 'completed',
             results: {
@@ -63,7 +63,7 @@ const classOneFirstTerm = {
             },
         },
         {
-            id: 'factor-practice-review', title: '소인수분해 개념 복습', type: 'practice', origin: 'manual',
+            id: 'factor-practice-review', title: '소인수분해 개념 복습', type: 'practice', origin: 'manual', sourceWorksheetId: null,
             analysisId: 'factor-practice', resultId: 'factor-practice-review',
             assignedAt: '2026.07.06', dueAt: '2026.07.09', status: 'completed',
             results: {
@@ -72,7 +72,7 @@ const classOneFirstTerm = {
             },
         },
         {
-            id: 'gcd-lcm-assessment', title: '최대공약수와 최소공배수 평가', type: 'assessment', origin: 'manual',
+            id: 'gcd-lcm-assessment', title: '최대공약수와 최소공배수 평가', type: 'assessment', origin: 'manual', sourceWorksheetId: null,
             analysisId: 'factor-assessment', resultId: 'gcd-lcm-assessment', maxScore: 100,
             assignedAt: '2026.07.13', dueAt: '2026.07.16', status: 'completed',
             results: {
@@ -81,15 +81,7 @@ const classOneFirstTerm = {
             },
         },
         {
-            id: 'factor-custom', title: '공통소인수 맞춤 학습', type: 'practice', origin: 'custom',
-            analysisId: 'factor-practice', resultId: null,
-            assignedAt: '2026.07.21', dueAt: '2026.07.25', status: 'completed',
-            results: {
-                101: done(58, '07.24'), 103: done(55, '07.25'), 105: done(70, '07.25'), 107: idle,
-            },
-        },
-        {
-            id: 'factor-assessment', title: '2단원 소인수분해 종합 평가', type: 'assessment', origin: 'manual',
+            id: 'factor-assessment', title: '2단원 소인수분해 종합 평가', type: 'assessment', origin: 'manual', sourceWorksheetId: null,
             analysisId: 'factor-assessment', resultId: 'factor-assessment', maxScore: 100,
             assignedAt: '2026.07.29', dueAt: '2026.08.06', status: 'ongoing',
             results: {
@@ -98,12 +90,21 @@ const classOneFirstTerm = {
             },
         },
         {
-            id: 'factor-practice', title: '2단원 소인수분해 연습', type: 'practice', origin: 'manual',
+            id: 'factor-practice', title: '2단원 소인수분해 연습', type: 'practice', origin: 'manual', sourceWorksheetId: null,
             analysisId: 'factor-practice', resultId: null,
             assignedAt: '2026.08.01', dueAt: '2026.08.07', status: 'ongoing',
             results: {
-                101: solving, 102: done(63, '08.03'), 103: idle, 104: done(72, '08.02'),
-                105: solving, 106: done(86, '08.02'), 107: idle, 108: done(91, '08.02'),
+                101: done(52, '08.02'), 102: done(63, '08.03'), 103: done(46, '08.02'), 104: done(72, '08.02'),
+                105: done(58, '08.03'), 106: done(86, '08.02'), 107: done(54, '08.03'), 108: done(91, '08.02'),
+            },
+        },
+        {
+            // 원본 학습지의 취약점 분석에서 파생된 맞춤 학습. sourceWorksheetId 로 원본 아래에 묶인다.
+            id: 'factor-custom', title: '공통소인수 맞춤 학습', type: 'practice', origin: 'custom', sourceWorksheetId: 'factor-practice',
+            analysisId: 'factor-practice', resultId: null,
+            assignedAt: '2026.08.03', dueAt: '2026.08.07', status: 'ongoing',
+            results: {
+                101: done(58, '08.04'), 103: done(55, '08.04'), 105: done(70, '08.04'), 107: idle,
             },
         },
     ],
@@ -123,7 +124,7 @@ const classOneSecondTerm = {
     roster: classOneRoster,
     worksheets: [
         {
-            id: 'linear-equation-practice', title: '일차방정식 개념 확인', type: 'practice', origin: 'manual',
+            id: 'linear-equation-practice', title: '일차방정식 개념 확인', type: 'practice', origin: 'manual', sourceWorksheetId: null,
             analysisId: 'factor-practice', resultId: null,
             assignedAt: '2026.08.03', dueAt: '2026.08.10', status: 'ongoing',
             results: {
@@ -141,7 +142,7 @@ const classTwoFirstTerm = {
     roster: classTwoRoster,
     worksheets: [
         {
-            id: 'integer-practice-class2', title: '1단원 정수와 유리수 연습', type: 'practice', origin: 'manual',
+            id: 'integer-practice-class2', title: '1단원 정수와 유리수 연습', type: 'practice', origin: 'manual', sourceWorksheetId: null,
             analysisId: 'factor-practice', resultId: null,
             assignedAt: '2026.07.06', dueAt: '2026.07.10', status: 'completed',
             results: {
@@ -149,7 +150,7 @@ const classTwoFirstTerm = {
             },
         },
         {
-            id: 'integer-unit-test', title: '1단원 정수와 유리수 종합 평가', type: 'assessment', origin: 'manual',
+            id: 'integer-unit-test', title: '1단원 정수와 유리수 종합 평가', type: 'assessment', origin: 'manual', sourceWorksheetId: null,
             analysisId: 'factor-assessment', resultId: null, maxScore: 100,
             assignedAt: '2026.07.27', dueAt: '2026.07.31', status: 'completed',
             results: {
@@ -157,7 +158,7 @@ const classTwoFirstTerm = {
             },
         },
         {
-            id: 'factor-practice-class2', title: '2단원 소인수분해 연습', type: 'practice', origin: 'manual',
+            id: 'factor-practice-class2', title: '2단원 소인수분해 연습', type: 'practice', origin: 'manual', sourceWorksheetId: null,
             analysisId: 'factor-practice', resultId: null,
             assignedAt: '2026.08.01', dueAt: '2026.08.07', status: 'ongoing',
             results: {
@@ -193,18 +194,44 @@ export function getClassTerm(classId, term) {
 const isOverdue = (worksheet) => worksheet.dueAt < today;
 const average = (values) => (values.length === 0 ? null : Math.round(values.reduce((sum, value) => sum + value, 0) / values.length));
 
+// 원본 학습지 아래에 맞춤 학습을 묶어 표시 순서대로 펼치고 계층 번호(5, 5-1)를 매긴다.
+// 학습지별 현황과 학생별 결과 스트립이 같은 순서와 번호를 쓰도록 여기에서만 계산한다.
+function orderWorksheets(worksheets) {
+    const sources = worksheets.filter((worksheet) => worksheet.origin !== 'custom');
+    const customWorksheets = worksheets.filter((worksheet) => worksheet.origin === 'custom');
+    const ordered = [];
+
+    sources.forEach((source, index) => {
+        const children = customWorksheets.filter((worksheet) => worksheet.sourceWorksheetId === source.id);
+        ordered.push({ ...source, orderLabel: `${index + 1}`, depth: 0, childCount: children.length });
+        children.forEach((child, childIndex) => ordered.push({ ...child, orderLabel: `${index + 1}-${childIndex + 1}`, depth: 1, childCount: 0 }));
+    });
+
+    // 원본을 찾지 못한 맞춤 학습도 누락되지 않게 최상위 번호로 뒤에 이어 붙인다.
+    const sourceIds = new Set(sources.map((source) => source.id));
+    customWorksheets
+        .filter((worksheet) => !sourceIds.has(worksheet.sourceWorksheetId))
+        .forEach((worksheet, index) => ordered.push({ ...worksheet, orderLabel: `${sources.length + index + 1}`, depth: 0, childCount: 0 }));
+
+    return ordered;
+}
+
 // 학기에 배정된 모든 학습지를 학생 단위로 누적한다.
 export function getStudentProgress(classTerm) {
     const conceptsByAccuracy = [...classTerm.concepts].sort((first, second) => first.accuracy - second.accuracy);
 
+    const orderedWorksheets = orderWorksheets(classTerm.worksheets);
+
     return classTerm.roster.map((student) => {
-        const results = classTerm.worksheets.map((worksheet) => {
+        const results = orderedWorksheets.map((worksheet) => {
             const result = worksheet.results[student.id];
             return {
                 worksheetId: worksheet.id,
                 title: worksheet.title,
                 type: worksheet.type,
                 origin: worksheet.origin,
+                orderLabel: worksheet.orderLabel,
+                depth: worksheet.depth,
                 dueAt: worksheet.dueAt,
                 status: result?.status ?? 'unassigned',
                 accuracy: result?.accuracy ?? null,
@@ -240,7 +267,7 @@ export function getStudentProgress(classTerm) {
 
 // 학습지 한 개의 반 전체 진행 상태. 유형에 따라 대표 지표가 달라진다.
 export function getWorksheetSummary(classTerm) {
-    return classTerm.worksheets.map((worksheet) => {
+    return orderWorksheets(classTerm.worksheets).map((worksheet) => {
         const results = Object.values(worksheet.results);
         const submitted = results.filter((result) => result.status === 'submitted');
         const graded = submitted.filter((result) => result.accuracy !== null);

@@ -17,22 +17,23 @@ function WorksheetProgressList({ worksheets }) {
             <div className="dashboard-section__header">
                 <div>
                     <h2 id="worksheet-progress-title">학습지별 현황</h2>
-                    {worksheets.length > 0 && <p>배정 순서대로 정렬했습니다. 앞의 번호는 학생별 학습 현황의 결과 칸 순서와 같습니다.</p>}
+                    {worksheets.length > 0 && <p>배정 순서대로 정렬했고 맞춤 학습은 원본 학습지 아래에 묶었습니다. 앞의 번호는 학생별 학습 현황의 결과 칸 순서와 같습니다.</p>}
                 </div>
             </div>
 
             {worksheets.length === 0
                 ? <p className="dashboard-empty">이번 학기에 배정한 학습지가 없습니다.</p>
                 : <ol className="worksheet-list">
-                    {worksheets.map((worksheet, index) => (
-                        <li key={worksheet.id} className="worksheet-list__item">
-                            <span className="worksheet-list__order">{index + 1}</span>
+                    {worksheets.map((worksheet) => (
+                        <li key={worksheet.id} className={`worksheet-list__item${worksheet.depth > 0 ? ' worksheet-list__item--child' : ''}`}>
+                            <span className="worksheet-list__order">{worksheet.orderLabel}</span>
 
                             <div className="worksheet-list__content">
                                 <div className="worksheet-list__title">
                                     <strong>{worksheet.title}</strong>
                                     <span className={`worksheet-list__type worksheet-list__type--${worksheet.type}`}>{worksheetTypeLabels[worksheet.type]}</span>
                                     {worksheet.origin === 'custom' && <span className="worksheet-list__type worksheet-list__type--custom">맞춤</span>}
+                                    {worksheet.childCount > 0 && <span className="worksheet-list__custom-count">맞춤 {worksheet.childCount}</span>}
                                 </div>
                                 <span className="worksheet-list__meta">
                                     {worksheet.assignedAt} ~ {worksheet.dueAt} · {worksheet.status === 'ongoing' ? '진행 중' : '마감'} · 제출 {worksheet.submittedCount}/{worksheet.assignedCount}명
