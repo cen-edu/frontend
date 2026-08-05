@@ -2,7 +2,6 @@ import { getPracticeQuestionResult } from '../../../mocks/assessmentResult';
 import { difficultyLabels } from '../../../mocks/labels';
 
 const resultLabels = { correct: '정답', partial: '부분 정답', wrong: '오답', empty: '미제출' };
-const resultMarks = { correct: 'O', partial: '△', wrong: 'X', empty: '—' };
 
 // 학생 풀이 화면과 같은 순서로 풀이 과정을 보여주되 빈칸 자리에 학생이 쓴 답을 넣는다.
 function StepFormula({ segments, blankInputs }) {
@@ -36,7 +35,6 @@ function PracticeGradingCard({ student, question, answer, onMark }) {
                     <strong>난이도 {difficultyLabels[question.difficulty]}</strong>
                 </div>
                 <span className={`practice-grading-card__result practice-grading-card__result--${result}`}>
-                    <em aria-hidden="true">{resultMarks[result]}</em>
                     {resultLabels[result]} · 풀이 {correctCount}/{blanks.length}칸
                 </span>
             </div>

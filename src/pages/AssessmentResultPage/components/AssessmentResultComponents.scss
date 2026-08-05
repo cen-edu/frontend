@@ -178,6 +178,10 @@
 }
 
 .score-table {
+  --score-table-student-width: 132px;
+  --score-table-summary-width: 92px;
+  --score-table-action-width: 74px;
+
   &__toolbar {
     min-height: 64px;
     padding: 12px 18px;
@@ -207,8 +211,14 @@
   }
 
   table {
-    width: max-content;
-    min-width: 100%;
+    width: 100%;
+    min-width: calc(
+      var(--score-table-student-width)
+      + var(--score-table-questions-width)
+      + var(--score-table-summary-width)
+      + var(--score-table-action-width)
+    );
+    table-layout: fixed;
     border-collapse: separate;
     border-spacing: 0;
     color: #465166;
@@ -235,22 +245,15 @@
 
   tbody th {
     color: #172033;
-    text-align: left;
-
-    span {
-      margin-right: 7px;
-      color: #8a94a2;
-      font-size: 11px;
-      font-weight: 500;
-    }
+    text-align: center;
   }
 
   &__student {
     position: sticky;
     left: 0;
     z-index: 3 !important;
-    width: 132px;
-    min-width: 132px;
+    width: var(--score-table-student-width);
+    min-width: var(--score-table-student-width);
     background: #fff;
     box-shadow: 1px 0 0 #e1e6eb;
   }
@@ -260,12 +263,19 @@
   }
 
   &__question {
-    width: 44px;
     min-width: 44px;
   }
 
   &__summary {
-    min-width: 118px;
+    position: sticky;
+    right: var(--score-table-action-width);
+    z-index: 3 !important;
+    box-sizing: border-box;
+    width: var(--score-table-summary-width);
+    min-width: var(--score-table-summary-width);
+    max-width: var(--score-table-summary-width);
+    background: #fff;
+    box-shadow: -1px 0 0 #e1e6eb;
     color: #176fc1;
     font-weight: 700;
 
@@ -278,9 +288,11 @@
     position: sticky;
     right: 0;
     z-index: 3 !important;
-    min-width: 82px;
+    box-sizing: border-box;
+    width: var(--score-table-action-width);
+    min-width: var(--score-table-action-width);
+    max-width: var(--score-table-action-width);
     background: #fff;
-    box-shadow: -1px 0 0 #e1e6eb;
 
     button {
       width: 58px;
@@ -315,23 +327,51 @@
     background: #f5f6f8;
   }
 
+  thead &__summary {
+    background: #f5f6f8;
+  }
+
   &__mark {
     font-weight: 700;
 
     &--correct {
-      color: #356c55;
+      color: #2f7d5a;
     }
 
     &--partial {
-      color: #ad751d;
-
-      i {
-        font-size: 11px;
-      }
+      color: #d49a24;
     }
 
     &--wrong {
-      color: #a24b4b;
+      color: #c94f4f;
+    }
+
+    &--empty {
+      color: #98a2ae;
+    }
+  }
+
+  &__result-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+
+  &__score {
+    font-weight: 700;
+
+    &--full {
+      color: #2f7d5a;
+    }
+
+    &--partial {
+      color: #d49a24;
+    }
+
+    &--zero {
+      color: #c94f4f;
     }
 
     &--empty {
@@ -894,13 +934,6 @@
     font-weight: 600;
     white-space: nowrap;
 
-    em {
-      font-size: 11px;
-      font-style: normal;
-      font-weight: 600;
-      line-height: 1;
-    }
-
     &--correct {
       background: #dff0e7;
       color: #47715e;
@@ -1189,6 +1222,8 @@
     }
   }
   .score-table {
+    --score-table-student-width: 112px;
+
     &__toolbar {
       padding: 12px;
     }
@@ -1198,8 +1233,8 @@
     }
 
     &__student {
-      width: 112px;
-      min-width: 112px;
+      width: var(--score-table-student-width);
+      min-width: var(--score-table-student-width);
     }
   }
   .grading-answer-card__auto-heading {

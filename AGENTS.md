@@ -68,6 +68,7 @@
 - 취약점 분석의 문항 영역 값은 `concept|calculation|reasoning|problemSolving`으로 저장하고 화면에서는 개념/계산/추론/문제해결로 표시한다.
 - 취약점 분석의 정답 결과는 독립 정답, 힌트 후 정답, 오답, 채점 대기로 구분한다. 학급 평균과 영역·난이도 집계에서는 `insufficient` 상태 학생과 채점 대기 응답을 제외하되 참여 학생 수에는 자료 부족 학생을 포함한다.
 - 평가 문항 유형은 학생 풀이 화면을 포함해 모두 `format: 'choice'|'short'|'essay'`를 사용하고, 유형 라벨과 기본 배점은 `src/mocks/labels.js`의 `questionFormats`, `formatLabels`, `defaultScores`를 사용한다. 학생 화면에서도 난이도는 `low|mid|high`로 저장하고 배점은 `maxScore`에 둔다.
+- 종합 평가 결과의 문항별 `maxScore` 합계는 100점으로 맞춘다. 문항별 결과 색상은 만점이면 초록, 0점이면 빨강, 그 사이의 부분 점수는 노랑으로 표시하고 채점 대기는 중립색을 사용한다.
 - 종합평가의 총 문항 수에는 검증이나 경고를 두지 않고 교사가 자율적으로 구성할 수 있게 한다.
 - 학년·반 식별자는 학습 관리와 대시보드 간에 공통으로 사용한다. 학년은 `gradeId: 'middle-1'`, 반은 학년과 반을 포함한 `classId: 'middle-1-1'` 형식을 사용하고, 같은 `classId`를 페이지나 mock별로 다른 반에 매핑하지 않는다.
 - 학습 현황의 맞춤 학습은 `sourceWorksheetId`로 원본 학습지와 연결하고 왼쪽 학습 목록과 상단 집계에서 제외한다. 원본 학생 표에는 맞춤 학습 상태 컬럼을 두지 않고, 하단 `CustomLearningSection`의 학생별 상세 표를 구분선으로 바로 이어서 표시하며 카드를 눌러 별도 맞춤 화면으로 전환하지 않는다. 파생 학습지 조회는 `learningStatusUtils.js`의 `getDerivedCustomAssignments`에 두고 컴포넌트에서 다시 집계하지 않는다.
