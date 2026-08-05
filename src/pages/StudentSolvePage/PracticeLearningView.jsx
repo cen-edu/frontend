@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
-import { difficultyLabels } from '../../mocks/problemCreation';
 import ConceptChatPanel from '../../components/common/ConceptChatPanel/ConceptChatPanel';
+import PracticeConceptView from '../../components/common/PracticeProblemView/PracticeConceptView';
+import PracticeProblemView from '../../components/common/PracticeProblemView/PracticeProblemView';
 import HandwritingAnswer from './HandwritingAnswer';
 import { saveHandwriting } from './handwritingStorage';
 
@@ -33,51 +34,23 @@ function PracticeLearningView({
 
     return (
         <div className="student-solve__practice-workspace">
-            <section className="student-solve__practice" aria-labelledby="practice-problem-title">
-                <div className="student-solve__practice-heading">
-                    <div>
-                        <span>{problem.title}</span>
-                        <h2 id="practice-problem-title">{problem.prompt}</h2>
-                    </div>
-                    <span className="student-solve__difficulty">
-                        {isCustom ? `${problem.stageLabel} 문제` : `난이도 ${difficultyLabels[problem.difficulty]}`}
-                    </span>
-                </div>
-
-                <div className="student-solve__solution-steps">
-                    {problem.steps.map((step, stepIndex) => (
-                        <section key={step.id} className="student-solve__solution-step">
-                            <div className="student-solve__solution-copy">
-                                <span>{step.label}</span>
-                                <div>
-                                    <strong>{step.instruction}</strong>
-                                    <p className="student-solve__solution-formula">
-                                        {step.segments.filter((segment) => segment.type === 'text').map((segment) => segment.value).join(' ')}
-                                        <span className="student-solve__blank-marker" aria-hidden="true" />
-                                    </p>
-                                </div>
-                            </div>
-                            {step.segments.filter((segment) => segment.type === 'blank').map((blank) => {
-                                const storageKey = `${student.id}:${assignment.id}:${problem.id}:${step.id}:${blank.id}`;
-                                return (
-                                    <HandwritingAnswer
-                                        key={blank.id}
-                                        compact
-                                        saveMode="manual"
-                                        storageKey={storageKey}
-                                        onAnswerChange={(hasAnswer) => onStepAnswerChange(blank.id, hasAnswer)}
-                                        onStrokesChange={(strokes) => { draftsRef.current[storageKey] = strokes; }}
-                                    />
-                                );
-                            })}
-                            {stepIndex < problem.steps.length - 1 && (
-                                <i className="bi bi-arrow-down student-solve__step-arrow" aria-hidden="true" />
-                            )}
-                        </section>
-                    ))}
-                </div>
-
-                <footer className="student-solve__controls student-solve__controls--practice">
+            <PracticeProblemView
+                problem={problem}
+                difficultyText={isCustom ? `${problem.stageLabel} 문제` : undefined}
+                renderAnswer={(blank, step) => {
+                    const storageKey = `${student.id}:${assignment.id}:${problem.id}:${step.id}:${blank.id}`;
+                    return (
+                        <HandwritingAnswer
+                            key={blank.id}
+                            compact
+                            saveMode="manual"
+                            storageKey={storageKey}
+                            onAnswerChange={(hasAnswer) => onStepAnswerChange(blank.id, hasAnswer)}
+                            onStrokesChange={(strokes) => { draftsRef.current[storageKey] = strokes; }}
+                        />
+                    );
+                }}
+                footer={<footer className="student-solve__controls student-solve__controls--practice">
                     <button type="button" disabled={currentIndex === 0} onClick={onPrevious}>
                         <i className="bi bi-chevron-left" aria-hidden="true" /> 이전 학습
                     </button>
@@ -85,8 +58,8 @@ function PracticeLearningView({
                     <button type="button" disabled={currentIndex === problemCount - 1 || isSaving} className="student-solve__next" onClick={moveToNextLearning}>
                         {isSaving ? '저장 중' : '다음 학습'} {!isSaving && <i className="bi bi-chevron-right" aria-hidden="true" />}
                     </button>
-                </footer>
-            </section>
+                </footer>}
+            />
 
             {isCustom ? (
                 <ConceptChatPanel
@@ -101,18 +74,7 @@ function PracticeLearningView({
                         unitId: problem.steps[0]?.conceptId,
                     }]}
                 />
-            ) : <aside className="student-solve__concept" aria-labelledby="concept-title">
-                <span className="student-solve__concept-label">개념 설명</span>
-                <h2 id="concept-title">{problem.concept.title}</h2>
-                <p>{problem.concept.summary}</p>
-                <ul>
-                    {problem.concept.points.map((point) => <li key={point}>{point}</li>)}
-                </ul>
-                <div>
-                    <span>예시</span>
-                    <strong>{problem.concept.example}</strong>
-                </div>
-            </aside>}
+            ) : <PracticeConceptView concept={problem.concept} />}
         </div>
     );
 }

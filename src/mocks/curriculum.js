@@ -11,7 +11,7 @@ export const curriculumFilterOptions = {
     ],
 };
 
-const concept = (title, summary, points) => ({ title, summary, points });
+const concept = (title, summary, points, example) => ({ title, summary, points, example });
 const small = (id, name, unitConcept) => ({ id, name, ...(unitConcept ? { concept: unitConcept } : {}) });
 
 export const curriculumUnits = [
@@ -21,14 +21,14 @@ export const curriculumUnits = [
             {
                 id: 'm1s1-major-1', name: '수와 연산', middleUnits: [
                     { id: 'm1s1-mid-1', name: '소인수분해', smallUnits: [
-                        small('m1s1-prime-number', '소수와 합성수', concept('소수와 합성수', '자연수는 약수의 개수에 따라 소수와 합성수로 구분할 수 있습니다.', ['소수는 약수가 1과 자기 자신뿐입니다.', '1은 소수도 합성수도 아닙니다.'])),
-                        small('m1s1-prime-factor', '소인수분해', concept('소인수분해', '합성수를 소수인 인수들의 곱으로 나타내는 방법입니다.', ['거듭제곱을 사용해 간단히 나타냅니다.', '곱셈 순서가 달라도 같은 소인수분해입니다.'])),
-                        small('m1s1-gcd-lcm', '최대공약수와 최소공배수', concept('최대공약수와 최소공배수', '소인수분해를 이용하면 두 수의 공약수와 공배수를 체계적으로 구할 수 있습니다.', ['공통 소인수의 작은 지수로 최대공약수를 구합니다.', '모든 소인수의 큰 지수로 최소공배수를 구합니다.'])),
+                        small('m1s1-prime-number', '소수와 합성수', concept('소수와 합성수', '자연수는 약수의 개수에 따라 소수와 합성수로 구분할 수 있습니다.', ['소수는 약수가 1과 자기 자신뿐입니다.', '1은 소수도 합성수도 아닙니다.'], '2, 3, 5, 7은 소수입니다.')),
+                        small('m1s1-prime-factor', '소인수분해', concept('소인수분해', '합성수를 소수인 인수들의 곱으로 나타내는 방법입니다.', ['거듭제곱을 사용해 간단히 나타냅니다.', '곱셈 순서가 달라도 같은 소인수분해입니다.'], '12 = 2² × 3')),
+                        small('m1s1-gcd-lcm', '최대공약수와 최소공배수', concept('최대공약수와 최소공배수', '소인수분해를 이용하면 두 수의 공약수와 공배수를 체계적으로 구할 수 있습니다.', ['공통 소인수의 작은 지수로 최대공약수를 구합니다.', '모든 소인수의 큰 지수로 최소공배수를 구합니다.'], '12와 18의 최대공약수는 6입니다.')),
                     ] },
                     { id: 'm1s1-mid-2', name: '정수와 유리수', smallUnits: [
                         small('m1s1-integer-rational', '정수와 유리수'),
                         small('m1s1-number-line', '수의 대소 관계'),
-                        small('m1s1-integer-add-subtract', '정수의 덧셈과 뺄셈', concept('정수의 덧셈과 뺄셈', '부호가 있는 수의 덧셈과 뺄셈은 부호와 절댓값을 함께 살펴 계산합니다.', ['부호가 같으면 절댓값을 더합니다.', '뺄셈은 빼는 수의 부호를 바꾸어 덧셈으로 계산합니다.'])),
+                        small('m1s1-integer-add-subtract', '정수의 덧셈과 뺄셈', concept('정수의 덧셈과 뺄셈', '부호가 있는 수의 덧셈과 뺄셈은 부호와 절댓값을 함께 살펴 계산합니다.', ['부호가 같으면 절댓값을 더합니다.', '뺄셈은 빼는 수의 부호를 바꾸어 덧셈으로 계산합니다.'], '(-3) + 7 = 4')),
                         small('m1s1-integer-multiply-divide', '정수의 곱셈과 나눗셈'),
                     ] },
                 ],
@@ -42,7 +42,7 @@ export const curriculumUnits = [
                     ] },
                     { id: 'm1s1-mid-4', name: '일차방정식', smallUnits: [
                         small('m1s1-equation-basic', '방정식과 그 해'),
-                        small('m1s1-linear-equation', '일차방정식의 풀이', concept('일차방정식의 풀이', '등식의 성질을 이용하여 미지수를 한쪽에 모아 해를 구합니다.', ['이항하면 항의 부호가 바뀝니다.', '양변을 미지수의 계수로 나누어 해를 구합니다.'])),
+                        small('m1s1-linear-equation', '일차방정식의 풀이', concept('일차방정식의 풀이', '등식의 성질을 이용하여 미지수를 한쪽에 모아 해를 구합니다.', ['이항하면 항의 부호가 바뀝니다.', '양변을 미지수의 계수로 나누어 해를 구합니다.'], 'x + 5 = 12이면 x = 7입니다.')),
                         small('m1s1-linear-equation-use', '일차방정식의 활용'),
                     ] },
                 ],

@@ -5,16 +5,13 @@ import UnitTreeSelector from '../../components/common/UnitTreeSelector/UnitTreeS
 import { curriculumUnits } from '../../mocks/curriculum';
 import { defaultUnitCounts, difficultyLevels, generateProblems } from '../../mocks/problemCreation';
 import { libraryWorksheets } from '../../mocks/problemLibrary';
-import ConceptPanel from './components/ConceptPanel';
-import ProblemPreviewList from '../../components/common/ProblemViewer/ProblemPreviewList';
-import ProblemRevisePanel from './components/ProblemRevisePanel';
-import ProblemStepView from '../../components/common/ProblemViewer/ProblemStepView';
+import PracticeConceptView from '../../components/common/PracticeProblemView/PracticeConceptView';
+import PracticeProblemView from '../../components/common/PracticeProblemView/PracticeProblemView';
 import UnitConfigTable from './components/UnitConfigTable';
 import './ProblemCreationPage.scss';
 import './components/ProblemCreationComponents.scss';
 
 const subjectId = 'math';
-let nextRequestId = 1;
 
 function ProblemCreationPage() {
     const [searchParams] = useSearchParams();
@@ -25,7 +22,6 @@ function ProblemCreationPage() {
     const [result, setResult] = useState(null);
     const [selectedProblemId, setSelectedProblemId] = useState('');
     const [saved, setSaved] = useState(false);
-    const [revisionRequests, setRevisionRequests] = useState({});
 
     const majorUnits = useMemo(() => curriculumUnits.find((item) => item.gradeId === gradeId && item.subjectId === subjectId && item.term === term)?.majorUnits ?? [], [gradeId, subjectId, term]);
     const unitIndex = useMemo(() => new Map(majorUnits.flatMap((major) => major.middleUnits.flatMap((middle) => middle.smallUnits.map((unit) => [unit.id, { ...unit, majorName: major.name, middleName: middle.name }])))), [majorUnits]);
@@ -34,6 +30,8 @@ function ProblemCreationPage() {
     const totalCount = configs.reduce((sum, config) => sum + difficultyLevels.reduce((unitSum, level) => unitSum + config.counts[level], 0), 0);
     const canGenerate = configs.length > 0 && configs.every((config) => difficultyLevels.some((level) => config.counts[level] > 0));
     const selectedProblem = result?.problems.find((problem) => problem.id === selectedProblemId) ?? null;
+    const selectedProblemIndex = result?.problems.findIndex((problem) => problem.id === selectedProblemId) ?? -1;
+    const previewProgress = result?.problems.length ? Math.round(((selectedProblemIndex + 1) / result.problems.length) * 100) : 0;
 
     useEffect(() => {
         if (initializedFromLibrary.current) return;
@@ -53,7 +51,6 @@ function ProblemCreationPage() {
     const closeResult = () => {
         setResult(null);
         setSelectedProblemId('');
-        setRevisionRequests({});
     };
 
     const resetCreation = () => {
@@ -91,22 +88,11 @@ function ProblemCreationPage() {
         setResult({ problems });
         setSelectedProblemId(problems[0]?.id ?? '');
         setSaved(false);
-        setRevisionRequests({});
     };
 
-    const addRevisionRequest = (prompt) => {
-        if (!selectedProblem) return;
-        setRevisionRequests((current) => ({
-            ...current,
-            [selectedProblem.id]: [...(current[selectedProblem.id] ?? []), { id: `revision-request-${nextRequestId++}`, prompt }],
-        }));
-    };
-
-    const removeRevisionRequest = (requestId) => {
-        setRevisionRequests((current) => ({
-            ...current,
-            [selectedProblemId]: (current[selectedProblemId] ?? []).filter((request) => request.id !== requestId),
-        }));
+    const movePreview = (offset) => {
+        const nextProblem = result?.problems[selectedProblemIndex + offset];
+        if (nextProblem) setSelectedProblemId(nextProblem.id);
     };
 
     return (
@@ -127,20 +113,35 @@ function ProblemCreationPage() {
             ) : (
                 <section className="problem-creation-page__result" aria-labelledby="problem-result-title">
                     <header className="problem-creation-page__result-header">
-                        <div><h2 id="problem-result-title">생성 결과</h2><p>총 {result.problems.length}문항의 문제와 단계별 풀이를 검토하고 문항별 수정 요청을 작성합니다.</p></div>
+                        <div><h2 id="problem-result-title">생성 결과</h2><p>총 {result.problems.length}문항을 학생 화면과 같은 순서로 검토합니다.</p></div>
                         <div className="problem-creation-page__result-actions">
                             <button type="button" className="problem-creation-button problem-creation-button--secondary" onClick={closeResult}>출제 구성 수정</button>
                             <button type="button" className="problem-creation-button problem-creation-button--secondary" onClick={() => setSaved(true)} disabled={saved}>{saved ? '저장 완료' : '문제 보관함에 저장'}</button>
                         </div>
                     </header>
                     {saved && <p className="problem-creation-page__saved" role="status"><i className="bi bi-check-circle-fill" aria-hidden="true" /> 문제 보관함에 저장했습니다.</p>}
-                    <div className="problem-creation-page__preview-grid">
-                        <ProblemPreviewList problems={result.problems} selectedId={selectedProblemId} onSelect={setSelectedProblemId} />
-                        <div className="problem-creation-page__problem-column">
-                            <ProblemStepView problem={selectedProblem} />
-                            <ProblemRevisePanel key={selectedProblemId} problem={selectedProblem} requests={revisionRequests[selectedProblemId] ?? []} onAddRequest={addRevisionRequest} onRemoveRequest={removeRevisionRequest} />
+                    <div className="problem-creation-page__preview-progress" aria-label={`미리보기 진행률 ${previewProgress}%`}>
+                        <div><span style={{ width: `${previewProgress}%` }} /></div>
+                        <strong>{selectedProblemIndex + 1}/{result.problems.length}문항</strong>
+                    </div>
+                    <div className="problem-creation-page__student-preview">
+                        <div className="problem-creation-page__student-preview-content">
+                            <PracticeProblemView
+                                problem={selectedProblem}
+                                answerMode="answer"
+                                headingId="teacher-preview-problem-title"
+                                footer={<footer className="problem-creation-page__preview-controls">
+                                    <button type="button" disabled={selectedProblemIndex === 0} onClick={() => movePreview(-1)}>
+                                        <i className="bi bi-chevron-left" aria-hidden="true" /> 이전 학습
+                                    </button>
+                                    <span>풀이를 순서대로 완성해 보세요.</span>
+                                    <button type="button" className="problem-creation-page__preview-next" disabled={selectedProblemIndex === result.problems.length - 1} onClick={() => movePreview(1)}>
+                                        다음 학습 <i className="bi bi-chevron-right" aria-hidden="true" />
+                                    </button>
+                                </footer>}
+                            />
+                            <PracticeConceptView concept={selectedProblem?.concept} headingId="teacher-preview-concept-title" />
                         </div>
-                        <ConceptPanel problem={selectedProblem} />
                     </div>
                 </section>
             )}

@@ -40,6 +40,7 @@ const fallbackConcept = (unitName) => ({
     title: unitName,
     summary: `${unitName}의 정의와 기본 원리를 적용해 풀이 과정을 완성합니다.`,
     points: ['문제의 조건을 식이나 도형으로 정리합니다.', '계산 결과가 조건에 맞는지 확인합니다.'],
+    example: `${unitName}의 핵심 조건을 식으로 정리해 적용합니다.`,
 });
 
 const fallbackTemplate = (unit, difficulty, index) => template(
@@ -67,6 +68,8 @@ export function generateProblems(configs) {
                     ...item,
                     id: `${unit.id}-${difficulty}-${index + 1}-s${stepIndex + 1}`,
                     conceptId: unit.id,
+                    label: `풀이 과정 ${stepIndex + 1}`,
+                    instruction: '빈칸에 알맞은 답을 써서 풀이 과정을 완성합니다.',
                     segments: item.segments.map((segment) => segment.type === 'blank' ? { ...segment, id: `${unit.id}-${difficulty}-${index + 1}-${segment.id}` } : segment),
                 })),
             };
