@@ -6,6 +6,7 @@ import { learningAssignments, learningFilterOptions } from '../../mocks/learning
 import AssignmentList from './components/AssignmentList';
 import LearningSummary from './components/LearningSummary';
 import StudentProgressTable from './components/StudentProgressTable';
+import { getDerivedCustomAssignments } from './learningStatusUtils';
 import './LearningStatusPage.scss';
 import './components/LearningStatusComponents.scss';
 
@@ -26,7 +27,10 @@ function LearningStatusPage() {
     const [assignmentStatus, setAssignmentStatus] = useState('all');
     const [studentStatus, setStudentStatus] = useState('all');
     const [searchTerm, setSearchTerm] = useState('');
-    const [selectedId, setSelectedId] = useState(requestedAssignment?.id ?? 'linear-equation-quiz');
+    const initialSelectedId = requestedAssignment?.origin === 'custom'
+        ? requestedAssignment.sourceWorksheetId
+        : requestedAssignment?.id;
+    const [selectedId, setSelectedId] = useState(initialSelectedId ?? '');
     const previousAssignmentId = useRef(selectedId);
 
     const filteredAssignments = useMemo(() => {
@@ -39,11 +43,13 @@ function LearningStatusPage() {
                 && (!keyword || assignment.title.toLowerCase().includes(keyword)));
     }, [assignmentStatus, classId, gradeId, searchTerm, term]);
 
+    // 맞춤 학습은 목록에 노출하지 않고 원본 학습지 상세에서만 진입한다.
+    const listAssignments = useMemo(() => filteredAssignments.filter((assignment) => assignment.origin !== 'custom'), [filteredAssignments]);
+
     useEffect(() => {
-        if (!filteredAssignments.some((assignment) => assignment.id === selectedId)) {
-            setSelectedId(filteredAssignments[0]?.id ?? '');
-        }
-    }, [filteredAssignments, selectedId]);
+        const stillValid = listAssignments.some((assignment) => assignment.id === selectedId);
+        if (!stillValid) setSelectedId(listAssignments[0]?.id ?? '');
+    }, [listAssignments, selectedId]);
 
     useEffect(() => {
         if (previousAssignmentId.current !== selectedId) {
@@ -57,13 +63,16 @@ function LearningStatusPage() {
         if (studentStatus === 'unsubmitted') return student.status !== 'submitted';
         return studentStatus === 'all' || student.status === studentStatus;
     }) ?? [];
-    const allStudents = filteredAssignments.flatMap((assignment) => assignment.students);
+    // 맞춤 학습은 원본에서 파생된 후속 과제라 상단 집계에 이중으로 세지 않는다.
+    const allStudents = listAssignments.flatMap((assignment) => assignment.students);
     const summary = {
-        assignments: filteredAssignments.filter((assignment) => assignment.status === 'ongoing').length,
+        assignments: listAssignments.filter((assignment) => assignment.status === 'ongoing').length,
         submitted: allStudents.filter((student) => student.status === 'submitted').length,
         inProgress: allStudents.filter((student) => student.status === 'in-progress').length,
         unsubmitted: allStudents.filter((student) => student.status !== 'submitted').length,
     };
+
+    const derivedCustoms = getDerivedCustomAssignments(learningAssignments, selectedId);
 
     const selectSummary = (key) => {
         if (key === 'assignments') {
@@ -86,7 +95,7 @@ function LearningStatusPage() {
                     <h1 id="learning-status-title">학습 현황</h1>
                     <p>배정한 학습의 제출 상태와 학생별 진행 상황을 확인합니다.</p>
                 </div>
-                <span>검색 결과 <strong>{filteredAssignments.length}</strong>개</span>
+                <span>검색 결과 <strong>{listAssignments.length}</strong>개</span>
             </header>
             <div className="learning-status__toolbar">
                 <div className="learning-status__filters">
@@ -105,13 +114,14 @@ function LearningStatusPage() {
             <LearningSummary summary={summary} activeKey={activeSummaryKey} onSelect={selectSummary} />
 
             <div className="learning-status__content">
-                <AssignmentList assignments={filteredAssignments} selectedId={selectedId} onSelect={setSelectedId} />
+                <AssignmentList assignments={listAssignments} selectedId={selectedId} onSelect={setSelectedId} />
                 <StudentProgressTable
                     assignment={selectedAssignment}
                     students={visibleStudents}
                     status={studentStatus}
                     statusOptions={learningFilterOptions.studentStatuses}
                     onStatusChange={setStudentStatus}
+                    customAssignments={derivedCustoms}
                 />
             </div>
         </section>

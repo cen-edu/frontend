@@ -118,6 +118,7 @@
 
 .learning-students {
   &__header { align-items: center; }
+
   &__class { margin-bottom: 5px; display: flex; align-items: center; gap: 6px; color: #168bd5; font-size: 12px; font-weight: 750; }
   &__grading-count { margin-top: 7px; display: inline-flex; padding: 4px 7px; background: #fff3e8; border-radius: 6px; color: #c66a21; font-size: 11px; font-weight: 750; }
   &__header-controls { display: flex; align-items: center; gap: 16px; }
@@ -132,6 +133,13 @@
   &__empty-cell { height: 150px !important; color: #919ba8 !important; }
   &--empty { min-height: 300px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; color: #929ca8; i { font-size: 28px; } p { font-size: 14px; } }
 }
+
+/* 원본 학습지 상세 하단에 이어지는 파생 맞춤 학습 상세 */
+.custom-learning-list {
+  &__items { display: grid; }
+}
+
+.custom-learning-detail { border-top: 1px solid #ebeef2 !important; }
 
 @media (max-width: 1180px) {
   .learning-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -164,9 +172,11 @@
 .learning-origin-badge { background: #f1f3f5; color: #596579; font-weight: 600; }
 .learning-type-badge--practice,
 .learning-type-badge--assessment { background: #f1f3f5; color: #596579; }
+// 맞춤은 원본-파생 관계를 나타내는 표식이라 유형 배지와 구분되어야 한다. 대시보드와 같은 톤을 쓴다.
+.learning-origin-badge { background: #f2efe9; color: #8a6d2f; }
 .learning-assignments__state { padding: 0; background: transparent; color: #667185; font-weight: 600; &--ongoing { background: transparent; color: #3d6f5a; } &--completed { background: transparent; color: #747f91; } }
 .learning-assignments__deadline { padding: 0; background: transparent; &--today, &--overdue { background: transparent; color: #ad4b43; } &--soon { background: transparent; color: #8b692e; } }
 .learning-students__grading-count { padding: 0; background: transparent; color: #8b692e; font-weight: 600; }
-.learning-students__status { padding: 0; align-items: center; gap: 6px; background: transparent; font-weight: 600; &::before { width: 7px; height: 7px; border-radius: 50%; background: #9aa4b1; content: ""; } &--submitted { background: transparent; color: #356c55; &::before { background: #4f806b; } } &--in-progress { background: transparent; color: #456b8b; &::before { background: #6385a1; } } &--not-started { background: transparent; color: #747f91; } }
+.learning-students__status { padding: 0; align-items: center; gap: 6px; background: transparent; font-weight: 600; &::before { width: 7px; height: 7px; border-radius: 50%; background: #9aa4b1; content: ""; } &--submitted { background: transparent; color: #356c55; &::before { background: #4f806b; } } &--in-progress { background: transparent; color: #456b8b; &::before { background: #6385a1; } } &--not-started { background: transparent; color: #747f91; } &--unassigned { background: transparent; color: #96a0ad; &::before { background: transparent; border: 1px dotted #b3bcc7; } } }
 .learning-students__grading-done { color: #356c55; font-weight: 600; }
 .learning-students__grading-pending { color: #8b692e; font-weight: 600; }

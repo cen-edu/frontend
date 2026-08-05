@@ -55,6 +55,7 @@
 - 평가 문항 유형은 채점 화면과 동일한 `choice|short|essay`를 사용하고, 유형 라벨과 기본 배점은 `src/mocks/assessmentCreation.js`의 `questionFormats`와 `defaultScores`를 사용한다.
 - 종합평가의 총 문항 수에는 검증이나 경고를 두지 않고 교사가 자율적으로 구성할 수 있게 한다.
 - 학년·반 식별자는 학습 관리와 대시보드 간에 공통으로 사용한다. 학년은 `gradeId: 'middle-1'`, 반은 학년과 반을 포함한 `classId: 'middle-1-1'` 형식을 사용하고, 같은 `classId`를 페이지나 mock별로 다른 반에 매핑하지 않는다.
+- 학습 현황의 맞춤 학습은 `sourceWorksheetId`로 원본 학습지와 연결하고 왼쪽 학습 목록과 상단 집계에서 제외한다. 원본 학생 표에는 맞춤 학습 상태 컬럼을 두지 않고, 하단 `CustomLearningSection`의 학생별 상세 표를 구분선으로 바로 이어서 표시하며 카드를 눌러 별도 맞춤 화면으로 전환하지 않는다. 파생 학습지 조회는 `learningStatusUtils.js`의 `getDerivedCustomAssignments`에 두고 컴포넌트에서 다시 집계하지 않는다.
 - 학습 관리의 탐색형 필터는 `학년 → 반 → 학기 → 상태 → 검색`을 사용하고, 학년과 반에는 전체 옵션을 제공한다. 문제 보관함, 학습 현황, 평가 결과에서는 기간 필터를 사용하지 않는다. 취약점 분석의 선택형 필터는 `학년도 → 학년 → 반 → 학기 → 학습지`, 교사용 대시보드는 `학년도 → 학년 → 반 → 학기`를 사용하며 전체 옵션을 두지 않는다.
 - 교사용 대시보드는 학습지 하나가 아니라 반 × 학기 단위로 집계한다. 학습지 단위 상세는 학습 현황, 평가 결과, 취약점 분석이 담당하므로 대시보드에 문항 단위 분석이나 학습지 선택 필터를 두지 않는다.
 - 교사용 대시보드의 데이터와 파생 로직은 `src/mocks/teacherDashboard.js`의 `dashboardClassTerms`와 `getStudentProgress` / `getWorksheetSummary` / `getDashboardSummaries` 셀렉터에서 관리하고 컴포넌트에서 다시 집계하지 않는다.

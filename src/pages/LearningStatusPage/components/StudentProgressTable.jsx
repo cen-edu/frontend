@@ -1,12 +1,5 @@
-import { Link } from 'react-router-dom';
-import CustomSelect from '../../../components/common/CustomSelect/CustomSelect';
-import { getProgress, getProgressLabel, learningTypeLabels } from '../learningStatusUtils';
-
-const statusLabels = {
-    submitted: '제출 완료',
-    'in-progress': '학습 중',
-    'not-started': '미시작',
-};
+import AssignmentProgressPanel from './AssignmentProgressPanel';
+import CustomLearningSection from './CustomLearningSection';
 
 function StudentProgressTable({
     assignment,
@@ -14,6 +7,7 @@ function StudentProgressTable({
     status,
     statusOptions,
     onStatusChange,
+    customAssignments = [],
 }) {
     if (!assignment) {
         return (
@@ -24,66 +18,18 @@ function StudentProgressTable({
         );
     }
 
-    const worksheetId = assignment.analysisWorksheetId ?? assignment.id;
-    const gradingPending = assignment.students.filter((student) => student.grading === 'pending').length;
-
     return (
-        <section className="learning-panel learning-students" aria-labelledby="student-progress-title">
-            <div className="learning-panel__header learning-students__header">
-                <div>
-                    <span className="learning-students__class">
-                        {assignment.className}
-                        <span className={`learning-type-badge learning-type-badge--${assignment.type}`}>{learningTypeLabels[assignment.type]}</span>
-                        {assignment.origin === 'custom' && <span className="learning-origin-badge">맞춤</span>}
-                    </span>
-                    <h2 id="student-progress-title">{assignment.title}</h2>
-                    {gradingPending > 0 && <span className="learning-students__grading-count">채점 대기 {gradingPending}명</span>}
-                </div>
-                <div className="learning-students__header-controls">
-                    <CustomSelect label="학생 학습 상태" value={status} options={statusOptions} onChange={onStatusChange} width={116} />
-                </div>
-            </div>
-
-            <div className="learning-students__table-wrap">
-                <table className="learning-students__table">
-                    <thead>
-                        <tr>
-                            <th>번호</th>
-                            <th>이름</th>
-                            <th>학습 상태</th>
-                            <th>진행률</th>
-                            <th>채점</th>
-                            <th>제출 일시</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {students.map((student) => {
-                            const progress = getProgress(assignment, student);
-                            return (
-                                <tr key={student.id}>
-                                    <td>{student.number}</td>
-                                    <td><Link className="learning-students__name" to={`/learning/weaknesses/students/${student.id}?worksheet=${worksheetId}`}>{student.name}</Link></td>
-                                    <td><span className={`learning-students__status learning-students__status--${student.status}`}>{statusLabels[student.status]}</span></td>
-                                    <td>
-                                        <span className="learning-students__progress" title={`${getProgressLabel(assignment, student)} · ${progress}%`}>
-                                            <span><span style={{ width: `${progress}%` }} /></span>
-                                            <b>{getProgressLabel(assignment, student)}</b>
-                                        </span>
-                                    </td>
-                                    <td>
-                                        {student.grading === 'done' && <span className="learning-students__grading-done">채점 완료</span>}
-                                        {student.grading === 'pending' && <span className="learning-students__grading-pending">채점 대기</span>}
-                                        {student.grading === null && <span className="learning-students__muted">-</span>}
-                                    </td>
-                                    <td><span className="learning-students__muted">{student.submittedAt}</span></td>
-                                </tr>
-                            );
-                        })}
-                        {students.length === 0 && <tr><td className="learning-students__empty-cell" colSpan="6">조건에 맞는 학생이 없습니다.</td></tr>}
-                    </tbody>
-                </table>
-            </div>
-        </section>
+        <div className="learning-status__details">
+            <AssignmentProgressPanel
+                assignment={assignment}
+                students={students}
+                status={status}
+                statusOptions={statusOptions}
+                onStatusChange={onStatusChange}
+                titleId="student-progress-title"
+            />
+            <CustomLearningSection assignments={customAssignments} statusOptions={statusOptions} />
+        </div>
     );
 }
 

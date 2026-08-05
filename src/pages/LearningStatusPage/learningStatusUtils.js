@@ -16,6 +16,12 @@ export function getProgressLabel(assignment, student) {
     return `${unitLabel} ${student.doneUnits}/${totalUnits}${suffix}`;
 }
 
+// 원본 학습지에서 파생된 맞춤 학습. 목록 필터와 무관하게 찾아야 하므로 전체 배정 목록을 넘긴다.
+export function getDerivedCustomAssignments(assignments, sourceId) {
+    if (!sourceId) return [];
+    return assignments.filter((assignment) => assignment.origin === 'custom' && assignment.sourceWorksheetId === sourceId);
+}
+
 export function getDueStatus(dueAt, now = new Date()) {
     const dueDate = new Date(dueAt.replaceAll('.', '-').replace(' ', 'T'));
     if (Number.isNaN(dueDate.getTime())) return null;
