@@ -1,7 +1,6 @@
-export const learningTypeLabels = {
-    practice: '일반 학습',
-    assessment: '종합 평가',
-};
+import { worksheetTypeLabels } from '../../mocks/labels';
+
+export const learningTypeLabels = worksheetTypeLabels;
 
 export function getProgress(assignment, student) {
     const totalUnits = student.totalUnits ?? assignment.totalUnits;

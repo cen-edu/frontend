@@ -1,7 +1,7 @@
 const summaryItems = [
     { key: 'assignments', label: '진행 중 학습' },
     { key: 'submitted', label: '제출 완료' },
-    { key: 'inProgress', label: '학습 중' },
+    { key: 'inProgress', label: '풀이 중' },
     { key: 'unsubmitted', label: '미제출', attention: true },
 ];
 

@@ -19,7 +19,7 @@ function DashboardPage() {
         year: '2026',
         grade: 'middle-1',
         classId: 'middle-1-1',
-        term: 'first',
+        term: 'second',
     });
 
     const classTerm = useMemo(() => getClassTerm(filters.classId, filters.term), [filters.classId, filters.term]);

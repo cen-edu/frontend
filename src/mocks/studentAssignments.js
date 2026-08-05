@@ -1,3 +1,5 @@
+import { customStageLabels, customStages, studentAssignmentStatusLabels, worksheetTypeLabels } from './labels';
+
 const baseAssignments = [
     {
         id: 'factor-practice',
@@ -24,8 +26,8 @@ const baseAssignments = [
         assignedAt: '2026.08.03',
         dueAt: '2026.08.07 18:00',
         doneUnits: 0,
-        totalUnits: 9,
-        stages: ['retrace', 'basic', 'independent'],
+        totalUnits: 12,
+        stages: customStages,
     },
     {
         id: 'factor-assessment',
@@ -53,7 +55,8 @@ const baseAssignments = [
         submittedAt: '2026.07.30 16:42',
         doneUnits: 10,
         totalUnits: 10,
-        correctUnits: 8,
+        totalQuestions: 4,
+        correctUnits: 3,
         resultReady: true,
     },
     {
@@ -86,7 +89,8 @@ const baseAssignments = [
         submittedAt: '2026.04.20 17:10',
         doneUnits: 9,
         totalUnits: 10,
-        correctUnits: 7,
+        totalQuestions: 4,
+        correctUnits: 3,
         resultReady: true,
     },
     {
@@ -102,7 +106,8 @@ const baseAssignments = [
         submittedAt: '2025.05.15 19:22',
         doneUnits: 12,
         totalUnits: 12,
-        correctUnits: 10,
+        totalQuestions: 5,
+        correctUnits: 4,
         resultReady: true,
     },
     {
@@ -152,27 +157,13 @@ const baseAssignments = [
         submittedAt: '2024.10.14 20:04',
         doneUnits: 14,
         totalUnits: 14,
-        correctUnits: 12,
+        totalQuestions: 6,
+        correctUnits: 5,
         resultReady: true,
     },
 ];
 
-export const studentAssignmentTypeLabels = {
-    practice: '일반 학습',
-    assessment: '종합 평가',
-};
-
-export const studentAssignmentStatusLabels = {
-    'not-started': '학습 가능',
-    'in-progress': '풀이 중',
-    submitted: '학습 완료',
-};
-
-export const customStageLabels = {
-    retrace: '되짚기',
-    basic: '기본',
-    independent: '응용',
-};
+export { customStageLabels, studentAssignmentStatusLabels, worksheetTypeLabels };
 
 export const getStudentAssignments = (studentId) => {
     const progressOffset = Number(studentId) % 3;

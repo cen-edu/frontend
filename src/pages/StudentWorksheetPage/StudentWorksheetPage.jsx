@@ -1,10 +1,8 @@
 import { useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import Header from '../../components/Header/Header';
-import {
-    getStudentAssignments,
-    studentAssignmentStatusLabels,
-} from '../../mocks/studentAssignments';
+import { assignmentStatuses, studentAssignmentStatusLabels } from '../../mocks/labels';
+import { getStudentAssignments } from '../../mocks/studentAssignments';
 import students from '../../mocks/students';
 import formatRelativeDueDate from '../../utils/formatRelativeDueDate';
 import './StudentWorksheetPage.scss';
@@ -21,15 +19,14 @@ const typeOptions = [
 ];
 const statusOptions = [
     { value: 'all', label: '전체' },
-    { value: 'not-started', label: '학습 가능' },
-    { value: 'in-progress', label: '풀이 중' },
-    { value: 'submitted', label: '학습 완료' },
+    ...assignmentStatuses.map((status) => ({ value: status, label: studentAssignmentStatusLabels[status] })),
 ];
 
+// 일반 학습은 점수 없이 정답 문항 수만 보여준다.
 const getResult = (assignment) => {
     if (assignment.status !== 'submitted' || !assignment.resultReady) return '-';
     if (assignment.type === 'assessment') return `${assignment.score}점`;
-    return `${assignment.correctUnits}/${assignment.totalUnits}`;
+    return `${assignment.correctUnits}/${assignment.totalQuestions}문항 정답`;
 };
 
 const getAssignmentCategory = (assignment) => (

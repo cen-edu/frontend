@@ -1,5 +1,5 @@
 import CustomCheckbox from '../../../components/common/CustomCheckbox/CustomCheckbox';
-import {formatLabels} from '../../../mocks/assessmentCreation';
+import {formatLabels} from '../../../mocks/labels';
 
 function GradingAnswerCard({student, answer, question, rubricChecks, onScore, onRubric}) {
     const isUnsubmitted = !answer?.input;

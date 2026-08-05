@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { customStageLabels, customStages } from '../../../mocks/customCreation';
+import { customStageStepLabels, customStages } from '../../../mocks/customCreation';
 import { getConceptRate, getCustomSessionSummary, getStudentCustomSessions, prescriptionLabels } from '../../../mocks/weaknessAnalysis';
 
 function CustomLearningResult({ worksheet, student }) {
@@ -50,7 +50,7 @@ function CustomLearningResult({ worksheet, student }) {
                 {customStages.map((stage) => {
                     const item = summary.stages.find((value) => value.stage === stage);
                     return <li key={stage} className={stage === 'independent' ? 'custom-learning__stage custom-learning__stage--key' : 'custom-learning__stage'}>
-                        <span>{customStageLabels[stage]}</span>
+                        <span>{customStageStepLabels[stage]}</span>
                         <strong>{item.total ? `${item.correct}/${item.total}` : '—'}</strong>
                         <small>{item.solved < item.total ? `미풀이 ${item.total - item.solved}문항` : `${item.total}문항 중 정답`}</small>
                     </li>;

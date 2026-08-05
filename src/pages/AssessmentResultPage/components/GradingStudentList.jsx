@@ -1,6 +1,6 @@
-const isComplete = (student) => student.answers.every((answer) => answer.score !== null);
+const isScored = (student) => student.answers.every((answer) => answer.score !== null);
 
-function GradingStudentList({ students, selectedId, onSelect }) {
+function GradingStudentList({ students, selectedId, onSelect, isComplete = isScored }) {
     const completedCount = students.filter(isComplete).length;
 
     return (

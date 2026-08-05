@@ -1,4 +1,6 @@
 import { getAssessmentResults } from './assessmentResult';
+import { getClassRoster } from './classes';
+import { teacherProgressStatusLabels, worksheetTypeLabels } from './labels';
 
 export const dashboardFilterOptions = {
     years: [
@@ -18,50 +20,45 @@ export const dashboardFilterOptions = {
     ],
 };
 
-export const worksheetTypeLabels = { practice: '일반 학습', assessment: '종합평가' };
-export const resultStatusLabels = { submitted: '제출 완료', inProgress: '풀이 중', notStarted: '미시작', unassigned: '미배정' };
+export { worksheetTypeLabels };
+export const resultStatusLabels = teacherProgressStatusLabels;
 export const studentStatusLabels = { overdue: '미제출 지연', weak: '보완 필요', steady: '양호', noData: '자료 부족' };
 export const weakAccuracyThreshold = 60;
 
 // 오늘 기준 날짜. 기한 초과 판정에 사용한다.
 const today = '2026.08.04';
 
-const classOneRoster = [
-    { id: '101', number: 1, name: '김민수' },
-    { id: '102', number: 2, name: '박지수' },
-    { id: '103', number: 3, name: '정도윤' },
-    { id: '104', number: 4, name: '조현우' },
-    { id: '105', number: 5, name: '이서윤' },
-    { id: '106', number: 6, name: '한예린' },
-    { id: '107', number: 7, name: '윤하준' },
-    { id: '108', number: 8, name: '오서아' },
-];
-
-const classTwoRoster = [
-    { id: '201', number: 1, name: '서지민' },
-    { id: '202', number: 2, name: '강도현' },
-    { id: '203', number: 3, name: '김나윤' },
-    { id: '204', number: 4, name: '문시우' },
-    { id: '205', number: 5, name: '배서아' },
-];
+const classOneRoster = getClassRoster('middle-1-1');
+const classTwoRoster = getClassRoster('middle-1-2');
 
 const done = (accuracy, completedAt) => ({ status: 'submitted', accuracy, completedAt });
 const scored = (score, completedAt) => ({ status: 'submitted', accuracy: score, score, grading: 'done', completedAt });
 const awaiting = (completedAt) => ({ status: 'submitted', accuracy: null, score: null, grading: 'pending', completedAt });
-const solving = { status: 'inProgress', accuracy: null };
-const idle = { status: 'notStarted', accuracy: null };
+const solving = { status: 'in-progress', accuracy: null };
+const idle = { status: 'not-started', accuracy: null };
 
+// 학기 구분은 학생앱(studentAssignments)의 term 값을 기준으로 맞춘다.
+// 2026.07.18 이후 배정한 학습지는 2학기로 본다.
 const classOneFirstTerm = {
     updatedAt: '오늘 오전 10:30 기준',
     roster: classOneRoster,
     worksheets: [
         {
+            id: 'equation-practice', title: '3단원 일차방정식 연습', type: 'practice', origin: 'manual', sourceWorksheetId: null,
+            analysisId: 'factor-practice', resultId: null,
+            assignedAt: '2026.04.14', dueAt: '2026.04.21', status: 'completed',
+            results: {
+                1: done(52, '04.20'), 4: done(80, '04.19'), 7: done(85, '04.20'), 11: done(45, '04.21'),
+                12: done(56, '04.18'), 13: done(50, '04.21'), 14: done(68, '04.19'), 15: idle,
+            },
+        },
+        {
             id: 'unit-2-practice', title: '2단원 연습', type: 'practice', origin: 'manual', sourceWorksheetId: null,
             analysisId: 'factor-practice', resultId: 'unit-2-practice',
             assignedAt: '2026.06.24', dueAt: '2026.06.27', status: 'completed',
             results: {
-                101: done(45, '06.26'), 102: done(56, '06.27'), 103: done(50, '06.26'), 104: done(68, '06.25'),
-                105: done(61, '06.27'), 106: done(80, '06.25'), 107: done(54, '06.27'), 108: done(85, '06.25'),
+                1: done(54, '06.27'), 4: done(80, '06.25'), 7: done(85, '06.25'), 11: done(45, '06.26'),
+                12: done(56, '06.27'), 13: done(50, '06.26'), 14: done(68, '06.25'), 15: done(61, '06.27'),
             },
         },
         {
@@ -69,8 +66,8 @@ const classOneFirstTerm = {
             analysisId: 'factor-practice', resultId: 'factor-practice-review',
             assignedAt: '2026.07.06', dueAt: '2026.07.09', status: 'completed',
             results: {
-                101: done(50, '07.09'), 102: done(62, '07.08'), 103: done(47, '07.09'), 104: done(74, '07.07'),
-                105: done(66, '07.08'), 106: done(85, '07.07'), 107: idle, 108: done(90, '07.07'),
+                1: idle, 4: done(85, '07.07'), 7: done(90, '07.07'), 11: done(50, '07.09'),
+                12: done(62, '07.08'), 13: done(47, '07.09'), 14: done(74, '07.07'), 15: done(66, '07.08'),
             },
         },
         {
@@ -78,46 +75,10 @@ const classOneFirstTerm = {
             analysisId: 'factor-assessment', resultId: 'gcd-lcm-assessment', maxScore: 100,
             assignedAt: '2026.07.13', dueAt: '2026.07.16', status: 'completed',
             results: {
-                101: scored(44, '07.16'), 102: scored(55, '07.15'), 103: scored(52, '07.16'), 104: scored(70, '07.15'),
-                105: scored(60, '07.16'), 106: scored(82, '07.14'), 107: scored(58, '07.16'), 108: scored(88, '07.14'),
+                1: scored(58, '07.16'), 4: scored(82, '07.14'), 7: scored(88, '07.14'), 11: scored(44, '07.16'),
+                12: scored(55, '07.15'), 13: scored(52, '07.16'), 14: scored(70, '07.15'), 15: scored(60, '07.16'),
             },
         },
-        {
-            id: 'factor-assessment', title: '2단원 소인수분해 종합 평가', type: 'assessment', origin: 'manual', sourceWorksheetId: null,
-            analysisId: 'factor-assessment', resultId: 'factor-assessment', maxScore: 100,
-            assignedAt: '2026.07.29', dueAt: '2026.08.06', status: 'ongoing',
-            results: {
-                101: scored(47, '08.01'), 102: awaiting('08.01'), 103: solving, 104: scored(73, '07.31'),
-                105: scored(66, '08.02'), 106: scored(84, '07.30'), 107: idle, 108: awaiting('07.30'),
-            },
-        },
-        {
-            id: 'factor-practice', title: '2단원 소인수분해 연습', type: 'practice', origin: 'manual', sourceWorksheetId: null,
-            analysisId: 'factor-practice', resultId: null,
-            assignedAt: '2026.08.01', dueAt: '2026.08.07', status: 'ongoing',
-            results: {
-                101: done(52, '08.02'), 102: done(63, '08.03'), 103: done(46, '08.02'), 104: done(72, '08.02'),
-                105: done(58, '08.03'), 106: done(86, '08.02'), 107: done(54, '08.03'), 108: done(91, '08.02'),
-            },
-        },
-        {
-            // 원본 학습지의 취약점 분석에서 파생된 맞춤 학습. sourceWorksheetId 로 원본 아래에 묶인다.
-            id: 'factor-custom', title: '공통소인수 맞춤 학습', type: 'practice', origin: 'custom', sourceWorksheetId: 'factor-practice',
-            analysisId: 'factor-practice', resultId: null,
-            assignedAt: '2026.08.03', dueAt: '2026.08.07', status: 'ongoing',
-            results: {
-                101: done(58, '08.04'), 103: done(55, '08.04'), 105: done(70, '08.04'), 107: idle,
-            },
-        },
-    ],
-    concepts: [
-        { id: 'common', label: '공통소인수', accuracy: 44, weakStudentIds: ['101', '103', '107'] },
-        { id: 'gcd', label: '최대공약수', accuracy: 52, weakStudentIds: ['101', '102', '103'] },
-        { id: 'exponent', label: '지수 비교', accuracy: 58, weakStudentIds: ['101', '103', '105'] },
-        { id: 'lcm', label: '최소공배수', accuracy: 63, weakStudentIds: ['102', '107'] },
-        { id: 'prime-factor', label: '소인수', accuracy: 71, weakStudentIds: ['103'] },
-        { id: 'power', label: '거듭제곱', accuracy: 76, weakStudentIds: ['101'] },
-        { id: 'prime', label: '소인수분해', accuracy: 82, weakStudentIds: [] },
     ],
 };
 
@@ -126,17 +87,60 @@ const classOneSecondTerm = {
     roster: classOneRoster,
     worksheets: [
         {
+            id: 'integer-assessment', title: '1단원 정수와 유리수 종합 평가', type: 'assessment', origin: 'manual', sourceWorksheetId: null,
+            analysisId: 'factor-assessment', resultId: 'integer-assessment', maxScore: 100,
+            assignedAt: '2026.07.18', dueAt: '2026.07.25', status: 'completed',
+            results: {
+                1: scored(91, '07.25'), 4: scored(84, '07.25'), 7: scored(88, '07.24'), 11: scored(76, '07.25'),
+                12: scored(82, '07.25'), 13: scored(69, '07.25'), 14: scored(89, '07.24'), 15: idle,
+            },
+        },
+        {
+            id: 'integer-practice', title: '1단원 정수와 유리수 연습', type: 'practice', origin: 'manual', sourceWorksheetId: null,
+            analysisId: 'factor-practice', resultId: null,
+            assignedAt: '2026.07.24', dueAt: '2026.07.31', status: 'completed',
+            results: {
+                1: done(75, '07.30'), 4: done(88, '07.29'), 7: done(84, '07.31'), 11: done(58, '07.30'),
+                12: done(67, '07.28'), 13: done(44, '07.31'), 14: done(79, '07.29'), 15: done(62, '07.30'),
+            },
+        },
+        {
+            id: 'factor-assessment', title: '2단원 소인수분해 종합 평가', type: 'assessment', origin: 'manual', sourceWorksheetId: null,
+            analysisId: 'factor-assessment', resultId: 'factor-assessment', maxScore: 100,
+            assignedAt: '2026.08.04', dueAt: '2026.08.08', status: 'ongoing',
+            results: {
+                1: idle, 4: scored(84, '07.30'), 7: awaiting('07.30'), 11: scored(92, '08.01'),
+                12: awaiting('08.01'), 13: scored(52, '08.01'), 14: scored(86, '07.31'), 15: scored(66, '08.02'),
+            },
+        },
+        {
+            id: 'factor-practice', title: '2단원 소인수분해 연습', type: 'practice', origin: 'manual', sourceWorksheetId: null,
+            analysisId: 'factor-practice', resultId: 'factor-practice',
+            assignedAt: '2026.08.01', dueAt: '2026.08.07', status: 'ongoing',
+            results: {
+                1: solving, 4: done(86, '08.02'), 7: done(91, '08.02'), 11: done(52, '08.02'),
+                12: done(63, '08.03'), 13: done(46, '08.02'), 14: done(72, '08.02'), 15: done(58, '08.03'),
+            },
+        },
+        {
+            // 원본 학습지의 취약점 분석에서 파생된 맞춤 학습. sourceWorksheetId 로 원본 아래에 묶인다.
+            id: 'factor-custom', title: '공통소인수 맞춤 학습', type: 'practice', origin: 'custom', sourceWorksheetId: 'factor-practice',
+            analysisId: 'factor-practice', resultId: null,
+            assignedAt: '2026.08.03', dueAt: '2026.08.07', status: 'ongoing',
+            results: {
+                1: idle, 11: done(58, '08.04'), 13: done(55, '08.04'), 15: done(70, '08.04'),
+            },
+        },
+        {
             id: 'linear-equation-practice', title: '일차방정식 개념 확인', type: 'practice', origin: 'manual', sourceWorksheetId: null,
             analysisId: 'factor-practice', resultId: null,
             assignedAt: '2026.08.03', dueAt: '2026.08.10', status: 'ongoing',
             results: {
-                101: idle, 102: solving, 103: idle, 104: done(69, '08.04'),
-                105: idle, 106: done(81, '08.04'), 107: idle, 108: solving,
+                1: idle, 4: done(81, '08.04'), 7: solving, 11: idle,
+                12: solving, 13: idle, 14: done(69, '08.04'), 15: idle,
             },
         },
     ],
-    // 배정 직후라 개념별 누적 정답률을 낼 만큼 응답이 모이지 않은 학기.
-    concepts: [],
 };
 
 const classTwoFirstTerm = {
@@ -148,15 +152,22 @@ const classTwoFirstTerm = {
             analysisId: 'factor-practice', resultId: null,
             assignedAt: '2026.07.06', dueAt: '2026.07.10', status: 'completed',
             results: {
-                201: done(91, '07.09'), 202: done(84, '07.10'), 203: done(62, '07.10'), 204: done(89, '07.08'), 205: idle,
+                16: done(91, '07.09'), 17: done(84, '07.10'), 18: done(62, '07.10'), 19: done(89, '07.08'), 20: idle,
             },
         },
+    ],
+};
+
+const classTwoSecondTerm = {
+    updatedAt: '어제 오후 5:00 기준',
+    roster: classTwoRoster,
+    worksheets: [
         {
-            id: 'integer-unit-test', title: '1단원 정수와 유리수 종합 평가', type: 'assessment', origin: 'manual', sourceWorksheetId: null,
+            id: 'integer-unit-test-class2', title: '1단원 정수와 유리수 종합 평가', type: 'assessment', origin: 'manual', sourceWorksheetId: null,
             analysisId: 'factor-assessment', resultId: null, maxScore: 100,
             assignedAt: '2026.07.27', dueAt: '2026.07.31', status: 'completed',
             results: {
-                201: scored(88, '07.31'), 202: scored(80, '07.31'), 203: scored(58, '07.31'), 204: scored(85, '07.31'), 205: idle,
+                16: scored(88, '07.31'), 17: scored(80, '07.31'), 18: scored(58, '07.31'), 19: scored(85, '07.31'), 20: idle,
             },
         },
         {
@@ -164,22 +175,10 @@ const classTwoFirstTerm = {
             analysisId: 'factor-practice', resultId: null,
             assignedAt: '2026.08.01', dueAt: '2026.08.07', status: 'ongoing',
             results: {
-                201: done(84, '08.03'), 202: done(76, '08.03'), 203: done(55, '08.03'), 204: done(82, '08.02'), 205: idle,
+                16: done(84, '08.03'), 17: done(76, '08.03'), 18: done(55, '08.03'), 19: done(82, '08.02'), 20: idle,
             },
         },
     ],
-    concepts: [
-        { id: 'gcd', label: '최대공약수', accuracy: 57, weakStudentIds: ['203'] },
-        { id: 'lcm', label: '최소공배수', accuracy: 66, weakStudentIds: ['203', '202'] },
-        { id: 'prime-factor', label: '소인수', accuracy: 79, weakStudentIds: [] },
-    ],
-};
-
-const classTwoSecondTerm = {
-    updatedAt: '어제 오후 5:00 기준',
-    roster: classTwoRoster,
-    worksheets: [],
-    concepts: [],
 };
 
 export const dashboardClassTerms = {
@@ -190,7 +189,7 @@ export const dashboardClassTerms = {
 };
 
 export function getClassTerm(classId, term) {
-    return dashboardClassTerms[`${classId}:${term}`] ?? { updatedAt: '', roster: [], worksheets: [], concepts: [] };
+    return dashboardClassTerms[`${classId}:${term}`] ?? { updatedAt: '', roster: [], worksheets: [] };
 }
 
 const isOverdue = (worksheet) => worksheet.dueAt < today;

@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import Header from '../../components/Header/Header';
+import { difficultyLabels, formatLabels } from '../../mocks/labels';
 import { getStudentAssignments } from '../../mocks/studentAssignments';
 import { getStudentCustomProblems, getStudentPracticeProblems, getStudentWorksheetProblems } from '../../mocks/studentWorksheetSolving';
 import students from '../../mocks/students';
@@ -75,19 +76,18 @@ function StudentSolvePage() {
     };
 
     const renderAnswer = () => {
-        if (problem.type === 'choice') {
-            const selected = Array.isArray(answers[currentIndex]) ? answers[currentIndex] : [];
+        // 객관식은 5지선다 단일 선택이고 부분 점수를 두지 않는다.
+        if (problem.format === 'choice') {
+            const selected = answers[currentIndex];
             return (
                 <div className="student-solve__choices" aria-label="답 선택">
                     {problem.choices.map((choice) => (
                         <button
                             key={choice}
                             type="button"
-                            aria-pressed={selected.includes(choice)}
-                            className={selected.includes(choice) ? 'student-solve__choice student-solve__choice--selected' : 'student-solve__choice'}
-                            onClick={() => updateAnswer(selected.includes(choice)
-                                ? selected.filter((item) => item !== choice)
-                                : [...selected, choice])}
+                            aria-pressed={selected === choice}
+                            className={selected === choice ? 'student-solve__choice student-solve__choice--selected' : 'student-solve__choice'}
+                            onClick={() => updateAnswer(selected === choice ? '' : choice)}
                         >
                             {choice}
                         </button>
@@ -171,7 +171,8 @@ function StudentSolvePage() {
                         <div className="student-solve__problem-topline">
                             <div>
                                 <span className="student-solve__number">{problem.no}</span>
-                                <span className="student-solve__difficulty">난이도 {problem.difficulty}</span>
+                                <span className="student-solve__difficulty">난이도 {difficultyLabels[problem.difficulty]}</span>
+                                <span className="student-solve__format">{formatLabels[problem.format]} · {problem.maxScore}점</span>
                             </div>
                             <button
                                 type="button"

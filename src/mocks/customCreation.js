@@ -1,11 +1,7 @@
 import { curriculumUnits } from './curriculum';
+import { customStageLabels, customStageStepLabels, customStages } from './labels';
 
-export const customStages = ['retrace', 'basic', 'independent'];
-export const customStageLabels = {
-    retrace: '① 복습',
-    basic: '② 유사',
-    independent: '③ 응용',
-};
+export { customStageLabels, customStageStepLabels, customStages };
 
 export const conceptUnitMap = {
     'prime-number': 'm1s1-prime-factor',

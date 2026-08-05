@@ -1,3 +1,11 @@
+import { getClassName, getClassRoster } from './classes';
+import { customStages, difficultyLabels } from './labels';
+
+export { difficultyLabels };
+
+const analysisClassId = 'middle-1-1';
+const analysisClassName = getClassName({ grade: '1', name: '1반' });
+
 export const weaknessFilterOptions = {
     years: [{ value: '2026', label: '2026학년도' }, { value: '2025', label: '2025학년도' }],
     grades: [{ value: 'middle-1', label: '1학년' }],
@@ -26,8 +34,6 @@ export const areaLabels = {
     problemSolving: '문제해결',
 };
 
-export const difficultyLabels = { low: '하', mid: '중', high: '상' };
-
 const text = (value) => ({ type: 'text', value });
 const blank = (id, answer) => ({ type: 'blank', id, answer });
 const practiceStep = (questionNo, order, conceptId, label, answer) => ({
@@ -49,26 +55,35 @@ const customProblem = (no, stage, difficulty, correct) => ({ no, stage, difficul
 const customSession = (id, conceptId, assignedAt, completedAt, problems) => ({ id, sourceWorksheetId: 'factor-practice', conceptId, assignedAt, completedAt, problems });
 
 const customSessions = {
-    '101': [
-        customSession('cs-101-1', 'common', '07.24', '07.25', [customProblem(1, 'retrace', 'low', true), customProblem(2, 'basic', 'mid', true), customProblem(3, 'independent', 'mid', false), customProblem(4, 'independent', 'high', false)]),
-        customSession('cs-101-2', 'common', '07.28', '07.30', [customProblem(1, 'retrace', 'low', true), customProblem(2, 'basic', 'mid', true), customProblem(3, 'independent', 'mid', true), customProblem(4, 'independent', 'high', true)]),
+    11: [
+        customSession('cs-11-1', 'common', '07.24', '07.25', [customProblem(1, 'retrace', 'low', true), customProblem(2, 'basic', 'mid', true), customProblem(3, 'independent', 'mid', false), customProblem(4, 'independent', 'high', false)]),
+        customSession('cs-11-2', 'common', '07.28', '07.30', [customProblem(1, 'retrace', 'low', true), customProblem(2, 'basic', 'mid', true), customProblem(3, 'independent', 'mid', true), customProblem(4, 'independent', 'high', true)]),
     ],
-    '102': [customSession('cs-102-1', 'common', '07.24', '07.26', [customProblem(1, 'retrace', 'low', true), customProblem(2, 'basic', 'mid', true), customProblem(3, 'independent', 'mid', true)])],
-    '103': [customSession('cs-103-1', 'prime', '07.24', '07.26', [customProblem(1, 'retrace', 'low', true), customProblem(2, 'basic', 'mid', false), customProblem(3, 'independent', 'mid', false)])],
-    '105': [customSession('cs-105-1', 'exponent', '07.29', null, [customProblem(1, 'retrace', 'low', true), customProblem(2, 'basic', 'mid', null), customProblem(3, 'independent', 'high', null)])],
-    '108': [customSession('cs-108-1', 'common', '07.25', '07.28', [customProblem(1, 'retrace', 'low', true), customProblem(2, 'basic', 'mid', true), customProblem(3, 'independent', 'mid', false)])],
+    12: [customSession('cs-12-1', 'common', '07.24', '07.26', [customProblem(1, 'retrace', 'low', true), customProblem(2, 'basic', 'mid', true), customProblem(3, 'independent', 'mid', true)])],
+    13: [customSession('cs-13-1', 'prime', '07.24', '07.26', [customProblem(1, 'retrace', 'low', true), customProblem(2, 'basic', 'mid', false), customProblem(3, 'independent', 'mid', false)])],
+    15: [customSession('cs-15-1', 'exponent', '07.29', null, [customProblem(1, 'retrace', 'low', true), customProblem(2, 'basic', 'mid', null), customProblem(3, 'independent', 'high', null)])],
+    7: [customSession('cs-7-1', 'common', '07.25', '07.28', [customProblem(1, 'retrace', 'low', true), customProblem(2, 'basic', 'mid', true), customProblem(3, 'independent', 'mid', false)])],
 };
 
-const profiles = [
-    { id: '101', name: '김민수', status: 'priority', nextAction: '공통소인수 2문항', pattern: [1, 0, 0, 1], inputs: ['2³×3', '2×6', '2×6', '2³×3²'] },
-    { id: '102', name: '박지수', status: 'review', nextAction: '다른 구조 2문항', pattern: [1, 1, 1, 0], inputs: ['2³×3', '2×3', '2×5', '2²×3²'] },
-    { id: '103', name: '정도윤', status: 'priority', nextAction: '기초 개념 복습', pattern: [0, 0, 0, 1], inputs: ['2²×6', '2×6', '2×3', '2³×3²'] },
-    { id: '104', name: '조현우', status: 'stable', nextAction: '다음 단원', pattern: [1, 1, 1, 1], inputs: ['2³×3', '2×3', '2×5', '2³×3²'] },
-    { id: '105', name: '이서윤', status: 'review', nextAction: '지수 비교 2문항', pattern: [1, 1, 0, 0], inputs: ['2³×3', '2×3', '2×5', '2×3²'] },
-    { id: '106', name: '한예린', status: 'stable', nextAction: '심화 문제', pattern: [1, 1, 1, 1], inputs: ['2³×3', '2×3', '2×5', '2³×3²'] },
-    { id: '107', name: '윤하준', status: 'insufficient', nextAction: '추가 응답 확인', pattern: [1, null, null, null], inputs: ['2³×3', '', '', ''] },
-    { id: '108', name: '오서아', status: 'priority', nextAction: '공통소인수 재학습', pattern: [1, 0, 0, 1], inputs: ['2³×3', '2×6', '2×6', '2³×3²'] },
-].map((profile) => ({ ...profile, customSessions: customSessions[profile.id] ?? [] }));
+// 분석 대상은 반 명단(classes.js)을 그대로 쓰고 학생별 응답 패턴만 여기에서 정의한다.
+const profileData = {
+    1: { status: 'insufficient', nextAction: '추가 응답 확인', pattern: [1, null, null, null], inputs: ['2³×3', '', '', ''] },
+    4: { status: 'stable', nextAction: '심화 문제', pattern: [1, 1, 1, 1], inputs: ['2³×3', '2×3', '2×5', '2³×3²'] },
+    7: { status: 'priority', nextAction: '공통소인수 재학습', pattern: [1, 0, 0, 1], inputs: ['2³×3', '2×6', '2×6', '2³×3²'] },
+    11: { status: 'priority', nextAction: '공통소인수 2문항', pattern: [1, 0, 0, 1], inputs: ['2³×3', '2×6', '2×6', '2³×3²'] },
+    12: { status: 'review', nextAction: '다른 구조 2문항', pattern: [1, 1, 1, 0], inputs: ['2³×3', '2×3', '2×5', '2²×3²'] },
+    13: { status: 'priority', nextAction: '기초 개념 복습', pattern: [0, 0, 0, 1], inputs: ['2²×6', '2×6', '2×3', '2³×3²'] },
+    14: { status: 'stable', nextAction: '다음 단원', pattern: [1, 1, 1, 1], inputs: ['2³×3', '2×3', '2×5', '2³×3²'] },
+    15: { status: 'review', nextAction: '지수 비교 2문항', pattern: [1, 1, 0, 0], inputs: ['2³×3', '2×3', '2×5', '2×3²'] },
+};
+
+// 라우트 파라미터와 비교하므로 id는 문자열로 맞춘다.
+const profiles = getClassRoster(analysisClassId).map((student) => ({
+    id: String(student.id),
+    name: student.name,
+    ...profileData[student.id],
+    customSessions: customSessions[student.id] ?? [],
+}));
 
 const makePracticeResponses = (profile) => practiceQuestions.map((question, index) => {
     const correct = profile.pattern[index];
@@ -86,12 +101,13 @@ const practiceStudents = profiles.map((profile) => ({
     responses: makePracticeResponses(profile),
 }));
 
-const assessmentQuestions = Array.from({ length: 20 }, (_, index) => ({
+// 종합 평가 문항 수는 학생 풀이 화면(studentWorksheetSolving)의 10문항과 같게 유지한다.
+const assessmentQuestions = Array.from({ length: 10 }, (_, index) => ({
     no: index + 1,
     prompt: `${index + 1}번 소인수분해 응용 문항`,
     maxScore: index % 3 === 2 ? 3 : 2,
     format: index % 3 === 0 ? 'choice' : index % 3 === 1 ? 'short' : 'essay',
-    unitId: index < 8 ? 'm1s1-prime-factor' : 'm1s1-gcd-lcm',
+    unitId: index < 4 ? 'm1s1-prime-factor' : 'm1s1-gcd-lcm',
     difficulty: index % 3 === 0 ? 'low' : index % 3 === 1 ? 'mid' : 'high',
     area: ['concept', 'calculation', 'reasoning', 'problemSolving'][index % 4],
     correctAnswer: `${index + 1}번 문항 정답`,
@@ -102,7 +118,8 @@ const assessmentStudents = profiles.map((profile, studentIndex) => ({
     ...profile,
     responses: assessmentQuestions.map((question, questionIndex) => {
         const factor = (studentIndex * 2 + questionIndex) % 7;
-        const pending = question.grading === 'pending' && studentIndex < 4;
+        // 자료 부족 학생은 아직 제출하지 않아 채점된 응답이 없다.
+        const pending = profile.status === 'insufficient' || (question.grading === 'pending' && studentIndex < 4);
         return {
             no: question.no,
             score: pending ? 0 : factor < 2 ? 0 : factor < 4 ? question.maxScore - 1 : question.maxScore,
@@ -115,8 +132,8 @@ const assessmentStudents = profiles.map((profile, studentIndex) => ({
 }));
 
 export const weaknessWorksheets = {
-    'factor-practice': { id: 'factor-practice', gradeId: 'middle-1', classId: 'middle-1-1', term: 'first', type: 'practice', origin: 'manual', title: '2단원 소인수분해 연습', className: '중학교 1학년 1반', date: '오늘 11:30', concepts, questions: practiceQuestions, students: practiceStudents },
-    'factor-assessment': { id: 'factor-assessment', gradeId: 'middle-1', classId: 'middle-1-1', term: 'first', type: 'assessment', origin: 'manual', title: '2단원 소인수분해 종합 평가', className: '중학교 1학년 1반', date: '오늘 11:30', concepts: [], questions: assessmentQuestions, students: assessmentStudents },
+    'factor-practice': { id: 'factor-practice', gradeId: 'middle-1', classId: analysisClassId, term: 'second', type: 'practice', origin: 'manual', title: '2단원 소인수분해 연습', className: analysisClassName, date: '오늘 11:30', concepts, questions: practiceQuestions, students: practiceStudents },
+    'factor-assessment': { id: 'factor-assessment', gradeId: 'middle-1', classId: analysisClassId, term: 'second', type: 'assessment', origin: 'manual', title: '2단원 소인수분해 종합 평가', className: analysisClassName, date: '오늘 11:30', concepts: [], questions: assessmentQuestions, students: assessmentStudents },
 };
 
 export const statusLabels = { priority: '집중 지도', review: '다시 확인', stable: '안정', insufficient: '자료 부족' };
@@ -185,7 +202,7 @@ export function getStudentCustomSessions(worksheet, student) {
 }
 
 export function getCustomSessionSummary(session) {
-    const stages = ['retrace', 'basic', 'independent'].map((stage) => {
+    const stages = customStages.map((stage) => {
         const problems = session.problems.filter((problem) => problem.stage === stage);
         const solved = problems.filter((problem) => problem.correct !== null);
         return { stage, total: problems.length, solved: solved.length, correct: solved.filter((problem) => problem.correct).length };

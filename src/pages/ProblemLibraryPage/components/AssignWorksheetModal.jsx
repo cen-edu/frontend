@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import StudentFormModal from '../../StudentManagementPage/components/StudentFormModal';
 import CustomSelect from '../../../components/common/CustomSelect/CustomSelect';
-import classes from '../../../mocks/classes';
+import classes, { getClassLabel } from '../../../mocks/classes';
 
-const classOptions = classes.map((item) => ({ value: `middle-${item.grade}-${item.id}`, label: `${item.year}학년도 ${item.grade}학년 ${item.name}` }));
+const classOptions = classes.map((item) => ({ value: item.classId, label: getClassLabel(item) }));
 
 function AssignWorksheetModal({ worksheet, onClose, onAssign }) {
     const [classId, setClassId] = useState(classOptions[0]?.value ?? '');

@@ -1,3 +1,6 @@
+import { getClassName, getClassRoster } from './classes';
+import { getStudentPracticeProblems } from './studentWorksheetSolving';
+
 // 학생이 필기로 제출한 원본 답안 이미지. 실제 서비스에서는 서버가 저장한 이미지 URL이 내려온다.
 const essayAnswerScan = '/answer-scans/essay-answer.png';
 const shortAnswerScan = '/answer-scans/short-answer.png';
@@ -40,7 +43,8 @@ const baseAssessmentQuestions = [
     },
 ];
 
-const additionalAssessmentQuestions = Array.from({ length: 15 }, (_, index) => {
+// 종합 평가는 학생 풀이 화면(studentWorksheetSolving)과 같은 10문항으로 맞춘다.
+const additionalAssessmentQuestions = Array.from({ length: 5 }, (_, index) => {
     const no = index + 6;
     return {
         no,
@@ -58,19 +62,18 @@ const additionalAssessmentQuestions = Array.from({ length: 15 }, (_, index) => {
 
 const assessmentQuestions = [...baseAssessmentQuestions, ...additionalAssessmentQuestions];
 
-const baseStudents = [
+// 앞 네 명에게는 채점 화면 검토용 답안(주관식 스캔·서술형 루브릭 근거)을 직접 지정한다.
+const handwrittenAnswerSets = [
     {
-        id: 101, number: 1, name: '김민서',
         answers: [
             { no: 1, input: '3', score: 5, autoScore: 5, gradedBy: 'auto' },
             { no: 2, input: '4', score: 5, autoScore: 5, gradedBy: 'auto' },
-            { no: 3, input: '2*3', answerImage: shortAnswerScan, score: null, autoScore: 0, gradedBy: null },
+            { no: 3, input: '2*3', answerImage: shortAnswerScan, score: null, autoScore: 3, gradedBy: null },
             { no: 4, input: '2', score: 5, autoScore: 5, gradedBy: 'auto' },
             { no: 5, input: '12=2²×3, 18=2×3²이므로 공통인 2와 3을 곱하면 6이다.', answerImage: essayAnswerScan, score: 5, autoScore: 5, gradedBy: 'auto', rubricResults: [{ satisfied: true, evidence: '12=2²×3, 18=2×3²' }, { satisfied: true, evidence: '공통인 2와 3을 곱하면 6이다' }] },
         ],
     },
     {
-        id: 102, number: 2, name: '박준호',
         answers: [
             { no: 1, input: '3', score: 5, autoScore: 5, gradedBy: 'auto' },
             { no: 2, input: '3', score: 0, autoScore: 0, gradedBy: 'auto' },
@@ -80,17 +83,15 @@ const baseStudents = [
         ],
     },
     {
-        id: 103, number: 3, name: '이서윤',
         answers: [
             { no: 1, input: '3', score: 5, autoScore: 5, gradedBy: 'auto' },
             { no: 2, input: '4', score: 5, autoScore: 5, gradedBy: 'auto' },
-            { no: 3, input: '2 × 3', answerImage: shortAnswerScan, score: null, autoScore: 0, gradedBy: null },
+            { no: 3, input: '2 × 3', answerImage: shortAnswerScan, score: null, autoScore: 3, gradedBy: null },
             { no: 4, input: '1', score: 0, autoScore: 0, gradedBy: 'auto' },
             { no: 5, input: '두 수를 소인수분해하고 공통 소인수를 곱한다.', answerImage: essayAnswerScan, score: 3, autoScore: 3, gradedBy: 'auto', rubricResults: [{ satisfied: false, evidence: '' }, { satisfied: true, evidence: '공통 소인수를 곱한다' }] },
         ],
     },
     {
-        id: 104, number: 4, name: '최지우',
         answers: [
             { no: 1, input: '3', score: 5, autoScore: 5, gradedBy: 'auto' },
             { no: 2, input: '4', score: 5, autoScore: 5, gradedBy: 'auto' },
@@ -101,115 +102,176 @@ const baseStudents = [
     },
 ];
 
-const additionalStudents = [
-    { id: 105, number: 5, name: '정하은' },
-    { id: 106, number: 6, name: '윤도현' },
-    { id: 107, number: 7, name: '한유진' },
-    { id: 108, number: 8, name: '강시우' },
-    { id: 109, number: 9, name: '조예린' },
-    { id: 110, number: 10, name: '임건우' },
-].map((student, studentIndex) => ({
-    ...student,
-    answers: [
-        { no: 1, input: studentIndex % 4 === 0 ? '2' : '3', score: studentIndex % 4 === 0 ? 0 : 5, autoScore: studentIndex % 4 === 0 ? 0 : 5, gradedBy: 'auto' },
-        { no: 2, input: studentIndex % 3 === 0 ? '3' : '4', score: studentIndex % 3 === 0 ? 0 : 5, autoScore: studentIndex % 3 === 0 ? 0 : 5, gradedBy: 'auto' },
-        { no: 3, input: studentIndex % 2 === 0 ? '2×3' : '6', answerImage: shortAnswerScan, score: studentIndex < 3 ? null : 3, autoScore: studentIndex < 3 ? 0 : 3, gradedBy: studentIndex < 3 ? null : 'auto' },
-        { no: 4, input: studentIndex % 5 === 0 ? '1' : '2', score: studentIndex % 5 === 0 ? 0 : 5, autoScore: studentIndex % 5 === 0 ? 0 : 5, gradedBy: 'auto' },
-        {
-            no: 5,
-            input: studentIndex % 2 === 0 ? '두 수를 소인수분해하고 공통 소인수를 곱한다.' : '공통인 2와 3을 곱하면 6이다.',
-            answerImage: essayAnswerScan,
-            score: 3,
-            autoScore: 3,
-            gradedBy: 'auto',
-            rubricResults: [
-                { satisfied: false, evidence: '' },
-                { satisfied: true, evidence: studentIndex % 2 === 0 ? '공통 소인수를 곱한다' : '2와 3을 곱하면 6이다' },
-            ],
-        },
-    ],
-}));
+const generatedBaseAnswers = (studentIndex) => [
+    { no: 1, input: studentIndex % 4 === 0 ? '2' : '3', score: studentIndex % 4 === 0 ? 0 : 5, autoScore: studentIndex % 4 === 0 ? 0 : 5, gradedBy: 'auto' },
+    { no: 2, input: studentIndex % 3 === 0 ? '3' : '4', score: studentIndex % 3 === 0 ? 0 : 5, autoScore: studentIndex % 3 === 0 ? 0 : 5, gradedBy: 'auto' },
+    { no: 3, input: studentIndex % 2 === 0 ? '2×3' : '6', answerImage: shortAnswerScan, score: 3, autoScore: 3, gradedBy: 'auto' },
+    { no: 4, input: studentIndex % 5 === 0 ? '1' : '2', score: studentIndex % 5 === 0 ? 0 : 5, autoScore: studentIndex % 5 === 0 ? 0 : 5, gradedBy: 'auto' },
+    {
+        no: 5,
+        input: studentIndex % 2 === 0 ? '두 수를 소인수분해하고 공통 소인수를 곱한다.' : '공통인 2와 3을 곱하면 6이다.',
+        answerImage: essayAnswerScan,
+        score: 3,
+        autoScore: 3,
+        gradedBy: 'auto',
+        rubricResults: [
+            { satisfied: false, evidence: '' },
+            { satisfied: true, evidence: studentIndex % 2 === 0 ? '공통 소인수를 곱한다' : '2와 3을 곱하면 6이다' },
+        ],
+    },
+];
 
-const allStudents = [...baseStudents, ...additionalStudents];
+// 채점 대상 학생은 반 명단(classes.js)에서 가져오고, 미제출 학생은 결과 표에 넣지 않는다.
+// 미제출·채점 대기 학생은 학습 현황(learningStatus)의 같은 학습지 상태와 일치해야 한다.
+const gradingRoster = (classId, unsubmittedIds = []) => getClassRoster(classId)
+    .filter((student) => !unsubmittedIds.includes(student.id));
 
-const assessmentStudents = allStudents.map((student, studentIndex) => ({
-    ...student,
-    answers: [
-        ...student.answers,
+const buildAssessmentStudents = (roster, pendingIds = []) => roster.map((student, studentIndex) => {
+    const answers = [
+        ...(handwrittenAnswerSets[studentIndex]?.answers ?? generatedBaseAnswers(studentIndex)),
         ...additionalAssessmentQuestions.map((question) => {
             const isCorrect = (question.no + studentIndex) % 6 !== 0;
             return { no: question.no, input: isCorrect ? '1' : '2', score: isCorrect ? 5 : 0, autoScore: isCorrect ? 5 : 0, gradedBy: 'auto' };
         }),
-    ],
-}));
+    ];
+    // 주관식은 교사 확인이 필요한 학생만 채점 대기로 남기고 나머지는 자동 채점 점수를 반영한다.
+    return {
+        id: student.id,
+        number: student.number,
+        name: student.name,
+        answers: pendingIds.includes(student.id)
+            ? answers.map((answer) => (answer.no === 3 ? { ...answer, score: null, gradedBy: null } : answer))
+            : answers.map((answer) => (answer.score === null ? { ...answer, score: answer.autoScore, gradedBy: 'auto' } : answer)),
+    };
+});
 
-const completedAssessmentStudents = assessmentStudents.map((student) => ({
-    ...student,
-    answers: student.answers.map((answer) => answer.score === null
-        ? { ...answer, score: answer.autoScore, gradedBy: 'teacher' }
-        : answer),
-}));
+const classOneRoster = getClassRoster('middle-1-1');
 
-const practiceQuestions = Array.from({ length: 20 }, (_, index) => ({
+// 2단원 종합 평가: 송현우 미제출, 최도윤·박지수 주관식 채점 대기
+const assessmentStudents = buildAssessmentStudents(gradingRoster('middle-1-1', [1]), [7, 12]);
+// 1단원 종합 평가: 이서윤 미제출, 채점 완료
+const completedAssessmentStudents = buildAssessmentStudents(gradingRoster('middle-1-1', [15]));
+const gcdAssessmentStudents = buildAssessmentStudents(classOneRoster);
+const classTwoAssessmentStudents = buildAssessmentStudents(gradingRoster('middle-1-2', [20]));
+
+// 일반 학습은 배점이 없고, 학생 풀이 화면과 같은 steps[].segments[] 구조에서
+// 필기 입력 칸(blank) 하나하나를 정답/오답으로만 판정한다.
+const practiceQuestions = getStudentPracticeProblems().map((problem, index) => ({
     no: index + 1,
-    format: index % 4 === 0 ? 'choice' : 'short',
-    prompt: `${index + 1}번 일반 학습 문제`,
-    answer: String(index + 2),
-    rubric: [],
-    gradingStatus: 'auto',
+    id: problem.id,
+    title: problem.title,
+    prompt: problem.prompt,
+    difficulty: problem.difficulty,
+    concept: problem.concept,
+    steps: problem.steps.map((step) => ({
+        id: step.id,
+        label: step.label,
+        instruction: step.instruction,
+        conceptId: step.conceptId,
+        segments: step.segments,
+        blanks: step.segments
+            .filter((segment) => segment.type === 'blank')
+            .map((segment) => ({ id: segment.id, answer: segment.answer })),
+    })),
 }));
 
-const practiceStudents = allStudents.map((student, studentIndex) => ({
-    id: student.id,
-    number: student.number,
-    name: student.name,
-    answers: practiceQuestions.map((question) => {
-        const isPartial = question.format === 'short' && (question.no + studentIndex) % 7 === 0;
-        const isCorrect = !isPartial && (question.no + studentIndex) % 5 !== 0;
-        return {
+// 자동 채점이 오답으로 본 칸에 채워 넣을 학생 입력. 실제 연동에서는 필기 인식 결과가 내려온다.
+const practiceWrongInputs = {
+    'divide-answer': '16',
+    'factor-answer': '6',
+    answer: '2 × 3²',
+    'first-number-answer': '2² × 3',
+    'second-number-answer': '2 × 3²',
+    'common-factor-answer': '6',
+    'factor-84-answer': '2 × 3 × 7',
+    'factor-60-answer': '2 × 3 × 5',
+    'gcd-answer': '6',
+    'conclusion-answer': '6cm',
+};
+
+const buildPracticeStudents = (roster, ungradedIds = []) => roster.map((student, studentIndex) => {
+    let blankIndex = 0;
+    return {
+        id: student.id,
+        number: student.number,
+        name: student.name,
+        // 교사가 확인을 마쳤는지 여부. 일반 학습은 점수가 없어 이 값으로 채점 완료를 판단한다.
+        graded: !ungradedIds.includes(student.id),
+        answers: practiceQuestions.map((question) => ({
             no: question.no,
-            input: isCorrect ? question.answer : isPartial ? '풀이 과정 일부 정답' : '오답',
-            isCorrect,
-            result: isPartial ? 'partial' : isCorrect ? 'correct' : 'wrong',
-            gradedBy: 'auto',
-        };
-    }),
-}));
+            blanks: question.steps.flatMap((step) => step.blanks.map((blank) => {
+                blankIndex += 1;
+                const autoCorrect = (studentIndex + blankIndex) % 4 !== 0;
+                return {
+                    stepId: step.id,
+                    blankId: blank.id,
+                    input: autoCorrect ? blank.answer : practiceWrongInputs[blank.id] ?? '풀이 미완성',
+                    // 학생이 필기로 제출한 원본 획을 이미지로 만든 결과.
+                    answerImage: shortAnswerScan,
+                    autoCorrect,
+                    correct: autoCorrect,
+                    gradedBy: 'auto',
+                };
+            })),
+        })),
+    };
+});
+
+// 소인수분해 개념 복습은 송현우가 제출하지 않아 결과 표에서 제외한다.
+const practiceStudents = buildPracticeStudents(classOneRoster);
+const reviewPracticeStudents = buildPracticeStudents(gradingRoster('middle-1-1', [1]));
+// 진행 중인 학습지라 아직 교사가 확인하지 않은 학생이 남아 있다.
+const factorPracticeStudents = buildPracticeStudents(gradingRoster('middle-1-1', [1]), [7, 12, 13, 15]);
+
+const classOne = { gradeId: 'middle-1', classId: 'middle-1-1', className: getClassName({ grade: '1', name: '1반' }) };
+const classTwo = { gradeId: 'middle-1', classId: 'middle-1-2', className: getClassName({ grade: '1', name: '2반' }) };
 
 export const initialAssessmentResults = [
     {
         id: 'factor-assessment', type: 'assessment', title: '2단원 소인수분해 종합 평가',
-        gradeId: 'middle-1', classId: 'middle-1-1', className: '중학교 1학년 1반', term: 'first', assignedAt: '2026.07.29', status: 'grading', modified: false,
+        ...classOne, term: 'second', assignedAt: '2026.08.04', status: 'grading', modified: false,
         questions: assessmentQuestions,
         students: assessmentStudents,
     },
     {
+        id: 'integer-assessment', type: 'assessment', title: '1단원 정수와 유리수 종합 평가',
+        ...classOne, term: 'second', assignedAt: '2026.07.18', status: 'confirmed', modified: false,
+        questions: assessmentQuestions,
+        students: completedAssessmentStudents,
+    },
+    {
+        id: 'factor-practice', type: 'practice', title: '2단원 소인수분해 연습',
+        ...classOne, term: 'second', assignedAt: '2026.08.01', status: 'grading', modified: false,
+        questions: practiceQuestions,
+        students: factorPracticeStudents,
+    },
+    {
         id: 'unit-2-practice', type: 'practice', title: '2단원 연습',
-        gradeId: 'middle-1', classId: 'middle-1-1', className: '중학교 1학년 1반', term: 'first', assignedAt: '2026.07.21', status: 'confirmed', modified: false,
+        ...classOne, term: 'first', assignedAt: '2026.06.24', status: 'confirmed', modified: false,
         questions: practiceQuestions,
         students: practiceStudents,
     },
     {
         id: 'factor-practice-review', type: 'practice', title: '소인수분해 개념 복습',
-        gradeId: 'middle-1', classId: 'middle-1-2', className: '중학교 1학년 2반', term: 'first', assignedAt: '2026.07.17', status: 'confirmed', modified: false,
+        ...classOne, term: 'first', assignedAt: '2026.07.06', status: 'confirmed', modified: false,
         questions: practiceQuestions,
-        students: practiceStudents,
+        students: reviewPracticeStudents,
     },
     {
         id: 'gcd-lcm-assessment', type: 'assessment', title: '최대공약수와 최소공배수 평가',
-        gradeId: 'middle-1', classId: 'middle-1-2', className: '중학교 1학년 2반', term: 'first', assignedAt: '2026.07.11', status: 'grading', modified: false,
+        ...classOne, term: 'first', assignedAt: '2026.07.13', status: 'confirmed', modified: false,
         questions: assessmentQuestions,
-        students: assessmentStudents,
+        students: gcdAssessmentStudents,
     },
     {
         id: 'first-term-final-assessment', type: 'assessment', title: '1학기 학기말 종합 평가',
-        gradeId: 'middle-1', classId: 'middle-1-1', className: '중학교 1학년 1반', term: 'first', assignedAt: '2026.07.04', status: 'confirmed', modified: true,
+        ...classTwo, term: 'first', assignedAt: '2026.07.04', status: 'confirmed', modified: true,
         questions: assessmentQuestions,
-        students: completedAssessmentStudents,
+        students: classTwoAssessmentStudents,
     },
 ];
 
-const STORAGE_KEY = 'assessment-results-v6';
+const STORAGE_KEY = 'assessment-results-v8';
 
 export const getAssessmentResults = () => {
     try {
@@ -228,12 +290,25 @@ export const saveAssessmentResults = (results) => {
     }
 };
 
+// 일반 학습 문항 결과는 저장하지 않고 칸 판정에서 파생한다.
+// 모두 정답이면 O, 일부만 정답이면 △, 정답이 없으면 X 이다.
+export const getPracticeQuestionResult = (answer) => {
+    const blanks = answer?.blanks ?? [];
+    if (!blanks.length || blanks.every((blank) => !blank.input)) return 'empty';
+    const correctCount = blanks.filter((blank) => blank.correct).length;
+    if (correctCount === blanks.length) return 'correct';
+    return correctCount > 0 ? 'partial' : 'wrong';
+};
+
+// 부분 정답은 정답 수에 포함하지 않는다.
+export const getPracticeCorrectCount = (student) => student.answers
+    .filter((answer) => getPracticeQuestionResult(answer) === 'correct').length;
+
+export const isPracticeStudentGraded = (student) => student.graded === true;
+
 export const getWorksheetMetrics = (worksheet) => {
     if (worksheet.type === 'practice') {
-        const totals = worksheet.students.map((student) => worksheet.questions.reduce((sum, question) => {
-            const answer = student.answers.find((candidate) => candidate.no === question.no);
-            return sum + (answer?.isCorrect ? 1 : 0);
-        }, 0));
+        const totals = worksheet.students.map(getPracticeCorrectCount);
         const average = totals.length ? Math.round((totals.reduce((sum, value) => sum + value, 0) / totals.length) * 10) / 10 : 0;
         return {
             totals,
@@ -241,7 +316,7 @@ export const getWorksheetMetrics = (worksheet) => {
             average,
             highest: totals.length ? Math.max(...totals) : 0,
             lowest: totals.length ? Math.min(...totals) : 0,
-            pendingCount: 0,
+            pendingCount: worksheet.students.filter((student) => !isPracticeStudentGraded(student)).length,
         };
     }
 

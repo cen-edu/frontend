@@ -1,7 +1,4 @@
-import {
-    studentAssignmentStatusLabels,
-    studentAssignmentTypeLabels,
-} from '../../../mocks/studentAssignments';
+import { getWorksheetTypeLabel, studentAssignmentStatusLabels } from '../../../mocks/labels';
 import formatRelativeDueDate from '../../../utils/formatRelativeDueDate';
 
 const filters = [
@@ -11,10 +8,6 @@ const filters = [
 ];
 
 const getCategory = (assignment) => assignment.type === 'assessment' ? 'assessment' : 'homework';
-
-const getTypeLabel = (assignment) => assignment.origin === 'custom'
-    ? '맞춤 학습'
-    : studentAssignmentTypeLabels[assignment.type];
 
 function AssignmentBrowser({ assignments, activeFilter, onFilterChange, selectedId, onSelect }) {
     const filteredAssignments = activeFilter === 'all'
@@ -66,7 +59,7 @@ function AssignmentBrowser({ assignments, activeFilter, onFilterChange, selected
                         >
                             <span className="student-home__worksheet-topline">
                                 <span className={`student-home__worksheet-type student-home__worksheet-type--${getCategory(assignment)}`}>
-                                    {getTypeLabel(assignment)}
+                                    {getWorksheetTypeLabel(assignment)}
                                 </span>
                                 <span className={`student-home__worksheet-status student-home__worksheet-status--${assignment.status}`}>
                                     {studentAssignmentStatusLabels[assignment.status]}
@@ -74,7 +67,9 @@ function AssignmentBrowser({ assignments, activeFilter, onFilterChange, selected
                             </span>
                             <strong className="student-home__worksheet-title">{assignment.title}</strong>
                             <span className="student-home__worksheet-meta">
-                                {assignment.totalUnits}문항
+                                {assignment.type === 'assessment'
+                                    ? `${assignment.totalUnits}문항`
+                                    : `풀이 ${assignment.totalUnits}칸`}
                             </span>
                             <span className="student-home__worksheet-due">마감 {formatRelativeDueDate(assignment.dueAt)}</span>
                             <span className="student-home__worksheet-progress">

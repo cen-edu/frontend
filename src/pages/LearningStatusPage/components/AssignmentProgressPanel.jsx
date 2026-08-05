@@ -1,12 +1,7 @@
 import { Link } from 'react-router-dom';
 import CustomSelect from '../../../components/common/CustomSelect/CustomSelect';
+import { teacherProgressStatusLabels as statusLabels } from '../../../mocks/labels';
 import { getProgress, getProgressLabel, learningTypeLabels } from '../learningStatusUtils';
-
-const statusLabels = {
-    submitted: '제출 완료',
-    'in-progress': '학습 중',
-    'not-started': '미시작',
-};
 
 function AssignmentProgressPanel({
     assignment,

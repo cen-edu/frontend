@@ -41,6 +41,13 @@
 - 아이콘은 새 이미지나 아이콘 라이브러리를 추가하기 전에 기존 Bootstrap Icons의 `bi` 클래스를 우선 사용한다.
 - 기본 글꼴은 `src/index.css`에 설정된 Pretendard 구성을 유지한다.
 - 화면 개발용 더미 데이터는 페이지 컴포넌트 안에 직접 선언하지 않고 `src/mocks`에서 관리한다.
+- 학생 화면과 교사 화면이 함께 쓰는 도메인 상수와 라벨은 `src/mocks/labels.js`에서만 관리한다. 학습지 유형, 난이도, 문항 유형과 기본 배점, 맞춤 단계, 진행 상태 라벨을 페이지나 다른 mock에서 다시 선언하지 않고 여기에서 가져오거나 재수출한다.
+- 학습지 유형 라벨은 `종합 평가`처럼 띄어 쓰고, 맞춤 출제는 유형이 아니라 출제 방식이므로 `getWorksheetTypeLabel`로 `맞춤 학습`을 구분해 표시한다.
+- 진행 상태 키는 `not-started | in-progress | submitted`로 통일하고, 라벨만 보는 사람 기준으로 나눠 학생은 `studentAssignmentStatusLabels`(학습 가능/풀이 중/학습 완료), 교사는 `teacherProgressStatusLabels`(미시작/풀이 중/제출 완료/미배정)를 사용한다.
+- 맞춤 학습 단계 라벨은 `복습 / 유사 / 응용`을 사용하고, 단계 순서를 함께 보여주는 표 머리글과 회차 요약에서만 `customStageStepLabels`의 `① ② ③` 표기를 쓴다.
+- 학생 명단은 `src/mocks/students.js`, 반과 반별 출석 순서는 `src/mocks/classes.js`가 단일 기준이다. 교사 화면의 학생 표는 `getClassRoster(classId)`로 명단을 만들고 학습별 진행 상태만 덮어쓰며, mock마다 별도의 학생 이름이나 id를 만들지 않는다.
+- 학습지 id, 학기, 배정일, 마감일, 문항 수는 학생앱(`studentAssignments`, `studentWorksheetSolving`)의 값을 기준으로 교사 mock을 맞춘다. 같은 학습지에 다른 id를 쓰지 않고, 학생이 미제출인 학습지는 평가 결과의 채점 대상 명단에서도 제외한다.
+- 진행 단위 `totalUnits`는 종합 평가에서는 문항 수, 일반 학습과 맞춤 학습에서는 필기 입력 칸 수를 뜻한다. 일반 학습 결과의 정답 문항 수는 `correctUnits`와 `totalQuestions`로 따로 저장한다.
 - 학생 관리의 학생 `grade` 값은 `1|2|3` 문자열로 통일하고 학교급이나 학교명 필드를 사용하지 않는다.
 - 학생 관리의 학생 등록 연도는 `registrationYear` 4자리 문자열로 저장한다. 신규 개별 등록 시 현재 연도를 자동 적용하고 수정할 수 없게 표시하며, 학생 데이터에는 활성·비활성 상태와 수업 시작일을 두지 않는다.
 - 학생 관리의 반 데이터는 `year`, `grade`, 축약 반 이름 `name`을 별도 필드로 저장하고 화면 라벨은 `년도학년도 학년학년 반이름`으로 조합한다. 학기는 반 데이터에 저장하지 않는다.
@@ -60,7 +67,7 @@
 - 문제 난이도 값은 `low|mid|high`로 저장하고 화면 라벨은 `difficultyLabels`의 하/중/상을 사용한다.
 - 취약점 분석의 문항 영역 값은 `concept|calculation|reasoning|problemSolving`으로 저장하고 화면에서는 개념/계산/추론/문제해결로 표시한다.
 - 취약점 분석의 정답 결과는 독립 정답, 힌트 후 정답, 오답, 채점 대기로 구분한다. 학급 평균과 영역·난이도 집계에서는 `insufficient` 상태 학생과 채점 대기 응답을 제외하되 참여 학생 수에는 자료 부족 학생을 포함한다.
-- 평가 문항 유형은 채점 화면과 동일한 `choice|short|essay`를 사용하고, 유형 라벨과 기본 배점은 `src/mocks/assessmentCreation.js`의 `questionFormats`와 `defaultScores`를 사용한다.
+- 평가 문항 유형은 학생 풀이 화면을 포함해 모두 `format: 'choice'|'short'|'essay'`를 사용하고, 유형 라벨과 기본 배점은 `src/mocks/labels.js`의 `questionFormats`, `formatLabels`, `defaultScores`를 사용한다. 학생 화면에서도 난이도는 `low|mid|high`로 저장하고 배점은 `maxScore`에 둔다.
 - 종합평가의 총 문항 수에는 검증이나 경고를 두지 않고 교사가 자율적으로 구성할 수 있게 한다.
 - 학년·반 식별자는 학습 관리와 대시보드 간에 공통으로 사용한다. 학년은 `gradeId: 'middle-1'`, 반은 학년과 반을 포함한 `classId: 'middle-1-1'` 형식을 사용하고, 같은 `classId`를 페이지나 mock별로 다른 반에 매핑하지 않는다.
 - 학습 현황의 맞춤 학습은 `sourceWorksheetId`로 원본 학습지와 연결하고 왼쪽 학습 목록과 상단 집계에서 제외한다. 원본 학생 표에는 맞춤 학습 상태 컬럼을 두지 않고, 하단 `CustomLearningSection`의 학생별 상세 표를 구분선으로 바로 이어서 표시하며 카드를 눌러 별도 맞춤 화면으로 전환하지 않는다. 파생 학습지 조회는 `learningStatusUtils.js`의 `getDerivedCustomAssignments`에 두고 컴포넌트에서 다시 집계하지 않는다.
@@ -97,7 +104,12 @@
 - 대시보드와 취약점 분석처럼 학년도·학기·반·학습지를 선택하는 분석 조회 영역은 `src/components/common/AnalysisFilters/AnalysisFilters.jsx`를 재사용한다.
 - 평가 결과의 반·기간 필터도 `AnalysisFilters`의 `controls` 구성을 사용하며 학습지 선택은 좌측 학습 목록으로 대체한다.
 - 평가 결과표는 학생별 행만 제공하고 등급과 문항별 평균을 표시하지 않는다. 20문항까지 가로 스크롤로 조회하며 학생 열과 채점 동작 열을 고정한다.
-- 일반 학습 결과는 배점이나 점수·정답률을 저장·표시하지 않고 문항별 O/△/X(정답/부분 정답/오답)와 학생별 정답 수로 표현한다. 채점 화면에서도 문항별 O/△/X를 선택해 수정하며, 부분 정답은 정답 수에 포함하지 않는다.
+- 일반 학습 결과는 배점이나 점수·정답률을 저장·표시하지 않고 문항별 O/△/X(정답/부분 정답/오답)와 학생별 정답 수로 표현한다. 부분 정답은 정답 수에 포함하지 않는다.
+- 일반 학습 채점은 문항이 아니라 학생 풀이 화면과 같은 `steps[].segments[]`의 필기 입력 칸(blank) 단위로 정답 여부만 판정한다. 칸 판정은 `answers[].blanks[{ stepId, blankId, input, answerImage, autoCorrect, correct, gradedBy }]`에 저장하고, 문항별 O/△/X와 학생별 정답 수는 저장하지 않고 `assessmentResult.js`의 `getPracticeQuestionResult`, `getPracticeCorrectCount`에서 파생한다.
+- 일반 학습 채점 화면은 종합 평가 채점 화면(`GradingPage`)과 같은 라우트·레이아웃·스타일을 쓰고, 문항 카드만 `PracticeGradingCard`로 분기한다. 카드에는 풀이 단계별 지시문과 학생 입력을 채운 풀이식, 칸마다 학생의 원본 필기 이미지와 인식된 답·정답을 함께 표시한다.
+- 일반 학습도 종합 평가와 같이 자동 채점 결과를 먼저 보여주고 교사가 정답·오답 어느 쪽으로든 바꿀 수 있게 한다. 자동 채점과 다른 판정을 고르면 `gradedBy: 'teacher'`로 기록해 수정된 칸임을 표시한다.
+- 일반 학습은 점수가 없어 학생별 채점 완료 여부를 판단할 수 없으므로 채점 화면의 `채점 완료`가 설정하는 `student.graded` 값으로 완료를 판단한다.
+- 교사 채점 화면의 필기 답안은 서버가 만들어 준 이미지(`answerImage`)를 사용하고, 학생 기기의 IndexedDB 획 데이터를 직접 읽지 않는다.
 - 종합평가 채점은 학생을 먼저 선택한 뒤 해당 학생의 전체 문항을 한 화면에서 채점하는 흐름을 사용한다.
 - 종합평가 채점 화면에서는 자동 채점된 객관식·주관식·서술형도 교사가 학생 답안과 정답 또는 루브릭 근거를 확인하고 점수·평가지표 판정을 수정할 수 있게 한다.
 - 종합평가 객관식 채점은 부분 점수를 허용하지 않고 `0점` 또는 문항 배점만 선택할 수 있게 하며, 검토 화면에 전체 5지선다 보기와 학생 선택·정답 표시를 함께 제공한다.

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import AnalysisFilters from '../../components/common/AnalysisFilters/AnalysisFilters';
+import { getWorksheetTypeLabel } from '../../mocks/labels';
 import { getStudentMetrics, getWorksheetMetrics, weaknessFilterOptions, weaknessWorksheets } from '../../mocks/weaknessAnalysis';
 import AnalysisTargetList from './components/AnalysisTargetList';
 import ClassAnalysisView from './components/ClassAnalysisView';
@@ -14,7 +15,7 @@ function WeaknessAnalysisPage() {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const initialWorksheet = weaknessWorksheets[searchParams.get('worksheet')] ? searchParams.get('worksheet') : 'factor-practice';
-    const [filters, setFilters] = useState({ year: '2026', grade: 'middle-1', classId: 'middle-1-1', term: 'first', worksheet: initialWorksheet });
+    const [filters, setFilters] = useState({ year: '2026', grade: 'middle-1', classId: 'middle-1-1', term: 'second', worksheet: initialWorksheet });
     const [selection, setSelection] = useState(null);
     const [matrixView, setMatrixView] = useState('score');
     const [matrixSort, setMatrixSort] = useState('score-asc');
@@ -53,7 +54,7 @@ function WeaknessAnalysisPage() {
         { key: 'term', label: '학기 선택', value: filters.term, options: weaknessFilterOptions.terms, onChange: (value) => changeFilter('term', value), width: 104 },
         { key: 'worksheet', label: '학습지 선택', value: filters.worksheet, options: weaknessFilterOptions.worksheets, onChange: (value) => changeFilter('worksheet', value), width: 252 },
     ];
-    const typeLabel = worksheet.origin === 'custom' ? '맞춤 문제' : worksheet.type === 'assessment' ? '종합 평가' : '일반 학습';
+    const typeLabel = getWorksheetTypeLabel(worksheet);
 
     return <section className="weakness-page" aria-labelledby="weakness-page-title">
         <header className="weakness-page__page-header"><div><h1 id="weakness-page-title">취약점 분석</h1><p>학급과 학생의 응답을 분석하고 보고서에 담길 내용을 확인합니다.</p></div><span>{worksheet.className} · {typeLabel}</span></header>

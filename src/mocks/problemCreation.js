@@ -1,5 +1,6 @@
-export const difficultyLevels = ['low', 'mid', 'high'];
-export const difficultyLabels = { low: '하', mid: '중', high: '상' };
+import { difficultyLabels, difficultyLevels } from './labels';
+
+export { difficultyLabels, difficultyLevels };
 export const defaultUnitCounts = { low: 0, mid: 0, high: 0 };
 
 const step = (id, segments) => ({ id, segments });

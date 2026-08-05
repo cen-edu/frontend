@@ -1,13 +1,6 @@
-import { difficultyLabels } from './problemCreation';
+import { defaultScores, difficultyLabels, formatLabels, questionFormats } from './labels';
 
-export const questionFormats = [
-    { value: 'choice', label: '5지선다 객관식' },
-    { value: 'short', label: '주관식' },
-    { value: 'essay', label: '서술형' },
-];
-
-export const formatLabels = { choice: '객관식', short: '주관식', essay: '서술형' };
-export const defaultScores = { choice: 5, short: 3, essay: 5 };
+export { defaultScores, formatLabels, questionFormats };
 
 const choice = (prompt, choices, answer) => ({ prompt, choices, answer });
 const short = (prompt, answer) => ({ prompt, answer });
