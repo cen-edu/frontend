@@ -46,7 +46,6 @@ function WorksheetProgressList({ worksheets }) {
                             </div>
 
                             <div className="worksheet-list__action">
-                                {worksheet.gradingCount > 0 && <span className="worksheet-list__pending">채점 대기 {worksheet.gradingCount}명</span>}
                                 <button type="button" onClick={() => moveToAction(worksheet)}>
                                     {worksheet.type === 'assessment' ? (worksheet.gradingCount > 0 ? '채점하기' : '결과 보기') : '분석 보기'}
                                 </button>

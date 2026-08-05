@@ -9,7 +9,6 @@ import {
     getWeakConcepts,
     getWorksheetSummary,
 } from '../../mocks/teacherDashboard';
-import AchievementDistribution from './components/AchievementDistribution';
 import AnalysisFilters from '../../components/common/AnalysisFilters/AnalysisFilters';
 import ClassStudentProgress from './components/ClassStudentProgress';
 import DashboardSummaryCards from './components/DashboardSummaryCards';
@@ -67,8 +66,6 @@ function DashboardPage() {
                     <WorksheetProgressList worksheets={worksheets} />
                     <WeakConceptActions concepts={concepts} customWorksheetId={customWorksheetId} />
                 </div>
-
-                <AchievementDistribution students={students} />
             </main>
         </div>
     );
