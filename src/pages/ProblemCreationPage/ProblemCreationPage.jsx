@@ -7,6 +7,8 @@ import { defaultUnitCounts, difficultyLevels, generateProblems } from '../../moc
 import { libraryWorksheets } from '../../mocks/problemLibrary';
 import PracticeConceptView from '../../components/common/PracticeProblemView/PracticeConceptView';
 import PracticeProblemView from '../../components/common/PracticeProblemView/PracticeProblemView';
+import sennyChatbot from '../../assets/images/senny-chatbot.png';
+import ProblemAiEditPanel from './components/ProblemAiEditPanel';
 import UnitConfigTable from './components/UnitConfigTable';
 import './ProblemCreationPage.scss';
 import './components/ProblemCreationComponents.scss';
@@ -22,6 +24,8 @@ function ProblemCreationPage() {
     const [result, setResult] = useState(null);
     const [selectedProblemId, setSelectedProblemId] = useState('');
     const [saved, setSaved] = useState(false);
+    const [editMode, setEditMode] = useState(false);
+    const [editTarget, setEditTarget] = useState(null);
 
     const majorUnits = useMemo(() => curriculumUnits.find((item) => item.gradeId === gradeId && item.subjectId === subjectId && item.term === term)?.majorUnits ?? [], [gradeId, subjectId, term]);
     const unitIndex = useMemo(() => new Map(majorUnits.flatMap((major) => major.middleUnits.flatMap((middle) => middle.smallUnits.map((unit) => [unit.id, { ...unit, majorName: major.name, middleName: middle.name }])))), [majorUnits]);
@@ -49,6 +53,8 @@ function ProblemCreationPage() {
     }, [searchParams]);
 
     const closeResult = () => {
+        setEditMode(false);
+        setEditTarget(null);
         setResult(null);
         setSelectedProblemId('');
     };
@@ -92,7 +98,15 @@ function ProblemCreationPage() {
 
     const movePreview = (offset) => {
         const nextProblem = result?.problems[selectedProblemIndex + offset];
-        if (nextProblem) setSelectedProblemId(nextProblem.id);
+        if (nextProblem) {
+            setSelectedProblemId(nextProblem.id);
+            setEditTarget(null);
+        }
+    };
+
+    const toggleEditMode = () => {
+        setEditMode((current) => !current);
+        setEditTarget(null);
     };
 
     return (
@@ -115,7 +129,11 @@ function ProblemCreationPage() {
                     <header className="problem-creation-page__result-header">
                         <div><h2 id="problem-result-title">생성 결과</h2><p>총 {result.problems.length}문항을 학생 화면과 같은 순서로 검토합니다.</p></div>
                         <div className="problem-creation-page__result-actions">
-                            <button type="button" className="problem-creation-button problem-creation-button--secondary" onClick={closeResult}>출제 구성 수정</button>
+                            <button type="button" className="problem-creation-button problem-creation-button--secondary" onClick={closeResult}>이전</button>
+                            <button type="button" className={`problem-creation-page__ai-edit-button${editMode ? ' problem-creation-page__ai-edit-button--active' : ''}`} aria-pressed={editMode} onClick={toggleEditMode}>
+                                <img src={sennyChatbot} alt="" />
+                                {editMode ? '편집 모드 종료' : 'AI 에이전트로 편집'}
+                            </button>
                             <button type="button" className="problem-creation-button problem-creation-button--secondary" onClick={() => setSaved(true)} disabled={saved}>{saved ? '저장 완료' : '문제 보관함에 저장'}</button>
                         </div>
                     </header>
@@ -130,6 +148,9 @@ function ProblemCreationPage() {
                                 problem={selectedProblem}
                                 answerMode="answer"
                                 headingId="teacher-preview-problem-title"
+                                editMode={editMode}
+                                selectedEditTarget={editTarget}
+                                onSelectEditTarget={setEditTarget}
                                 footer={<footer className="problem-creation-page__preview-controls">
                                     <button type="button" disabled={selectedProblemIndex === 0} onClick={() => movePreview(-1)}>
                                         <i className="bi bi-chevron-left" aria-hidden="true" /> 이전 학습
@@ -140,9 +161,17 @@ function ProblemCreationPage() {
                                     </button>
                                 </footer>}
                             />
-                            <PracticeConceptView concept={selectedProblem?.concept} headingId="teacher-preview-concept-title" />
+                            <PracticeConceptView
+                                concept={selectedProblem?.concept}
+                                headingId="teacher-preview-concept-title"
+                                editMode={editMode}
+                                selected={editTarget?.type === 'concept'}
+                                onSelect={() => setEditTarget({ type: 'concept', id: selectedProblem?.id, label: '개념 설명 전체' })}
+                            />
                         </div>
                     </div>
+                    {editMode && !editTarget && <p className="problem-creation-page__edit-guide" role="status"><i className="bi bi-cursor" aria-hidden="true" /> 편집할 문제 전체, 풀이 과정 또는 개념 설명 영역을 선택하세요.</p>}
+                    {editMode && <ProblemAiEditPanel target={editTarget} onClose={() => setEditTarget(null)} />}
                 </section>
             )}
         </section>

@@ -8,15 +8,36 @@ function PracticeProblemView({
     footer,
     headingId = 'practice-problem-title',
     difficultyText,
+    editMode = false,
+    selectedEditTarget,
+    onSelectEditTarget,
 }) {
     if (!problem) {
         return <div className="practice-problem-view practice-problem-view--empty">목록에서 문제를 선택해 주세요.</div>;
     }
 
     const isPreview = answerMode === 'answer';
+    const isProblemSelected = selectedEditTarget?.type === 'problem';
+
+    const selectProblem = () => onSelectEditTarget?.({
+        type: 'problem',
+        id: problem.id,
+        label: '문제 전체',
+    });
+
+    const selectStep = (step, stepIndex) => onSelectEditTarget?.({
+        type: 'step',
+        id: step.id,
+        label: step.label ?? `풀이 과정 ${stepIndex + 1}`,
+    });
 
     return (
-        <article className={`practice-problem-view${isPreview ? ' practice-problem-view--preview' : ''}`} aria-labelledby={headingId}>
+        <article className={`practice-problem-view${isPreview ? ' practice-problem-view--preview' : ''}${editMode ? ' practice-problem-view--edit-mode' : ''}${isProblemSelected ? ' practice-problem-view--selected' : ''}`} aria-labelledby={headingId}>
+            {editMode && (
+                <button type="button" className="practice-problem-view__sector-button practice-problem-view__sector-button--problem" aria-pressed={isProblemSelected} onClick={selectProblem}>
+                    <i className="bi bi-bounding-box" aria-hidden="true" /> 문제 전체 선택
+                </button>
+            )}
             <div className="practice-problem-view__heading">
                 <div>
                     <span>{problem.title ?? problem.unitName}</span>
@@ -27,7 +48,12 @@ function PracticeProblemView({
 
             <div className="practice-problem-view__steps">
                 {problem.steps.map((step, stepIndex) => (
-                    <section key={step.id} className="practice-problem-view__step">
+                    <section key={step.id} className={`practice-problem-view__step${editMode ? ' practice-problem-view__step--editable' : ''}${selectedEditTarget?.type === 'step' && selectedEditTarget.id === step.id ? ' practice-problem-view__step--selected' : ''}`}>
+                        {editMode && (
+                            <button type="button" className="practice-problem-view__sector-button practice-problem-view__sector-button--step" aria-pressed={selectedEditTarget?.type === 'step' && selectedEditTarget.id === step.id} onClick={() => selectStep(step, stepIndex)}>
+                                <i className="bi bi-pencil-square" aria-hidden="true" /> 이 풀이 과정 선택
+                            </button>
+                        )}
                         <div className="practice-problem-view__copy">
                             <span>{step.label ?? `풀이 과정 ${stepIndex + 1}`}</span>
                             <div>
