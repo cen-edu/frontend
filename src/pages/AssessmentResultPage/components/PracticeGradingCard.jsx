@@ -44,25 +44,52 @@ function PracticeGradingCard({ student, question, answer, onMark }) {
             <p className="practice-grading-card__title">{question.title}</p>
             <p className="grading-answer-card__prompt">{question.prompt}</p>
 
-            <div className="practice-grading-card__concept">
-                <span>{question.concept.title}</span>
-                <p>{question.concept.summary}</p>
-            </div>
-
             <div className="practice-grading-card__steps">
                 {question.steps.map((step) => (
                     <section key={step.id} className="practice-grading-card__step">
                         <div className="practice-grading-card__step-heading">
-                            <span>{step.label}</span>
-                            <strong>{step.instruction}</strong>
+                            <div className="practice-grading-card__step-heading-copy">
+                                <span>{step.label}</span>
+                                <strong>{step.instruction}</strong>
+                            </div>
+                            <div className="practice-grading-card__step-grading">
+                                {step.blanks.map((blank) => {
+                                    const blankAnswer = blankInputs[blank.id];
+                                    const isUnanswered = !blankAnswer?.input;
+                                    const isCorrect = blankAnswer?.correct === true;
+
+                                    return (
+                                        <div key={blank.id} className="practice-grading-card__blank-grading">
+                                            <div className="practice-grading-card__marks" role="group" aria-label={`${student.name} ${question.no}번 ${step.label} 판정`}>
+                                                <button
+                                                    type="button"
+                                                    aria-pressed={isCorrect}
+                                                    disabled={isUnanswered}
+                                                    className={`practice-grading-card__mark practice-grading-card__mark--correct${isCorrect ? ' practice-grading-card__mark--selected' : ''}`}
+                                                    onClick={() => onMark(blank.id, true)}
+                                                >
+                                                    <i className="bi bi-circle" aria-hidden="true" /> 정답
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    aria-pressed={blankAnswer?.correct === false}
+                                                    disabled={isUnanswered}
+                                                    className={`practice-grading-card__mark practice-grading-card__mark--wrong${blankAnswer?.correct === false ? ' practice-grading-card__mark--selected' : ''}`}
+                                                    onClick={() => onMark(blank.id, false)}
+                                                >
+                                                    <i className="bi bi-x-lg" aria-hidden="true" /> 오답
+                                                </button>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
                         </div>
                         <StepFormula segments={step.segments} blankInputs={blankInputs} />
 
                         {step.blanks.map((blank) => {
                             const blankAnswer = blankInputs[blank.id];
                             const isUnanswered = !blankAnswer?.input;
-                            const isCorrect = blankAnswer?.correct === true;
-                            const isModified = blankAnswer?.gradedBy === 'teacher';
 
                             return (
                                 <div key={blank.id} className="practice-grading-card__blank">
@@ -89,33 +116,6 @@ function PracticeGradingCard({ student, question, answer, onMark }) {
                                             </div>
                                         </div>
 
-                                        <div className="practice-grading-card__blank-grading">
-                                            <span className={`practice-grading-card__auto${blankAnswer?.autoCorrect ? ' practice-grading-card__auto--correct' : ''}`}>
-                                                <i className="bi bi-stars" aria-hidden="true" />
-                                                자동 채점 {blankAnswer?.autoCorrect ? '정답' : '오답'}
-                                            </span>
-                                            <div className="practice-grading-card__marks" role="group" aria-label={`${student.name} ${question.no}번 ${step.label} 판정`}>
-                                                <button
-                                                    type="button"
-                                                    aria-pressed={isCorrect}
-                                                    disabled={isUnanswered}
-                                                    className={`practice-grading-card__mark practice-grading-card__mark--correct${isCorrect ? ' practice-grading-card__mark--selected' : ''}`}
-                                                    onClick={() => onMark(blank.id, true)}
-                                                >
-                                                    <i className="bi bi-circle" aria-hidden="true" /> 정답
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    aria-pressed={blankAnswer?.correct === false}
-                                                    disabled={isUnanswered}
-                                                    className={`practice-grading-card__mark practice-grading-card__mark--wrong${blankAnswer?.correct === false ? ' practice-grading-card__mark--selected' : ''}`}
-                                                    onClick={() => onMark(blank.id, false)}
-                                                >
-                                                    <i className="bi bi-x-lg" aria-hidden="true" /> 오답
-                                                </button>
-                                            </div>
-                                            {isModified && <em className="practice-grading-card__modified">교사 수정</em>}
-                                        </div>
                                     </div>
                                 </div>
                             );

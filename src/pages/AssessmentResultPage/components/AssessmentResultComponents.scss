@@ -455,7 +455,7 @@
       align-items: center;
     }
 
-    span {
+    > div > span {
       color: #172033;
       font-size: 14px;
       font-weight: 700;
@@ -885,56 +885,35 @@
   &__result {
     display: inline-flex;
     align-items: center;
-    gap: 7px;
-    padding: 4px 10px;
+    gap: 5px;
+    padding: 3px 8px;
     border-radius: 999px;
     background: #edf2f6;
-    color: #55677c;
+    color: #68788a;
     font-size: 11px;
-    font-weight: 700;
+    font-weight: 600;
     white-space: nowrap;
 
     em {
-      font-size: 13px;
+      font-size: 11px;
       font-style: normal;
-      font-weight: 800;
+      font-weight: 600;
       line-height: 1;
     }
 
     &--correct {
       background: #dff0e7;
-      color: #2b6249;
+      color: #47715e;
     }
 
     &--partial {
       background: #fbf1de;
-      color: #8a6420;
+      color: #8b713f;
     }
 
     &--wrong {
       background: #f9e8e7;
-      color: #a24b4b;
-    }
-  }
-
-  &__concept {
-    margin-top: 12px;
-    padding: 11px 13px;
-    background: #f6f9fc;
-    border: 1px solid #e2ebf3;
-    border-radius: 7px;
-
-    span {
-      color: #4f6f86;
-      font-size: 11px;
-      font-weight: 700;
-    }
-
-    p {
-      margin-top: 4px;
-      color: #506076;
-      font-size: 12px;
-      line-height: 1.55;
+      color: #99615f;
     }
   }
 
@@ -953,10 +932,18 @@
 
   &__step-heading {
     display: flex;
-    align-items: baseline;
-    gap: 9px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
 
-    span {
+    &-copy {
+      min-width: 0;
+      display: flex;
+      align-items: baseline;
+      gap: 9px;
+    }
+
+    &-copy > span {
       flex: 0 0 auto;
       padding: 3px 7px;
       background: #eaeff4;
@@ -966,7 +953,7 @@
       font-weight: 700;
     }
 
-    strong {
+    &-copy > strong {
       color: #33445a;
       font-size: 13px;
       line-height: 1.5;
@@ -1017,13 +1004,19 @@
     margin-top: 0;
 
     img {
-      max-height: 132px;
+      height: 132px;
+      max-height: none;
+      box-sizing: border-box;
     }
   }
 
   &__scan-empty {
     margin-top: 7px;
-    padding: 22px 12px;
+    height: 132px;
+    padding: 12px;
+    display: grid;
+    place-items: center;
+    box-sizing: border-box;
     background: #f7f8fa;
     border: 1px dashed #d5dbe2;
     border-radius: 6px;
@@ -1034,15 +1027,31 @@
   }
 
   &__blank-body {
+    padding-top: 20px;
     display: flex;
     flex-direction: column;
-    gap: 11px;
   }
 
   &__blank-answers {
+    height: 132px;
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px;
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+
+    > div:first-child {
+      padding: 10px 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background: #f5f6f8;
+      border-radius: 6px;
+    }
+
+    > div:last-child {
+      padding: 10px 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
 
     span {
       color: #747f91;
@@ -1067,28 +1076,19 @@
   }
 
   &__blank-grading {
-    margin-top: auto;
     display: flex;
     align-items: center;
     flex-wrap: wrap;
     gap: 9px;
   }
 
-  &__auto {
-    display: inline-flex;
+  &__step-grading {
+    flex: 0 0 auto;
+    display: flex;
     align-items: center;
-    gap: 5px;
-    padding: 4px 9px;
-    background: #f3f5f8;
-    border-radius: 999px;
-    color: #6b7889;
-    font-size: 11px;
-    font-weight: 600;
-
-    &--correct {
-      background: #eef5fb;
-      color: #176fc1;
-    }
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 9px;
   }
 
   &__marks {
@@ -1153,20 +1153,15 @@
     }
   }
 
-  &__modified {
-    padding: 4px 9px;
-    background: #fbf1de;
-    border-radius: 999px;
-    color: #8a6420;
-    font-size: 11px;
-    font-style: normal;
-    font-weight: 700;
-  }
 }
 
 @media (max-width: 900px) {
   .practice-grading-card__blank {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .practice-grading-card__blank-body {
+    padding-top: 0;
   }
 }
 
