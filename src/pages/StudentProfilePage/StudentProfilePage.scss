@@ -1,0 +1,211 @@
+.student-profile {
+  min-height: 100vh;
+  background: #f5f6f8;
+  color: #172033;
+  font-family: '학교안심 분필', cursive;
+
+  .header__brand-name { font-size: 25px; }
+  .header__menu { font-size: 19px; }
+  .header__student-name { font-size: 17px; }
+  .header__return-link { font-size: 15px; }
+
+  &__main {
+    width: min(100%, 960px);
+    margin: 0 auto;
+    padding: 34px 32px 56px;
+  }
+
+  &__heading {
+    h1 {
+      font-size: 28px;
+      font-weight: 700;
+      line-height: 1.4;
+    }
+
+    p {
+      margin-top: 5px;
+      color: #747f91;
+      font-size: 16px;
+      line-height: 1.5;
+    }
+  }
+
+  &__content {
+    margin-top: 24px;
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid #dde2e8;
+    border-radius: 10px;
+  }
+
+  &__section,
+  &__logout {
+    padding: 26px 28px;
+
+    + .student-profile__section,
+    + .student-profile__logout {
+      border-top: 1px solid #ebeef2;
+    }
+  }
+
+  &__section-heading {
+    h2 {
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 1.45;
+    }
+
+    p {
+      margin-top: 4px;
+      color: #747f91;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+  }
+
+  &__section-topline {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+  }
+
+  &__password-submit {
+    min-width: 150px;
+    min-height: 52px;
+    padding: 0 20px;
+    background: #176fc1;
+    border: 1px solid #176fc1;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+
+    &:hover { background: #0f5fa8; border-color: #0f5fa8; }
+    &:focus-visible { outline: 3px solid rgba(23, 111, 193, .25); outline-offset: 2px; }
+  }
+
+  &__info-list {
+    margin-top: 20px;
+    border-top: 1px solid #dde2e8;
+
+    > div {
+      min-height: 62px;
+      display: grid;
+      grid-template-columns: 150px minmax(0, 1fr);
+      align-items: center;
+      border-bottom: 1px solid #ebeef2;
+    }
+
+    dt {
+      color: #667185;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    dd {
+      color: #172033;
+      font-size: 17px;
+      font-weight: 700;
+    }
+  }
+
+  &__password-form {
+    margin-top: 20px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+
+    label {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+
+      span {
+        color: #465166;
+        font-size: 15px;
+        font-weight: 700;
+      }
+    }
+
+    input {
+      width: 100%;
+      min-height: 52px;
+      padding: 0 14px;
+      background: #fff;
+      border: 1px solid #cfd6df;
+      border-radius: 8px;
+      color: #172033;
+      font-size: 16px;
+
+      &::placeholder { color: #929baa; }
+      &:hover { border-color: #8eb7dc; }
+      &:focus {
+        border-color: #176fc1;
+        outline: 3px solid rgba(23, 111, 193, .18);
+      }
+    }
+  }
+
+  &__message {
+    grid-column: 1 / -1;
+    min-height: 23px;
+    color: #747f91;
+    font-size: 15px;
+    line-height: 1.5;
+
+    &--error { color: #b42318; }
+    &--success { color: #2f7357; }
+  }
+
+  &__logout {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+
+    h2 { font-size: 20px; line-height: 1.45; }
+    p { margin-top: 4px; color: #747f91; font-size: 15px; line-height: 1.5; }
+
+    button {
+      min-width: 120px;
+      min-height: 52px;
+      padding: 0 18px;
+      background: #fff;
+      border: 1px solid #cfd6df;
+      border-radius: 8px;
+      color: #465166;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+
+      &:hover { background: #f8f9fb; border-color: #8a94a3; color: #172033; }
+      &:focus-visible { outline: 3px solid rgba(23, 111, 193, .22); outline-offset: 2px; }
+    }
+  }
+}
+
+@media (max-width: 840px) {
+  .student-profile {
+    &__password-form { grid-template-columns: 1fr; }
+  }
+}
+
+@media (max-width: 760px) {
+  .student-profile {
+    .header__navigation,
+    .header__return-link { display: none; }
+    .header__inner { padding-inline: 18px; }
+
+    &__main { padding: 24px 18px 40px; }
+    &__section,
+    &__logout { padding: 22px 18px; }
+    &__section-topline { align-items: stretch; flex-direction: column; }
+    &__password-submit { width: 100%; }
+    &__info-list > div { grid-template-columns: 110px minmax(0, 1fr); }
+    &__logout { align-items: stretch; flex-direction: column; }
+    &__logout button { width: 100%; }
+  }
+}

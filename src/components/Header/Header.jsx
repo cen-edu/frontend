@@ -9,6 +9,7 @@ function Header({ hideOnWheel = false, onHiddenChange, mode = 'teacher', userNam
     const studentQuery = studentId ? `?student=${encodeURIComponent(studentId)}` : '';
     const studentHomePath = `/student${studentQuery}`;
     const studentWorksheetsPath = `/student/worksheets${studentQuery}`;
+    const studentProfilePath = `/student/profile${studentQuery}`;
     const [isHidden, setIsHidden] = useState(false);
     const downwardWheelCount = useRef(0);
     const updateVisibility = useCallback((hidden) => {
@@ -147,10 +148,15 @@ function Header({ hideOnWheel = false, onHiddenChange, mode = 'teacher', userNam
                     <i className="bi bi-chevron-down header__profile-arrow" />
                 </button> : (
                     <div className="header__student-actions">
-                        <span className="header__student-name">
+                        <NavLink
+                            to={studentProfilePath}
+                            aria-label={`${userName} 학생 마이페이지`}
+                            className={({ isActive }) => `header__student-name${isActive ? ' header__student-name--active' : ''}`}
+                        >
                             <i className="bi bi-person-fill" aria-hidden="true" />
                             {userName} 학생
-                        </span>
+                            <i className="bi bi-chevron-right header__student-name-arrow" aria-hidden="true" />
+                        </NavLink>
                         <Link to="/students" className="header__return-link">
                             교사 화면으로 돌아가기
                         </Link>

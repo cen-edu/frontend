@@ -178,11 +178,30 @@
     border-radius: 10px;
     color: #fff;
     font-size: 15px;
+    cursor: pointer;
+    transition: background-color 140ms ease, border-color 140ms ease, color 140ms ease;
 
     i {
       color: #f2e8c9;
       font-size: 14px;
     }
+
+    &:hover,
+    &--active {
+      background: #3a6659;
+      border-color: #d8cfaa;
+      color: #fff;
+    }
+
+    &:focus-visible {
+      outline: 2px solid #f2e8c9;
+      outline-offset: 2px;
+    }
+  }
+
+  &__student-name-arrow {
+    color: #fff !important;
+    font-size: 11px !important;
   }
 
   &__return-link {

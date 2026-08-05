@@ -18,6 +18,7 @@ import ProblemLibraryDetailPage from './pages/ProblemLibraryPage/ProblemLibraryD
 import StudentHomePage from './pages/StudentHomePage/StudentHomePage';
 import StudentWorksheetPage from './pages/StudentWorksheetPage/StudentWorksheetPage';
 import StudentSolvePage from './pages/StudentSolvePage/StudentSolvePage';
+import StudentProfilePage from './pages/StudentProfilePage/StudentProfilePage';
 
 function App() {
   return (
@@ -39,6 +40,7 @@ function App() {
         </Route>
         <Route path="/learning/results/:worksheetId/grading" element={<GradingPage />} />
         <Route path="/student" element={<StudentHomePage />} />
+        <Route path="/student/profile" element={<StudentProfilePage />} />
         <Route path="/student/worksheets" element={<StudentWorksheetPage />} />
         <Route path="/student/worksheets/:assignmentId/solve" element={<StudentSolvePage />} />
         <Route path="/students" element={<StudentManagementLayout />}>
