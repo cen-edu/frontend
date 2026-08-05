@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import Header from '../../components/Header/Header';
 import { getStudentAssignments } from '../../mocks/studentAssignments';
-import { getStudentPracticeProblems, getStudentWorksheetProblems } from '../../mocks/studentWorksheetSolving';
+import { getStudentCustomProblems, getStudentPracticeProblems, getStudentWorksheetProblems } from '../../mocks/studentWorksheetSolving';
 import students from '../../mocks/students';
 import HandwritingAnswer from './HandwritingAnswer';
 import PracticeLearningView from './PracticeLearningView';
@@ -20,9 +20,14 @@ function StudentSolvePage() {
         [assignmentId, student.id],
     );
     const isAssessment = assignment.type === 'assessment';
+    const isCustom = assignment.origin === 'custom';
     const problems = useMemo(
-        () => isAssessment ? getStudentWorksheetProblems(assignment.id) : getStudentPracticeProblems(assignment.id),
-        [assignment.id, isAssessment],
+        () => {
+            if (isAssessment) return getStudentWorksheetProblems(assignment.id);
+            if (isCustom) return getStudentCustomProblems(assignment.id);
+            return getStudentPracticeProblems(assignment.id);
+        },
+        [assignment.id, isAssessment, isCustom],
     );
     const initialIndex = isAssessment && assignment.status === 'in-progress'
         ? Math.min(assignment.doneUnits, problems.length - 1)
@@ -123,6 +128,7 @@ function StudentSolvePage() {
                         onPrevious={() => setCurrentIndex((index) => index - 1)}
                         onNext={() => setCurrentIndex((index) => index + 1)}
                         onStepAnswerChange={updatePracticeAnswer}
+                        isCustom={isCustom}
                     />
                 ) : <div className="student-solve__workspace">
                     <aside className="student-solve__navigator" aria-label="문항 바로가기">

@@ -85,3 +85,58 @@ export const getStudentPracticeProblems = () => practiceProblems.map((problem) =
     concept: { ...problem.concept, points: [...problem.concept.points] },
     steps: problem.steps.map((step) => ({ ...step })),
 }));
+
+const customStageLabels = {
+    retrace: '복습',
+    basic: '유사',
+    independent: '응용',
+};
+
+const retraceProblem = practiceProblems[2];
+
+const customProblems = [
+    {
+        ...retraceProblem,
+        id: 'custom-retrace-tile',
+        stage: 'retrace',
+        title: '최대공약수 활용하기',
+    },
+    {
+        ...retraceProblem,
+        id: 'custom-similar-tile',
+        stage: 'basic',
+        difficulty: 'mid',
+        title: '쌍둥이 문제',
+        prompt: '가로 72cm, 세로 48cm인 직사각형을 가장 큰 정사각형으로 남김없이 나누려고 합니다. 정사각형 한 변의 길이를 구하시오.',
+        steps: [
+            { id: 'factor-72', label: '풀이 과정 1', conceptId: 'm1s1-gcd-lcm', instruction: '72를 소인수분해합니다.', segments: [{ type: 'text', value: '72 =' }, { type: 'blank', id: 'factor-72-answer', answer: '2³ × 3²' }] },
+            { id: 'factor-48', label: '풀이 과정 2', conceptId: 'm1s1-gcd-lcm', instruction: '48을 소인수분해합니다.', segments: [{ type: 'text', value: '48 =' }, { type: 'blank', id: 'factor-48-answer', answer: '2⁴ × 3' }] },
+            { id: 'gcd', label: '풀이 과정 3', conceptId: 'm1s1-gcd-lcm', instruction: '두 수에 공통으로 들어 있는 소인수를 곱합니다.', segments: [{ type: 'text', value: '72와 48의 최대공약수 =' }, { type: 'blank', id: 'gcd-answer', answer: '24' }] },
+            { id: 'conclusion', label: '답', conceptId: 'm1s1-gcd-lcm', instruction: '따라서 정사각형 한 변의 길이를 씁니다.', segments: [{ type: 'text', value: '한 변의 길이 =' }, { type: 'blank', id: 'conclusion-answer', answer: '24cm' }] },
+        ],
+    },
+    {
+        ...retraceProblem,
+        id: 'custom-independent-ribbon',
+        stage: 'independent',
+        difficulty: 'high',
+        title: '응용 문제',
+        prompt: '길이가 84cm인 빨간 리본과 60cm인 파란 리본을 남김없이 똑같은 길이로 가장 길게 자르려고 합니다. 자른 리본 조각의 전체 개수를 구하시오.',
+        steps: [
+            { id: 'common-length', label: '풀이 과정 1', conceptId: 'm1s1-gcd-lcm', instruction: '두 리본을 똑같이 나눌 수 있는 가장 긴 길이를 구합니다.', segments: [{ type: 'text', value: '84와 60의 최대공약수 =' }, { type: 'blank', id: 'common-length-answer', answer: '12' }] },
+            { id: 'red-count', label: '풀이 과정 2', conceptId: 'm1s1-gcd-lcm', instruction: '빨간 리본에서 나오는 조각 수를 구합니다.', segments: [{ type: 'text', value: '84 ÷ 12 =' }, { type: 'blank', id: 'red-count-answer', answer: '7' }] },
+            { id: 'blue-count', label: '풀이 과정 3', conceptId: 'm1s1-gcd-lcm', instruction: '파란 리본에서 나오는 조각 수를 구합니다.', segments: [{ type: 'text', value: '60 ÷ 12 =' }, { type: 'blank', id: 'blue-count-answer', answer: '5' }] },
+            { id: 'total-count', label: '답', conceptId: 'm1s1-gcd-lcm', instruction: '두 리본의 조각 수를 더합니다.', segments: [{ type: 'text', value: '전체 조각 수 =' }, { type: 'blank', id: 'total-count-answer', answer: '12개' }] },
+        ],
+    },
+];
+
+export const getStudentCustomProblems = () => customProblems.map((problem) => ({
+    ...problem,
+    stageLabel: customStageLabels[problem.stage],
+    concept: { ...problem.concept, points: [...problem.concept.points] },
+    steps: problem.steps.map((step) => ({
+        ...step,
+        segments: step.segments.map((segment) => ({ ...segment })),
+    })),
+}));

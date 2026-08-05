@@ -317,7 +317,13 @@
     font-weight: 700;
   }
 
-  &__difficulty { color: #667185; font-size: 15px; font-weight: 600; }
+  &__difficulty {
+    flex: 0 0 auto;
+    color: #667185;
+    font-size: 15px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
 
   &__bookmark {
     min-height: 48px;

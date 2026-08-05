@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import { difficultyLabels } from '../../mocks/problemCreation';
+import ConceptChatPanel from '../../components/common/ConceptChatPanel/ConceptChatPanel';
 import HandwritingAnswer from './HandwritingAnswer';
 import { saveHandwriting } from './handwritingStorage';
 
@@ -12,6 +13,7 @@ function PracticeLearningView({
     onPrevious,
     onNext,
     onStepAnswerChange,
+    isCustom = false,
 }) {
     const draftsRef = useRef({});
     const [isSaving, setIsSaving] = useState(false);
@@ -38,7 +40,7 @@ function PracticeLearningView({
                         <h2 id="practice-problem-title">{problem.prompt}</h2>
                     </div>
                     <span className="student-solve__difficulty">
-                        난이도 {difficultyLabels[problem.difficulty]}
+                        {isCustom ? `${problem.stageLabel} 문제` : `난이도 ${difficultyLabels[problem.difficulty]}`}
                     </span>
                 </div>
 
@@ -86,7 +88,20 @@ function PracticeLearningView({
                 </footer>
             </section>
 
-            <aside className="student-solve__concept" aria-labelledby="concept-title">
+            {isCustom ? (
+                <ConceptChatPanel
+                    mode="student"
+                    title="학습 도우미"
+                    description="문제를 풀다 막히면 질문하세요."
+                    studentName={student.name}
+                    welcomeMessage={`${problem.stageLabel} 문제를 풀고 있어요. 정답을 바로 알려주기보다 필요한 개념과 다음 풀이 방향을 함께 찾아볼게요.`}
+                    context={[{
+                        conceptId: 'common',
+                        conceptLabel: problem.concept.title,
+                        unitId: problem.steps[0]?.conceptId,
+                    }]}
+                />
+            ) : <aside className="student-solve__concept" aria-labelledby="concept-title">
                 <span className="student-solve__concept-label">개념 설명</span>
                 <h2 id="concept-title">{problem.concept.title}</h2>
                 <p>{problem.concept.summary}</p>
@@ -97,7 +112,7 @@ function PracticeLearningView({
                     <span>예시</span>
                     <strong>{problem.concept.example}</strong>
                 </div>
-            </aside>
+            </aside>}
         </div>
     );
 }

@@ -1,17 +1,29 @@
 import { useEffect, useState } from 'react';
 import { getConceptChatReply, getRecommendedQuestions } from '../../../mocks/conceptChat';
+import sennyChatbotImage from '../../../assets/images/senny-chatbot.png';
 import './ConceptChatPanel.scss';
 
-function ConceptChatPanel({ context = [], studentName = '' }) {
+function ConceptChatPanel({
+    context = [],
+    studentName = '',
+    mode = 'default',
+    title = '개념 도우미',
+    description = '교육과정 개념을 기준으로 답변합니다.',
+    welcomeMessage,
+}) {
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState('');
     const [isExpanded, setIsExpanded] = useState(false);
     const questions = getRecommendedQuestions(context);
 
     useEffect(() => {
-        setMessages([{ id: 'welcome', role: 'assistant', text: `${studentName ? `${studentName} 학생의 ` : ''}취약 개념을 기준으로 질문해 주세요.` }]);
+        setMessages([{
+            id: 'welcome',
+            role: 'assistant',
+            text: welcomeMessage ?? `${studentName ? `${studentName} 학생의 ` : ''}취약 개념을 기준으로 질문해 주세요.`,
+        }]);
         setInput('');
-    }, [studentName]);
+    }, [studentName, welcomeMessage]);
 
     const sendMessage = (value) => {
         const question = value.trim();
@@ -22,9 +34,9 @@ function ConceptChatPanel({ context = [], studentName = '' }) {
     };
 
     return (
-        <aside className={`concept-chat${isExpanded ? ' concept-chat--expanded' : ''}`} aria-labelledby="concept-chat-title">
+        <aside className={`concept-chat concept-chat--${mode}${isExpanded ? ' concept-chat--expanded' : ''}`} aria-labelledby="concept-chat-title">
             <header className="concept-chat__header">
-                <div><h2 id="concept-chat-title">개념 도우미</h2><p>교육과정 개념을 기준으로 답변합니다.</p></div>
+                <div><h2 id="concept-chat-title">{title}</h2><p>{description}</p></div>
                 <button type="button" className="concept-chat__toggle" aria-expanded={isExpanded} aria-label={isExpanded ? '개념 도우미 접기' : '개념 도우미 펼치기'} onClick={() => setIsExpanded((current) => !current)}><i className={`bi bi-chevron-${isExpanded ? 'up' : 'down'}`} aria-hidden="true" /></button>
             </header>
             <div className="concept-chat__body">
@@ -34,7 +46,9 @@ function ConceptChatPanel({ context = [], studentName = '' }) {
                 {questions.length > 0 && <div className="concept-chat__suggestions" aria-label="추천 질문">{questions.map((question) => <button type="button" key={question} onClick={() => sendMessage(question)}>{question}</button>)}</div>}
                 <form className="concept-chat__form" onSubmit={(event) => { event.preventDefault(); sendMessage(input); }}>
                     <input value={input} onChange={(event) => setInput(event.target.value)} aria-label="개념 질문 입력" placeholder="개념이나 풀이 단계를 질문하세요" />
-                    <button type="submit" aria-label="질문 보내기" disabled={!input.trim()}><i className="bi bi-send-fill" aria-hidden="true" /></button>
+                    <button type="submit" aria-label="질문 보내기" disabled={!input.trim()}>
+                        <img src={sennyChatbotImage} alt="" />
+                    </button>
                 </form>
             </div>
         </aside>
