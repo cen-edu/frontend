@@ -57,9 +57,10 @@
 - 학년·반 식별자는 학습 관리와 대시보드 간에 공통으로 사용한다. 학년은 `gradeId: 'middle-1'`, 반은 학년과 반을 포함한 `classId: 'middle-1-1'` 형식을 사용하고, 같은 `classId`를 페이지나 mock별로 다른 반에 매핑하지 않는다.
 - 학습 관리의 탐색형 필터는 `학년 → 반 → 학기 → 상태 → 검색`을 사용하고, 학년과 반에는 전체 옵션을 제공한다. 문제 보관함, 학습 현황, 평가 결과에서는 기간 필터를 사용하지 않는다. 취약점 분석의 선택형 필터는 `학년도 → 학년 → 반 → 학기 → 학습지`, 교사용 대시보드는 `학년도 → 학년 → 반 → 학기`를 사용하며 전체 옵션을 두지 않는다.
 - 교사용 대시보드는 학습지 하나가 아니라 반 × 학기 단위로 집계한다. 학습지 단위 상세는 학습 현황, 평가 결과, 취약점 분석이 담당하므로 대시보드에 문항 단위 분석이나 학습지 선택 필터를 두지 않는다.
-- 교사용 대시보드의 데이터와 파생 로직은 `src/mocks/teacherDashboard.js`의 `dashboardClassTerms`와 `getStudentProgress` / `getWorksheetSummary` / `getWeakConcepts` / `getDashboardSummaries` 셀렉터에서 관리하고 컴포넌트에서 다시 집계하지 않는다.
-- 대시보드에서 학습지 유형 차등은 `학습지별 현황` 섹션에서만 둔다. `practice`는 평균 정답률과 취약점 분석 이동, `assessment`는 평균 점수·채점 대기와 채점 화면 이동을 제공하고, 학생·개념 축은 유형과 무관하게 정답률로 통일한다.
-- 맞춤 문제 생성으로 이동할 때 `concept`에는 라벨이 아니라 `conceptId`를 넘긴다. `CustomProblemPage`는 `worksheet`, `students`, `concept`만 읽으므로 다른 이름의 파라미터를 추가하지 않고, `worksheet`에는 `weaknessWorksheets`에 실재하는 `practice` 학습지 id를 넘긴다.
+- 교사용 대시보드의 데이터와 파생 로직은 `src/mocks/teacherDashboard.js`의 `dashboardClassTerms`와 `getStudentProgress` / `getWorksheetSummary` / `getDashboardSummaries` 셀렉터에서 관리하고 컴포넌트에서 다시 집계하지 않는다.
+- 대시보드의 본문 섹션은 `학생별 학습 현황`(학생 축)과 `학습지별 현황`(학습지 축) 두 개로 두고 각각 전폭으로 배치한다. 개념 축 섹션은 두지 않는다. 대시보드의 개념 정보는 학기 누적 집계라 학습지 단위 취약 개념 분석 결과와 축이 달라 맞춤 문제 생성의 입력이 될 수 없고, 개념 단위 후속 조치는 취약점 분석이 담당한다. `classTerm.concepts`는 학생 표의 `주요 취약 개념` 컬럼(`getStudentProgress`의 `weakConcept`) 용도로만 유지한다.
+- 대시보드에서 학습지 유형 차등은 `학습지별 현황` 섹션에서만 둔다. `practice`는 평균 정답률과 취약점 분석 이동, `assessment`는 평균 점수·채점 대기와 채점 화면 이동을 제공하고, 학생 축은 유형과 무관하게 정답률로 통일한다.
+- 맞춤 문제 생성 진입은 취약점 분석에서만 제공한다. 이동할 때 `concept`에는 라벨이 아니라 `conceptId`를 넘기고, `CustomProblemPage`는 `worksheet`, `students`, `concept`만 읽으므로 다른 이름의 파라미터를 추가하지 않는다. `worksheet`에는 `weaknessWorksheets`에 실재하는 `practice` 학습지 id를 넘긴다.
 
 ## 라우팅
 

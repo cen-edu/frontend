@@ -258,15 +258,6 @@ export function getWorksheetSummary(classTerm) {
     });
 }
 
-export function getWeakConcepts(classTerm) {
-    return [...classTerm.concepts].sort((first, second) => first.accuracy - second.accuracy);
-}
-
-// 맞춤 출제는 practice 학습지 기준으로만 동작하므로 개념이 걸린 일반 학습지를 찾아 준다.
-export function getCustomSourceWorksheetId(classTerm) {
-    return classTerm.worksheets.find((worksheet) => worksheet.type === 'practice' && worksheet.origin === 'manual')?.analysisId ?? null;
-}
-
 export function getDashboardSummaries(classTerm) {
     const students = getStudentProgress(classTerm);
     const worksheets = getWorksheetSummary(classTerm);

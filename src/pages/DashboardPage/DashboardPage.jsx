@@ -3,16 +3,13 @@ import Header from '../../components/Header/Header';
 import {
     dashboardFilterOptions,
     getClassTerm,
-    getCustomSourceWorksheetId,
     getDashboardSummaries,
     getStudentProgress,
-    getWeakConcepts,
     getWorksheetSummary,
 } from '../../mocks/teacherDashboard';
 import AnalysisFilters from '../../components/common/AnalysisFilters/AnalysisFilters';
 import ClassStudentProgress from './components/ClassStudentProgress';
 import DashboardSummaryCards from './components/DashboardSummaryCards';
-import WeakConceptActions from './components/WeakConceptActions';
 import WorksheetProgressList from './components/WorksheetProgressList';
 import './DashboardPage.scss';
 import './components/DashboardComponents.scss';
@@ -28,9 +25,7 @@ function DashboardPage() {
     const classTerm = useMemo(() => getClassTerm(filters.classId, filters.term), [filters.classId, filters.term]);
     const students = useMemo(() => getStudentProgress(classTerm), [classTerm]);
     const worksheets = useMemo(() => getWorksheetSummary(classTerm), [classTerm]);
-    const concepts = useMemo(() => getWeakConcepts(classTerm), [classTerm]);
     const summaries = useMemo(() => getDashboardSummaries(classTerm), [classTerm]);
-    const customWorksheetId = getCustomSourceWorksheetId(classTerm);
 
     const selectedGradeLabel = dashboardFilterOptions.grades.find((option) => option.value === filters.grade)?.label;
     const selectedClassLabel = dashboardFilterOptions.classes.find((option) => option.value === filters.classId)?.label;
@@ -61,11 +56,7 @@ function DashboardPage() {
                 <DashboardSummaryCards summaries={summaries} />
 
                 <ClassStudentProgress students={students} worksheets={worksheets} />
-
-                <div className="dashboard-page__support-grid">
-                    <WorksheetProgressList worksheets={worksheets} />
-                    <WeakConceptActions concepts={concepts} customWorksheetId={customWorksheetId} />
-                </div>
+                <WorksheetProgressList worksheets={worksheets} />
             </main>
         </div>
     );
