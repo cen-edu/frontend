@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import classes from '../../mocks/classes';
 import initialStudents from '../../mocks/students';
 import StudentBulkRegistrationModal from './components/StudentBulkRegistrationModal';
@@ -15,6 +16,7 @@ const ROW_HEIGHT = 54;
 const HEAD_HEIGHT = 42;
 
 function StudentListPage() {
+    const navigate = useNavigate();
     const [students, setStudents] = useState(initialStudents);
     const [selectedIds, setSelectedIds] = useState([]);
     const [yearFilter, setYearFilter] = useState('all');
@@ -161,6 +163,7 @@ function StudentListPage() {
                 onToggleAll={toggleAll}
                 onToggleStudent={toggleStudent}
                 onOpenDetail={setDetailStudent}
+                onOpenStudentApp={(student) => navigate(`/student?student=${student.id}`)}
             />
 
             <div className="student-list__pagination" aria-label="페이지 이동">

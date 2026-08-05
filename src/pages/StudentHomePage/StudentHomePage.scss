@@ -1,0 +1,303 @@
+.student-home {
+  min-height: 100vh;
+  background: #f5f6f8;
+  color: #172033;
+  font-family: '학교안심 분필', cursive;
+
+  .header__brand-name { font-size: 25px; }
+  .header__menu { font-size: 19px; }
+  .header__student-name { font-size: 17px; }
+  .header__return-link { font-size: 15px; }
+
+  &__main {
+    width: min(100%, 1344px);
+    margin: 0 auto;
+    padding: 28px 32px 56px;
+  }
+
+  &__summary {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+
+    > div {
+      min-height: 92px;
+      padding: 20px 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background: #fff;
+      border: 1px solid #dde2e8;
+      border-radius: 10px;
+    }
+
+    span {
+      color: #667185;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    strong {
+      margin-top: 5px;
+      color: #172033;
+      font-size: 31px;
+      line-height: 1.2;
+
+      small {
+        margin-left: 3px;
+        color: #465166;
+        font-size: 16px;
+        font-weight: 600;
+      }
+    }
+  }
+
+  &__browser {
+    margin-top: 30px;
+  }
+
+  &__browser-heading {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 20px;
+
+    h1 {
+      font-size: 27px;
+      font-weight: 700;
+      line-height: 1.4;
+    }
+
+    p {
+      margin-top: 4px;
+      color: #747f91;
+      font-size: 16px;
+      line-height: 1.5;
+    }
+
+    > span {
+      color: #667185;
+      font-size: 16px;
+      font-weight: 600;
+    }
+  }
+
+  &__tabs {
+    margin-top: 18px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  &__tab {
+    min-height: 58px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: #fff;
+    border: 1px solid #d7dde4;
+    border-radius: 9px;
+    color: #667185;
+    font-size: 19px;
+    font-weight: 600;
+    cursor: pointer;
+
+    span {
+      min-width: 24px;
+      height: 24px;
+      padding: 0 7px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #f0f2f5;
+      border-radius: 999px;
+      color: #747f91;
+      font-size: 14px;
+    }
+
+    &:hover {
+      background: #f2f7fc;
+      border-color: #8eb7dc;
+      color: #176fc1;
+    }
+
+    &:focus-visible {
+      outline: 3px solid rgba(23, 111, 193, .25);
+      outline-offset: 2px;
+    }
+
+    &--active {
+      background: #176fc1;
+      border-color: #176fc1;
+      color: #fff;
+
+      span {
+        background: rgba(255, 255, 255, .18);
+        color: #fff;
+      }
+
+      &:hover {
+        background: #0f5fa8;
+        border-color: #0f5fa8;
+        color: #fff;
+      }
+    }
+  }
+
+  &__worksheet-grid {
+    margin-top: 16px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  &__worksheet {
+    min-width: 0;
+    min-height: 226px;
+    padding: 22px;
+    display: flex;
+    align-items: stretch;
+    flex-direction: column;
+    background: #fff;
+    border: 2px solid #dde2e8;
+    border-radius: 11px;
+    color: #172033;
+    text-align: left;
+    cursor: pointer;
+
+    &:hover {
+      background: #f8fbfd;
+      border-color: #8eb7dc;
+    }
+
+    &:focus-visible {
+      outline: 3px solid rgba(23, 111, 193, .28);
+      outline-offset: 2px;
+    }
+
+    &--selected {
+      background: #f2f7fc;
+      border-color: #176fc1;
+    }
+  }
+
+  &__worksheet-topline {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  &__worksheet-type,
+  &__worksheet-status {
+    min-height: 27px;
+    padding: 0 9px;
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  &__worksheet-type {
+    background: #edf5fc;
+    color: #176fc1;
+
+    &--assessment {
+      background: #f4f0e9;
+      color: #76583b;
+    }
+  }
+
+  &__worksheet-status {
+    background: #f0f2f5;
+    color: #667185;
+
+    &--in-progress {
+      background: #fff4dc;
+      color: #8a5a00;
+    }
+
+    &--submitted {
+      background: #edf4f0;
+      color: #386b59;
+    }
+  }
+
+  &__worksheet-title {
+    margin-top: 18px;
+    overflow: hidden;
+    color: #172033;
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.45;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__worksheet-meta,
+  &__worksheet-due {
+    color: #747f91;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  &__worksheet-meta { margin-top: 5px; }
+  &__worksheet-due { margin-top: 12px; }
+
+  &__worksheet-progress {
+    margin-top: 17px;
+  }
+
+  &__worksheet-progress-label {
+    margin-bottom: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: #667185;
+    font-size: 14px;
+
+    strong {
+      color: #465166;
+      font-size: 15px;
+    }
+  }
+
+  &__worksheet-progress-track {
+    height: 7px;
+    display: block;
+    overflow: hidden;
+    background: #ebeef2;
+    border-radius: 999px;
+
+    > span {
+      height: 100%;
+      display: block;
+      background: #176fc1;
+      border-radius: inherit;
+    }
+  }
+
+}
+
+@media (max-width: 1024px) {
+  .student-home {
+    &__main { padding-inline: 24px; }
+  }
+}
+
+@media (max-width: 760px) {
+  .student-home {
+    .header__navigation,
+    .header__return-link { display: none; }
+
+    .header__inner { padding-inline: 18px; }
+
+    &__main { padding: 22px 18px 40px; }
+    &__summary { grid-template-columns: 1fr; }
+    &__browser-heading { align-items: flex-start; flex-direction: column; gap: 6px; }
+    &__worksheet-grid { grid-template-columns: 1fr; }
+  }
+}

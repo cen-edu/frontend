@@ -161,6 +161,51 @@
     color: #ffffff;
     font-size: 11px;
   }
+
+  &__student-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  &__student-name {
+    min-height: 44px;
+    padding: 0 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid #6f8c82;
+    border-radius: 10px;
+    color: #fff;
+    font-size: 15px;
+
+    i {
+      color: #f2e8c9;
+      font-size: 14px;
+    }
+  }
+
+  &__return-link {
+    min-height: 44px;
+    padding: 0 14px;
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid #d8cfaa;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 13px;
+    transition: background-color 140ms ease, border-color 140ms ease;
+
+    &:hover {
+      background: #3a6659;
+      border-color: #f2e8c9;
+    }
+
+    &:focus-visible {
+      outline: 2px solid #f2e8c9;
+      outline-offset: 2px;
+    }
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -8,6 +8,7 @@
 | --- | --- | --- |
 | `/students` | `StudentListPage` | 학생 목록 조회, 필터링, 선택, 등록, 수정 |
 | `/students/classes` | `ClassManagementPage` | 반 목록 조회, 검색, 선택, 순서 변경, 생성, 수정 |
+| `/student?student={학생 ID}` | `StudentHomePage` | 선택한 학생의 학생앱 메인 화면 미리보기 |
 
 `/students`, `/students/classes`는 `StudentManagementLayout`을 공통 부모로 사용한다. `StudentManagementLayout`은 공용 `SectionLayout`에 학생 관리 메뉴 설정을 전달하며, 자식 화면은 `SectionLayout`의 `Outlet` 위치에 렌더링된다. 반 생성과 상세 수정은 별도 경로로 이동하지 않고 `/students/classes` 목록 위에 모달로 표시한다.
 
@@ -126,6 +127,7 @@ StudentManagementPage/
 - 전체 선택과 개별 학생 선택을 처리한다.
 - 행 클릭 및 `Enter`, `Space` 키를 통한 선택을 지원한다.
 - 학생앱 이동 및 상세보기 버튼을 렌더링한다.
+- 학생앱 이동은 선택한 학생 ID를 `student` 쿼리로 전달해 독립 라우트의 `StudentHomePage`를 연다.
 - 상세보기 요청은 선택된 학생 객체를 상위 페이지에 전달한다.
 
 ### `StudentSelectionBar.jsx`
@@ -221,6 +223,8 @@ StudentManagementPage/
 - `src/components/common/CustomSelect/CustomSelect.jsx`: 공통 드롭다운
 - `src/components/common/CustomCheckbox/CustomCheckbox.jsx`: 목록 선택용 공통 체크박스
 - `src/App.jsx`: 학생 관리 중첩 라우트 등록
+- `src/pages/StudentHomePage`: 학생별 배정 학습지를 `전체 / 숙제 / 평가`로 조회하고 카드 단위로 선택하는 독립 학생앱 메인 화면
+- `src/mocks/studentAssignments.js`: 학생앱 메인 화면의 배정 데이터와 유형·상태·맞춤 단계 라벨
 
 ## 데이터 흐름
 
@@ -229,7 +233,7 @@ src/mocks/students.js
         ↓
 StudentListPage (학생 데이터와 화면 상태 관리)
         ├── StudentToolbar (필터·검색 변경 요청)
-        ├── StudentTable (선택·상세보기 요청)
+        ├── StudentTable (선택·상세보기·학생앱 이동 요청)
         ├── StudentSelectionBar (선택 학생 삭제 요청)
         ├── StudentBulkRegistrationModal (일괄 등록 파일 전달)
         ├── StudentRegistrationModal (신규 학생 등록 요청)

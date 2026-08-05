@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { NavLink } from "react-router-dom";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import logoSymbol from "../../assets/images/logo-symbol.png";
 import "./Header.scss";
 
-function Header({ hideOnWheel = false, onHiddenChange }) {
+function Header({ hideOnWheel = false, onHiddenChange, mode = 'teacher', userName }) {
+    const location = useLocation();
+    const studentHomePath = `${location.pathname}${location.search}`;
     const [isHidden, setIsHidden] = useState(false);
     const downwardWheelCount = useRef(0);
     const updateVisibility = useCallback((hidden) => {
@@ -63,7 +65,7 @@ function Header({ hideOnWheel = false, onHiddenChange }) {
         >
             <div className="header__inner">
                 <div className="header__left">
-                    <NavLink to="/dashboard" className="header__brand">
+                    <NavLink to={mode === 'student' ? studentHomePath : '/dashboard'} className="header__brand">
                         <img
                             src={logoSymbol}
                             alt=""
@@ -73,7 +75,7 @@ function Header({ hideOnWheel = false, onHiddenChange }) {
                         <span className="header__brand-name">센의 정석</span>
                     </NavLink>
 
-                    <nav className="header__navigation" aria-label="주요 메뉴">
+                    {mode === 'teacher' ? <nav className="header__navigation" aria-label="주요 메뉴">
                         <NavLink
                             to="/dashboard"
                             className={({ isActive }) =>
@@ -109,10 +111,21 @@ function Header({ hideOnWheel = false, onHiddenChange }) {
                         >
                             학생 관리
                         </NavLink>
-                    </nav>
+                    </nav> : (
+                        <nav className="header__navigation" aria-label="학생 메뉴">
+                            <NavLink
+                                to={studentHomePath}
+                                className={({ isActive }) =>
+                                    `header__menu ${isActive ? "header__menu--active" : ""}`
+                                }
+                            >
+                                내 학습
+                            </NavLink>
+                        </nav>
+                    )}
                 </div>
 
-                <button type="button" className="header__profile">
+                {mode === 'teacher' ? <button type="button" className="header__profile">
           <span className="header__profile-icon">
             <i className="bi bi-person-fill" />
           </span>
@@ -120,7 +133,17 @@ function Header({ hideOnWheel = false, onHiddenChange }) {
                     <span className="header__profile-name">이하영 선생님</span>
 
                     <i className="bi bi-chevron-down header__profile-arrow" />
-                </button>
+                </button> : (
+                    <div className="header__student-actions">
+                        <span className="header__student-name">
+                            <i className="bi bi-person-fill" aria-hidden="true" />
+                            {userName} 학생
+                        </span>
+                        <Link to="/students" className="header__return-link">
+                            교사 화면으로 돌아가기
+                        </Link>
+                    </div>
+                )}
             </div>
         </header>
     );

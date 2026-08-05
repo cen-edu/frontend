@@ -1,6 +1,6 @@
 import CustomCheckbox from '../../../components/common/CustomCheckbox/CustomCheckbox';
 
-function StudentTable({ wrapRef, students, selectedIds, getClassLabel, onToggleAll, onToggleStudent, onOpenDetail }) {
+function StudentTable({ wrapRef, students, selectedIds, getClassLabel, onToggleAll, onToggleStudent, onOpenDetail, onOpenStudentApp }) {
     const visibleIds = students.map((student) => student.id);
     const isAllSelected = visibleIds.length > 0 && visibleIds.every((id) => selectedIds.includes(id));
 
@@ -57,7 +57,7 @@ function StudentTable({ wrapRef, students, selectedIds, getClassLabel, onToggleA
                             <td>{student.name}</td>
                             <td>{student.attendanceNumber}</td>
                             <td>{student.studentId}</td>
-                            <td><button type="button" className="student-list__table-button">학생앱으로 이동</button></td>
+                            <td><button type="button" className="student-list__table-button" onClick={() => onOpenStudentApp(student)}>학생앱으로 이동</button></td>
                             <td><button type="button" className="student-list__table-button" onClick={() => onOpenDetail(student)}>상세보기</button></td>
                         </tr>
                     ))}
