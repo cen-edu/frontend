@@ -37,6 +37,7 @@ function AssessmentResultPage() {
     const worksheet = filtered.find((item) => item.id === selectedId);
 
     const openGrading = (studentId) => {
+        if (worksheet.type !== 'assessment') return;
         const params = new URLSearchParams();
         if (studentId) params.set('student', studentId);
         navigate(`/learning/results/${worksheet.id}/grading?${params}`);

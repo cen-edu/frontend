@@ -1,6 +1,7 @@
 function ResultSummaryBar({ worksheet, metrics, onGrade, onConfirm }) {
     const unit = worksheet.type === 'assessment' ? '점' : '개';
-    const canGrade = worksheet.type === 'practice' || metrics.pendingCount > 0;
+    // 일반 학습 채점 화면은 실제 학습 페이지 구현 이후 다시 만들 예정이라 지금은 종합 평가만 채점할 수 있다.
+    const canGrade = worksheet.type === 'assessment' && metrics.pendingCount > 0;
     return (
         <div className="result-summary">
             <div>

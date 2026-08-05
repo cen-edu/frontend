@@ -294,9 +294,14 @@
       font-weight: 600;
       cursor: pointer;
 
-      &:hover {
+      &:hover:not(:disabled) {
         background: #edf5fc;
         border-color: #176fc1;
+      }
+
+      &:disabled {
+        opacity: .45;
+        cursor: not-allowed;
       }
 
       &:focus-visible {
@@ -471,23 +476,6 @@
 
     i {
       color: #176fc1;
-    }
-  }
-
-  &__practice-current {
-    font-size: 11px !important;
-    font-weight: 700 !important;
-
-    &--correct {
-      color: #356c55 !important;
-    }
-
-    &--partial {
-      color: #ad751d !important;
-    }
-
-    &--wrong {
-      color: #a24b4b !important;
     }
   }
 
@@ -711,77 +699,6 @@
     border-top: 1px solid #e7ebef;
   }
 
-  &__grading--practice {
-    display: grid;
-    grid-template-columns: minmax(180px, 1fr) auto;
-    align-items: end;
-    gap: 20px;
-  }
-
-  &__practice-results {
-    display: flex;
-    gap: 7px;
-  }
-
-  &__practice-result {
-    min-width: 72px;
-    height: 48px;
-    padding: 0 10px;
-    display: grid;
-    grid-template-columns: auto 1fr;
-    align-items: center;
-    gap: 7px;
-    background: #fff;
-    border: 1px solid #d8dfe5;
-    border-radius: 7px;
-    color: #647284;
-    cursor: pointer;
-    transition: .14s;
-
-    strong {
-      font-size: 15px;
-    }
-
-    span {
-      font-size: 11px;
-      font-weight: 600;
-      white-space: nowrap;
-    }
-
-    &:hover:not(:disabled) {
-      background: #f7f9fb;
-      border-color: #9baaba;
-    }
-
-    &:focus-visible {
-      outline: 2px solid rgba(23, 111, 193, .35);
-      outline-offset: 1px;
-    }
-
-    &:disabled {
-      opacity: .4;
-      cursor: not-allowed;
-    }
-
-    &--correct.grading-answer-card__practice-result--selected {
-      background: #edf6f1;
-      border-color: #75a28e;
-      color: #356c55;
-    }
-
-    &--partial.grading-answer-card__practice-result--selected {
-      background: #fbf5e9;
-      border-color: #c9a15f;
-      color: #95631a;
-    }
-
-    &--wrong.grading-answer-card__practice-result--selected {
-      background: #fbefef;
-      border-color: #c98b8b;
-      color: #a24b4b;
-    }
-  }
-
   &__model {
     margin-bottom: 12px;
 
@@ -992,16 +909,5 @@
   .grading-answer-card__auto-heading {
     align-items: flex-start;
     flex-direction: column;
-  }
-  .grading-answer-card__grading--practice {
-    grid-template-columns: 1fr;
-  }
-  .grading-answer-card__practice-results {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-  }
-  .grading-answer-card__practice-result {
-    min-width: 0;
-    padding: 0 7px;
   }
 }
