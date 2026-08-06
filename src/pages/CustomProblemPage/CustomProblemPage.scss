@@ -13,8 +13,8 @@
   &__progress { min-height: 48px; flex: 0 0 48px; padding: 0 18px; display: flex; align-items: center; gap: 18px; background: #fbfdff; border-bottom: 1px solid #dfe8f0; > div { height: 8px; flex: 1; overflow: hidden; background: #e4ebf1; border-radius: 999px; span { height: 100%; display: block; background: #176fc1; border-radius: inherit; } } strong { min-width: 74px; color: #465166; font-family: '학교안심 분필', cursive; font-size: 14px; text-align: right; } }
   &__student-preview { min-width: 0; min-height: 0; flex: 1; padding: 22px 24px 28px; display: grid; grid-template-columns: minmax(0, 980px) 300px; justify-content: center; align-content: start; align-items: start; gap: 18px; background-color: #f8fbfd; background-image: radial-gradient(circle, rgba(112,143,168,.2) 1px, transparent 1px); background-size: 20px 20px; overflow-x: hidden; overflow-y: auto; }
   &__student-preview-content { min-width: 0; font-family: '학교안심 분필', cursive; .practice-problem-view { border-color: #d8e2ea; box-shadow: 0 8px 24px rgba(52,75,94,.08); } }
-  &__support { min-width: 0; min-height: 0; align-self: stretch; display: flex; flex-direction: column; gap: 8px; font-family: '학교안심 분필', cursive;
-    .concept-chat--student { position: static; flex: 1; height: auto; min-height: 320px; max-height: none; box-shadow: 0 8px 24px rgba(52,75,94,.08); }
+  &__support { position: sticky; top: 0; min-width: 0; align-self: start; display: flex; flex-direction: column; gap: 8px; font-family: '학교안심 분필', cursive;
+    .concept-chat--student { position: static; flex: 0 0 auto; height: 500px; max-height: none; box-shadow: 0 8px 24px rgba(52,75,94,.08); }
     .practice-concept-view { border-color: #d8e2ea; box-shadow: 0 8px 24px rgba(52,75,94,.08); }
   }
   &__support-switch { padding: 4px; display: grid; grid-template-columns: 1fr 1fr; gap: 4px; background: #fff; border: 1px solid #dde2e8; border-radius: 8px; font-family: Pretendard, sans-serif; }
@@ -27,7 +27,7 @@
 @media (max-width: 1120px) {
   .custom-problem-result {
     &__student-preview { grid-template-columns: minmax(0, 980px); }
-    &__support { align-self: start; .concept-chat--student { flex: 0 0 auto; height: 420px; } }
+    &__support { position: static; .concept-chat--student { height: 420px; } }
   }
   .custom-problem-page { min-width: 0; &__workspace { grid-template-columns: 1fr; grid-template-rows: minmax(0,.7fr) minmax(0,2fr) minmax(0,.9fr); > .weakness-summary { grid-column: auto; } } &__page-header { align-items: flex-start; flex-direction: column; } } }
 @media (max-width: 720px) { .custom-config__footer { align-items: stretch; flex-direction: column; } .custom-config__add, .custom-config__generate { justify-content: space-between; } .custom-problem-result { &__header { align-items: flex-start; flex-direction: column; flex-basis: auto; } &__actions { width: 100%; flex-wrap: wrap; } &__student-preview { padding-inline: 14px; } &__preview-controls { grid-template-columns: 1fr 1fr; gap: 10px; > span { display: none; } button { min-width: 0; width: 100%; } } } }
