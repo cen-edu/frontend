@@ -138,8 +138,9 @@
 - 보관함 학습지 데이터는 `src/mocks/problemLibrary.js`에서 관리하고, 학습 관리 mock과 같은 학습지는 동일한 학습지 id를 사용한다.
 - 문제 미리보기 렌더러는 `src/components/common/ProblemViewer`를 재사용하고 페이지별로 중복 구현하지 않는다.
 - 일반 학습의 단계형 문제 카드와 개념 설명 카드는 `src/components/common/PracticeProblemView`를 학생 풀이와 교사용 생성 결과 미리보기에서 함께 사용한다. 교사용 미리보기는 필기 입력 없이 같은 문제 구조 안에 정답을 표시하고 우측에 개념 설명을 배치하며, 문항 목록 없이 상단 진행률과 하단 이전/다음 버튼으로 문항을 이동한다.
+- 종합평가 생성 결과도 일반 학습 문제 생성 결과와 같은 상단 진행률·하단 이전/다음 문항 탐색과 점무늬 캔버스 미리보기 구조를 사용한다. 중앙에는 정답·채점 기준을 포함한 문항 카드를 배치하고 배점 수정·문항 순서 변경 기능을 유지한다.
 - 교사용 문제 미리보기와 문제 생성 결과에서는 정답을 항상 표시하고, 정답 표시·숨기기 전환 기능을 제공하지 않는다.
-- 종합평가 생성과 맞춤 문제 생성의 결과 화면에서 AI 문제 수정 요청 영역은 `src/pages/ProblemCreationPage/components/ProblemRevisePanel.jsx`를 재사용하고 추천 요청 문구는 `src/mocks/problemRevision.js`의 `revisionPresets`에서 관리한다. 일반 학습 문제 생성 결과는 `senny-chatbot.png`를 사용한 AI 편집 버튼으로 편집 모드에 진입하고 문제 전체·풀이 과정별·개념 설명 전체 섹터 중 하나를 선택한 뒤 `ProblemAiEditPanel`에서 요청을 입력한다. LLM 연동 전까지는 UI 피드백만 제공하고 문제 데이터를 변형하지 않는다.
+- 맞춤 문제 생성 결과의 AI 문제 수정 요청 영역은 `src/pages/ProblemCreationPage/components/ProblemRevisePanel.jsx`를 재사용하고 추천 요청 문구는 `src/mocks/problemRevision.js`의 `revisionPresets`에서 관리한다. 일반 학습과 종합평가 생성 결과는 `senny-chatbot.png`를 사용한 AI 편집 버튼으로 편집 모드에 진입한 뒤 수정 섹터를 선택하고 `ProblemAiEditPanel`에서 요청을 입력한다. 일반 학습은 문제 전체·풀이 과정별·개념 설명 전체, 종합평가는 문제 전체·보기와 정답·모범답안·채점 기준 영역을 선택한다. LLM 연동 전까지는 UI 피드백만 제공하고 문제 데이터를 변형하지 않는다.
 - 문제 보관함에서는 제목만 직접 수정하며, 내용 변경은 `from` 쿼리로 문제 생성 또는 종합평가 생성 화면에 구성값을 전달해 재구성한다.
 - 문제 보관함의 출제 상태는 별도 필드로 저장하지 않고 `assignments` 배열의 길이에서 파생한다.
 - 문제 보관함의 맞춤 문제는 `custom.sourceWorksheetId`로 원본 일반 학습 또는 종합 평가에 연결하고, 원본 학습지 행 아래의 접을 수 있는 하위 항목으로 표시한다. 유형 탭 분류도 맞춤 문제 자체의 `type`이 아니라 연결된 원본 학습지 유형을 기준으로 한다.

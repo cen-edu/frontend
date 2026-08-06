@@ -19,4 +19,12 @@
 .assessment-question__short-answer > div, .assessment-question__essay-box { min-height: 82px; padding: 14px; border: 1px solid #dde2e8; border-radius: 7px; }
 .assessment-question__short-answer p, .assessment-question__model-answer, .assessment-question__rubric { padding: 14px; background: #f4f9fd; border-radius: 7px; color: #344054; line-height: 1.6; strong { margin-right: 10px; color: #176fc1; } h4 { margin-bottom: 8px; color: #172033; } }
 .assessment-question__rubric table { width: 100%; border-collapse: collapse; background: #fff; th, td { padding: 8px; border: 1px solid #dde2e8; font-size: 12px; text-align: left; } th:last-child, td:last-child { text-align: right; } }
+.assessment-question--edit-mode { position: relative; padding-top: 64px !important; border-color: #8eb7dc; outline: 2px dashed rgba(23,111,193,.26); outline-offset: -7px; }
+.assessment-question--selected { outline: 3px solid rgba(23,111,193,.2); outline-offset: -3px; }
+.assessment-question__sector { position: relative; }
+.assessment-question__sector--editable { margin-inline: -12px; padding: 48px 12px 12px; border-radius: 8px; outline: 1px dashed #b7cce0; outline-offset: -4px; &:hover { background: #f7fbff; outline-color: #176fc1; } }
+.assessment-question__sector--selected { background: #eff7ff; outline: 2px solid #176fc1; outline-offset: -2px; }
+.assessment-question__sector-button { position: absolute; z-index: 3; top: 10px; right: 10px; min-height: 32px; padding: 0 11px; display: inline-flex; align-items: center; gap: 6px; background: #fff; border: 1px solid #8eb7dc; border-radius: 6px; color: #176fc1; font-family: Pretendard, sans-serif; font-size: 12px; font-weight: 700; cursor: pointer; &:hover { background: #eff7ff; border-color: #176fc1; } &:focus-visible { outline: 3px solid rgba(23,111,193,.25); outline-offset: 2px; } &[aria-pressed='true'] { background: #176fc1; border-color: #176fc1; color: #fff; } &--problem { top: 14px; right: 14px; } }
+.assessment-question__short-answer.assessment-question__sector--editable { padding-top: 48px; }
+.assessment-question__model-answer.assessment-question__sector--editable, .assessment-question__rubric.assessment-question__sector--editable { padding-top: 52px; }
 @media (max-width: 720px) { .assessment-question__header { flex-direction: column; } }
