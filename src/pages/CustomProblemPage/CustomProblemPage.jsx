@@ -2,9 +2,10 @@ import { useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import AnalysisFilters from '../../components/common/AnalysisFilters/AnalysisFilters';
 import ConceptChatPanel from '../../components/common/ConceptChatPanel/ConceptChatPanel';
-import { buildProposal, createCustomAssignment, createManualConfig, generateCustomProblems, getAvailableCustomUnits } from '../../mocks/customCreation';
+import { buildProposal, createCustomAssignment, createManualConfig, defaultSupportMode, generateCustomProblems, getAvailableCustomUnits, supportModes } from '../../mocks/customCreation';
 import { customStageLabels, difficultyLabels } from '../../mocks/labels';
 import { weaknessFilterOptions, weaknessWorksheets } from '../../mocks/weaknessAnalysis';
+import PracticeConceptView from '../../components/common/PracticeProblemView/PracticeConceptView';
 import PracticeProblemView from '../../components/common/PracticeProblemView/PracticeProblemView';
 import sennyChatbot from '../../assets/images/senny-chatbot.png';
 import ProblemAiEditPanel from '../ProblemCreationPage/components/ProblemAiEditPanel';
@@ -44,13 +45,14 @@ function CustomProblemPage() {
     const selectedStudent = worksheet.students.find((student) => student.id === selectedStudentId) ?? worksheet.students[0];
     const selectedProposal = proposals[selectedStudent.id];
     const workKey = `${worksheet.id}:${selectedStudent.id}`;
-    const currentWork = studentWork[workKey] ?? { configs: selectedProposal.configs, problems: [], assignment: null };
+    const currentWork = studentWork[workKey] ?? { configs: selectedProposal.configs, problems: [], assignment: null, supports: {} };
     const selectedProblem = currentWork.problems.find((problem) => problem.id === selectedProblemId) ?? currentWork.problems[0] ?? null;
     const selectedProblemIndex = currentWork.problems.findIndex((problem) => problem.id === selectedProblem?.id);
     const previewProgress = currentWork.problems.length ? Math.round(((selectedProblemIndex + 1) / currentWork.problems.length) * 100) : 0;
+    const selectedSupport = currentWork.supports?.[selectedProblem?.id] ?? defaultSupportMode;
 
     const updateCurrentWork = (updater) => setStudentWork((current) => {
-        const base = current[workKey] ?? { configs: selectedProposal.configs, problems: [], assignment: null };
+        const base = current[workKey] ?? { configs: selectedProposal.configs, problems: [], assignment: null, supports: {} };
         return { ...current, [workKey]: typeof updater === 'function' ? updater(base) : updater };
     });
 
@@ -69,21 +71,25 @@ function CustomProblemPage() {
         setSearchParams({ worksheet: value, students: nextStudentId });
     };
 
-    const changeCount = (conceptId, stage, value) => updateCurrentWork((work) => ({ ...work, configs: work.configs.map((config) => config.conceptId === conceptId ? { ...config, counts: { ...config.counts, [stage]: value } } : config), problems: [], assignment: null }));
-    const removeConfig = (conceptId) => updateCurrentWork((work) => ({ ...work, configs: work.configs.filter((config) => config.conceptId !== conceptId), problems: [], assignment: null }));
+    const changeCount = (conceptId, stage, value) => updateCurrentWork((work) => ({ ...work, configs: work.configs.map((config) => config.conceptId === conceptId ? { ...config, counts: { ...config.counts, [stage]: value } } : config), problems: [], assignment: null, supports: {} }));
+    const removeConfig = (conceptId) => updateCurrentWork((work) => ({ ...work, configs: work.configs.filter((config) => config.conceptId !== conceptId), problems: [], assignment: null, supports: {} }));
     const addConfig = (unitId) => {
         const unit = availableUnits.find((item) => item.id === unitId);
         if (!unit) return;
-        updateCurrentWork((work) => ({ ...work, configs: [...work.configs, createManualConfig(unit)], problems: [], assignment: null }));
+        updateCurrentWork((work) => ({ ...work, configs: [...work.configs, createManualConfig(unit)], problems: [], assignment: null, supports: {} }));
     };
     const generate = () => {
         const problems = generateCustomProblems(selectedStudent, currentWork.configs);
-        updateCurrentWork((work) => ({ ...work, problems, assignment: null }));
+        updateCurrentWork((work) => ({ ...work, problems, assignment: null, supports: {} }));
         setSelectedProblemId(problems[0]?.id ?? '');
         setEditMode(false);
         setEditTarget(null);
     };
-    const assign = (dueAt) => updateCurrentWork((work) => ({ ...work, assignment: createCustomAssignment(selectedStudent, dueAt, work.problems) }));
+    const changeSupport = (mode) => {
+        if (!selectedProblem) return;
+        updateCurrentWork((work) => ({ ...work, supports: { ...work.supports, [selectedProblem.id]: mode }, assignment: null }));
+    };
+    const assign = (dueAt) => updateCurrentWork((work) => ({ ...work, assignment: createCustomAssignment(selectedStudent, dueAt, work.problems, work.supports) }));
     const selectStudent = (studentId) => {
         setSelectedStudentId(studentId);
         setSelectedProblemId('');
@@ -91,7 +97,7 @@ function CustomProblemPage() {
         setEditTarget(null);
     };
     const editConfiguration = () => {
-        updateCurrentWork((work) => ({ ...work, problems: [], assignment: null }));
+        updateCurrentWork((work) => ({ ...work, problems: [], assignment: null, supports: {} }));
         setEditMode(false);
         setEditTarget(null);
     };
@@ -154,16 +160,35 @@ function CustomProblemPage() {
                         </footer>}
                     />
                 </div>
-                <div className="custom-problem-result__chat-preview">
-                    <ConceptChatPanel
-                        readOnly
-                        mode="student"
-                        title="학습 도우미"
-                        description="문제를 풀다 막히면 질문하세요."
-                        studentName={selectedStudent.name}
-                        welcomeMessage="학생 화면에 표시되는 학습 도우미입니다. 학생은 문제를 푸는 동안 막히는 부분을 질문하고, 정답 대신 필요한 개념과 다음 풀이 방향을 안내받습니다."
-                        suggestions={['이 문제는 어떻게 시작하나요?', '필요한 개념을 다시 알려 주세요', '다음 풀이 단계를 알려 주세요']}
-                    />
+                <div className="custom-problem-result__support">
+                    <p className="custom-problem-result__support-note"><i className="bi bi-info-circle" aria-hidden="true" /> 선택한 항목만 학생 화면에 표시됩니다.</p>
+                    <div className="custom-problem-result__support-switch" role="group" aria-label="학생 화면에 함께 보여줄 자료 선택">
+                        {supportModes.map((mode) => (
+                            <button
+                                key={mode.value}
+                                type="button"
+                                className={selectedSupport === mode.value ? 'custom-problem-result__support-option custom-problem-result__support-option--active' : 'custom-problem-result__support-option'}
+                                aria-pressed={selectedSupport === mode.value}
+                                title={mode.description}
+                                onClick={() => changeSupport(mode.value)}
+                            >
+                                <i className={`bi ${mode.icon}`} aria-hidden="true" /> {mode.label}
+                            </button>
+                        ))}
+                    </div>
+                    {selectedSupport === 'chat' ? (
+                        <ConceptChatPanel
+                            readOnly
+                            mode="student"
+                            title="학습 도우미"
+                            description="문제를 풀다 막히면 질문하세요."
+                            studentName={selectedStudent.name}
+                            welcomeMessage="학생 화면에 표시되는 학습 도우미입니다. 학생은 문제를 푸는 동안 막히는 부분을 질문하고, 정답 대신 필요한 개념과 다음 풀이 방향을 안내받습니다."
+                            suggestions={['이 문제는 어떻게 시작하나요?']}
+                        />
+                    ) : (
+                        <PracticeConceptView concept={selectedProblem.concept} headingId="custom-preview-concept-title" />
+                    )}
                 </div>
             </div>
             {editMode && !editTarget && <p className="custom-problem-result__edit-guide" role="status"><i className="bi bi-cursor" aria-hidden="true" /> 편집할 문제 전체 또는 풀이 과정 영역을 선택하세요.</p>}

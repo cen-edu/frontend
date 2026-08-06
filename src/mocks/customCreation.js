@@ -3,6 +3,12 @@ import { customStageLabels, customStageStepLabels, customStages } from './labels
 
 export { customStageLabels, customStageStepLabels, customStages };
 
+export const supportModes = [
+    { value: 'chat', label: '학습 도우미', icon: 'bi-chat-dots', description: '학생이 막힐 때 질문할 수 있는 챗봇을 보여 줍니다.' },
+    { value: 'concept', label: '개념 설명', icon: 'bi-journal-text', description: '문제와 관련된 개념 정리를 보여 줍니다.' },
+];
+export const defaultSupportMode = 'chat';
+
 export const conceptUnitMap = {
     'prime-number': 'm1s1-prime-factor',
     'divisor-factor': 'm1s1-prime-factor',
@@ -47,6 +53,13 @@ const templates = {
         independent: { difficulty: 'high', prompt: '24와 90의 최소공배수를 구하시오.', steps: [step('s1', [text('최종 답: '), blank('b1', '360')])] },
     },
 };
+
+const fallbackConcept = (label) => ({
+    title: label,
+    summary: `${label}의 정의와 기본 원리를 적용해 풀이 과정을 완성합니다.`,
+    points: ['문제의 조건을 식이나 그림으로 정리합니다.', '계산 결과가 조건에 맞는지 확인합니다.'],
+    example: `${label}의 핵심 조건을 식으로 정리해 적용합니다.`,
+});
 
 const fallbackTemplate = (label, stage) => ({
     difficulty: stage === 'retrace' ? 'low' : stage === 'independent' ? 'high' : 'mid',
@@ -121,6 +134,7 @@ export function generateCustomProblems(student, configs) {
                 unitName: unit?.name ?? config.conceptLabel,
                 unitPath: unit ? `${unit.majorName} > ${unit.middleName} > ${unit.name}` : config.conceptLabel,
                 difficulty: selected.difficulty,
+                concept: unit?.concept ?? fallbackConcept(config.conceptLabel),
                 stage,
                 sourceQuestionNo: stage === 'retrace' ? config.sourceQuestionNo : null,
                 prompt: selected.prompt,
@@ -135,7 +149,7 @@ export function generateCustomProblems(student, configs) {
     }));
 }
 
-export function createCustomAssignment(student, dueAt, problems) {
+export function createCustomAssignment(student, dueAt, problems, supports = {}) {
     const totalUnits = problems.reduce((sum, problem) => sum + problem.steps.reduce((stepSum, currentStep) => stepSum + currentStep.segments.filter((segment) => segment.type === 'blank').length, 0), 0);
-    return { studentId: student.id, mode: 'custom', dueAt, status: 'assigned', type: 'practice', origin: 'custom', totalUnits };
+    return { studentId: student.id, mode: 'custom', dueAt, status: 'assigned', type: 'practice', origin: 'custom', totalUnits, supports: Object.fromEntries(problems.map((problem) => [problem.id, supports[problem.id] ?? defaultSupportMode])) };
 }
