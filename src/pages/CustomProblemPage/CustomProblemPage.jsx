@@ -2,10 +2,11 @@ import { useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import AnalysisFilters from '../../components/common/AnalysisFilters/AnalysisFilters';
 import { buildProposal, createCustomAssignment, createManualConfig, generateCustomProblems, getAvailableCustomUnits } from '../../mocks/customCreation';
+import { customStageLabels, difficultyLabels } from '../../mocks/labels';
 import { weaknessFilterOptions, weaknessWorksheets } from '../../mocks/weaknessAnalysis';
-import ProblemPreviewList from '../../components/common/ProblemViewer/ProblemPreviewList';
-import ProblemStepView from '../../components/common/ProblemViewer/ProblemStepView';
-import ProblemRevisePanel from '../ProblemCreationPage/components/ProblemRevisePanel';
+import PracticeProblemView from '../../components/common/PracticeProblemView/PracticeProblemView';
+import sennyChatbot from '../../assets/images/senny-chatbot.png';
+import ProblemAiEditPanel from '../ProblemCreationPage/components/ProblemAiEditPanel';
 import CustomAssignBar from './components/CustomAssignBar';
 import CustomConfigTable from './components/CustomConfigTable';
 import StudentWeaknessList from './components/StudentWeaknessList';
@@ -15,7 +16,6 @@ import './components/CustomProblemComponents.scss';
 import '../ProblemCreationPage/components/ProblemCreationComponents.scss';
 
 const defaultWorksheetId = 'factor-practice';
-let nextRevisionRequestId = 1;
 
 function CustomProblemPage() {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -29,7 +29,8 @@ function CustomProblemPage() {
     const [selectedStudentId, setSelectedStudentId] = useState(initialStudentId);
     const [studentWork, setStudentWork] = useState({});
     const [selectedProblemId, setSelectedProblemId] = useState('');
-    const [revisionRequests, setRevisionRequests] = useState({});
+    const [editMode, setEditMode] = useState(false);
+    const [editTarget, setEditTarget] = useState(null);
 
     const worksheet = weaknessWorksheets[filters.worksheetId];
     const proposals = useMemo(() => Object.fromEntries(worksheet.students.map((student) => {
@@ -44,7 +45,8 @@ function CustomProblemPage() {
     const workKey = `${worksheet.id}:${selectedStudent.id}`;
     const currentWork = studentWork[workKey] ?? { configs: selectedProposal.configs, problems: [], assignment: null };
     const selectedProblem = currentWork.problems.find((problem) => problem.id === selectedProblemId) ?? currentWork.problems[0] ?? null;
-    const revisionKey = selectedProblem ? `${workKey}:${selectedProblem.id}` : '';
+    const selectedProblemIndex = currentWork.problems.findIndex((problem) => problem.id === selectedProblem?.id);
+    const previewProgress = currentWork.problems.length ? Math.round(((selectedProblemIndex + 1) / currentWork.problems.length) * 100) : 0;
 
     const updateCurrentWork = (updater) => setStudentWork((current) => {
         const base = current[workKey] ?? { configs: selectedProposal.configs, problems: [], assignment: null };
@@ -61,6 +63,8 @@ function CustomProblemPage() {
         setFilters((current) => ({ ...current, worksheetId: value, gradeId: nextWorksheet.gradeId, classId: nextWorksheet.classId }));
         setSelectedStudentId(nextStudentId);
         setSelectedProblemId('');
+        setEditMode(false);
+        setEditTarget(null);
         setSearchParams({ worksheet: value, students: nextStudentId });
     };
 
@@ -75,24 +79,30 @@ function CustomProblemPage() {
         const problems = generateCustomProblems(selectedStudent, currentWork.configs);
         updateCurrentWork((work) => ({ ...work, problems, assignment: null }));
         setSelectedProblemId(problems[0]?.id ?? '');
-        setRevisionRequests((current) => Object.fromEntries(Object.entries(current).filter(([key]) => !key.startsWith(`${workKey}:`))));
+        setEditMode(false);
+        setEditTarget(null);
     };
     const assign = (dueAt) => updateCurrentWork((work) => ({ ...work, assignment: createCustomAssignment(selectedStudent, dueAt, work.problems) }));
-    const selectStudent = (studentId) => { setSelectedStudentId(studentId); setSelectedProblemId(''); };
-    const addRevisionRequest = (prompt) => {
-        if (!revisionKey) return;
-        setRevisionRequests((current) => ({
-            ...current,
-            [revisionKey]: [...(current[revisionKey] ?? []), { id: `custom-revision-${nextRevisionRequestId++}`, prompt }],
-        }));
+    const selectStudent = (studentId) => {
+        setSelectedStudentId(studentId);
+        setSelectedProblemId('');
+        setEditMode(false);
+        setEditTarget(null);
     };
-    const removeRevisionRequest = (requestId) => setRevisionRequests((current) => ({
-        ...current,
-        [revisionKey]: (current[revisionKey] ?? []).filter((request) => request.id !== requestId),
-    }));
     const editConfiguration = () => {
         updateCurrentWork((work) => ({ ...work, problems: [], assignment: null }));
-        setRevisionRequests((current) => Object.fromEntries(Object.entries(current).filter(([key]) => !key.startsWith(`${workKey}:`))));
+        setEditMode(false);
+        setEditTarget(null);
+    };
+    const movePreview = (offset) => {
+        const nextProblem = currentWork.problems[selectedProblemIndex + offset];
+        if (!nextProblem) return;
+        setSelectedProblemId(nextProblem.id);
+        setEditTarget(null);
+    };
+    const toggleEditMode = () => {
+        setEditMode((current) => !current);
+        setEditTarget(null);
     };
 
     const filterControls = [
@@ -105,11 +115,47 @@ function CustomProblemPage() {
 
     const workByStudentId = Object.fromEntries(worksheet.students.map((student) => [student.id, studentWork[`${worksheet.id}:${student.id}`]]));
 
-    return <section className="custom-problem-page" aria-labelledby={currentWork.problems.length ? 'custom-result-title' : 'custom-problem-title'}>
+    return <section className="custom-problem-page" aria-labelledby="custom-problem-title">
         {!currentWork.problems.length && <header className="custom-problem-page__page-header"><div><h1 id="custom-problem-title">맞춤 문제 생성</h1><p>풀이 단계별 오답을 바탕으로 비계를 줄이는 3단계 문제를 구성합니다.</p></div><span>{worksheet.className} · {worksheet.title}</span></header>}
         {currentWork.problems.length ? <section className="custom-problem-result" aria-labelledby="custom-result-title">
-            <header><div><h2 id="custom-result-title">생성 결과</h2><p>{selectedStudent.name} 학생 · 총 {currentWork.problems.length}문항</p></div><div><button type="button" onClick={editConfiguration}>구성 수정</button></div></header>
-            <div className="custom-problem-result__preview"><ProblemPreviewList problems={currentWork.problems} selectedId={selectedProblem?.id} onSelect={setSelectedProblemId} /><div className="custom-problem-result__problem-column"><ProblemStepView problem={selectedProblem} /><ProblemRevisePanel key={revisionKey} problem={selectedProblem} requests={revisionRequests[revisionKey] ?? []} onAddRequest={addRevisionRequest} onRemoveRequest={removeRevisionRequest} /></div></div>
+            <header className="custom-problem-result__header">
+                <div><h2 id="custom-result-title">생성 결과</h2><p>{selectedStudent.name} 학생 · 총 {currentWork.problems.length}문항을 학생 화면과 같은 순서로 검토합니다.</p></div>
+                <div className="custom-problem-result__actions">
+                    <button type="button" className="custom-problem-result__secondary-button" onClick={editConfiguration}>이전</button>
+                    <button type="button" className={`custom-problem-result__ai-edit-button${editMode ? ' custom-problem-result__ai-edit-button--active' : ''}`} aria-pressed={editMode} onClick={toggleEditMode}>
+                        <img src={sennyChatbot} alt="" />
+                        {editMode ? '편집 모드 종료' : 'AI 에이전트로 편집'}
+                    </button>
+                </div>
+            </header>
+            <div className="custom-problem-result__progress" aria-label={`미리보기 진행률 ${previewProgress}%`}>
+                <div><span style={{ width: `${previewProgress}%` }} /></div>
+                <strong>{selectedProblemIndex + 1}/{currentWork.problems.length}문항</strong>
+            </div>
+            <div className="custom-problem-result__student-preview">
+                <div className="custom-problem-result__student-preview-content">
+                    <PracticeProblemView
+                        problem={selectedProblem}
+                        answerMode="answer"
+                        headingId="custom-preview-problem-title"
+                        difficultyText={`${customStageLabels[selectedProblem.stage]} · 난이도 ${difficultyLabels[selectedProblem.difficulty]}`}
+                        editMode={editMode}
+                        selectedEditTarget={editTarget}
+                        onSelectEditTarget={setEditTarget}
+                        footer={<footer className="custom-problem-result__preview-controls">
+                            <button type="button" disabled={selectedProblemIndex === 0} onClick={() => movePreview(-1)}>
+                                <i className="bi bi-chevron-left" aria-hidden="true" /> 이전 학습
+                            </button>
+                            <span>{customStageLabels[selectedProblem.stage]} 단계 문제를 검토하고 있습니다.</span>
+                            <button type="button" className="custom-problem-result__preview-next" disabled={selectedProblemIndex === currentWork.problems.length - 1} onClick={() => movePreview(1)}>
+                                다음 학습 <i className="bi bi-chevron-right" aria-hidden="true" />
+                            </button>
+                        </footer>}
+                    />
+                </div>
+            </div>
+            {editMode && !editTarget && <p className="custom-problem-result__edit-guide" role="status"><i className="bi bi-cursor" aria-hidden="true" /> 편집할 문제 전체 또는 풀이 과정 영역을 선택하세요.</p>}
+            {editMode && <ProblemAiEditPanel target={editTarget} onClose={() => setEditTarget(null)} />}
             <CustomAssignBar student={selectedStudent} assignment={currentWork.assignment} onAssign={assign} />
         </section> : <>
             <AnalysisFilters className="custom-problem-page__filters" controls={filterControls} showContext={false} />
