@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import AnalysisFilters from '../../components/common/AnalysisFilters/AnalysisFilters';
+import ConceptChatPanel from '../../components/common/ConceptChatPanel/ConceptChatPanel';
 import { buildProposal, createCustomAssignment, createManualConfig, generateCustomProblems, getAvailableCustomUnits } from '../../mocks/customCreation';
 import { customStageLabels, difficultyLabels } from '../../mocks/labels';
 import { weaknessFilterOptions, weaknessWorksheets } from '../../mocks/weaknessAnalysis';
@@ -151,6 +152,17 @@ function CustomProblemPage() {
                                 다음 학습 <i className="bi bi-chevron-right" aria-hidden="true" />
                             </button>
                         </footer>}
+                    />
+                </div>
+                <div className="custom-problem-result__chat-preview">
+                    <ConceptChatPanel
+                        readOnly
+                        mode="student"
+                        title="학습 도우미"
+                        description="문제를 풀다 막히면 질문하세요."
+                        studentName={selectedStudent.name}
+                        welcomeMessage="학생 화면에 표시되는 학습 도우미입니다. 학생은 문제를 푸는 동안 막히는 부분을 질문하고, 정답 대신 필요한 개념과 다음 풀이 방향을 안내받습니다."
+                        suggestions={['이 문제는 어떻게 시작하나요?', '필요한 개념을 다시 알려 주세요', '다음 풀이 단계를 알려 주세요']}
                     />
                 </div>
             </div>
