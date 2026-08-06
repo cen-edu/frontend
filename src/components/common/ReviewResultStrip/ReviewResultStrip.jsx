@@ -15,6 +15,7 @@ function ReviewResultStrip({ summary, questions, currentIndex, onSelect }) {
                     정답 {summary.correctCount}
                     {summary.partialCount > 0 && ` · 부분 정답 ${summary.partialCount}`}
                     {` · 오답 ${summary.wrongCount}`}
+                    {summary.pendingCount > 0 && ` · 채점 대기 ${summary.pendingCount}`}
                 </span>
             </div>
 

@@ -301,6 +301,13 @@ export const getPracticeQuestionResult = (answer) => {
     return correctCount > 0 ? 'partial' : 'wrong';
 };
 
+// 종합 평가 문항 결과는 배점 대비 점수로 판정한다. 아직 점수가 없으면 채점 대기다.
+export const getAssessmentQuestionResult = (answer, question) => {
+    if (answer?.score === null || answer?.score === undefined) return 'pending';
+    if (answer.score >= question.maxScore) return 'correct';
+    return answer.score > 0 ? 'partial' : 'wrong';
+};
+
 // 부분 정답은 정답 수에 포함하지 않는다.
 export const getPracticeCorrectCount = (student) => student.answers
     .filter((answer) => getPracticeQuestionResult(answer) === 'correct').length;

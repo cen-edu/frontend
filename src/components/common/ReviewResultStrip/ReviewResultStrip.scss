@@ -49,6 +49,8 @@
     &--correct { background: #eaf5ef; border-color: #b6ddc7; color: #2f7357; }
     &--partial { background: #fff7e4; border-color: #e8cd93; color: #8a5a00; }
     &--wrong { background: #fdeeee; border-color: #eab6b6; color: #b23c3c; }
+    // 교사 채점 화면에서 아직 점수를 매기지 않은 문항.
+    &--pending { background: #f2f4f7; border-color: #cfd6de; color: #747f91; }
 
     // 현재 보고 있는 문항 표시가 결과 색보다 우선한다.
     &--current { border-color: #465166; box-shadow: 0 0 0 2px rgba(70, 81, 102, .18); }

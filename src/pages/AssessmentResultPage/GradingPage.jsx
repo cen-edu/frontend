@@ -1,12 +1,9 @@
 import { useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { getAssessmentResults, isPracticeStudentGraded, saveAssessmentResults } from '../../mocks/assessmentResult';
-import { worksheetTypeLabels } from '../../mocks/labels';
-import GradingAnswerCard from './components/GradingAnswerCard';
-import GradingStudentList from './components/GradingStudentList';
+import AssessmentGradingView from './AssessmentGradingView';
 import PracticeGradingView from './PracticeGradingView';
 import './GradingPage.scss';
-import './components/AssessmentResultComponents.scss';
 
 const deriveRubricChecks = (answer, question) => {
     if (answer?.rubricChecks?.length === question.rubric.length) return answer.rubricChecks;
@@ -117,7 +114,9 @@ function GradingPage() {
         navigate('/learning/results');
     };
 
-    // 일반 학습은 학생이 보는 풀이 화면 그대로 채점한다.
+    const selectStudent = (studentId) => moveStudent(worksheet.students.findIndex((candidate) => candidate.id === studentId));
+
+    // 일반 학습·종합 평가 모두 학생이 보는 화면 그대로 문항을 하나씩 넘겨 보면서 채점한다.
     if (isPractice) {
         return (
             <PracticeGradingView
@@ -125,7 +124,7 @@ function GradingPage() {
                 student={student}
                 completedCount={completedStudents}
                 isComplete={isComplete}
-                onSelectStudent={(studentId) => moveStudent(worksheet.students.findIndex((candidate) => candidate.id === studentId))}
+                onSelectStudent={selectStudent}
                 onMark={markBlank}
                 onComplete={completeGrading}
                 onExit={() => navigate('/learning/results')}
@@ -134,30 +133,18 @@ function GradingPage() {
     }
 
     return (
-        <main className="grading-page">
-            <header className="grading-page__header">
-                <button type="button" className="grading-page__back" aria-label="평가 결과로 돌아가기" onClick={() => navigate('/learning/results')}><i className="bi bi-chevron-left" /></button>
-                <div><strong>{worksheet.title}</strong><span>{worksheet.className} · {worksheetTypeLabels[worksheet.type]}</span></div>
-                <div className="grading-page__progress"><span>학생 채점 완료</span><strong>{completedStudents}/{worksheet.students.length}</strong><div><i style={{ width: `${(completedStudents / worksheet.students.length) * 100}%` }} /></div></div>
-                <button type="button" className="grading-page__save" onClick={() => navigate('/learning/results')}><i className="bi bi-check2" aria-hidden="true" /> 저장하고 나가기</button>
-            </header>
-            <div className="grading-page__workspace">
-                <GradingStudentList students={worksheet.students} selectedId={student.id} isComplete={isComplete} onSelect={(studentId) => moveStudent(worksheet.students.findIndex((candidate) => candidate.id === studentId))} />
-                <section className="grading-page__answers" aria-label={`${student.name} 학생 전체 답안 채점`}>
-                    <div className="grading-page__student-title">
-                        <div><span>{student.number}번</span><h1>{student.name}</h1></div>
-                        <button type="button" className="grading-page__complete" onClick={completeGrading}>채점 완료</button>
-                    </div>
-                    <div className="grading-page__answer-list">
-                        {worksheet.questions.map((question) => {
-                            const answer = student.answers.find((candidate) => candidate.no === question.no);
-                            return <GradingAnswerCard key={question.no} student={student} answer={answer} question={question} rubricChecks={deriveRubricChecks(answer, question)} onScore={(score) => updateScore(question.no, score)} onRubric={(rubricIndex) => toggleRubric(question, rubricIndex)} />;
-                        })}
-                    </div>
-                    <nav className="grading-page__navigation" aria-label="학생 이동"><button type="button" disabled={studentIndex === 0} onClick={() => moveStudent(studentIndex - 1)}><i className="bi bi-chevron-left" /> 이전 학생</button><span>{studentIndex + 1} / {worksheet.students.length}</span><button type="button" disabled={studentIndex === worksheet.students.length - 1} onClick={() => moveStudent(studentIndex + 1)}>다음 학생 <i className="bi bi-chevron-right" /></button></nav>
-                </section>
-            </div>
-        </main>
+        <AssessmentGradingView
+            worksheet={worksheet}
+            student={student}
+            completedCount={completedStudents}
+            isComplete={isComplete}
+            deriveRubricChecks={deriveRubricChecks}
+            onSelectStudent={selectStudent}
+            onScore={updateScore}
+            onRubric={toggleRubric}
+            onComplete={completeGrading}
+            onExit={() => navigate('/learning/results')}
+        />
     );
 }
 

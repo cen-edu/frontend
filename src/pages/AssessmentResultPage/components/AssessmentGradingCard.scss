@@ -1,0 +1,301 @@
+// 종합 평가 채점 카드. 학생 채점 결과 화면(AssessmentReviewCard)과 같은 크기·색을 쓰고,
+// 교사가 누르는 채점 기준·점수 버튼만 아래에 덧붙인다.
+.assessment-grading-card {
+  min-width: 0;
+  padding: 30px 34px 26px;
+  background: #fff;
+  border: 1px solid #dde2e8;
+  border-radius: 10px;
+  color: #172033;
+
+  &__heading {
+    padding-bottom: 26px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    border-bottom: 1px solid #dde2e8;
+
+    > div > span { color: #176fc1; font-size: 15px; font-weight: 700; }
+
+    h2 {
+      max-width: 780px;
+      margin-top: 9px;
+      font-size: 24px;
+      line-height: 1.7;
+      word-break: keep-all;
+    }
+  }
+
+  &__score-box {
+    flex: 0 0 auto;
+    min-width: 128px;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    border: 1px solid #dde2e8;
+    border-radius: 8px;
+    text-align: center;
+
+    strong { font-size: 24px; font-weight: 700; }
+    em { color: #667185; font-size: 13px; font-style: normal; font-weight: 600; }
+
+    &--correct { background: #eaf5ef; border-color: #b6ddc7; strong { color: #2f7357; } }
+    &--partial { background: #fff7e4; border-color: #e8cd93; strong { color: #8a5a00; } }
+    &--wrong { background: #fdeeee; border-color: #eab6b6; strong { color: #b23c3c; } }
+    // 아직 점수를 매기지 않은 문항은 결과 색 대신 채점 대기 색으로 둔다.
+    &--pending { background: #f2f4f7; border-color: #cfd6de; strong { color: #747f91; } }
+  }
+
+  &__choices {
+    margin-top: 24px;
+    display: grid;
+    gap: 10px;
+  }
+
+  &__choice {
+    min-height: 56px;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #fff;
+    border: 1px solid #d7dde4;
+    border-radius: 8px;
+    color: #465166;
+    font-size: 18px;
+
+    b {
+      width: 32px;
+      height: 32px;
+      flex: 0 0 auto;
+      display: grid;
+      place-items: center;
+      background: #f0f3f6;
+      border-radius: 50%;
+      color: #6b7889;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    > span { flex: 1; font-weight: 600; word-break: keep-all; }
+
+    em {
+      padding: 4px 10px;
+      background: #fdeeee;
+      border-radius: 999px;
+      color: #b23c3c;
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    strong {
+      padding: 4px 10px;
+      background: #eaf5ef;
+      border-radius: 999px;
+      color: #2f7357;
+      font-size: 14px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    &--answer { background: #f4fbf7; border-color: #9fd0b6; b { background: #e0f0e8; color: #46795f; } }
+    &--picked { background: #fdf6f6; border-color: #e3a6a6; b { background: #f7e2e1; color: #a75d5a; } }
+  }
+
+  &__choice-empty {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #b23c3c;
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  &__scan {
+    margin-top: 24px;
+
+    figcaption {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #747f91;
+      font-size: 14px;
+      font-weight: 700;
+
+      i { color: #176fc1; }
+    }
+
+    img {
+      width: 100%;
+      max-height: 320px;
+      margin-top: 9px;
+      object-fit: contain;
+      object-position: left top;
+      background: #fff;
+      border: 1px solid #e2e8ef;
+      border-radius: 8px;
+    }
+  }
+
+  &__answers {
+    margin-top: 16px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  &__answer-block {
+    padding: 16px 18px;
+    background: #f8f9fb;
+    border: 1px solid #e4e8ee;
+    border-radius: 8px;
+
+    span { color: #747f91; font-size: 14px; font-weight: 700; }
+    p { margin-top: 9px; color: #172033; font-size: 18px; line-height: 1.7; word-break: keep-all; }
+
+    &--correct {
+      background: #f4fbf7;
+      border-color: #b6ddc7;
+
+      span { color: #2f7357; }
+    }
+  }
+
+  &__answer-empty { color: #98a2ae !important; }
+
+  &__rubric {
+    margin-top: 22px;
+    padding-top: 20px;
+    border-top: 1px solid #ebeef2;
+
+    &-heading {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      h3 { font-size: 18px; }
+
+      span {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 10px;
+        background: #edf5fc;
+        border-radius: 999px;
+        color: #176fc1;
+        font-size: 14px;
+        font-weight: 700;
+      }
+    }
+
+    ul { margin-top: 14px; display: grid; gap: 10px; }
+  }
+
+  // 채점 기준을 눌러 켜고 끄면 점수가 함께 바뀐다. 색은 학생 화면의 채점 기준 목록과 같다.
+  &__rubric-item {
+    width: 100%;
+    padding: 14px 16px;
+    display: grid;
+    grid-template-columns: 22px minmax(0, 1fr) auto;
+    align-items: start;
+    gap: 12px;
+    background: #fdeeee;
+    border: 1px solid #eab6b6;
+    border-radius: 8px;
+    color: #172033;
+    font-family: inherit;
+    text-align: left;
+    cursor: pointer;
+
+    .bi { color: #b23c3c; font-size: 17px; line-height: 1.4; }
+    strong { font-size: 16px; line-height: 1.5; }
+    p { margin-top: 6px; color: #667185; font-size: 15px; line-height: 1.6; }
+    > span { color: #b23c3c; font-size: 16px; font-weight: 700; white-space: nowrap; }
+
+    &:hover:not(:disabled) { border-color: #b23c3c; }
+    &:focus-visible { outline: 3px solid rgba(23, 111, 193, .25); outline-offset: 2px; }
+
+    &:disabled {
+      background: #f2f4f7;
+      border-color: #cfd6de;
+      cursor: not-allowed;
+
+      .bi, > span { color: #98a2ae; }
+      strong { color: #747f91; }
+    }
+
+    &--met {
+      background: #eaf5ef;
+      border-color: #b6ddc7;
+
+      .bi, > span { color: #2f7357; }
+
+      &:hover:not(:disabled) { border-color: #2f7357; }
+    }
+  }
+
+  &__evidence-empty { color: #98a2ae !important; }
+
+  &__marking {
+    margin-top: 22px;
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: #f8fafc;
+    border: 1px solid #e2e8ef;
+    border-radius: 9px;
+
+    &-label { color: #747f91; font-size: 14px; font-weight: 700; }
+  }
+
+  &__scores {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  &__score {
+    min-width: 62px;
+    min-height: 50px;
+    padding: 0 14px;
+    background: #fff;
+    border: 1px solid #d7dde4;
+    border-radius: 8px;
+    color: #465166;
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+
+    &:hover:not(:disabled) { background: #f2f7fc; border-color: #8eb7dc; color: #176fc1; }
+    &:focus-visible { outline: 3px solid rgba(23, 111, 193, .25); outline-offset: 2px; }
+    &:disabled { background: #f2f4f7; color: #aeb5bf; cursor: not-allowed; }
+
+    &--selected {
+      &, &:hover:not(:disabled) { background: #176fc1; border-color: #176fc1; color: #fff; }
+    }
+  }
+
+  &__note { color: #747f91; font-size: 14px; }
+}
+
+@media (max-width: 660px) {
+  .assessment-grading-card {
+    padding: 24px 20px;
+
+    &__heading { flex-direction: column; gap: 14px; }
+    &__heading h2 { font-size: 21px; }
+    &__score-box { align-self: stretch; flex-direction: row; justify-content: space-between; }
+    &__choice { flex-wrap: wrap; }
+    &__answers { grid-template-columns: 1fr; }
+    &__rubric-item { grid-template-columns: 22px minmax(0, 1fr); }
+    &__rubric-item > span { grid-column: 2; }
+    &__score { flex: 1 1 0; min-width: 0; }
+  }
+}

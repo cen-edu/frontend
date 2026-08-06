@@ -47,6 +47,8 @@ export const questionResultLabels = {
     partial: '부분 정답',
     wrong: '오답',
     empty: '미응답',
+    // 종합 평가에서 아직 교사가 점수를 매기지 않은 문항.
+    pending: '채점 대기',
 };
 
 export const teacherProgressStatusLabels = {
