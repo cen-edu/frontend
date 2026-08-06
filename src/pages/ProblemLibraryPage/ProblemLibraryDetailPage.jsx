@@ -1,45 +1,70 @@
 import { useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
-import AssessmentPreviewList from '../../components/common/ProblemViewer/AssessmentPreviewList';
+import { Link, useParams } from 'react-router-dom';
 import AssessmentQuestionView from '../../components/common/ProblemViewer/AssessmentQuestionView';
-import ProblemPreviewList from '../../components/common/ProblemViewer/ProblemPreviewList';
-import ProblemStepView from '../../components/common/ProblemViewer/ProblemStepView';
-import { getLibraryWorksheets, libraryTypeLabels, removeLibraryWorksheet, updateLibraryWorksheet } from '../../mocks/problemLibrary';
-import AssignWorksheetModal from './components/AssignWorksheetModal';
-import DeleteWorksheetModal from './components/DeleteWorksheetModal';
+import PracticeConceptView from '../../components/common/PracticeProblemView/PracticeConceptView';
+import PracticeProblemView from '../../components/common/PracticeProblemView/PracticeProblemView';
+import { customStageLabels, difficultyLabels } from '../../mocks/labels';
+import { getLibraryWorksheets } from '../../mocks/problemLibrary';
 import QuestionExplanationModal from './components/QuestionExplanationModal';
 import './ProblemLibraryPage.scss';
 import './components/LibraryComponents.scss';
 
 function ProblemLibraryDetailPage() {
     const { worksheetId } = useParams();
-    const navigate = useNavigate();
-    const source = getLibraryWorksheets().find((item) => item.id === worksheetId);
-    const [worksheet, setWorksheet] = useState(source);
-    const [selectedProblemId, setSelectedProblemId] = useState(source?.problems[0]?.id ?? '');
-    const [assignOpen, setAssignOpen] = useState(false);
-    const [deleteOpen, setDeleteOpen] = useState(false);
+    const worksheet = getLibraryWorksheets().find((item) => item.id === worksheetId);
+    const [selectedProblemId, setSelectedProblemId] = useState(worksheet?.problems[0]?.id ?? '');
     const [explanationOpen, setExplanationOpen] = useState(false);
-    const [editingTitle, setEditingTitle] = useState(false);
-    const [titleDraft, setTitleDraft] = useState(source?.title ?? '');
-    const [notice, setNotice] = useState('');
 
     if (!worksheet) return <section className="problem-library-detail problem-library-detail--missing"><h1>학습지를 찾을 수 없습니다.</h1><Link to="/problems/library">보관함으로 돌아가기</Link></section>;
     const selectedProblem = worksheet.problems.find((item) => item.id === selectedProblemId) ?? worksheet.problems[0];
+    const selectedProblemIndex = worksheet.problems.findIndex((item) => item.id === selectedProblem?.id);
+    const previewProgress = worksheet.problems.length ? Math.round(((selectedProblemIndex + 1) / worksheet.problems.length) * 100) : 0;
     const isAssessment = worksheet.type === 'assessment';
-    const duplicatePath = `${isAssessment ? '/problems/comprehensive' : '/problems'}?from=${worksheet.id}`;
-    const saveTitle = () => { const next = titleDraft.trim(); if (next) { setWorksheet(updateLibraryWorksheet(worksheet.id, (current) => ({ ...current, title: next }))); setEditingTitle(false); setNotice('제목을 수정했습니다.'); } };
-    const assign = (assignment) => { const assignedAt = new Date().toISOString().slice(0, 10).replaceAll('-', '.'); setWorksheet(updateLibraryWorksheet(worksheet.id, (current) => ({ ...current, assignments: [...current.assignments, { ...assignment, assignedAt, status: 'ongoing' }] }))); setAssignOpen(false); setNotice('학습지를 출제했습니다.'); };
+    const isCustom = worksheet.origin === 'custom';
+    const movePreview = (offset) => {
+        const nextProblem = worksheet.problems[selectedProblemIndex + offset];
+        if (nextProblem) setSelectedProblemId(nextProblem.id);
+    };
+
+    const previewControls = (
+        <footer className="problem-library-detail__preview-controls">
+            <button type="button" disabled={selectedProblemIndex === 0} onClick={() => movePreview(-1)}>
+                <i className="bi bi-chevron-left" aria-hidden="true" /> {isAssessment ? '이전 문항' : '이전 학습'}
+            </button>
+            <span>{isAssessment ? '문항과 정답, 채점 기준을 확인합니다.' : isCustom ? `${customStageLabels[selectedProblem.stage]} 단계 문제를 확인합니다.` : '문제의 풀이 과정과 개념 설명을 확인합니다.'}</span>
+            <button type="button" className="problem-library-detail__preview-next" disabled={selectedProblemIndex === worksheet.problems.length - 1} onClick={() => movePreview(1)}>
+                {isAssessment ? '다음 문항' : '다음 학습'} <i className="bi bi-chevron-right" aria-hidden="true" />
+            </button>
+        </footer>
+    );
 
     return <section className="problem-library-detail" aria-labelledby="library-detail-title">
-        <Link className="problem-library-detail__back" to="/problems/library"><i className="bi bi-arrow-left" aria-hidden="true" /> 문제 보관함</Link>
-        <header className="problem-library-detail__header"><div className="problem-library-detail__title">{editingTitle ? <><h1 id="library-detail-title" className="library-sr-only">{worksheet.title}</h1><div className="problem-library-detail__title-edit"><input value={titleDraft} onChange={(event) => setTitleDraft(event.target.value)} onKeyDown={(event) => { if (event.key === 'Enter') saveTitle(); if (event.key === 'Escape') setEditingTitle(false); }} aria-label="학습지 제목" autoFocus /><button type="button" onClick={saveTitle}>저장</button><button type="button" onClick={() => setEditingTitle(false)}>취소</button></div></> : <div><h1 id="library-detail-title">{worksheet.title}</h1><button type="button" aria-label="학습지 제목 수정" onClick={() => setEditingTitle(true)}><i className="bi bi-pencil" aria-hidden="true" /></button></div>}<p>{libraryTypeLabels[worksheet.origin === 'custom' ? 'custom' : worksheet.type]} · 1학년 {worksheet.term === 'first' ? '1학기' : '2학기'} · {worksheet.unitSummary} · {worksheet.createdAt} · {worksheet.problemCount}문항{worksheet.totalScore ? ` · ${worksheet.totalScore}점` : ''}</p>{worksheet.custom && <p>{worksheet.custom.studentName} 학생 · 원본 {worksheet.custom.sourceTitle}</p>}</div><div className="problem-library-detail__actions">{worksheet.origin !== 'custom' && <button type="button" className="library-button library-button--primary" onClick={() => setAssignOpen(true)}>출제</button>}<button type="button" className="library-button" onClick={() => navigate(duplicatePath)}><i className="bi bi-copy" aria-hidden="true" /> 복제 후 재구성</button><button type="button" className="library-button library-button--danger" onClick={() => setDeleteOpen(true)}>삭제</button></div></header>
-        {notice && <p className="problem-library-detail__notice" role="status"><i className="bi bi-check-circle-fill" aria-hidden="true" /> {notice}</p>}
+        <h1 id="library-detail-title" className="library-sr-only">{worksheet.title}</h1>
         <div className="problem-library-detail__workspace">
-            <section className="problem-library-detail__section problem-library-detail__section--preview" aria-labelledby="preview-title"><header><div><h2 id="preview-title">문항 미리보기</h2><p>문항을 선택해 문제, 정답과 해설을 확인합니다.</p></div><div className="problem-library-detail__preview-actions"><button type="button" className="library-button library-button--primary" onClick={() => setExplanationOpen(true)}><i className="bi bi-journal-text" aria-hidden="true" /> 해설 보기</button></div></header><div className="problem-library-detail__viewer">{isAssessment ? <><AssessmentPreviewList problems={worksheet.problems} selectedId={selectedProblemId} onSelect={setSelectedProblemId} /><AssessmentQuestionView problem={selectedProblem} /></> : <><ProblemPreviewList problems={worksheet.problems} selectedId={selectedProblemId} onSelect={setSelectedProblemId} /><ProblemStepView problem={selectedProblem} /></>}</div></section>
+            <section className="problem-library-detail__section problem-library-detail__section--preview" aria-labelledby="preview-title">
+                <header><div><h2 id="preview-title">문항 미리보기</h2><p>학생 화면과 같은 순서로 문제와 정답을 확인합니다.</p></div><div className="problem-library-detail__preview-actions"><Link className="library-button problem-library-detail__previous-button" to="/problems/library"> 이전</Link><button type="button" className="library-button library-button--primary" onClick={() => setExplanationOpen(true)}><i className="bi bi-journal-text" aria-hidden="true" /> 해설 보기</button></div></header>
+                <div className="problem-library-detail__preview-progress" aria-label={`미리보기 진행률 ${previewProgress}%`}>
+                    <div><span style={{ width: `${previewProgress}%` }} /></div>
+                    <strong>{selectedProblemIndex + 1}/{worksheet.problems.length}문항</strong>
+                </div>
+                <div className="problem-library-detail__student-preview">
+                    <div className={`problem-library-detail__student-preview-content${isAssessment || isCustom ? ' problem-library-detail__student-preview-content--single' : ''}`}>
+                        {isAssessment ? <div className="problem-library-detail__question-preview"><AssessmentQuestionView problem={selectedProblem} />{previewControls}</div> : <>
+                            <PracticeProblemView
+                                problem={selectedProblem}
+                                answerMode="answer"
+                                headingId="library-preview-problem-title"
+                                difficultyText={isCustom ? `${customStageLabels[selectedProblem.stage]} · 난이도 ${difficultyLabels[selectedProblem.difficulty]}` : undefined}
+                                footer={previewControls}
+                            />
+                            {!isCustom && <PracticeConceptView concept={selectedProblem.concept} headingId="library-preview-concept-title" />}
+                        </>}
+                    </div>
+                </div>
+            </section>
             <aside className="problem-library-detail__section problem-library-detail__section--history" aria-labelledby="history-title"><header><div><h2 id="history-title">출제 이력</h2><p>반별 출제일과 제출 기한을 확인합니다.</p></div></header>{worksheet.assignments.length ? <div className="problem-library-detail__history"><ul>{worksheet.assignments.map((assignment, index) => <li key={`${assignment.classId}-${index}`}><div className="problem-library-detail__history-heading"><strong>{assignment.className}</strong><span className="library-status library-status--assigned">{assignment.status === 'completed' ? '종료' : '진행 중'}</span></div><dl><div><dt>출제일</dt><dd>{assignment.assignedAt}</dd></div><div><dt>제출 기한</dt><dd>{assignment.dueAt}</dd></div></dl><Link to={`/learning?worksheet=${worksheet.id}`}>학습 현황 <i className="bi bi-arrow-right" aria-hidden="true" /></Link></li>)}</ul></div> : <p className="problem-library-detail__no-history">아직 출제하지 않았습니다.</p>}</aside>
         </div>
-        {assignOpen && <AssignWorksheetModal worksheet={worksheet} onClose={() => setAssignOpen(false)} onAssign={assign} />}{deleteOpen && <DeleteWorksheetModal worksheet={worksheet} onClose={() => setDeleteOpen(false)} onConfirm={() => { removeLibraryWorksheet(worksheet.id); navigate('/problems/library'); }} />}{explanationOpen && <QuestionExplanationModal problem={selectedProblem} isAssessment={isAssessment} onClose={() => setExplanationOpen(false)} />}
+        {explanationOpen && <QuestionExplanationModal problem={selectedProblem} isAssessment={isAssessment} onClose={() => setExplanationOpen(false)} />}
     </section>;
 }
 
