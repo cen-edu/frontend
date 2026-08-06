@@ -38,10 +38,15 @@
 - 학생앱의 주관식·서술형 답안은 `StudentSolvePage/HandwritingAnswer`의 Canvas 필기 UI를 사용하고, 문항별 획 좌표·압력·도구 정보를 `handwritingStorage.js`를 통해 IndexedDB에 임시 저장한다. 서버 연동 시에는 이 원본 획 데이터로 제출 이미지를 생성하며, 페이지별 필기 구현을 중복하지 않는다.
 - 학생앱의 일반 학습 풀이는 왼쪽 문항 탐색을 사용하지 않고 중앙의 `steps[].segments[]` 풀이 단계마다 한 줄 `HandwritingAnswer`를 제공하며, 오른쪽에는 현재 문제의 개념 요약을 표시한다. 일반 학습 필기는 입력 중 자동 저장하지 않고 `다음 학습`을 눌렀을 때 현재 단계의 획 데이터를 IndexedDB에 저장한 뒤 이동한다. 종합평가만 왼쪽 문항 탐색과 문제별 전체 답안 영역을 사용한다.
 - 학생앱의 `origin: 'custom'` 맞춤 학습은 일반 학습과 같은 단계별 필기 구조를 사용하되 문제를 `stage: 'retrace'|'basic'|'independent'`로 저장하고 화면에서는 복습/유사/응용으로 표시한다. 오른쪽 개념 설명 대신 학생 모드의 공통 `ConceptChatPanel`을 표시하며, 교사용 맞춤 문제 생성 화면의 챗봇 미표시 규칙과 구분한다.
+- 학생앱 학습지 목록의 `결과` 컬럼은 값이 아니라 진입 버튼으로 둔다. 미제출은 `-`, 제출했지만 `resultReady`가 `false`이면 `채점 중` 표시, 채점이 끝나면 파란 `확인` 버튼을 보여 주고 점수와 정답 문항 수는 채점 결과 화면에서만 표시한다. `확인` 버튼은 표 안의 보조 동작이라 학생앱의 최소 50px 터치 영역 대신 `채점 중` 표시와 같은 크기(높이 40px)로 맞춘다.
+- 학생앱 채점 결과 화면은 학습 화면과 같은 문제 카드를 재사용해 채점된 풀이를 보여 주고, 우측 보조 영역에는 개념 설명 대신 학생 모드 `ConceptChatPanel`을 배치해 해설을 봐도 모를 때 질문할 수 있게 한다. 문항 이동은 상단 `ReviewResultStrip`과 하단 이전/다음 버튼으로 제공한다. 결과 스트립의 문항 버튼과 필기 입력 칸의 정오 표시는 아이콘 없이 색으로만 구분하고, 판정은 각각 `aria-label`과 화면 낭독기용 텍스트로 함께 전달한다. 해설은 접기 없이 항상 펼쳐 둔다.
+- 학생앱 채점 결과와 해설 데이터는 `src/mocks/studentWorksheetReview.js`에서만 만든다. 문항 판정은 `assessmentResult.js`의 `getPracticeQuestionResult`, 오답 필기 인식값은 같은 파일의 `practiceWrongInputs`를 재사용하고 화면에서 다시 집계하지 않는다.
+- 문항 해설 문구는 문제 데이터의 `explanation` 필드에 저장하고, 정답 표기와 단계별 풀이는 `steps[].segments[]`의 정답에서 파생한다.
+- 필기 입력 칸을 학생 입력이나 채점 결과로 바꿔 그릴 때는 `PracticeProblemView`의 `renderBlank`를 사용하고 문제 카드를 다시 구현하지 않는다.
 - 아이콘은 새 이미지나 아이콘 라이브러리를 추가하기 전에 기존 Bootstrap Icons의 `bi` 클래스를 우선 사용한다.
 - 기본 글꼴은 `src/index.css`에 설정된 Pretendard 구성을 유지한다.
 - 화면 개발용 더미 데이터는 페이지 컴포넌트 안에 직접 선언하지 않고 `src/mocks`에서 관리한다.
-- 학생 화면과 교사 화면이 함께 쓰는 도메인 상수와 라벨은 `src/mocks/labels.js`에서만 관리한다. 학습지 유형, 난이도, 문항 유형과 기본 배점, 맞춤 단계, 진행 상태 라벨을 페이지나 다른 mock에서 다시 선언하지 않고 여기에서 가져오거나 재수출한다.
+- 학생 화면과 교사 화면이 함께 쓰는 도메인 상수와 라벨은 `src/mocks/labels.js`에서만 관리한다. 학습지 유형, 난이도, 문항 유형과 기본 배점, 맞춤 단계, 진행 상태 라벨, 문항별 정오 판정 라벨을 페이지나 다른 mock에서 다시 선언하지 않고 여기에서 가져오거나 재수출한다.
 - 학습지 유형 라벨은 `종합 평가`처럼 띄어 쓰고, 맞춤 출제는 유형이 아니라 출제 방식이므로 `getWorksheetTypeLabel`로 `맞춤 학습`을 구분해 표시한다.
 - 진행 상태 키는 `not-started | in-progress | submitted`로 통일하고, 라벨만 보는 사람 기준으로 나눠 학생은 `studentAssignmentStatusLabels`(학습 가능/풀이 중/학습 완료), 교사는 `teacherProgressStatusLabels`(미시작/풀이 중/제출 완료/미배정)를 사용한다.
 - 맞춤 학습 단계 라벨은 `복습 / 유사 / 응용`을 사용하고, 단계 순서를 함께 보여주는 표 머리글과 회차 요약에서만 `customStageStepLabels`의 `① ② ③` 표기를 쓴다.
@@ -86,6 +91,7 @@
 - 새로운 페이지 경로는 `src/App.jsx`의 라우트 구성에 등록한다.
 - 학생 관리 하위 화면은 기본적으로 `src/pages/StudentManagementPage/StudentManagementLayout.jsx`의 중첩 라우트와 `Outlet` 구조를 사용한다.
 - 반 생성과 반 상세 수정은 별도 라우트로 이동하지 않고 `/students/classes` 목록 화면에서 `StudentFormModal` 프레임을 재사용한 모달로 제공한다.
+- 학생앱 학습지 하위 화면은 풀이 `/student/worksheets/:assignmentId/solve`, 채점 결과·해설 `/student/worksheets/:assignmentId/review` 경로를 사용하고 두 경로 모두 `student` 쿼리로 학생 ID를 유지한다.
 - 학습 현황과 취약점 분석 사이의 학습지 컨텍스트는 `worksheet` 쿼리로 전달한다.
 - 취약점 분석의 전체/개인 화면은 좌측 분석 대상 목록을 공유하고 개인 URL(`/learning/weaknesses/students/:id`)을 유지한 채 같은 2단 레이아웃 안에서 전환한다.
 - 평가 결과 조회(`/learning/results`)는 학습 관리의 중첩 라우트를 사용하고, 채점 화면(`/learning/results/:worksheetId/grading`)은 헤더와 사이드바가 없는 독립 라우트로 유지한다.

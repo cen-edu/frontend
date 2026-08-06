@@ -41,6 +41,14 @@ export const studentAssignmentStatusLabels = {
     'in-progress': '풀이 중',
     submitted: '학습 완료',
 };
+// 문항별 정오 판정. 교사 채점 결과표와 학생앱 채점 결과 화면이 함께 사용한다.
+export const questionResultLabels = {
+    correct: '정답',
+    partial: '부분 정답',
+    wrong: '오답',
+    empty: '미응답',
+};
+
 export const teacherProgressStatusLabels = {
     'not-started': '미시작',
     'in-progress': '풀이 중',

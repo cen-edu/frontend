@@ -176,7 +176,8 @@ const practiceQuestions = getStudentPracticeProblems().map((problem, index) => (
 }));
 
 // 자동 채점이 오답으로 본 칸에 채워 넣을 학생 입력. 실제 연동에서는 필기 인식 결과가 내려온다.
-const practiceWrongInputs = {
+// 학생앱 채점 결과(studentWorksheetReview)도 같은 입력을 사용한다.
+export const practiceWrongInputs = {
     'divide-answer': '16',
     'factor-answer': '6',
     answer: '2 × 3²',

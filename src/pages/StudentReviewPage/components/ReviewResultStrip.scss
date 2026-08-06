@@ -1,0 +1,66 @@
+.review-result-strip {
+  margin-top: 16px;
+  padding: 18px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px 24px;
+  background: #fff;
+  border: 1px solid #dde2e8;
+  border-radius: 10px;
+
+  &__summary {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+
+    strong { color: #172033; font-size: 22px; font-weight: 700; }
+    span { color: #667185; font-size: 15px; font-weight: 600; }
+  }
+
+  &__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  // 문항 결과는 배경색으로만 구분하고, 판정은 버튼의 aria-label로 함께 전달한다.
+  &__item {
+    min-width: 50px;
+    min-height: 50px;
+    padding: 0 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    border: 1px solid #d7dde4;
+    border-radius: 8px;
+    color: #667185;
+    font-family: inherit;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: border-color 140ms ease, box-shadow 140ms ease;
+
+    &:hover { border-color: #8eb7dc; }
+    &:focus-visible { outline: 3px solid rgba(23, 111, 193, .25); outline-offset: 2px; }
+
+    &--correct { background: #eaf5ef; border-color: #b6ddc7; color: #2f7357; }
+    &--partial { background: #fff7e4; border-color: #e8cd93; color: #8a5a00; }
+    &--wrong { background: #fdeeee; border-color: #eab6b6; color: #b23c3c; }
+
+    // 현재 보고 있는 문항 표시가 결과 색보다 우선한다.
+    &--current { border-color: #465166; box-shadow: 0 0 0 2px rgba(70, 81, 102, .18); }
+  }
+}
+
+@media (max-width: 660px) {
+  .review-result-strip {
+    padding: 16px 14px;
+
+    &__summary strong { font-size: 19px; }
+    &__list { width: 100%; }
+    &__item { flex: 1 1 48px; min-width: 48px; }
+  }
+}

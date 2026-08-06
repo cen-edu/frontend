@@ -1,7 +1,7 @@
 import { getPracticeCorrectCount, getPracticeQuestionResult, getWorksheetMetrics, isPracticeStudentGraded } from '../../../mocks/assessmentResult';
+import { questionResultLabels } from '../../../mocks/labels';
 
 const formatScore = (score) => score === null ? '—' : score;
-const practiceResultLabels = { correct: '정답', partial: '부분 정답', wrong: '오답', empty: '미응답' };
 const getAssessmentScoreTone = (score, maxScore) => {
     if (score === '—') return 'empty';
     if (score === 0) return 'zero';
@@ -10,8 +10,8 @@ const getAssessmentScoreTone = (score, maxScore) => {
 };
 
 const PracticeResultMark = ({ result }) => result === 'empty'
-    ? <span aria-label={practiceResultLabels[result]}>—</span>
-    : <span className="score-table__result-dot" role="img" aria-label={practiceResultLabels[result]} />;
+    ? <span aria-label={questionResultLabels[result]}>—</span>
+    : <span className="score-table__result-dot" role="img" aria-label={questionResultLabels[result]} />;
 
 function ScoreTable({ worksheet, onGradeStudent }) {
     const metrics = getWorksheetMetrics(worksheet);

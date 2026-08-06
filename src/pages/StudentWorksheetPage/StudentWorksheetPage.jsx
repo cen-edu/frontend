@@ -22,13 +22,6 @@ const statusOptions = [
     ...assignmentStatuses.map((status) => ({ value: status, label: studentAssignmentStatusLabels[status] })),
 ];
 
-// 일반 학습은 점수 없이 정답 문항 수만 보여준다.
-const getResult = (assignment) => {
-    if (assignment.status !== 'submitted' || !assignment.resultReady) return '-';
-    if (assignment.type === 'assessment') return `${assignment.score}점`;
-    return `${assignment.correctUnits}/${assignment.totalQuestions}문항 정답`;
-};
-
 const getAssignmentCategory = (assignment) => (
     assignment.type === 'assessment' ? 'assessment' : 'homework'
 );
@@ -57,6 +50,30 @@ function FilterButtons({ label, options, value, onChange }) {
                 })}
             </div>
         </div>
+    );
+}
+
+// 제출 전에는 볼 결과가 없고, 제출했더라도 채점이 끝나야 결과와 해설을 열 수 있다.
+function ResultCell({ assignment, onOpen }) {
+    if (assignment.status !== 'submitted') {
+        return <span className="student-worksheets__result-empty">-</span>;
+    }
+
+    if (!assignment.resultReady) {
+        return (
+            <span className="student-worksheets__result-grading">채점 중</span>
+        );
+    }
+
+    return (
+        <button
+            type="button"
+            className="student-worksheets__result-button"
+            aria-label={`${assignment.title} 채점 결과와 해설 확인`}
+            onClick={onOpen}
+        >
+            확인
+        </button>
     );
 }
 
@@ -127,7 +144,12 @@ function StudentWorksheetPage() {
                                                 <i className="bi bi-chevron-right" aria-hidden="true" />
                                             </button>
                                         </td>
-                                        <td className="student-worksheets__result">{getResult(assignment)}</td>
+                                        <td className="student-worksheets__result">
+                                            <ResultCell
+                                                assignment={assignment}
+                                                onOpen={() => navigate(`/student/worksheets/${assignment.id}/review?student=${student.id}`)}
+                                            />
+                                        </td>
                                         <td>{formatRelativeDueDate(assignment.dueAt)}</td>
                                     </tr>
                                 ))}

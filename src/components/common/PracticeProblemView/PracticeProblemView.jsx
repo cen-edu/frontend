@@ -1,3 +1,4 @@
+import { Fragment } from 'react';
 import { difficultyLabels } from '../../../mocks/labels';
 import './PracticeProblemView.scss';
 
@@ -5,6 +6,7 @@ function PracticeProblemView({
     problem,
     answerMode = 'input',
     renderAnswer,
+    renderBlank,
     footer,
     headingId = 'practice-problem-title',
     difficultyText,
@@ -61,6 +63,7 @@ function PracticeProblemView({
                                 <p className="practice-problem-view__formula">
                                     {step.segments.map((segment, segmentIndex) => {
                                         if (segment.type === 'text') return <span key={`${step.id}-text-${segmentIndex}`}>{segment.value}</span>;
+                                        if (renderBlank) return <Fragment key={segment.id}>{renderBlank(segment, step)}</Fragment>;
                                         if (isPreview) return <span key={segment.id} className="practice-problem-view__answer">{segment.answer}</span>;
                                         return <span key={segment.id} className="practice-problem-view__blank" aria-hidden="true" />;
                                     })}

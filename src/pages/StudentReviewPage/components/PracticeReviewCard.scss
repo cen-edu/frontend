@@ -1,0 +1,48 @@
+// 정답·오답은 색으로만 구분하고, 판정은 화면 낭독기용 텍스트로 함께 전달한다.
+.practice-review-card {
+  &__blank {
+    min-height: 34px;
+    padding: 3px 10px;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    border: 1px solid transparent;
+    border-radius: 6px;
+
+    &--correct {
+      background: #eaf5ef;
+      border-color: #9fd0b6;
+      color: #2f7357;
+    }
+
+    &--wrong {
+      background: #fdeeee;
+      border-color: #e3a6a6;
+      color: #b23c3c;
+    }
+  }
+
+  &__input {
+    font-size: 17px;
+    font-weight: 700;
+  }
+
+  // 정답·오답을 색과 아이콘으로만 구분하지 않도록 화면 낭독기에 판정을 함께 전달한다.
+  &__reader {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  &__answer {
+    padding-left: 8px;
+    border-left: 1px solid rgba(178, 60, 60, .3);
+    color: #8a4b4b;
+    font-size: 15px;
+    font-style: normal;
+    font-weight: 700;
+  }
+}

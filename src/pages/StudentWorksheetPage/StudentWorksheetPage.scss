@@ -149,7 +149,7 @@
     th:nth-child(1), td:nth-child(1) { width: 15%; }
     th:nth-child(2), td:nth-child(2) { width: 15%; text-align: center; }
     th:nth-child(3), td:nth-child(3) { width: 40%; }
-    th:nth-child(4), td:nth-child(4) { width: 13%; text-align: right; }
+    th:nth-child(4), td:nth-child(4) { width: 13%; text-align: center; }
     th:nth-child(5), td:nth-child(5) { width: 17%; padding-inline: 10px; text-align: center; }
 
     tbody tr:last-child td { border-bottom: 0; }
@@ -189,6 +189,41 @@
   &__result {
     color: #172033 !important;
     font-weight: 700;
+  }
+
+  &__result-empty { color: #a2abb8; }
+
+  // 표 안의 보조 동작이라 `채점 중` 표시와 같은 크기로 맞춘다.
+  &__result-grading,
+  &__result-button {
+    min-width: 76px;
+    min-height: 40px;
+    padding: 0 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  &__result-grading {
+    background: #f3f4f7;
+    border: 1px solid #e0e4ea;
+    color: #7a8496;
+  }
+
+  &__result-button {
+    background: #176fc1;
+    border: 1px solid #176fc1;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 140ms ease, border-color 140ms ease;
+
+    &:hover { background: #0f5fa8; border-color: #0f5fa8; }
+    &:focus-visible { outline: 3px solid rgba(23, 111, 193, .25); outline-offset: 2px; }
   }
 
   &__status {

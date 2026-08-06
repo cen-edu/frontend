@@ -1,0 +1,169 @@
+.assessment-review-card {
+  min-width: 0;
+  padding: 30px 34px 26px;
+  background: #fff;
+  border: 1px solid #dde2e8;
+  border-radius: 10px;
+  color: #172033;
+
+  &__heading {
+    padding-bottom: 26px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    border-bottom: 1px solid #dde2e8;
+
+    > div > span { color: #176fc1; font-size: 15px; font-weight: 700; }
+
+    h2 {
+      max-width: 780px;
+      margin-top: 9px;
+      font-size: 24px;
+      line-height: 1.7;
+      word-break: keep-all;
+    }
+
+    > div > p {
+      margin-top: 10px;
+      color: #465166;
+      font-size: 18px;
+      line-height: 1.7;
+      word-break: keep-all;
+    }
+  }
+
+  &__score {
+    flex: 0 0 auto;
+    min-width: 128px;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    border: 1px solid #dde2e8;
+    border-radius: 8px;
+    text-align: center;
+
+    strong { font-size: 24px; font-weight: 700; }
+    em { color: #667185; font-size: 13px; font-style: normal; font-weight: 600; }
+
+    &--correct { background: #eaf5ef; border-color: #b6ddc7; strong { color: #2f7357; } }
+    &--partial { background: #fff7e4; border-color: #e8cd93; strong { color: #8a5a00; } }
+    &--wrong { background: #fdeeee; border-color: #eab6b6; strong { color: #b23c3c; } }
+  }
+
+  &__choices {
+    margin-top: 24px;
+    display: grid;
+    gap: 10px;
+  }
+
+  &__choice {
+    min-height: 56px;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #fff;
+    border: 1px solid #d7dde4;
+    border-radius: 8px;
+    color: #465166;
+    font-size: 18px;
+
+    > span { flex: 1; font-weight: 600; }
+
+    em {
+      padding: 4px 10px;
+      background: #fdeeee;
+      border-radius: 999px;
+      color: #b23c3c;
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 700;
+    }
+
+    strong {
+      padding: 4px 10px;
+      background: #eaf5ef;
+      border-radius: 999px;
+      color: #2f7357;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    &--answer { background: #f4fbf7; border-color: #9fd0b6; }
+    &--picked { background: #fdf6f6; border-color: #e3a6a6; }
+  }
+
+  &__answers {
+    margin-top: 24px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  &__answer-block {
+    padding: 16px 18px;
+    background: #f8f9fb;
+    border: 1px solid #e4e8ee;
+    border-radius: 8px;
+
+    span { color: #747f91; font-size: 14px; font-weight: 700; }
+    p { margin-top: 9px; color: #172033; font-size: 18px; line-height: 1.7; word-break: keep-all; }
+
+    &--correct {
+      background: #f4fbf7;
+      border-color: #b6ddc7;
+
+      span { color: #2f7357; }
+    }
+  }
+
+  &__rubric {
+    margin-top: 22px;
+    padding-top: 20px;
+    border-top: 1px solid #ebeef2;
+
+    h3 { font-size: 18px; }
+
+    ul { margin-top: 14px; display: grid; gap: 10px; }
+
+    li {
+      padding: 14px 16px;
+      display: grid;
+      grid-template-columns: 22px minmax(0, 1fr) auto;
+      align-items: start;
+      gap: 12px;
+      background: #fdeeee;
+      border: 1px solid #eab6b6;
+      border-radius: 8px;
+
+      .bi { color: #b23c3c; font-size: 17px; line-height: 1.4; }
+      strong { color: #172033; font-size: 16px; line-height: 1.5; }
+      p { margin-top: 6px; color: #667185; font-size: 15px; line-height: 1.6; }
+      > span { color: #b23c3c; font-size: 16px; font-weight: 700; white-space: nowrap; }
+
+      &.assessment-review-card__rubric-item--met {
+        background: #eaf5ef;
+        border-color: #b6ddc7;
+
+        .bi { color: #2f7357; }
+        > span { color: #2f7357; }
+      }
+    }
+  }
+}
+
+@media (max-width: 660px) {
+  .assessment-review-card {
+    padding: 24px 20px;
+
+    &__heading { flex-direction: column; gap: 14px; }
+    &__heading h2 { font-size: 21px; }
+    &__score { align-self: stretch; flex-direction: row; justify-content: space-between; }
+    &__answers { grid-template-columns: 1fr; }
+    &__rubric li { grid-template-columns: 22px minmax(0, 1fr); }
+    &__rubric li > span { grid-column: 2; }
+  }
+}
