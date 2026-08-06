@@ -1,3 +1,4 @@
+import { fallbackConcept } from './curriculum';
 import { difficultyLabels, difficultyLevels } from './labels';
 
 export { difficultyLabels, difficultyLevels };
@@ -35,13 +36,6 @@ export const problemTemplates = {
         high: [template('방정식 2(x-3)=3x-10을 푸시오.', step('s1', [text('2x-6 = 3x-10이므로 x = '), blank('b1', '4'), text('이다.')]))],
     },
 };
-
-const fallbackConcept = (unitName) => ({
-    title: unitName,
-    summary: `${unitName}의 정의와 기본 원리를 적용해 풀이 과정을 완성합니다.`,
-    points: ['문제의 조건을 식이나 도형으로 정리합니다.', '계산 결과가 조건에 맞는지 확인합니다.'],
-    example: `${unitName}의 핵심 조건을 식으로 정리해 적용합니다.`,
-});
 
 const fallbackTemplate = (unit, difficulty, index) => template(
     `${unit.name}의 핵심 원리를 적용하는 ${difficultyLabels[difficulty]} 난이도 문제 ${index + 1}입니다.`,

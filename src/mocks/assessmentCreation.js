@@ -1,3 +1,4 @@
+import { fallbackConcept } from './curriculum';
 import { defaultScores, difficultyLabels, formatLabels, questionFormats } from './labels';
 
 export { defaultScores, formatLabels, questionFormats };
@@ -88,6 +89,7 @@ export function generateAssessmentProblems(items) {
             unitPath: `${unit.majorName} > ${unit.middleName} > ${unit.name}`,
             format,
             difficulty,
+            concept: unit.concept ?? fallbackConcept(unit.name),
             maxScore: defaultScores[format],
             prompt: selectedTemplate.prompt,
         };

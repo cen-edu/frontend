@@ -4,7 +4,9 @@ import UnitScopeFilter from '../../components/common/UnitScopeFilter/UnitScopeFi
 import UnitTreeSelector from '../../components/common/UnitTreeSelector/UnitTreeSelector';
 import { generateAssessmentProblems } from '../../mocks/assessmentCreation';
 import { curriculumUnits } from '../../mocks/curriculum';
+import { defaultSupportModes } from '../../mocks/labels';
 import { libraryWorksheets } from '../../mocks/problemLibrary';
+import StudentSupportPreview from '../../components/common/StudentSupportPreview/StudentSupportPreview';
 import AssessmentItemBuilder from './components/AssessmentItemBuilder';
 import AssessmentOrderModal from './components/AssessmentOrderModal';
 import AssessmentQuestionView from '../../components/common/ProblemViewer/AssessmentQuestionView';
@@ -30,6 +32,7 @@ function ComprehensiveAssessmentPage() {
     const [orderModalOpen, setOrderModalOpen] = useState(false);
     const [editMode, setEditMode] = useState(false);
     const [editTarget, setEditTarget] = useState(null);
+    const [supports, setSupports] = useState({});
 
     const majorUnits = useMemo(() => curriculumUnits.find((item) => item.gradeId === gradeId && item.subjectId === subjectId && item.term === term)?.majorUnits ?? [], [gradeId, subjectId, term]);
     const unitIndex = useMemo(() => new Map(majorUnits.flatMap((major) => major.middleUnits.flatMap((middle) => middle.smallUnits.map((unit) => [unit.id, { ...unit, majorName: major.name, middleName: middle.name }])))), [majorUnits]);
@@ -41,6 +44,7 @@ function ComprehensiveAssessmentPage() {
     const selectedProblemIndex = result?.problems.findIndex((problem) => problem.id === selectedProblemId) ?? -1;
     const previewProgress = result?.problems.length ? Math.round(((selectedProblemIndex + 1) / result.problems.length) * 100) : 0;
     const canGenerate = totalCount > 0;
+    const selectedSupport = supports[selectedProblemId] ?? defaultSupportModes.assessment;
     const title = `${currentYear} ${term === 'first' ? '1' : '2'}학기 종합 평가`;
 
     useEffect(() => {
@@ -67,6 +71,7 @@ function ComprehensiveAssessmentPage() {
         setSaved(false);
         setEditMode(false);
         setEditTarget(null);
+        setSupports({});
     };
 
     const updateUnitItems = (updater) => {
@@ -107,6 +112,13 @@ function ComprehensiveAssessmentPage() {
         setSaved(false);
         setEditMode(false);
         setEditTarget(null);
+        setSupports({});
+    };
+
+    const changeSupport = (mode) => {
+        if (!selectedProblemId) return;
+        setSupports((current) => ({ ...current, [selectedProblemId]: mode }));
+        setSaved(false);
     };
 
     const changeScore = (problemId, value) => {
@@ -198,6 +210,12 @@ function ComprehensiveAssessmentPage() {
                                     </button>
                                 </footer>
                             </div>
+                            <StudentSupportPreview
+                                value={selectedSupport}
+                                onChange={changeSupport}
+                                concept={selectedProblem?.concept}
+                                conceptHeadingId="assessment-preview-concept-title"
+                            />
                         </div>
                     </div>
                     {editMode && !editTarget && <p className="comprehensive-assessment-page__edit-guide" role="status"><i className="bi bi-cursor" aria-hidden="true" /> 편집할 문제 전체, 정답 또는 채점 기준 영역을 선택하세요.</p>}

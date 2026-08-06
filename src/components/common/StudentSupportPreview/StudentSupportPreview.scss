@@ -1,0 +1,20 @@
+.student-support-preview {
+  position: sticky; top: 0; min-width: 0; align-self: start; display: flex; flex-direction: column; gap: 8px; font-family: '학교안심 분필', cursive;
+
+  &__note { display: flex; align-items: center; gap: 5px; color: #747f91; font-family: Pretendard, sans-serif; font-size: 11px; line-height: 1.5; i { color: #8ea3b8; font-size: 12px; } }
+  &__switch { padding: 4px; display: grid; grid-template-columns: 1fr 1fr; gap: 4px; background: #fff; border: 1px solid #dde2e8; border-radius: 8px; font-family: Pretendard, sans-serif; }
+  &__option {
+    min-height: 34px; padding: 0 8px; display: inline-flex; align-items: center; justify-content: center; gap: 5px; background: #fff; border: 1px solid transparent; border-radius: 6px; color: #667185; font-size: 12px; font-weight: 700; white-space: nowrap; cursor: pointer;
+
+    &:hover { background: #f2f7fc; color: #176fc1; }
+    &:focus-visible { outline: 3px solid rgba(23,111,193,.25); outline-offset: 1px; }
+    &--active { background: #176fc1; border-color: #176fc1; color: #fff; &:hover { background: #105caa; color: #fff; } }
+  }
+
+  .concept-chat--student { position: static; flex: 0 0 auto; height: 500px; max-height: none; box-shadow: 0 8px 24px rgba(52,75,94,.08); }
+  .practice-concept-view { border-color: #d8e2ea; box-shadow: 0 8px 24px rgba(52,75,94,.08); }
+}
+
+@media (max-width: 1120px) {
+  .student-support-preview { position: static; .concept-chat--student { height: 420px; } }
+}

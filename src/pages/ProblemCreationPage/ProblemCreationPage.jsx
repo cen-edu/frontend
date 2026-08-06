@@ -3,10 +3,11 @@ import { useSearchParams } from 'react-router-dom';
 import UnitScopeFilter from '../../components/common/UnitScopeFilter/UnitScopeFilter';
 import UnitTreeSelector from '../../components/common/UnitTreeSelector/UnitTreeSelector';
 import { curriculumUnits } from '../../mocks/curriculum';
+import { defaultSupportModes } from '../../mocks/labels';
 import { defaultUnitCounts, difficultyLevels, generateProblems } from '../../mocks/problemCreation';
 import { libraryWorksheets } from '../../mocks/problemLibrary';
-import PracticeConceptView from '../../components/common/PracticeProblemView/PracticeConceptView';
 import PracticeProblemView from '../../components/common/PracticeProblemView/PracticeProblemView';
+import StudentSupportPreview from '../../components/common/StudentSupportPreview/StudentSupportPreview';
 import sennyChatbot from '../../assets/images/senny-chatbot.png';
 import ProblemAiEditPanel from './components/ProblemAiEditPanel';
 import UnitConfigTable from './components/UnitConfigTable';
@@ -26,6 +27,7 @@ function ProblemCreationPage() {
     const [saved, setSaved] = useState(false);
     const [editMode, setEditMode] = useState(false);
     const [editTarget, setEditTarget] = useState(null);
+    const [supports, setSupports] = useState({});
 
     const majorUnits = useMemo(() => curriculumUnits.find((item) => item.gradeId === gradeId && item.subjectId === subjectId && item.term === term)?.majorUnits ?? [], [gradeId, subjectId, term]);
     const unitIndex = useMemo(() => new Map(majorUnits.flatMap((major) => major.middleUnits.flatMap((middle) => middle.smallUnits.map((unit) => [unit.id, { ...unit, majorName: major.name, middleName: middle.name }])))), [majorUnits]);
@@ -36,6 +38,7 @@ function ProblemCreationPage() {
     const selectedProblem = result?.problems.find((problem) => problem.id === selectedProblemId) ?? null;
     const selectedProblemIndex = result?.problems.findIndex((problem) => problem.id === selectedProblemId) ?? -1;
     const previewProgress = result?.problems.length ? Math.round(((selectedProblemIndex + 1) / result.problems.length) * 100) : 0;
+    const selectedSupport = supports[selectedProblemId] ?? defaultSupportModes.practice;
 
     useEffect(() => {
         if (initializedFromLibrary.current) return;
@@ -57,6 +60,7 @@ function ProblemCreationPage() {
         setEditTarget(null);
         setResult(null);
         setSelectedProblemId('');
+        setSupports({});
     };
 
     const resetCreation = () => {
@@ -93,6 +97,13 @@ function ProblemCreationPage() {
         const problems = generateProblems(configs);
         setResult({ problems });
         setSelectedProblemId(problems[0]?.id ?? '');
+        setSupports({});
+        setSaved(false);
+    };
+
+    const changeSupport = (mode) => {
+        if (!selectedProblemId) return;
+        setSupports((current) => ({ ...current, [selectedProblemId]: mode }));
         setSaved(false);
     };
 
@@ -161,12 +172,14 @@ function ProblemCreationPage() {
                                     </button>
                                 </footer>}
                             />
-                            <PracticeConceptView
+                            <StudentSupportPreview
+                                value={selectedSupport}
+                                onChange={changeSupport}
                                 concept={selectedProblem?.concept}
-                                headingId="teacher-preview-concept-title"
+                                conceptHeadingId="teacher-preview-concept-title"
                                 editMode={editMode}
-                                selected={editTarget?.type === 'concept'}
-                                onSelect={() => setEditTarget({ type: 'concept', id: selectedProblem?.id, label: '개념 설명 전체' })}
+                                conceptSelected={editTarget?.type === 'concept'}
+                                onSelectConcept={() => setEditTarget({ type: 'concept', id: selectedProblem?.id, label: '개념 설명 전체' })}
                             />
                         </div>
                     </div>

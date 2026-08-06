@@ -21,6 +21,14 @@ export const getWorksheetTypeLabel = (worksheet) => (
     worksheet.origin === 'custom' ? customLearningLabel : worksheetTypeLabels[worksheet.type]
 );
 
+// 생성 결과 미리보기에서 교사가 문제별로 고르는, 학생 화면 우측에 함께 보여줄 자료.
+export const supportModes = [
+    { value: 'chat', label: '학습 도우미', icon: 'bi-chat-dots', description: '학생이 막힐 때 질문할 수 있는 챗봇을 보여 줍니다.' },
+    { value: 'concept', label: '개념 설명', icon: 'bi-journal-text', description: '문제와 관련된 개념 정리를 보여 줍니다.' },
+];
+// 학습 문제·종합 평가는 개념 설명, 맞춤 문제는 학습 도우미를 기본으로 둔다.
+export const defaultSupportModes = { practice: 'concept', assessment: 'concept', custom: 'chat' };
+
 export const customStages = ['retrace', 'basic', 'independent'];
 export const customStageLabels = { retrace: '복습', basic: '유사', independent: '응용' };
 // 단계 순서를 함께 보여주는 표 머리글·요약에서만 사용한다.

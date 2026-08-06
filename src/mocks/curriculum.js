@@ -12,6 +12,14 @@ export const curriculumFilterOptions = {
 };
 
 const concept = (title, summary, points, example) => ({ title, summary, points, example });
+
+// 개념 데이터가 없는 단원도 개념 설명 화면을 채울 수 있게 같은 형태로 만들어 준다.
+export const fallbackConcept = (unitName) => concept(
+    unitName,
+    `${unitName}의 정의와 기본 원리를 적용해 풀이 과정을 완성합니다.`,
+    ['문제의 조건을 식이나 그림으로 정리합니다.', '계산 결과가 조건에 맞는지 확인합니다.'],
+    `${unitName}의 핵심 조건을 식으로 정리해 적용합니다.`,
+);
 const small = (id, name, unitConcept) => ({ id, name, ...(unitConcept ? { concept: unitConcept } : {}) });
 
 export const curriculumUnits = [

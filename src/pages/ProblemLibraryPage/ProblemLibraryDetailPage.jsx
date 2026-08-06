@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import AssessmentQuestionView from '../../components/common/ProblemViewer/AssessmentQuestionView';
-import PracticeConceptView from '../../components/common/PracticeProblemView/PracticeConceptView';
 import PracticeProblemView from '../../components/common/PracticeProblemView/PracticeProblemView';
-import { customStageLabels, difficultyLabels } from '../../mocks/labels';
+import StudentSupportPreview from '../../components/common/StudentSupportPreview/StudentSupportPreview';
+import { customStageLabels, defaultSupportModes, difficultyLabels } from '../../mocks/labels';
 import { getLibraryWorksheets } from '../../mocks/problemLibrary';
 import QuestionExplanationModal from './components/QuestionExplanationModal';
 import './ProblemLibraryPage.scss';
@@ -21,6 +21,8 @@ function ProblemLibraryDetailPage() {
     const previewProgress = worksheet.problems.length ? Math.round(((selectedProblemIndex + 1) / worksheet.problems.length) * 100) : 0;
     const isAssessment = worksheet.type === 'assessment';
     const isCustom = worksheet.origin === 'custom';
+    // 보관함은 조회 화면이라 선택 UI 없이, 학생에게 보여줄 자료만 그대로 표시한다.
+    const selectedSupport = isCustom ? defaultSupportModes.custom : isAssessment ? defaultSupportModes.assessment : defaultSupportModes.practice;
     const movePreview = (offset) => {
         const nextProblem = worksheet.problems[selectedProblemIndex + offset];
         if (nextProblem) setSelectedProblemId(nextProblem.id);
@@ -48,8 +50,8 @@ function ProblemLibraryDetailPage() {
                     <strong>{selectedProblemIndex + 1}/{worksheet.problems.length}문항</strong>
                 </div>
                 <div className="problem-library-detail__student-preview">
-                    <div className={`problem-library-detail__student-preview-content${isAssessment || isCustom ? ' problem-library-detail__student-preview-content--single' : ''}`}>
-                        {isAssessment ? <div className="problem-library-detail__question-preview"><AssessmentQuestionView problem={selectedProblem} />{previewControls}</div> : <>
+                    <div className="problem-library-detail__student-preview-content">
+                        {isAssessment ? <div className="problem-library-detail__question-preview"><AssessmentQuestionView problem={selectedProblem} />{previewControls}</div> : (
                             <PracticeProblemView
                                 problem={selectedProblem}
                                 answerMode="answer"
@@ -57,8 +59,13 @@ function ProblemLibraryDetailPage() {
                                 difficultyText={isCustom ? `${customStageLabels[selectedProblem.stage]} · 난이도 ${difficultyLabels[selectedProblem.difficulty]}` : undefined}
                                 footer={previewControls}
                             />
-                            {!isCustom && <PracticeConceptView concept={selectedProblem.concept} headingId="library-preview-concept-title" />}
-                        </>}
+                        )}
+                        <StudentSupportPreview
+                            selectable={false}
+                            value={selectedSupport}
+                            concept={selectedProblem.concept}
+                            conceptHeadingId="library-preview-concept-title"
+                        />
                     </div>
                 </div>
             </section>

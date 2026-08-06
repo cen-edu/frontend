@@ -1,12 +1,11 @@
 import { useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import AnalysisFilters from '../../components/common/AnalysisFilters/AnalysisFilters';
-import ConceptChatPanel from '../../components/common/ConceptChatPanel/ConceptChatPanel';
-import { buildProposal, createCustomAssignment, createManualConfig, defaultSupportMode, generateCustomProblems, getAvailableCustomUnits, supportModes } from '../../mocks/customCreation';
-import { customStageLabels, difficultyLabels } from '../../mocks/labels';
+import { buildProposal, createCustomAssignment, createManualConfig, generateCustomProblems, getAvailableCustomUnits } from '../../mocks/customCreation';
+import { customStageLabels, defaultSupportModes, difficultyLabels } from '../../mocks/labels';
 import { weaknessFilterOptions, weaknessWorksheets } from '../../mocks/weaknessAnalysis';
-import PracticeConceptView from '../../components/common/PracticeProblemView/PracticeConceptView';
 import PracticeProblemView from '../../components/common/PracticeProblemView/PracticeProblemView';
+import StudentSupportPreview from '../../components/common/StudentSupportPreview/StudentSupportPreview';
 import sennyChatbot from '../../assets/images/senny-chatbot.png';
 import ProblemAiEditPanel from '../ProblemCreationPage/components/ProblemAiEditPanel';
 import CustomAssignBar from './components/CustomAssignBar';
@@ -49,7 +48,7 @@ function CustomProblemPage() {
     const selectedProblem = currentWork.problems.find((problem) => problem.id === selectedProblemId) ?? currentWork.problems[0] ?? null;
     const selectedProblemIndex = currentWork.problems.findIndex((problem) => problem.id === selectedProblem?.id);
     const previewProgress = currentWork.problems.length ? Math.round(((selectedProblemIndex + 1) / currentWork.problems.length) * 100) : 0;
-    const selectedSupport = currentWork.supports?.[selectedProblem?.id] ?? defaultSupportMode;
+    const selectedSupport = currentWork.supports?.[selectedProblem?.id] ?? defaultSupportModes.custom;
 
     const updateCurrentWork = (updater) => setStudentWork((current) => {
         const base = current[workKey] ?? { configs: selectedProposal.configs, problems: [], assignment: null, supports: {} };
@@ -160,36 +159,13 @@ function CustomProblemPage() {
                         </footer>}
                     />
                 </div>
-                <div className="custom-problem-result__support">
-                    <p className="custom-problem-result__support-note"><i className="bi bi-info-circle" aria-hidden="true" /> 선택한 항목만 학생 화면에 표시됩니다.</p>
-                    <div className="custom-problem-result__support-switch" role="group" aria-label="학생 화면에 함께 보여줄 자료 선택">
-                        {supportModes.map((mode) => (
-                            <button
-                                key={mode.value}
-                                type="button"
-                                className={selectedSupport === mode.value ? 'custom-problem-result__support-option custom-problem-result__support-option--active' : 'custom-problem-result__support-option'}
-                                aria-pressed={selectedSupport === mode.value}
-                                title={mode.description}
-                                onClick={() => changeSupport(mode.value)}
-                            >
-                                <i className={`bi ${mode.icon}`} aria-hidden="true" /> {mode.label}
-                            </button>
-                        ))}
-                    </div>
-                    {selectedSupport === 'chat' ? (
-                        <ConceptChatPanel
-                            readOnly
-                            mode="student"
-                            title="학습 도우미"
-                            description="문제를 풀다 막히면 질문하세요."
-                            studentName={selectedStudent.name}
-                            welcomeMessage="학생 화면에 표시되는 학습 도우미입니다. 학생은 문제를 푸는 동안 막히는 부분을 질문하고, 정답 대신 필요한 개념과 다음 풀이 방향을 안내받습니다."
-                            suggestions={['이 문제는 어떻게 시작하나요?']}
-                        />
-                    ) : (
-                        <PracticeConceptView concept={selectedProblem.concept} headingId="custom-preview-concept-title" />
-                    )}
-                </div>
+                <StudentSupportPreview
+                    value={selectedSupport}
+                    onChange={changeSupport}
+                    concept={selectedProblem.concept}
+                    conceptHeadingId="custom-preview-concept-title"
+                    studentName={selectedStudent.name}
+                />
             </div>
             {editMode && !editTarget && <p className="custom-problem-result__edit-guide" role="status"><i className="bi bi-cursor" aria-hidden="true" /> 편집할 문제 전체 또는 풀이 과정 영역을 선택하세요.</p>}
             {editMode && <ProblemAiEditPanel target={editTarget} onClose={() => setEditTarget(null)} />}
