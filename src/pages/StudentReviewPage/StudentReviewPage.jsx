@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import ConceptChatPanel from '../../components/common/ConceptChatPanel/ConceptChatPanel';
+import ReviewResultStrip from '../../components/common/ReviewResultStrip/ReviewResultStrip';
 import Header from '../../components/Header/Header';
 import { questionResultLabels } from '../../mocks/labels';
 import { getStudentAssignments } from '../../mocks/studentAssignments';
@@ -9,7 +10,6 @@ import students from '../../mocks/students';
 import AssessmentReviewCard from './components/AssessmentReviewCard';
 import PracticeReviewCard from './components/PracticeReviewCard';
 import ReviewExplanation from './components/ReviewExplanation';
-import ReviewResultStrip from './components/ReviewResultStrip';
 import './StudentReviewPage.scss';
 
 function StudentReviewPage() {

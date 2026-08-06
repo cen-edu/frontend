@@ -1,0 +1,189 @@
+// 일반 학습 채점 카드. 학생 채점 결과 화면(PracticeReviewCard)과 같은 색·크기를 쓰고,
+// 칸마다 교사가 판정을 바꿀 수 있는 영역만 아래에 덧붙인다.
+.practice-grading-card {
+  &__blank {
+    min-height: 34px;
+    padding: 3px 10px;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    border: 1px solid transparent;
+    border-radius: 6px;
+
+    &--correct {
+      background: #eaf5ef;
+      border-color: #9fd0b6;
+      color: #2f7357;
+    }
+
+    &--wrong {
+      background: #fdeeee;
+      border-color: #e3a6a6;
+      color: #b23c3c;
+    }
+
+    &--empty {
+      background: #f2f4f7;
+      border-color: #cfd6de;
+      color: #747f91;
+    }
+  }
+
+  &__input {
+    font-size: 17px;
+    font-weight: 700;
+  }
+
+  // 정답·오답을 색으로만 구분하지 않도록 화면 낭독기에 판정을 함께 전달한다.
+  &__reader {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  &__answer {
+    padding-left: 8px;
+    border-left: 1px solid rgba(178, 60, 60, .3);
+    color: #8a4b4b;
+    font-size: 15px;
+    font-style: normal;
+    font-weight: 700;
+  }
+
+  // 풀이 과정 라벨 칸(116px)과 간격(18px)만큼 밀어 수식과 왼쪽 선을 맞춘다.
+  &__marking {
+    margin: 0 0 0 134px;
+    padding: 16px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) 236px;
+    gap: 14px;
+    background: #f8fafc;
+    border: 1px solid #e2e8ef;
+    border-radius: 9px;
+
+    // 한 풀이 과정에 빈칸이 여러 개일 때만 채점 칸 사이를 띄운다.
+    + .practice-grading-card__marking { margin-top: 12px; }
+  }
+
+  // 라벨과 내용 칸의 높이를 통일해 네 칸이 같은 선에서 시작하고 끝나게 한다.
+  &__field {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  &__field-label {
+    color: #747f91;
+    font-size: 14px;
+    font-weight: 700;
+
+    i { margin-right: 5px; color: #176fc1; }
+  }
+
+  &__field-body {
+    height: 124px;
+    padding: 10px 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    box-sizing: border-box;
+    background: #fff;
+    border: 1px solid #e2e8ef;
+    border-radius: 7px;
+    text-align: center;
+  }
+
+  &__field--scan &__field-body { padding: 7px; }
+
+  &__field--scan img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
+
+  &__field-value {
+    color: #172033;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.5;
+    word-break: break-word;
+  }
+
+  &__field-empty {
+    color: #98a2ae;
+    font-size: 15px;
+  }
+
+  &__marks {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  &__mark {
+    min-width: 100px;
+    min-height: 50px;
+    padding: 0 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    background: #fff;
+    border: 1px solid #d7dde4;
+    border-radius: 8px;
+    color: #465166;
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+
+    i { font-size: 14px; }
+
+    &:focus-visible { outline: 3px solid rgba(23, 111, 193, .25); outline-offset: 2px; }
+    &:disabled { background: #f2f4f7; color: #aeb5bf; cursor: not-allowed; }
+
+    &--correct:hover:not(:disabled) { background: #eaf5ef; border-color: #9fd0b6; color: #2f7357; }
+    &--wrong:hover:not(:disabled) { background: #fdeeee; border-color: #e3a6a6; color: #b23c3c; }
+
+    &--correct.practice-grading-card__mark--selected {
+      &, &:hover { background: #2f7357; border-color: #2f7357; color: #fff; }
+    }
+
+    &--wrong.practice-grading-card__mark--selected {
+      &, &:hover { background: #b23c3c; border-color: #b23c3c; color: #fff; }
+    }
+  }
+
+  &__note {
+    color: #747f91;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 900px) {
+  .practice-grading-card {
+    &__marking {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    &__field--scan { grid-column: 1 / -1; }
+  }
+}
+
+@media (max-width: 660px) {
+  .practice-grading-card {
+    &__marking {
+      margin-left: 0;
+      padding: 13px;
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    &__mark { flex: 1 1 0; min-width: 0; }
+  }
+}

@@ -1,6 +1,7 @@
 import { questionResultLabels } from '../../../mocks/labels';
 import './ReviewResultStrip.scss';
 
+// 학생 채점 결과 화면과 교사 채점 화면이 같은 문항별 결과 막대를 사용한다.
 function ReviewResultStrip({ summary, questions, currentIndex, onSelect }) {
     return (
         <section className="review-result-strip" aria-label="문항별 채점 결과">
