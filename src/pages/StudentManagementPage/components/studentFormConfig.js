@@ -5,5 +5,4 @@ export const GRADE_OPTIONS = ['1', '2', '3'].map((grade) => ({
 
 export const EMPTY_STUDENT_FORM = {
     name: '',
-    attendanceNumber: '',
 };

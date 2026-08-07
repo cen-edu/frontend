@@ -112,7 +112,7 @@
 
   &__table {
     width: 100%;
-    min-width: 990px;
+    min-width: 880px;
     border-collapse: collapse;
     table-layout: fixed;
 
@@ -131,14 +131,13 @@
     // 고정 px로 두면 남는 폭이 비율대로 분배돼 짧은 열이 과하게 넓어진다.
     // 내용 길이에 맞춘 비율로 지정해 어떤 화면 폭에서도 간격이 일정하게 유지된다.
     th:nth-child(1) { width: 5%; }
-    th:nth-child(2) { width: 11%; }
-    th:nth-child(3) { width: 8%; }
-    th:nth-child(4) { width: 9%; }
-    th:nth-child(5) { width: 13%; }
-    th:nth-child(6) { width: 11%; }
-    th:nth-child(7) { width: 15%; }
-    th:nth-child(8) { width: 16%; }
-    th:nth-child(9) { width: 12%; }
+    th:nth-child(2) { width: 12%; }
+    th:nth-child(3) { width: 9%; }
+    th:nth-child(4) { width: 10%; }
+    th:nth-child(5) { width: 15%; }
+    th:nth-child(6) { width: 18%; }
+    th:nth-child(7) { width: 18%; }
+    th:nth-child(8) { width: 13%; }
     td:nth-child(5) { color: #263247; font-weight: 600; }
   }
 

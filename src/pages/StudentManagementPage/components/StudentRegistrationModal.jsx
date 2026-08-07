@@ -35,10 +35,6 @@ function StudentRegistrationModal({ onClose, onRegister }) {
                         <StudentGradeSelector value={grade} onChange={setGrade} />
                     </div>
 
-                    <label className="student-form-modal__field">
-                        <span>출결 번호</span>
-                        <input name="attendanceNumber" value={form.attendanceNumber} inputMode="numeric" placeholder="출결 번호 입력" required onChange={updateField} />
-                    </label>
                 </div>
 
                 <footer className="student-form-modal__footer">

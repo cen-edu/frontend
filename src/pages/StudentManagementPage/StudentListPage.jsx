@@ -116,7 +116,6 @@ function StudentListPage() {
                 grade: student.grade,
                 name: student.name,
                 studentId: `S${String(Date.now()).slice(-8)}`,
-                attendanceNumber: student.attendanceNumber,
             }, ...current];
         });
         setIsRegistrationOpen(false);

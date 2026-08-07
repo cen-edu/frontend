@@ -5,7 +5,6 @@ import StudentGradeSelector from './StudentGradeSelector';
 function StudentDetailModal({ student, onClose, onSave }) {
     const [form, setForm] = useState({
         name: student.name,
-        attendanceNumber: student.attendanceNumber,
     });
     const [grade, setGrade] = useState(student.grade);
     const [passwordReset, setPasswordReset] = useState(false);
@@ -36,11 +35,6 @@ function StudentDetailModal({ student, onClose, onSave }) {
                         <span>학년</span>
                         <StudentGradeSelector value={grade} onChange={setGrade} />
                     </div>
-
-                    <label className="student-form-modal__field">
-                        <span>출결 번호</span>
-                        <input name="attendanceNumber" value={form.attendanceNumber} inputMode="numeric" required onChange={updateField} />
-                    </label>
 
                     <label className="student-form-modal__field">
                         <span>학생 ID</span>

@@ -65,7 +65,7 @@ function StudentProfilePage() {
                     <section className="student-profile__section" aria-labelledby="student-info-title">
                         <div className="student-profile__section-heading">
                             <h2 id="student-info-title">내 정보</h2>
-                            <p>이름이나 출석번호를 바꾸려면 선생님께 요청해 주세요.</p>
+                            <p>이름이나 학년을 바꾸려면 선생님께 요청해 주세요.</p>
                         </div>
 
                         <dl className="student-profile__info-list">
@@ -80,10 +80,6 @@ function StudentProfilePage() {
                             <div>
                                 <dt>아이디</dt>
                                 <dd>{student.studentId}</dd>
-                            </div>
-                            <div>
-                                <dt>출석번호</dt>
-                                <dd>{Number(student.attendanceNumber)}번</dd>
                             </div>
                         </dl>
                     </section>
