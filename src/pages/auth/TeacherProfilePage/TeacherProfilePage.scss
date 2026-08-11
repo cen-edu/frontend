@@ -1,0 +1,201 @@
+.teacher-profile {
+  min-height: 100vh;
+  background: #f5f6f8;
+  color: #172033;
+
+  &__main {
+    width: min(100%, 960px);
+    margin: 0 auto;
+    padding: 36px 32px 56px;
+  }
+
+  &__heading {
+    h1 {
+      font-size: 28px;
+      font-weight: 700;
+      line-height: 1.4;
+    }
+
+    p {
+      margin-top: 5px;
+      color: #747f91;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+  }
+
+  &__content {
+    margin-top: 24px;
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid #dde2e8;
+    border-radius: 10px;
+  }
+
+  &__section,
+  &__logout {
+    padding: 26px 28px;
+
+    + .teacher-profile__section,
+    + .teacher-profile__logout {
+      border-top: 1px solid #ebeef2;
+    }
+  }
+
+  &__section-heading {
+    h2 {
+      font-size: 19px;
+      font-weight: 700;
+      line-height: 1.45;
+    }
+
+    p {
+      margin-top: 4px;
+      color: #747f91;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+  }
+
+  &__section-topline {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+  }
+
+  &__info-list {
+    margin-top: 18px;
+
+    > div {
+      min-height: 58px;
+      display: grid;
+      grid-template-columns: 150px minmax(0, 1fr);
+      align-items: center;
+      border-bottom: 1px solid #ebeef2;
+
+      &:last-child {
+        border-bottom: 0;
+      }
+    }
+
+    dt {
+      color: #667185;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    dd {
+      color: #172033;
+      font-size: 15px;
+      font-weight: 600;
+    }
+  }
+
+  &__primary-button {
+    min-width: 132px;
+    min-height: 44px;
+    padding: 0 18px;
+    background: #176fc1;
+    border: 1px solid #176fc1;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 140ms ease, border-color 140ms ease;
+
+    &:hover { background: #0f5fa8; border-color: #0f5fa8; }
+    &:focus-visible { outline: 3px solid rgba(23, 111, 193, .25); outline-offset: 2px; }
+  }
+
+  &__password-form {
+    margin-top: 20px;
+    display: grid;
+    grid-template-columns: 150px minmax(0, 1fr);
+    align-items: center;
+    gap: 12px 20px;
+
+    label {
+      color: #465166;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    input {
+      width: 100%;
+      min-height: 44px;
+      padding: 0 13px;
+      background: #fff;
+      border: 1px solid #cfd6df;
+      border-radius: 8px;
+      color: #172033;
+      font-size: 14px;
+      transition: border-color 140ms ease, box-shadow 140ms ease;
+
+      &::placeholder { color: #929baa; }
+      &:hover { border-color: #8eb7dc; }
+      &:focus {
+        border-color: #176fc1;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(23, 111, 193, .18);
+      }
+    }
+  }
+
+  &__message {
+    grid-column: 2;
+    min-height: 21px;
+    color: #747f91;
+    font-size: 13px;
+    line-height: 1.5;
+
+    &--error { color: #b42318; }
+    &--success { color: #2f7357; }
+  }
+
+  &__logout {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+
+    h2 { font-size: 19px; line-height: 1.45; }
+    p { margin-top: 4px; color: #747f91; font-size: 13px; line-height: 1.5; }
+
+    button {
+      min-width: 104px;
+      min-height: 44px;
+      padding: 0 16px;
+      background: #fff;
+      border: 1px solid #cfd6df;
+      border-radius: 8px;
+      color: #465166;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background-color 140ms ease, border-color 140ms ease, color 140ms ease;
+
+      &:hover { background: #f8f9fb; border-color: #8a94a3; color: #172033; }
+      &:focus-visible { outline: 3px solid rgba(23, 111, 193, .22); outline-offset: 2px; }
+    }
+  }
+}
+
+@media (max-width: 680px) {
+  .teacher-profile {
+    .header__navigation { display: none; }
+    .header__inner { padding-inline: 18px; }
+
+    &__main { padding: 24px 18px 40px; }
+    &__section,
+    &__logout { padding: 22px 18px; }
+    &__section-topline { align-items: stretch; flex-direction: column; }
+    &__primary-button { width: 100%; }
+    &__info-list > div { grid-template-columns: 90px minmax(0, 1fr); }
+    &__password-form { grid-template-columns: 1fr; }
+    &__message { grid-column: 1; }
+    &__logout { align-items: stretch; flex-direction: column; }
+    &__logout button { width: 100%; }
+  }
+}

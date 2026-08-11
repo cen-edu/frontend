@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import logoSymbol from "../../assets/images/logo-symbol.png";
+import teachers from "../../mocks/teachers";
 import "./Header.scss";
 
 function Header({ hideOnWheel = false, onHiddenChange, mode = 'teacher', userName }) {
@@ -10,6 +11,7 @@ function Header({ hideOnWheel = false, onHiddenChange, mode = 'teacher', userNam
     const studentHomePath = `/student${studentQuery}`;
     const studentWorksheetsPath = `/student/worksheets${studentQuery}`;
     const studentProfilePath = `/student/profile${studentQuery}`;
+    const currentTeacher = teachers[0];
     const [isHidden, setIsHidden] = useState(false);
     const downwardWheelCount = useRef(0);
     const updateVisibility = useCallback((hidden) => {
@@ -138,15 +140,19 @@ function Header({ hideOnWheel = false, onHiddenChange, mode = 'teacher', userNam
                     )}
                 </div>
 
-                {mode === 'teacher' ? <button type="button" className="header__profile">
+                {mode === 'teacher' ? <NavLink
+                    to="/profile"
+                    aria-label="교사 마이페이지"
+                    className={({ isActive }) => `header__profile${isActive ? ' header__profile--active' : ''}`}
+                >
           <span className="header__profile-icon">
             <i className="bi bi-person-fill" />
           </span>
 
-                    <span className="header__profile-name">이하영 선생님</span>
+                    <span className="header__profile-name">{currentTeacher.name}</span>
 
-                    <i className="bi bi-chevron-down header__profile-arrow" />
-                </button> : (
+                    <i className="bi bi-chevron-right header__profile-arrow" aria-hidden="true" />
+                </NavLink> : (
                     <div className="header__student-actions">
                         <NavLink
                             to={studentProfilePath}

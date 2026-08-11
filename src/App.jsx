@@ -21,12 +21,14 @@ import StudentWorksheetPage from './pages/student/StudentWorksheetPage/StudentWo
 import StudentSolvePage from './pages/student/StudentSolvePage/StudentSolvePage';
 import StudentReviewPage from './pages/student/StudentReviewPage/StudentReviewPage';
 import StudentProfilePage from './pages/student/StudentProfilePage/StudentProfilePage';
+import TeacherProfilePage from './pages/auth/TeacherProfilePage/TeacherProfilePage';
 
 function App() {
   return (
       <Routes>
         <Route path="/" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
+        <Route path="/profile" element={<TeacherProfilePage />} />
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/problems" element={<SectionLayout section="problems" />}>
           <Route index element={<ProblemCreationPage />} />

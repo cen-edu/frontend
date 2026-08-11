@@ -131,6 +131,11 @@
       color: #ffffff;
     }
 
+    &--active {
+      background-color: #3a6659;
+      border-color: #f2e8c9;
+    }
+
     &:focus-visible {
       outline: 2px solid #f2e8c9;
       outline-offset: 2px;
