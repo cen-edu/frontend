@@ -1,5 +1,6 @@
 import axios from 'axios';
 import ApiError from './ApiError';
+import {getAuth} from "./auth/authStorage.js";
 
 const DEFAULT_API_BASE_URL = '/api';
 const DEFAULT_API_TIMEOUT_MS = 10000;
@@ -16,6 +17,17 @@ const httpClient = axios.create({
     headers: {
         Accept: 'application/json',
     },
+});
+
+httpClient.interceptors.request.use((config) => {
+    const auth = getAuth();
+
+    if (auth?.accessToken) {
+        config.headers.Authorization =
+            `${auth.tokenType || 'Bearer'} ${auth.accessToken}`;
+    }
+
+    return config;
 });
 
 httpClient.interceptors.response.use(
