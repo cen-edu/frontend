@@ -31,6 +31,7 @@ src/pages/students/
 ├── StudentListPage/
 │   ├── StudentListPage.jsx
 │   ├── StudentListPage.scss
+│   ├── useStudentsQuery.js
 │   ├── studentFormConfig.js
 │   └── components/
 │       ├── StudentToolbar.jsx
@@ -61,12 +62,18 @@ src/pages/students/
 
 - 학생 목록 화면의 상태와 데이터 흐름을 관리하는 컨테이너 페이지다.
 - 검색어, 등록 연도·`1/2/3` 학년·반 필터, 정렬 방식과 선택된 학생 ID를 관리한다.
-- 학생의 반은 별도 필드가 아니라 `src/mocks/classes.js`의 `studentIds`에서 거꾸로 찾는다. 어느 반에도 없으면 미배정이며, 새로 등록한 학생은 자동으로 미배정이 된다.
-- 학생 등록, 상세 수정과 선택 학생 삭제 로직을 소유한다.
+- 필터와 1부터 시작하는 화면 페이지를 API 요청 파라미터로 변환하고, 서버가 반환한 현재 페이지 학생 목록과 전체 개수를 표시한다.
+- 학생의 반은 학생 응답의 `classes` 배열을 사용하고, 반이 없으면 미배정으로 표시한다.
+- 등록·상세 수정·선택 학생 삭제는 전용 API가 연결되기 전까지 비활성 상태로 둔다.
 - 페이지 제목, 기능 설명과 현재 검색 결과 인원수를 목록 위에 표시한다.
 - 화면 표현은 `StudentToolbar`, `StudentTable`, `StudentSelectionBar`에 위임한다.
-- 일괄 등록·개별 등록·상세 모달의 열림 상태와 저장 결과를 관리한다.
-- 개발용 초기 데이터는 `src/mocks/students.js`에서 가져온다.
+- 목록 조회는 `useStudentsQuery`에 위임하며 개발용 학생·반 mock을 가져오지 않는다.
+
+### `StudentListPage/useStudentsQuery.js`
+
+- React Query로 교사 학생 목록을 조회한다.
+- 필터·정렬·페이지 요청값 전체를 query key에 포함한다.
+- query function의 `signal`을 학생 목록 API 요청에 전달하고 페이지 전환 중 이전 데이터를 유지한다.
 
 ### `ClassManagementPage.jsx`
 
@@ -118,8 +125,8 @@ src/pages/students/
 ### `StudentToolbar.jsx`
 
 - 최신 등록순·이름순 정렬을 제공한다.
-- 학생 데이터에 존재하는 등록 연도와 전체·1학년·2학년·3학년 셀렉트 필터를 제공한다.
-- 반 필터를 제공한다. 옵션은 전체 반, 각 반 이름과 미배정으로 구성한다.
+- 현재 조회 결과에 존재하는 등록 연도와 전체·1학년·2학년·3학년 셀렉트 필터를 제공한다.
+- 별도 반 목록 API가 연결되기 전에는 현재 조회 결과의 반으로 전체 반과 각 반 이름 옵션을 구성한다. 목록 API 요청에 미배정 조건이 없으므로 미배정 필터는 제공하지 않는다.
 - 학생 이름 검색 입력을 제공한다.
 - 학생 일괄 등록 및 개별 등록 버튼을 렌더링하고 각 모달 열기 요청을 상위 페이지에 전달한다.
 - 필터 상태는 직접 소유하지 않고 `StudentListPage`에서 props로 전달받는다.
@@ -141,7 +148,7 @@ src/pages/students/
 - 한 명 이상의 학생이 선택되었을 때 하단에 표시된다.
 - 선택 인원수를 표시한다.
 - 선택 학생 삭제와 선택 해제를 요청한다.
-- 실제 학생 데이터 변경은 `StudentListPage`가 수행한다.
+- 삭제 API가 연결되기 전에는 삭제 동작을 비활성화한다.
 
 ## 학생 폼 모달 컴포넌트
 
@@ -226,8 +233,8 @@ src/pages/students/
 
 ## 외부 의존 파일
 
-- `src/mocks/students.js`: 학생 목록 개발용 초기 데이터. `registrationYear`는 4자리 문자열, `grade`는 `1|2|3` 문자열을 사용하며 출석번호와 상태 필드는 두지 않는다.
 - `src/mocks/classes.js`: 반 목록 개발용 초기 데이터. 반은 `year`, `grade`, 축약된 `name`을 별도 필드로 가진다.
+- `src/api/students/studentsApi.js`: `GET /api/teacher/students` 요청을 담당하는 학생 목록 API 모듈
 - `src/mocks/teachers.js`: 로그인 사용자 연동 전 담당 선생님을 고정하는 개발용 데이터
 - `src/components/Header/Header.jsx`: 서비스 공통 헤더
 - `src/components/SectionLayout/SectionLayout.jsx`: 헤더, 공용 사이드바와 중첩 화면을 배치하는 섹션 공통 레이아웃
@@ -242,15 +249,18 @@ src/pages/students/
 ## 데이터 흐름
 
 ```text
-src/mocks/students.js
+StudentListPage (필터·페이지·선택 상태 관리)
         ↓
-StudentListPage (학생 데이터와 화면 상태 관리)
+useStudentsQuery
+        ↓
+src/api/students/studentsApi.js
+        ↓
+GET /api/teacher/students
+        ↓
+StudentListPage (서버 목록·페이지 정보 표시)
         ├── StudentToolbar (필터·검색 변경 요청)
         ├── StudentTable (선택·상세보기·학생앱 이동 요청)
-        ├── StudentSelectionBar (선택 학생 삭제 요청)
-        ├── StudentBulkRegistrationModal (일괄 등록 파일 전달)
-        ├── StudentRegistrationModal (신규 학생 등록 요청)
-        └── StudentDetailModal (기존 학생 저장 요청)
+        └── StudentSelectionBar (선택 해제, 삭제 API 연결 전 삭제 비활성)
 ```
 
 ```text
@@ -265,7 +275,7 @@ ClassManagementPage (반 데이터와 화면 상태 관리)
              반 목록에 즉시 반영
 ```
 
-실제 API가 연결되면 서버 요청과 응답 처리는 `StudentListPage`에 직접 누적하지 않고 별도의 API 모듈 또는 전용 훅으로 분리한다.
+학생 등록·수정·삭제 API가 연결되면 각 mutation 성공 후 학생 목록 query를 무효화해 서버 데이터를 다시 조회한다.
 
 ## 변경 시 원칙
 

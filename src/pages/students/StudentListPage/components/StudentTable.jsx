@@ -1,6 +1,17 @@
 import { CustomCheckbox } from '../../../../components/common/inputs';
 
-function StudentTable({ wrapRef, students, selectedIds, getClassLabel, onToggleAll, onToggleStudent, onOpenDetail, onOpenStudentApp }) {
+function StudentTable({
+    wrapRef,
+    students,
+    selectedIds,
+    getClassLabel,
+    onToggleAll,
+    onToggleStudent,
+    onOpenDetail,
+    onOpenStudentApp,
+    emptyMessage = '검색 조건에 맞는 학생이 없습니다.',
+    detailDisabled = false,
+}) {
     const visibleIds = students.map((student) => student.id);
     const isAllSelected = visibleIds.length > 0 && visibleIds.every((id) => selectedIds.includes(id));
 
@@ -54,13 +65,13 @@ function StudentTable({ wrapRef, students, selectedIds, getClassLabel, onToggleA
                             <td>{getClassLabel(student)
                                 ?? <span className="student-list__unassigned">미배정</span>}</td>
                             <td>{student.name}</td>
-                            <td>{student.studentId}</td>
+                            <td>{student.loginId}</td>
                             <td><button type="button" className="student-list__table-button" onClick={() => onOpenStudentApp(student)}>학생앱으로 이동</button></td>
-                            <td><button type="button" className="student-list__table-button" onClick={() => onOpenDetail(student)}>상세보기</button></td>
+                            <td><button type="button" className="student-list__table-button" disabled={detailDisabled} onClick={() => onOpenDetail(student)}>상세보기</button></td>
                         </tr>
                     ))}
                     {students.length === 0 && (
-                        <tr><td className="student-list__empty" colSpan="8">검색 조건에 맞는 학생이 없습니다.</td></tr>
+                        <tr><td className="student-list__empty" colSpan="8">{emptyMessage}</td></tr>
                     )}
                 </tbody>
             </table>

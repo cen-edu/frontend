@@ -1,9 +1,8 @@
 import { CustomSelect } from '../../../../components/common/inputs';
-import { UNASSIGNED_CLASS } from '../../shared/studentManagementConstants';
 
 const sortOptions = [
     { value: 'newest', label: '최신 등록순' },
-    { value: 'name', label: '이름순' },
+    { value: 'NAME', label: '이름순' },
 ];
 
 const gradeOptions = [
@@ -26,8 +25,9 @@ function StudentToolbar({
     classes,
     searchTerm,
     onSearchTermChange,
-    onOpenBulkRegistration,
-    onOpenRegistration,
+    onOpenBulkRegistration = () => {},
+    onOpenRegistration = () => {},
+    writeActionsDisabled = false,
 }) {
     const yearOptions = [
         { value: 'all', label: '전체 등록 연도' },
@@ -38,8 +38,10 @@ function StudentToolbar({
 
     const classOptions = [
         { value: 'all', label: '전체 반' },
-        ...classes.map(({ id, name }) => ({ value: String(id), label: name })),
-        { value: UNASSIGNED_CLASS, label: '미배정' },
+        ...classes.map(({ id, academicYear, grade, name }) => ({
+            value: String(id),
+            label: academicYear && grade ? `${academicYear}학년도 ${grade}학년 ${name}` : name,
+        })),
     ];
 
     return (
@@ -76,14 +78,15 @@ function StudentToolbar({
                         type="search"
                         placeholder="학생 이름 검색"
                         value={searchTerm}
+                        maxLength={50}
                         onChange={(event) => onSearchTermChange(event.target.value)}
                     />
                     <i className="bi bi-search" aria-hidden="true" />
                 </label>
-                <button type="button" className="student-list__outline-button" onClick={onOpenBulkRegistration}>
+                <button type="button" className="student-list__outline-button" disabled={writeActionsDisabled} onClick={onOpenBulkRegistration}>
                     학생 일괄 등록
                 </button>
-                <button type="button" className="student-list__primary-button" onClick={onOpenRegistration}>
+                <button type="button" className="student-list__primary-button" disabled={writeActionsDisabled} onClick={onOpenRegistration}>
                     학생 개별 등록
                 </button>
             </div>

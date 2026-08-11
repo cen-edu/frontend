@@ -1,14 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import classes from '../../../mocks/classes';
-import initialStudents from '../../../mocks/students';
-import StudentBulkRegistrationModal from './components/StudentBulkRegistrationModal';
-import StudentDetailModal from './components/StudentDetailModal';
-import StudentRegistrationModal from './components/StudentRegistrationModal';
 import StudentSelectionBar from './components/StudentSelectionBar';
 import StudentTable from './components/StudentTable';
 import StudentToolbar from './components/StudentToolbar';
-import { UNASSIGNED_CLASS } from '../shared/studentManagementConstants';
+import useStudentsQuery from './useStudentsQuery.js';
 import './StudentListPage.scss';
 
 // 표 영역 안에서 스크롤 없이 보여줄 수 있는 행 수를 계산할 때 쓰는 값. SCSS의 th/td 높이와 같아야 한다.
@@ -17,19 +12,43 @@ const HEAD_HEIGHT = 42;
 
 function StudentListPage() {
     const navigate = useNavigate();
-    const [students, setStudents] = useState(initialStudents);
     const [selectedIds, setSelectedIds] = useState([]);
     const [yearFilter, setYearFilter] = useState('all');
     const [gradeFilter, setGradeFilter] = useState('all');
     const [classFilter, setClassFilter] = useState('all');
     const [sortOrder, setSortOrder] = useState('newest');
     const [searchTerm, setSearchTerm] = useState('');
-    const [isBulkRegistrationOpen, setIsBulkRegistrationOpen] = useState(false);
-    const [isRegistrationOpen, setIsRegistrationOpen] = useState(false);
-    const [detailStudent, setDetailStudent] = useState(null);
     const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
     const tableWrapRef = useRef(null);
+
+    const queryParams = {
+        registrationYear: yearFilter === 'all' ? undefined : Number(yearFilter),
+        grade: gradeFilter === 'all' ? undefined : Number(gradeFilter),
+        classId: classFilter === 'all' ? undefined : Number(classFilter),
+        keyword: searchTerm.trim() || undefined,
+        // 최신 등록순은 서버 기본값을 사용한다. 이름순 enum 값은 백엔드 StudentSort와 맞춰야 한다.
+        sort: sortOrder === 'newest' ? undefined : sortOrder,
+        page: page - 1,
+        size: pageSize,
+    };
+
+    const { data, isPending, isError, error } = useStudentsQuery(queryParams);
+    const students = data?.students ?? [];
+    const totalElements = data?.totalElements ?? 0;
+    const totalPages = data?.totalPages ?? 0;
+    const currentPage = (data?.page ?? page - 1) + 1;
+
+    // 별도 반 목록 API가 연결되기 전에는 현재 조회 결과에 포함된 반만 필터 옵션으로 노출한다.
+    const classes = useMemo(() => {
+        const classMap = new Map();
+
+        students.forEach((student) => {
+            student.classes?.forEach((classItem) => classMap.set(classItem.id, classItem));
+        });
+
+        return [...classMap.values()];
+    }, [students]);
 
     // 표 안에 스크롤이 생기지 않도록, 남은 높이에 딱 들어가는 만큼만 한 페이지에 그린다.
     useEffect(() => {
@@ -41,7 +60,6 @@ function StudentListPage() {
             setPageSize(Math.max(1, Math.floor(rowArea / ROW_HEIGHT)));
         };
 
-        // 첫 렌더에는 스타일이 아직 붙지 않아 높이를 덜 잡을 수 있어서 다음 프레임에 한 번 더 잰다.
         updatePageSize();
         const frame = requestAnimationFrame(updatePageSize);
         const observer = new ResizeObserver(updatePageSize);
@@ -53,42 +71,20 @@ function StudentListPage() {
         };
     }, []);
 
-    // 학생의 반은 반 목록의 studentIds에서 거꾸로 찾는다. 어느 반에도 없으면 미배정이다.
-    const classByStudentId = useMemo(() => new Map(
-        classes.flatMap((classItem) => classItem.studentIds.map((id) => [id, classItem])),
-    ), []);
-
-    const getClassLabel = (student) => classByStudentId.get(student.id)?.name ?? null;
-
-    const filteredStudents = useMemo(() => {
-        const keyword = searchTerm.trim().toLowerCase();
-        const matches = students.filter((student) => {
-            const studentClass = classByStudentId.get(student.id);
-            return (yearFilter === 'all' || student.registrationYear === yearFilter)
-                && (gradeFilter === 'all' || student.grade === gradeFilter)
-                && (classFilter === 'all' || (classFilter === UNASSIGNED_CLASS
-                    ? !studentClass
-                    : String(studentClass?.id) === classFilter))
-                && (!keyword || student.name.toLowerCase().includes(keyword));
-        });
-
-        return sortOrder === 'name'
-            ? [...matches].sort((first, second) => first.name.localeCompare(second.name, 'ko'))
-            : matches;
-    }, [classByStudentId, classFilter, gradeFilter, searchTerm, sortOrder, students, yearFilter]);
-
-    const totalPages = Math.max(1, Math.ceil(filteredStudents.length / pageSize));
-    const currentPage = Math.min(page, totalPages);
-    const pagedStudents = filteredStudents.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+    const getClassLabel = (student) => student.classes
+        ?.map(({ name }) => name)
+        .join(', ') || null;
 
     // 조건이 바뀌면 결과 개수가 달라지므로 첫 페이지부터 다시 본다.
     const changeFilter = (setFilter) => (value) => {
         setFilter(value);
         setPage(1);
+        setSelectedIds([]);
     };
 
-    const visibleIds = pagedStudents.map((student) => student.id);
-    const isAllSelected = visibleIds.length > 0 && visibleIds.every((id) => selectedIds.includes(id));
+    const visibleIds = students.map((student) => student.id);
+    const isAllSelected = visibleIds.length > 0
+        && visibleIds.every((id) => selectedIds.includes(id));
 
     const toggleStudent = (studentId) => {
         setSelectedIds((current) => current.includes(studentId)
@@ -102,30 +98,11 @@ function StudentListPage() {
             : [...new Set([...current, ...visibleIds])]);
     };
 
-    const deleteSelectedStudents = () => {
-        setStudents((current) => current.filter((student) => !selectedIds.includes(student.id)));
-        setSelectedIds([]);
-    };
-
-    const registerStudent = (student) => {
-        setStudents((current) => {
-            const nextId = Math.max(...current.map((item) => item.id), 0) + 1;
-            return [{
-                id: nextId,
-                registrationYear: student.registrationYear,
-                grade: student.grade,
-                name: student.name,
-                studentId: `S${String(Date.now()).slice(-8)}`,
-            }, ...current];
-        });
-        setIsRegistrationOpen(false);
-    };
-
-    const saveStudent = (updatedStudent) => {
-        setStudents((current) => current.map((student) =>
-            student.id === updatedStudent.id ? updatedStudent : student));
-        setDetailStudent(null);
-    };
+    const emptyMessage = isPending
+        ? '학생 목록을 불러오는 중입니다.'
+        : isError
+            ? error?.message || '학생 목록을 불러오지 못했습니다.'
+            : '검색 조건에 맞는 학생이 없습니다.';
 
     return (
         <section className="student-list" aria-labelledby="student-list-title">
@@ -134,7 +111,7 @@ function StudentListPage() {
                     <h1 id="student-list-title">학생 목록</h1>
                     <p>등록 연도, 학년과 반별로 학생의 기본 정보를 관리합니다.</p>
                 </div>
-                <span className="student-list__count">검색 결과 <strong>{filteredStudents.length}</strong>명</span>
+                <span className="student-list__count">검색 결과 <strong>{totalElements}</strong>명</span>
             </header>
 
             <StudentToolbar
@@ -150,27 +127,28 @@ function StudentListPage() {
                 classes={classes}
                 searchTerm={searchTerm}
                 onSearchTermChange={changeFilter(setSearchTerm)}
-                onOpenBulkRegistration={() => setIsBulkRegistrationOpen(true)}
-                onOpenRegistration={() => setIsRegistrationOpen(true)}
+                writeActionsDisabled
             />
 
             <StudentTable
                 wrapRef={tableWrapRef}
-                students={pagedStudents}
+                students={students}
                 selectedIds={selectedIds}
                 getClassLabel={getClassLabel}
                 onToggleAll={toggleAll}
                 onToggleStudent={toggleStudent}
-                onOpenDetail={setDetailStudent}
+                onOpenDetail={() => {}}
                 onOpenStudentApp={(student) => navigate(`/student?student=${student.id}`)}
+                emptyMessage={emptyMessage}
+                detailDisabled
             />
 
             <div className="student-list__pagination" aria-label="페이지 이동">
                 <button
                     type="button"
-                    disabled={currentPage === 1}
+                    disabled={data?.first ?? currentPage <= 1}
                     aria-label="이전 페이지"
-                    onClick={() => setPage(currentPage - 1)}
+                    onClick={() => setPage((current) => Math.max(1, current - 1))}
                 >
                     <i className="bi bi-chevron-left" />
                 </button>
@@ -187,9 +165,9 @@ function StudentListPage() {
                 ))}
                 <button
                     type="button"
-                    disabled={currentPage === totalPages}
+                    disabled={data?.last ?? true}
                     aria-label="다음 페이지"
-                    onClick={() => setPage(currentPage + 1)}
+                    onClick={() => setPage((current) => current + 1)}
                 >
                     <i className="bi bi-chevron-right" />
                 </button>
@@ -197,23 +175,9 @@ function StudentListPage() {
 
             <StudentSelectionBar
                 selectedCount={selectedIds.length}
-                onDelete={deleteSelectedStudents}
                 onClear={() => setSelectedIds([])}
+                deleteDisabled
             />
-
-            {isBulkRegistrationOpen && (
-                <StudentBulkRegistrationModal
-                    onClose={() => setIsBulkRegistrationOpen(false)}
-                    onRegister={() => setIsBulkRegistrationOpen(false)}
-                />
-            )}
-
-            {isRegistrationOpen && (
-                <StudentRegistrationModal onClose={() => setIsRegistrationOpen(false)} onRegister={registerStudent} />
-            )}
-            {detailStudent && (
-                <StudentDetailModal student={detailStudent} onClose={() => setDetailStudent(null)} onSave={saveStudent} />
-            )}
         </section>
     );
 }

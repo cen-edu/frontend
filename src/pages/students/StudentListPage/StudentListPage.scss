@@ -90,6 +90,11 @@
     justify-content: center;
     font-weight: 600;
     cursor: pointer;
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: .5;
+    }
   }
 
   &__outline-button {
@@ -164,6 +169,7 @@
 
     &:hover { background: #edf5fc; border-color: #8eb7dc; color: #176fc1; }
     &:focus-visible { outline: 2px solid rgba(23, 111, 193, .35); outline-offset: 1px; }
+    &:disabled { cursor: not-allowed; opacity: .5; }
   }
 
   &__empty { height: 180px !important; color: #747f91 !important; text-align: center !important; }
@@ -228,6 +234,7 @@
       cursor: pointer;
       &:hover { background: rgba(255, 255, 255, .1); }
       &:focus-visible { outline: 2px solid #9ec8eb; outline-offset: 1px; }
+      &:disabled { cursor: not-allowed; opacity: .5; }
     }
   }
 
