@@ -1,9 +1,10 @@
-@use "sass:color";
-
 $ink: #101c32;
-$primary: #0868f6;
-$primary-dark: #0059e8;
-$line: #dce3ed;
+$chalkboard: #2c5749;
+$chalkboard-light: #315b4f;
+$chalkboard-hover: #3a6659;
+$chalk: #f2e8c9;
+$chalk-muted: #d7dfd7;
+$chalk-line: #6f8c82;
 
 .login-page {
   display: grid;
@@ -55,10 +56,9 @@ $line: #dce3ed;
     align-items: center;
     justify-content: center;
     isolation: isolate;
-    padding: clamp(38px, 6vh, 64px) clamp(36px, 3.55vw, 60px) 75px;
-    background:
-      radial-gradient(circle at 52% 31%, rgba(255, 255, 255, 0.98) 0, rgba(244, 249, 255, 0.78) 26%, transparent 52%),
-      linear-gradient(142deg, #dbeaff 0%, #edf6ff 47%, #dcecff 100%);
+    padding: clamp(38px, 6vh, 64px) clamp(36px, 3.55vw, 60px);
+    border-left: 6px solid #76583b;
+    background: $chalkboard;
   }
 
   &__background {
@@ -82,8 +82,9 @@ $line: #dce3ed;
 
   &__description {
     margin-top: clamp(24px, 3.1vh, 34px);
-    font-size: clamp(26px, 2.35vw, 41px);
+    font-size: clamp(29px, 2.55vw, 44px);
     font-weight: 720;
+    font-family: '학교안심 분필', cursive;
     line-height: 1.3;
     letter-spacing: -0.055em;
     text-align: center;
@@ -178,7 +179,8 @@ $line: #dce3ed;
   position: absolute;
   display: block;
   border-radius: 50%;
-  background: rgba(117, 174, 247, 0.12);
+  border: 2px solid rgba($chalk, 0.08);
+  background: transparent;
 
   &--top {
     top: -13%;
@@ -192,7 +194,6 @@ $line: #dce3ed;
     right: -17%;
     width: 187px;
     aspect-ratio: 1;
-    background: rgba(105, 165, 244, 0.1);
   }
 
   &--bottom {
@@ -200,14 +201,20 @@ $line: #dce3ed;
     left: -2%;
     width: 260px;
     aspect-ratio: 1;
-    box-shadow: -130px 40px 0 8px rgba(117, 174, 247, 0.1);
+    box-shadow: -130px 40px 0 6px rgba($chalk, 0.04);
   }
 }
 
 .login-container {
-  width: min(100%, 300px);
+  position: relative;
+  z-index: 1;
+  width: min(100%, 340px);
   margin: auto 0;
-  transform: translateY(-2%);
+  padding: 34px 26px 30px;
+  border: 1px solid $chalk-line;
+  border-radius: 12px;
+  background: $chalkboard-light;
+  font-family: '학교안심 분필', cursive;
 }
 
 .login-brand {
@@ -215,7 +222,9 @@ $line: #dce3ed;
   align-items: center;
   justify-content: center;
   gap: 13px;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
+  color: #fff;
+  font-family: '학교안심 분필', cursive;
 
   &__logo {
     width: clamp(50px, 3vw, 58px);
@@ -225,14 +234,14 @@ $line: #dce3ed;
 
   &__title {
     font-size: clamp(27px, 1.65vw, 31px);
-    font-weight: 760;
+    font-weight: 400;
     line-height: 1;
-    letter-spacing: -0.055em;
+    letter-spacing: 0.025em;
   }
 }
 
 .login-form {
-  padding: 18px 28px 30px;
+  padding: 0;
   border: 0;
   background: transparent;
 
@@ -241,9 +250,9 @@ $line: #dce3ed;
     display: flex;
     align-items: center;
     height: 46px;
-    border: 1px solid $line;
+    border: 1px solid #d7ded8;
     border-radius: 8px;
-    background: #fff;
+    background: #f8f7f0;
     transition: border-color 160ms ease, box-shadow 160ms ease;
 
     & + & {
@@ -251,15 +260,15 @@ $line: #dce3ed;
     }
 
     &:focus-within {
-      border-color: rgba($primary, 0.72);
-      box-shadow: 0 0 0 3px rgba($primary, 0.1);
+      border-color: $chalk;
+      box-shadow: 0 0 0 3px rgba($chalk, 0.14);
     }
   }
 
   &__field-icon {
     flex: 0 0 auto;
     margin-left: 15px;
-    color: #8290aa;
+    color: #60756d;
     font-size: 19px;
   }
 
@@ -273,10 +282,11 @@ $line: #dce3ed;
     color: $ink;
     font-size: 14px;
     font-weight: 460;
+    font-family: inherit;
     background: transparent;
 
     &::placeholder {
-      color: #909cb2;
+      color: #7d8c86;
       opacity: 1;
     }
 
@@ -291,19 +301,20 @@ $line: #dce3ed;
     align-self: stretch;
     place-items: center;
     border: 0;
-    color: #8290aa;
+    color: #60756d;
     font-size: 18px;
+    font-family: inherit;
     background: transparent;
     cursor: pointer;
     transition: color 150ms ease;
 
     &:hover,
     &:focus-visible {
-      color: $primary;
+      color: $chalkboard;
     }
 
     &:focus-visible {
-      outline: 2px solid rgba($primary, 0.45);
+      outline: 2px solid $chalkboard;
       outline-offset: -5px;
       border-radius: 8px;
     }
@@ -314,7 +325,7 @@ $line: #dce3ed;
     align-items: center;
     gap: 9px;
     margin-top: 18px;
-    color: #687790;
+    color: $chalk-muted;
     font-size: 13px;
     line-height: 18px;
     cursor: pointer;
@@ -328,13 +339,13 @@ $line: #dce3ed;
       opacity: 0;
 
       &:checked + .login-form__checkbox {
-        border-color: $primary;
-        color: #fff;
-        background: $primary;
+        border-color: $chalk;
+        color: $chalkboard;
+        background: $chalk;
       }
 
       &:focus-visible + .login-form__checkbox {
-        outline: 3px solid rgba($primary, 0.18);
+        outline: 3px solid rgba($chalk, 0.22);
         outline-offset: 2px;
       }
     }
@@ -345,7 +356,7 @@ $line: #dce3ed;
     width: 18px;
     height: 18px;
     place-items: center;
-    border: 2px solid #cad3df;
+    border: 2px solid #a8bbb4;
     border-radius: 4px;
     color: transparent;
     font-size: 13px;
@@ -356,30 +367,29 @@ $line: #dce3ed;
     width: 100%;
     height: 46px;
     margin-top: 20px;
-    border: 0;
+    border: 1px solid $chalk;
     border-radius: 8px;
-    color: #fff;
+    color: $chalkboard;
     font-size: 17px;
     font-weight: 700;
+    font-family: inherit;
     letter-spacing: -0.025em;
-    background: linear-gradient(100deg, $primary 0%, #0067f5 55%, #0574f9 100%);
-    box-shadow: 0 11px 20px rgba($primary, 0.17);
+    background: $chalk;
     cursor: pointer;
-    transition: transform 150ms ease, box-shadow 150ms ease, background 150ms ease;
+    transition: border-color 150ms ease, color 150ms ease, background 150ms ease;
 
     &:hover {
-      background: linear-gradient(100deg, $primary-dark, color.adjust($primary, $lightness: 2%));
-      box-shadow: 0 13px 24px rgba($primary, 0.24);
-      transform: translateY(-1px);
+      border-color: #fff;
+      color: #1f4438;
+      background: #fffaf0;
     }
 
     &:active {
-      box-shadow: 0 7px 14px rgba($primary, 0.18);
-      transform: translateY(1px);
+      background: #e2d7b8;
     }
 
     &:focus-visible {
-      outline: 3px solid rgba($primary, 0.26);
+      outline: 3px solid rgba($chalk, 0.28);
       outline-offset: 3px;
     }
   }
@@ -389,7 +399,7 @@ $line: #dce3ed;
     grid-template-columns: 1fr 1px 1fr;
     align-items: center;
     margin-top: 24px;
-    color: $primary;
+    color: $chalk;
     font-size: 13px;
     font-weight: 600;
     text-align: center;
@@ -399,7 +409,7 @@ $line: #dce3ed;
 
       &:hover,
       &:focus-visible {
-        color: #004fc7;
+        color: #fff;
         text-decoration: underline;
         text-underline-offset: 4px;
       }
@@ -409,7 +419,7 @@ $line: #dce3ed;
   &__divider {
     width: 1px;
     height: 16px;
-    background: #dce3ec;
+    background: $chalk-line;
   }
 }
 
@@ -440,12 +450,13 @@ $line: #dce3ed;
     &__panel {
       min-height: 100svh;
       padding: 46px 24px 28px;
+      border-top: 6px solid #76583b;
+      border-left: 0;
     }
   }
 
   .login-container {
     margin: auto 0;
-    transform: none;
   }
 
   .login-brand {
@@ -464,6 +475,7 @@ $line: #dce3ed;
   .login-container {
     width: 100%;
     margin: 0;
+    padding: 30px 20px;
   }
 
   .login-brand {
@@ -481,9 +493,6 @@ $line: #dce3ed;
   }
 
   .login-form {
-    padding: 25px 20px 30px;
-    border-radius: 16px;
-
     &__field {
       height: 52px;
     }
