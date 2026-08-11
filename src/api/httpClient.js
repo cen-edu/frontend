@@ -31,19 +31,32 @@ httpClient.interceptors.request.use((config) => {
 });
 
 httpClient.interceptors.response.use(
-    (response) => response.data,
+    (response) => {
+        const apiResponse = response.data;
+
+        if (!apiResponse.success) {
+            return Promise.reject(new ApiError({
+                status: response.status,
+                code: apiResponse.error?.code ?? null,
+                message: apiResponse.error?.message || '요청을 처리하지 못했습니다.',
+            }));
+        }
+
+        return apiResponse.data;
+    },
     (error) => {
         if (axios.isCancel(error)) {
             return Promise.reject(error);
         }
 
         const responseData = error.response?.data;
+        const errorBody = responseData?.error;
         const isTimeout = error.code === 'ECONNABORTED';
 
         return Promise.reject(new ApiError({
             status: error.response?.status ?? null,
-            code: responseData?.code ?? error.code ?? null,
-            message: responseData?.message
+            code: errorBody?.code ?? error.code ?? null,
+            message: errorBody?.message
                 || (isTimeout
                     ? '요청 시간이 초과되었습니다.'
                     : '요청을 처리하지 못했습니다.'),

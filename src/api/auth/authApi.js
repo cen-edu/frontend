@@ -6,3 +6,11 @@ export const login = ({ loginId, password }) => (
         password,
     })
 );
+
+export const signup = ({ email, name, password }) => (
+    httpClient.post('/auth/signup', {
+        email,
+        name,
+        password,
+    })
+);

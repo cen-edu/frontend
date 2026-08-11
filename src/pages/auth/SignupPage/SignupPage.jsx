@@ -1,15 +1,45 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import {Link, useNavigate} from 'react-router-dom'
 
 import loginSymbol from '../../../assets/images/logo-symbol.png'
 import './SignupPage.scss'
+import {useMutation} from "@tanstack/react-query";
+import {signup} from "../../../api/auth/authApi.js";
 
 const SignupPage = () => {
-    const [showPassword, setShowPassword] = useState(false)
+    const navigate = useNavigate();
+
+    const [email, setEmail] = useState('');
+    const [name, setName] = useState('');
+    const [password, setPassword] = useState('');
+    const [passwordConfirm, setPasswordConfirm] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
+
+    const signupMutation = useMutation({
+        mutationFn: signup,
+        onSuccess: (response) => {
+            window.alert(`${response.name}님, 회원가입이 완료되었습니다.`);
+            navigate('/', { replace: true });
+        },
+        onError: (error) => {
+            window.alert(error?.message || '회원가입에 실패했습니다.');
+        },
+    });
 
     const handleSubmit = (event) => {
-        event.preventDefault()
-    }
+        event.preventDefault();
+
+        if (password !== passwordConfirm) {
+            window.alert('비밀번호가 일치하지 않습니다.');
+            return;
+        }
+
+        signupMutation.mutate({
+            email: email.trim(),
+            name: name.trim(),
+            password,
+        });
+    };
 
     return (
         <main className="signup-page">
@@ -40,6 +70,8 @@ const SignupPage = () => {
                                 className="signup-form__input"
                                 type="email"
                                 name="email"
+                                value={email}
+                                onChange={(event) => setEmail(event.target.value)}
                                 placeholder="이메일을 입력하세요"
                                 autoComplete="email"
                                 maxLength={64}
@@ -57,6 +89,8 @@ const SignupPage = () => {
                                 className="signup-form__input"
                                 type="text"
                                 name="name"
+                                value={name}
+                                onChange={(event) => setName(event.target.value)}
                                 placeholder="이름을 입력하세요"
                                 autoComplete="name"
                                 minLength={2}
@@ -76,6 +110,8 @@ const SignupPage = () => {
                                 className="signup-form__input signup-form__input--password"
                                 type={showPassword ? 'text' : 'password'}
                                 name="password"
+                                value={password}
+                                onChange={(event) => setPassword(event.target.value)}
                                 placeholder="비밀번호를 입력하세요"
                                 autoComplete="new-password"
                                 minLength={8}
@@ -104,6 +140,8 @@ const SignupPage = () => {
                                 className="signup-form__input signup-form__input--password"
                                 type={showPassword ? 'text' : 'password'}
                                 name="passwordConfirm"
+                                value={passwordConfirm}
+                                onChange={(event) => setPasswordConfirm(event.target.value)}
                                 placeholder="비밀번호를 다시 입력하세요"
                                 autoComplete="new-password"
                                 minLength={8}
@@ -113,7 +151,13 @@ const SignupPage = () => {
                         </div>
                     </div>
 
-                    <button className="signup-form__submit" type="submit">가입하기</button>
+                    <button
+                        className="signup-form__submit"
+                        type="submit"
+                        disabled={signupMutation.isPending}
+                    >
+                        {signupMutation.isPending ? '가입 중...' : '가입하기'}
+                    </button>
                 </form>
 
                 <p className="signup-card__login-link">
