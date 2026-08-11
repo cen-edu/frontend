@@ -1,4 +1,4 @@
-import { questionResultLabels } from '../../../mocks/labels';
+import { questionResultLabels } from '../../../../mocks/labels';
 import './ReviewResultStrip.scss';
 
 // 학생 채점 결과 화면과 교사 채점 화면이 같은 문항별 결과 막대를 사용한다.

@@ -1,4 +1,4 @@
-import CustomSelect from '../../../../components/common/CustomSelect/CustomSelect';
+import { CustomSelect } from '../../../../components/common/inputs';
 import { questionFormats } from '../../../../mocks/assessmentCreation';
 import { difficultyLabels, difficultyLevels } from '../../../../mocks/problemCreation';
 

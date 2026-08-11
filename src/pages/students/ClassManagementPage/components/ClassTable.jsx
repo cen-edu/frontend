@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import CustomCheckbox from '../../../../components/common/CustomCheckbox/CustomCheckbox';
+import { CustomCheckbox } from '../../../../components/common/inputs';
 import { formatClassLabel } from '../classFormConfig';
 
 function ClassTable({ classes, selectedIds, onToggleAll, onToggleClass, onOpenDetail, onMoveClass, onReorderClass }) {

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import CustomSelect from '../../../../components/common/CustomSelect/CustomSelect';
+import { CustomSelect } from '../../../../components/common/inputs';
 import { teacherProgressStatusLabels as statusLabels } from '../../../../mocks/labels';
 import { getProgress, getProgressLabel, learningTypeLabels } from '../learningStatusUtils';
 

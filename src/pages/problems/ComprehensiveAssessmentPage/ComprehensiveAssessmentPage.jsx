@@ -1,15 +1,16 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import UnitScopeFilter from '../../../components/common/UnitScopeFilter/UnitScopeFilter';
-import UnitTreeSelector from '../../../components/common/UnitTreeSelector/UnitTreeSelector';
+import { UnitScopeFilter, UnitTreeSelector } from '../../../components/common/filters';
 import { generateAssessmentProblems } from '../../../mocks/assessmentCreation';
 import { curriculumUnits } from '../../../mocks/curriculum';
 import { defaultSupportModes } from '../../../mocks/labels';
 import { libraryWorksheets } from '../../../mocks/problemLibrary';
-import StudentSupportPreview from '../../../components/common/StudentSupportPreview/StudentSupportPreview';
+import {
+  AssessmentQuestionView,
+  StudentSupportPreview,
+} from '../../../components/common/worksheets';
 import AssessmentItemBuilder from './components/AssessmentItemBuilder';
 import AssessmentOrderModal from './components/AssessmentOrderModal';
-import AssessmentQuestionView from '../../../components/common/ProblemViewer/AssessmentQuestionView';
 import sennyChatbot from '../../../assets/images/senny-chatbot.png';
 import ProblemAiEditPanel from '../ProblemCreationPage/components/ProblemAiEditPanel';
 import './ComprehensiveAssessmentPage.scss';

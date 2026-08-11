@@ -1,5 +1,5 @@
-import CustomSelect from '../CustomSelect/CustomSelect';
-import { assignmentPeriodOptions, isValidAssignmentDateRange } from '../../../utils/assignmentPeriod';
+import { CustomSelect } from '../../inputs';
+import { assignmentPeriodOptions, isValidAssignmentDateRange } from '../../../../utils/assignmentPeriod';
 import './AssignmentPeriodFilter.scss';
 
 function AssignmentPeriodFilter({ period, startDate, endDate, onPeriodChange, onStartDateChange, onEndDateChange, selectWidth = 116 }) {

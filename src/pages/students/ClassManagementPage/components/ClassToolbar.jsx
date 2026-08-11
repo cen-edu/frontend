@@ -1,4 +1,4 @@
-import CustomSelect from '../../../../components/common/CustomSelect/CustomSelect';
+import { CustomSelect } from '../../../../components/common/inputs';
 
 function ClassToolbar({
     yearFilter,

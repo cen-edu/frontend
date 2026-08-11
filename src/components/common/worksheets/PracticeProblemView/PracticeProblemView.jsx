@@ -1,5 +1,5 @@
 import { Fragment } from 'react';
-import { difficultyLabels } from '../../../mocks/labels';
+import { difficultyLabels } from '../../../../mocks/labels';
 import './PracticeProblemView.scss';
 
 function PracticeProblemView({

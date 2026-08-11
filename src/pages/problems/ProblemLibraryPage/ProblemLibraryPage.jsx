@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import CustomSelect from '../../../components/common/CustomSelect/CustomSelect';
-import SearchInput from '../../../components/common/SearchInput/SearchInput';
+import { CustomSelect, SearchInput } from '../../../components/common/inputs';
 import { libraryTypeLabels } from '../../../mocks/labels';
 import { getLibraryWorksheets, removeLibraryWorksheet, updateLibraryWorksheet } from '../../../mocks/problemLibrary';
 import AssignWorksheetModal from './components/AssignWorksheetModal';

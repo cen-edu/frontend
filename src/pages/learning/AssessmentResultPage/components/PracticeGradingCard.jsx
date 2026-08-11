@@ -1,4 +1,4 @@
-import PracticeProblemView from '../../../../components/common/PracticeProblemView/PracticeProblemView';
+import { PracticeProblemView } from '../../../../components/common/worksheets';
 import './PracticeGradingCard.scss';
 
 const blankStateLabels = { correct: '정답', wrong: '오답', empty: '미작성' };

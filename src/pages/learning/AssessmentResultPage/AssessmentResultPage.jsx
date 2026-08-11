@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import AnalysisFilters from '../../../components/common/AnalysisFilters/AnalysisFilters';
-import SearchInput from '../../../components/common/SearchInput/SearchInput';
+import { AnalysisFilters } from '../../../components/common/filters';
+import { SearchInput } from '../../../components/common/inputs';
 import { assessmentResultFilterOptions, getAssessmentResults, getWorksheetMetrics, saveAssessmentResults } from '../../../mocks/assessmentResult';
 import ResultWorksheetList from './components/ResultWorksheetList';
 import ResultSummaryBar from './components/ResultSummaryBar';

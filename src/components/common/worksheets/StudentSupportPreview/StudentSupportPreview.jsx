@@ -1,4 +1,4 @@
-import { supportModes } from '../../../mocks/labels';
+import { supportModes } from '../../../../mocks/labels';
 import ConceptChatPanel from '../ConceptChatPanel/ConceptChatPanel';
 import PracticeConceptView from '../PracticeProblemView/PracticeConceptView';
 import './StudentSupportPreview.scss';

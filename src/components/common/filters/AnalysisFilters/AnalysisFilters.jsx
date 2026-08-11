@@ -1,5 +1,5 @@
 import { Fragment } from 'react';
-import CustomSelect from '../CustomSelect/CustomSelect';
+import { CustomSelect } from '../../inputs';
 import './AnalysisFilters.scss';
 
 function AnalysisFilters({ filters, options, onChange, badge, controls, showContext = true, className = '' }) {

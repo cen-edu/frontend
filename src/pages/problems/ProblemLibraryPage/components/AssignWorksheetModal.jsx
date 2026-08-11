@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import StudentFormModal from '../../../students/shared/StudentFormModal';
-import CustomSelect from '../../../../components/common/CustomSelect/CustomSelect';
+import { CustomSelect } from '../../../../components/common/inputs';
 import classes, { getClassLabel } from '../../../../mocks/classes';
 
 const classOptions = classes.map((item) => ({ value: item.classId, label: getClassLabel(item) }));

@@ -7,7 +7,7 @@ import {
     getStudentProgress,
     getWorksheetSummary,
 } from '../../../mocks/teacherDashboard';
-import AnalysisFilters from '../../../components/common/AnalysisFilters/AnalysisFilters';
+import { AnalysisFilters } from '../../../components/common/filters';
 import ClassStudentProgress from './components/ClassStudentProgress';
 import DashboardSummaryCards from './components/DashboardSummaryCards';
 import WorksheetProgressList from './components/WorksheetProgressList';

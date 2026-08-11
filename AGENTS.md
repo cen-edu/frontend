@@ -112,9 +112,10 @@
 - 문제 만들기, 학습 관리, 학생 관리의 좌측 메뉴는 `src/components/Sidebar/Sidebar.jsx`와 `src/config/sidebarMenus.js`를 공통으로 사용하며, 섹션별 사이드바 UI나 메뉴 배열을 페이지 내부에 중복 구현하지 않는다.
 - 헤더와 사이드바가 함께 표시되는 중첩 라우트 화면은 `src/components/SectionLayout/SectionLayout.jsx`를 재사용한다.
 - 공통 헤더는 화면 상단에, 공통 사이드바는 헤더 아래에 고정해 본문을 스크롤해도 탐색 메뉴가 계속 보이도록 유지한다.
-- 서비스의 모든 셀렉트 드롭다운은 네이티브 `<select>` 대신 `src/components/common/CustomSelect/CustomSelect.jsx`를 사용한다.
-- 문제 생성과 종합평가 생성의 단원 선택 트리와 출제 범위 필터는 각각 `src/components/common/UnitTreeSelector/UnitTreeSelector.jsx`와 `src/components/common/UnitScopeFilter/UnitScopeFilter.jsx`를 재사용한다.
-- 대시보드와 취약점 분석처럼 학년도·학기·반·학습지를 선택하는 분석 조회 영역은 `src/components/common/AnalysisFilters/AnalysisFilters.jsx`를 재사용한다.
+- `src/components/common`은 책임별로 `inputs`, `filters`, `worksheets` 그룹을 사용하고, 페이지에서는 각 그룹의 `index.js` 진입점에서 필요한 컴포넌트를 named import한다.
+- 서비스의 모든 셀렉트 드롭다운은 네이티브 `<select>` 대신 `src/components/common/inputs/CustomSelect/CustomSelect.jsx`를 사용한다.
+- 문제 생성과 종합평가 생성의 단원 선택 트리와 출제 범위 필터는 각각 `src/components/common/filters/UnitTreeSelector/UnitTreeSelector.jsx`와 `src/components/common/filters/UnitScopeFilter/UnitScopeFilter.jsx`를 재사용한다.
+- 대시보드와 취약점 분석처럼 학년도·학기·반·학습지를 선택하는 분석 조회 영역은 `src/components/common/filters/AnalysisFilters/AnalysisFilters.jsx`를 재사용한다.
 - 평가 결과의 반·기간 필터도 `AnalysisFilters`의 `controls` 구성을 사용하며 학습지 선택은 좌측 학습 목록으로 대체한다.
 - 평가 결과표는 학생별 행만 제공하고 등급과 문항별 평균을 표시하지 않는다. 20문항까지 가로 스크롤로 조회하며 학생 열과 채점 동작 열을 고정한다.
 - 일반 학습 결과는 배점이나 점수·정답률을 저장·표시하지 않고 문항별 O/△/X(정답/부분 정답/오답)와 학생별 정답 수로 표현한다. 부분 정답은 정답 수에 포함하지 않는다.
@@ -127,13 +128,13 @@
 - 종합평가 채점 화면에서는 자동 채점된 객관식·주관식·서술형도 교사가 학생 답안과 정답 또는 루브릭 근거를 확인하고 점수·평가지표 판정을 수정할 수 있게 한다.
 - 종합평가 객관식 채점은 부분 점수를 허용하지 않고 `0점` 또는 문항 배점만 선택할 수 있게 하며, 검토 화면에 전체 5지선다 보기와 학생 선택·정답 표시를 함께 제공한다.
 - 서술형 자동 채점은 문항의 `rubric[{ label, score }]`을 기준으로 부분 점수를 합산하고, 학생 답안에는 항목 순서와 대응하는 `rubricResults[{ satisfied, evidence }]`를 저장한다. 채점 결과 화면에서는 각 평가지표의 획득 점수와 답안에서 확인된 근거 문구를 함께 표시한다.
-- 드롭다운 디자인은 `src/components/common/CustomSelect/CustomSelect.scss`의 공통 스타일을 따른다.
+- 드롭다운 디자인은 `src/components/common/inputs/CustomSelect/CustomSelect.scss`의 공통 스타일을 따른다.
 - 페이지별로 별도의 드롭다운 컴포넌트나 중복 스타일을 만들지 않는다.
 - 드롭다운의 높이, 글꼴, 테두리와 옵션 스타일은 `CustomSelect.scss`에서만 관리하고 페이지 SCSS에서 덮어쓰지 않는다. 너비와 비활성 상태 등 화면별 차이는 `CustomSelect`의 props로 조절한다.
 - 하단 고정 영역처럼 아래쪽 공간이 부족한 셀렉트는 `CustomSelect`의 `placement="top"`을 사용해 옵션을 위로 펼친다.
-- 학습 관리 화면의 학습명 검색은 `src/components/common/SearchInput/SearchInput.jsx`를 재사용하며, 검색창 높이와 입력·플레이스홀더 글꼴 및 테두리는 `SearchInput.scss`에서만 관리한다.
-- 테이블이나 목록의 항목 선택 체크박스는 `src/components/common/CustomCheckbox/CustomCheckbox.jsx`를 사용한다.
-- 항목 선택 체크박스의 디자인은 `src/components/common/CustomCheckbox/CustomCheckbox.scss`의 공통 스타일을 따르고 페이지에서 중복 구현하지 않는다.
+- 학습 관리 화면의 학습명 검색은 `src/components/common/inputs/SearchInput/SearchInput.jsx`를 재사용하며, 검색창 높이와 입력·플레이스홀더 글꼴 및 테두리는 `SearchInput.scss`에서만 관리한다.
+- 테이블이나 목록의 항목 선택 체크박스는 `src/components/common/inputs/CustomCheckbox/CustomCheckbox.jsx`를 사용한다.
+- 항목 선택 체크박스의 디자인은 `src/components/common/inputs/CustomCheckbox/CustomCheckbox.scss`의 공통 스타일을 따르고 페이지에서 중복 구현하지 않는다.
 - 학생 관리 영역의 모달은 `src/pages/students/shared/StudentFormModal.jsx`와 `StudentFormModal.scss`의 공통 오버레이, 헤더, 닫기 동작을 재사용하고 화면별 너비는 `width` prop으로 조절한다.
 - 학생 폼의 학년 선택과 선택 입력 영역은 각각 `StudentGradeSelector.jsx`, `StudentOptionalFields.jsx`를 재사용한다.
 - 오답에 대한 처방은 맞춤 문제 생성으로 일원화하고, 같은 문항을 다시 배정하는 별도 화면을 두지 않는다. 문항 풀이는 문제 보관함의 해설로 관리하고 출제 시 함께 배포한다.
@@ -141,15 +142,15 @@
 - 취약점 분석 `conceptId`와 단원 트리 소단원의 매핑은 `src/mocks/customCreation.js`의 `conceptUnitMap`을 사용한다.
 - 맞춤 문제는 공통 문제 구조에 `stage: 'retrace'|'basic'|'independent'`와 `sourceQuestionNo`를 추가해 저장한다.
 - 맞춤 문제 ID는 여러 취약 개념이 같은 소단원에 매핑될 수 있으므로 학생 ID·취약 개념 ID·소단원 ID·단계·순번을 함께 사용해 고유하게 만든다.
-- 개념 챗봇 UI는 `src/components/common/ConceptChatPanel`을 재사용하고 mock 응답은 `src/mocks/conceptChat.js`에서 관리한다.
+- 개념 챗봇 UI는 `src/components/common/worksheets/ConceptChatPanel`을 재사용하고 mock 응답은 `src/mocks/conceptChat.js`에서 관리한다.
 - 맞춤 문제 생성 화면에는 개념 챗봇 UI를 표시하지 않는다.
 - 맞춤 문제 생성 화면은 학생 목록을 좌측 탐색 영역, 문항 구성을 중앙 핵심 작업 영역, 제안 근거를 우측 보조 영역에 배치한다.
 - 맞춤 문제 생성 후 결과를 검토할 때는 `맞춤 문제 생성` 페이지 제목 영역과 조회 필터·학생 목록·제안 근거를 숨기고, 전체 작업 영역에 풀이 미리보기·배정 영역만 표시한다.
 - 맞춤 문제 생성 화면은 페이지 전체 스크롤을 만들지 않고 가용 화면 높이에 맞추며, 학생 목록·문항 구성/미리보기·제안 근거는 각 컨테이너 안에서 필요할 때 스크롤한다.
 - 취약점 분석에서 맞춤 문제 생성으로 이동할 때는 `worksheet`, 쉼표로 구분한 `students`, 선택 개념이 있으면 `concept` 쿼리를 전달한다.
 - 보관함 학습지 데이터는 `src/mocks/problemLibrary.js`에서 관리하고, 학습 관리 mock과 같은 학습지는 동일한 학습지 id를 사용한다.
-- 문제 미리보기 렌더러는 `src/components/common/ProblemViewer`를 재사용하고 페이지별로 중복 구현하지 않는다.
-- 일반 학습의 단계형 문제 카드와 개념 설명 카드는 `src/components/common/PracticeProblemView`를 학생 풀이와 교사용 생성 결과 미리보기에서 함께 사용한다. 교사용 미리보기는 필기 입력 없이 같은 문제 구조 안에 정답을 표시하고 우측에 개념 설명을 배치하며, 문항 목록 없이 상단 진행률과 하단 이전/다음 버튼으로 문항을 이동한다.
+- 문제 미리보기 렌더러는 `src/components/common/worksheets/ProblemViewer`를 재사용하고 페이지별로 중복 구현하지 않는다.
+- 일반 학습의 단계형 문제 카드와 개념 설명 카드는 `src/components/common/worksheets/PracticeProblemView`를 학생 풀이와 교사용 생성 결과 미리보기에서 함께 사용한다. 교사용 미리보기는 필기 입력 없이 같은 문제 구조 안에 정답을 표시하고 우측에 개념 설명을 배치하며, 문항 목록 없이 상단 진행률과 하단 이전/다음 버튼으로 문항을 이동한다.
 - 종합평가 생성 결과도 일반 학습 문제 생성 결과와 같은 상단 진행률·하단 이전/다음 문항 탐색과 점무늬 캔버스 미리보기 구조를 사용한다. 중앙에는 정답·채점 기준을 포함한 문항 카드를 배치하고 배점 수정·문항 순서 변경 기능을 유지한다.
 - 교사용 문제 미리보기와 문제 생성 결과에서는 정답을 항상 표시하고, 정답 표시·숨기기 전환 기능을 제공하지 않는다.
 - 일반 학습·맞춤 학습·종합평가 생성 결과는 `senny-chatbot.png`를 사용한 AI 편집 버튼으로 편집 모드에 진입한 뒤 수정 섹터를 선택하고 `ProblemAiEditPanel`에서 요청을 입력한다. 일반 학습은 문제 전체·풀이 과정별·개념 설명 전체, 맞춤 학습은 문제 전체·풀이 과정별, 종합평가는 문제 전체·보기와 정답·모범답안·채점 기준 영역을 선택한다. LLM 연동 전까지는 UI 피드백만 제공하고 문제 데이터를 변형하지 않는다.

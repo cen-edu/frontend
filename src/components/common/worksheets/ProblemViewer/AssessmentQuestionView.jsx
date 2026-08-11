@@ -1,5 +1,5 @@
-import { formatLabels } from '../../../mocks/assessmentCreation';
-import { difficultyLabels } from '../../../mocks/problemCreation';
+import { formatLabels } from '../../../../mocks/assessmentCreation';
+import { difficultyLabels } from '../../../../mocks/problemCreation';
 import './ProblemViewer.scss';
 
 function AssessmentQuestionView({ problem, onScoreChange, editMode = false, selectedEditTarget, onSelectEditTarget }) {

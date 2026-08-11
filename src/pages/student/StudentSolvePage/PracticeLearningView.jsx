@@ -1,7 +1,9 @@
 import { useRef, useState } from 'react';
-import ConceptChatPanel from '../../../components/common/ConceptChatPanel/ConceptChatPanel';
-import PracticeConceptView from '../../../components/common/PracticeProblemView/PracticeConceptView';
-import PracticeProblemView from '../../../components/common/PracticeProblemView/PracticeProblemView';
+import {
+  ConceptChatPanel,
+  PracticeConceptView,
+  PracticeProblemView,
+} from '../../../components/common/worksheets';
 import HandwritingAnswer from './HandwritingAnswer';
 import { saveHandwriting } from './handwritingStorage';
 

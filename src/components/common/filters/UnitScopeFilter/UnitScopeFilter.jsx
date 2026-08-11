@@ -1,5 +1,5 @@
-import CustomSelect from '../CustomSelect/CustomSelect';
-import { curriculumFilterOptions } from '../../../mocks/curriculum';
+import { CustomSelect } from '../../inputs';
+import { curriculumFilterOptions } from '../../../../mocks/curriculum';
 import './UnitScopeFilter.scss';
 
 function UnitScopeFilter({ gradeId, term, onGradeChange, onTermChange }) {

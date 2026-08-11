@@ -1,4 +1,4 @@
-import PracticeProblemView from '../../../../components/common/PracticeProblemView/PracticeProblemView';
+import { PracticeProblemView } from '../../../../components/common/worksheets';
 import './PracticeReviewCard.scss';
 
 // 학생이 필기로 쓴 답을 인식한 결과를 풀이 과정 자리에 그대로 채워 정답·오답을 보여 준다.

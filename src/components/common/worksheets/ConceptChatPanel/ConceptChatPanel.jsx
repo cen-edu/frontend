@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { getConceptChatReply, getRecommendedQuestions } from '../../../mocks/conceptChat';
-import sennyChatbotImage from '../../../assets/images/senny-chatbot.png';
+import { getConceptChatReply, getRecommendedQuestions } from '../../../../mocks/conceptChat';
+import sennyChatbotImage from '../../../../assets/images/senny-chatbot.png';
 import './ConceptChatPanel.scss';
 
 function ConceptChatPanel({

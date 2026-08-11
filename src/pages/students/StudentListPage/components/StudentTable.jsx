@@ -1,4 +1,4 @@
-import CustomCheckbox from '../../../../components/common/CustomCheckbox/CustomCheckbox';
+import { CustomCheckbox } from '../../../../components/common/inputs';
 
 function StudentTable({ wrapRef, students, selectedIds, getClassLabel, onToggleAll, onToggleStudent, onOpenDetail, onOpenStudentApp }) {
     const visibleIds = students.map((student) => student.id);

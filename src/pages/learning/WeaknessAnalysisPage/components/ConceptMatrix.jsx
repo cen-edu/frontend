@@ -1,4 +1,4 @@
-import CustomSelect from '../../../../components/common/CustomSelect/CustomSelect';
+import { CustomSelect } from '../../../../components/common/inputs';
 
 function getConceptResult(worksheet, student, conceptId) {
     const questionSteps = worksheet.questions.flatMap((question) => question.steps.filter((step) => step.conceptId === conceptId).map((step) => ({ no: question.no, step })));

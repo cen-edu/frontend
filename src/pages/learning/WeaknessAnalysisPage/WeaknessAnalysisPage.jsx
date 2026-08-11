@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import AnalysisFilters from '../../../components/common/AnalysisFilters/AnalysisFilters';
+import { AnalysisFilters } from '../../../components/common/filters';
 import { getWorksheetTypeLabel } from '../../../mocks/labels';
 import { getStudentMetrics, getWorksheetMetrics, weaknessFilterOptions, weaknessWorksheets } from '../../../mocks/weaknessAnalysis';
 import AnalysisTargetList from './components/AnalysisTargetList';

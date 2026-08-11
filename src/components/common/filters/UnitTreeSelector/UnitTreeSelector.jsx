@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import CustomCheckbox from '../CustomCheckbox/CustomCheckbox';
+import { CustomCheckbox } from '../../inputs';
 import './UnitTreeSelector.scss';
 
 function UnitTreeSelector({ majorUnits, selectedUnitIds, onToggleUnit, onToggleMiddleUnit }) {

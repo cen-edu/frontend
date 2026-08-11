@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import ConceptChatPanel from '../../../components/common/ConceptChatPanel/ConceptChatPanel';
-import ReviewResultStrip from '../../../components/common/ReviewResultStrip/ReviewResultStrip';
+import { ConceptChatPanel, ReviewResultStrip } from '../../../components/common/worksheets';
 import Header from '../../../components/Header/Header';
 import { questionResultLabels } from '../../../mocks/labels';
 import { getStudentAssignments } from '../../../mocks/studentAssignments';

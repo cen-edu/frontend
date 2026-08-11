@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import CustomSelect from '../../../components/common/CustomSelect/CustomSelect';
-import SearchInput from '../../../components/common/SearchInput/SearchInput';
+import { CustomSelect, SearchInput } from '../../../components/common/inputs';
 import { learningAssignments, learningFilterOptions } from '../../../mocks/learningStatus';
 import AssignmentList from './components/AssignmentList';
 import LearningSummary from './components/LearningSummary';

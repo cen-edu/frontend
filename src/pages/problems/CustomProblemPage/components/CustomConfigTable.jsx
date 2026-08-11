@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import CustomSelect from '../../../../components/common/CustomSelect/CustomSelect';
+import { CustomSelect } from '../../../../components/common/inputs';
 import { customStages, customStageStepLabels } from '../../../../mocks/customCreation';
 
 function Stepper({ value, disabled, label, onChange }) {

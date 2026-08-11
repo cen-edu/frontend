@@ -1,13 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import UnitScopeFilter from '../../../components/common/UnitScopeFilter/UnitScopeFilter';
-import UnitTreeSelector from '../../../components/common/UnitTreeSelector/UnitTreeSelector';
+import { UnitScopeFilter, UnitTreeSelector } from '../../../components/common/filters';
 import { curriculumUnits } from '../../../mocks/curriculum';
 import { defaultSupportModes } from '../../../mocks/labels';
 import { defaultUnitCounts, difficultyLevels, generateProblems } from '../../../mocks/problemCreation';
 import { libraryWorksheets } from '../../../mocks/problemLibrary';
-import PracticeProblemView from '../../../components/common/PracticeProblemView/PracticeProblemView';
-import StudentSupportPreview from '../../../components/common/StudentSupportPreview/StudentSupportPreview';
+import { PracticeProblemView, StudentSupportPreview } from '../../../components/common/worksheets';
 import sennyChatbot from '../../../assets/images/senny-chatbot.png';
 import ProblemAiEditPanel from './components/ProblemAiEditPanel';
 import UnitConfigTable from './components/UnitConfigTable';

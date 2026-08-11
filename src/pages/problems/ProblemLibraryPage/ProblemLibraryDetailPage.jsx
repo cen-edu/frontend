@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import AssessmentQuestionView from '../../../components/common/ProblemViewer/AssessmentQuestionView';
-import PracticeProblemView from '../../../components/common/PracticeProblemView/PracticeProblemView';
-import StudentSupportPreview from '../../../components/common/StudentSupportPreview/StudentSupportPreview';
+import {
+  AssessmentQuestionView,
+  PracticeProblemView,
+  StudentSupportPreview,
+} from '../../../components/common/worksheets';
 import { customStageLabels, defaultSupportModes, difficultyLabels } from '../../../mocks/labels';
 import { getLibraryWorksheets } from '../../../mocks/problemLibrary';
 import QuestionExplanationModal from './components/QuestionExplanationModal';

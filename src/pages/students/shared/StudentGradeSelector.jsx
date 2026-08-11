@@ -1,4 +1,4 @@
-import CustomSelect from '../../../components/common/CustomSelect/CustomSelect';
+import { CustomSelect } from '../../../components/common/inputs';
 import { GRADE_OPTIONS } from './gradeOptions';
 
 function StudentGradeSelector({ value, onChange }) {

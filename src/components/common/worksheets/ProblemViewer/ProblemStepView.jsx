@@ -1,5 +1,5 @@
-import { difficultyLabels } from '../../../mocks/problemCreation';
-import { customStageLabels } from '../../../mocks/customCreation';
+import { difficultyLabels } from '../../../../mocks/problemCreation';
+import { customStageLabels } from '../../../../mocks/customCreation';
 import './ProblemViewer.scss';
 
 function ProblemStepView({ problem }) {

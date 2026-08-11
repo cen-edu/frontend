@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import ReviewResultStrip from '../../../../components/common/ReviewResultStrip/ReviewResultStrip';
+import { ReviewResultStrip } from '../../../../components/common/worksheets';
 import { worksheetTypeLabels } from '../../../../mocks/labels';
 import './GradingShell.scss';
 

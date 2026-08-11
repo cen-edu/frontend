@@ -1,5 +1,4 @@
-import CustomSelect from '../../../../components/common/CustomSelect/CustomSelect';
-import SearchInput from '../../../../components/common/SearchInput/SearchInput';
+import { CustomSelect, SearchInput } from '../../../../components/common/inputs';
 import { getStudentMetrics, statusLabels } from '../../../../mocks/weaknessAnalysis';
 
 const statusOrder = { priority: 0, review: 1, stable: 2, insufficient: 3 };

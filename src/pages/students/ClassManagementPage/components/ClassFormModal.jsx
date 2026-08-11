@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import CustomSelect from '../../../../components/common/CustomSelect/CustomSelect';
+import { CustomSelect } from '../../../../components/common/inputs';
 import students from '../../../../mocks/students';
 import teachers from '../../../../mocks/teachers';
 import StudentFormModal from '../../shared/StudentFormModal';

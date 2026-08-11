@@ -1,11 +1,10 @@
 import { useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import AnalysisFilters from '../../../components/common/AnalysisFilters/AnalysisFilters';
+import { AnalysisFilters } from '../../../components/common/filters';
 import { buildProposal, createCustomAssignment, createManualConfig, generateCustomProblems, getAvailableCustomUnits } from '../../../mocks/customCreation';
 import { customStageLabels, defaultSupportModes, difficultyLabels } from '../../../mocks/labels';
 import { weaknessFilterOptions, weaknessWorksheets } from '../../../mocks/weaknessAnalysis';
-import PracticeProblemView from '../../../components/common/PracticeProblemView/PracticeProblemView';
-import StudentSupportPreview from '../../../components/common/StudentSupportPreview/StudentSupportPreview';
+import { PracticeProblemView, StudentSupportPreview } from '../../../components/common/worksheets';
 import sennyChatbot from '../../../assets/images/senny-chatbot.png';
 import ProblemAiEditPanel from '../ProblemCreationPage/components/ProblemAiEditPanel';
 import CustomAssignBar from './components/CustomAssignBar';
