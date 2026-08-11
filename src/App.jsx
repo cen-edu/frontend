@@ -1,26 +1,26 @@
 import { Routes, Route } from 'react-router-dom';
 import './App.css'
-import LoginPage from './pages/LoginPage/LoginPage';
-import SignupPage from './pages/SignupPage/SignupPage';
-import DashboardPage from './pages/DashboardPage/DashboardPage';
-import ClassManagementPage from './pages/StudentManagementPage/ClassManagementPage';
-import StudentListPage from './pages/StudentManagementPage/StudentListPage';
-import StudentManagementLayout from './pages/StudentManagementPage/StudentManagementLayout';
+import LoginPage from './pages/auth/LoginPage/LoginPage';
+import SignupPage from './pages/auth/SignupPage/SignupPage';
+import DashboardPage from './pages/dashboard/DashboardPage/DashboardPage';
+import ClassManagementPage from './pages/students/ClassManagementPage/ClassManagementPage';
+import StudentListPage from './pages/students/StudentListPage/StudentListPage';
+import StudentManagementLayout from './pages/students/StudentManagementLayout';
 import SectionLayout from './components/SectionLayout/SectionLayout';
-import LearningStatusPage from './pages/LearningStatusPage/LearningStatusPage';
-import WeaknessAnalysisPage from './pages/WeaknessAnalysisPage/WeaknessAnalysisPage';
-import AssessmentResultPage from './pages/AssessmentResultPage/AssessmentResultPage';
-import GradingPage from './pages/AssessmentResultPage/GradingPage';
-import ProblemCreationPage from './pages/ProblemCreationPage/ProblemCreationPage';
-import ComprehensiveAssessmentPage from './pages/ComprehensiveAssessmentPage/ComprehensiveAssessmentPage';
-import CustomProblemPage from './pages/CustomProblemPage/CustomProblemPage';
-import ProblemLibraryPage from './pages/ProblemLibraryPage/ProblemLibraryPage';
-import ProblemLibraryDetailPage from './pages/ProblemLibraryPage/ProblemLibraryDetailPage';
-import StudentHomePage from './pages/StudentHomePage/StudentHomePage';
-import StudentWorksheetPage from './pages/StudentWorksheetPage/StudentWorksheetPage';
-import StudentSolvePage from './pages/StudentSolvePage/StudentSolvePage';
-import StudentReviewPage from './pages/StudentReviewPage/StudentReviewPage';
-import StudentProfilePage from './pages/StudentProfilePage/StudentProfilePage';
+import LearningStatusPage from './pages/learning/LearningStatusPage/LearningStatusPage';
+import WeaknessAnalysisPage from './pages/learning/WeaknessAnalysisPage/WeaknessAnalysisPage';
+import AssessmentResultPage from './pages/learning/AssessmentResultPage/AssessmentResultPage';
+import GradingPage from './pages/learning/AssessmentResultPage/GradingPage';
+import ProblemCreationPage from './pages/problems/ProblemCreationPage/ProblemCreationPage';
+import ComprehensiveAssessmentPage from './pages/problems/ComprehensiveAssessmentPage/ComprehensiveAssessmentPage';
+import CustomProblemPage from './pages/problems/CustomProblemPage/CustomProblemPage';
+import ProblemLibraryPage from './pages/problems/ProblemLibraryPage/ProblemLibraryPage';
+import ProblemLibraryDetailPage from './pages/problems/ProblemLibraryPage/ProblemLibraryDetailPage';
+import StudentHomePage from './pages/student/StudentHomePage/StudentHomePage';
+import StudentWorksheetPage from './pages/student/StudentWorksheetPage/StudentWorksheetPage';
+import StudentSolvePage from './pages/student/StudentSolvePage/StudentSolvePage';
+import StudentReviewPage from './pages/student/StudentReviewPage/StudentReviewPage';
+import StudentProfilePage from './pages/student/StudentProfilePage/StudentProfilePage';
 
 function App() {
   return (

@@ -4,7 +4,7 @@
 
 - 작업을 마친 뒤, 이후 다른 작업이나 다른 채팅의 에이전트가 참고해야 할 프로젝트 규칙, 공통 구현 방식, 주의사항이 새로 생겼다면 `AGENTS.md`에 명시적으로 추가하거나 기존 내용을 업데이트한다.
 - 일회성 작업 내용이나 특정 작업의 진행 상황은 기록하지 않고, 이후 작업에도 반복해서 적용되는 정보만 남긴다.
-- `src/pages/StudentManagementPage` 내부의 페이지나 컴포넌트 역할, 데이터 흐름 또는 파일 구조가 변경되면 해당 폴더의 `README.md` 명세도 함께 업데이트한다.
+- `src/pages/students` 내부의 페이지나 컴포넌트 역할, 데이터 흐름 또는 파일 구조가 변경되면 해당 폴더의 `README.md` 명세도 함께 업데이트한다.
 
 ## 검증
 
@@ -39,7 +39,7 @@
 - 학생앱 화면은 교사용 업무 화면과 구분해 전체 텍스트에 기존 `학교안심 분필` 글꼴을 사용한다.
 - 학생앱은 태블릿 사용을 기준으로 탭·버튼·카드의 주요 문구를 16px 이상으로 표시하고, 상태 배지와 진행률 같은 보조 정보도 14px 이상을 유지한다. 주요 터치 영역은 최소 50px 높이로 제공한다.
 - 학생앱 메인의 배정 학습지는 완료된 학습지를 제외하고 `전체 / 숙제 / 평가` 탭으로 분류한다. 숙제에는 일반 학습과 `origin: 'custom'` 맞춤 학습을 포함하고, 평가는 `type: 'assessment'`인 종합평가를 포함한다. 홈의 학습 상태 문구는 `학습 가능 / 풀이 중`만 사용한다.
-- 학생앱의 주관식·서술형 답안은 `StudentSolvePage/HandwritingAnswer`의 Canvas 필기 UI를 사용하고, 문항별 획 좌표·압력·도구 정보를 `handwritingStorage.js`를 통해 IndexedDB에 임시 저장한다. 서버 연동 시에는 이 원본 획 데이터로 제출 이미지를 생성하며, 페이지별 필기 구현을 중복하지 않는다.
+- 학생앱의 주관식·서술형 답안은 `src/pages/student/StudentSolvePage/HandwritingAnswer`의 Canvas 필기 UI를 사용하고, 문항별 획 좌표·압력·도구 정보를 `handwritingStorage.js`를 통해 IndexedDB에 임시 저장한다. 서버 연동 시에는 이 원본 획 데이터로 제출 이미지를 생성하며, 페이지별 필기 구현을 중복하지 않는다.
 - 학생앱의 일반 학습 풀이는 왼쪽 문항 탐색을 사용하지 않고 중앙의 `steps[].segments[]` 풀이 단계마다 한 줄 `HandwritingAnswer`를 제공하며, 오른쪽에는 현재 문제의 개념 요약을 표시한다. 일반 학습 필기는 입력 중 자동 저장하지 않고 `다음 학습`을 눌렀을 때 현재 단계의 획 데이터를 IndexedDB에 저장한 뒤 이동한다. 종합평가만 왼쪽 문항 탐색과 문제별 전체 답안 영역을 사용한다.
 - 학생앱의 `origin: 'custom'` 맞춤 학습은 일반 학습과 같은 단계별 필기 구조를 사용하되 문제를 `stage: 'retrace'|'basic'|'independent'`로 저장하고 화면에서는 복습/유사/응용으로 표시한다. 오른쪽 개념 설명 대신 학생 모드의 공통 `ConceptChatPanel`을 표시하며, 교사용 맞춤 문제 생성 화면의 챗봇 미표시 규칙과 구분한다.
 - 학생앱 학습지 목록의 `결과` 컬럼은 값이 아니라 진입 버튼으로 둔다. 미제출은 `-`, 제출했지만 `resultReady`가 `false`이면 `채점 중` 표시, 채점이 끝나면 파란 `확인` 버튼을 보여 주고 점수와 정답 문항 수는 채점 결과 화면에서만 표시한다. `확인` 버튼은 표 안의 보조 동작이라 학생앱의 최소 50px 터치 영역 대신 `채점 중` 표시와 같은 크기(높이 40px)로 맞춘다.
@@ -93,7 +93,9 @@
 
 - 페이지 이동과 활성 메뉴 처리는 `react-router-dom`을 사용한다.
 - 새로운 페이지 경로는 `src/App.jsx`의 라우트 구성에 등록한다.
-- 학생 관리 하위 화면은 기본적으로 `src/pages/StudentManagementPage/StudentManagementLayout.jsx`의 중첩 라우트와 `Outlet` 구조를 사용한다.
+- `src/pages`의 최상위 폴더는 라우트와 헤더 메뉴 기준으로 `auth`, `dashboard`, `problems`, `learning`, `students`, `student`를 사용하고, 개별 페이지 폴더는 해당 그룹 아래에 둔다.
+- 학생 관리 하위 화면은 기본적으로 `src/pages/students/StudentManagementLayout.jsx`의 중첩 라우트와 `Outlet` 구조를 사용한다.
+- `src/pages/students` 내부는 `StudentListPage`, `ClassManagementPage`, 양쪽에서 사용하는 UI와 상수 `shared`로 구분한다.
 - 반 생성과 반 상세 수정은 별도 라우트로 이동하지 않고 `/students/classes` 목록 화면에서 `StudentFormModal` 프레임을 재사용한 모달로 제공한다.
 - 학생앱 학습지 하위 화면은 풀이 `/student/worksheets/:assignmentId/solve`, 채점 결과·해설 `/student/worksheets/:assignmentId/review` 경로를 사용하고 두 경로 모두 `student` 쿼리로 학생 ID를 유지한다.
 - 학습 현황과 취약점 분석 사이의 학습지 컨텍스트는 `worksheet` 쿼리로 전달한다.
@@ -132,7 +134,7 @@
 - 학습 관리 화면의 학습명 검색은 `src/components/common/SearchInput/SearchInput.jsx`를 재사용하며, 검색창 높이와 입력·플레이스홀더 글꼴 및 테두리는 `SearchInput.scss`에서만 관리한다.
 - 테이블이나 목록의 항목 선택 체크박스는 `src/components/common/CustomCheckbox/CustomCheckbox.jsx`를 사용한다.
 - 항목 선택 체크박스의 디자인은 `src/components/common/CustomCheckbox/CustomCheckbox.scss`의 공통 스타일을 따르고 페이지에서 중복 구현하지 않는다.
-- 학생 관리 영역의 모달은 `src/pages/StudentManagementPage/components/StudentFormModal.jsx`와 `StudentFormModal.scss`의 공통 오버레이, 헤더, 닫기 동작을 재사용하고 화면별 너비는 `width` prop으로 조절한다.
+- 학생 관리 영역의 모달은 `src/pages/students/shared/StudentFormModal.jsx`와 `StudentFormModal.scss`의 공통 오버레이, 헤더, 닫기 동작을 재사용하고 화면별 너비는 `width` prop으로 조절한다.
 - 학생 폼의 학년 선택과 선택 입력 영역은 각각 `StudentGradeSelector.jsx`, `StudentOptionalFields.jsx`를 재사용한다.
 - 오답에 대한 처방은 맞춤 문제 생성으로 일원화하고, 같은 문항을 다시 배정하는 별도 화면을 두지 않는다. 문항 풀이는 문제 보관함의 해설로 관리하고 출제 시 함께 배포한다.
 - 맞춤 학습지의 총 풀이 수는 반 단위 학습지 값이 아니라 학생별 `totalUnits`로 저장하고 진행률 계산에서도 학생 값을 우선한다.
