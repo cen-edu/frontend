@@ -1,0 +1,261 @@
+$chalkboard: #2c5749;
+$chalkboard-light: #315b4f;
+$chalkboard-hover: #3a6659;
+$chalk: #f2e8c9;
+$chalk-muted: #d7dfd7;
+$chalk-line: #6f8c82;
+
+.signup-page {
+  position: relative;
+  display: grid;
+  min-height: 100svh;
+  overflow: hidden;
+  place-items: center;
+  padding: 48px 24px;
+  border-top: 7px solid #76583b;
+  border-bottom: 7px solid #76583b;
+  background: $chalkboard;
+  font-family: '학교안심 분필', cursive;
+
+  &__decoration {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  &__circle {
+    position: absolute;
+    display: block;
+    border: 2px solid rgba($chalk, 0.07);
+    border-radius: 50%;
+
+    &--top {
+      top: -150px;
+      right: 8%;
+      width: 340px;
+      aspect-ratio: 1;
+    }
+
+    &--bottom {
+      bottom: -190px;
+      left: 6%;
+      width: 420px;
+      aspect-ratio: 1;
+    }
+  }
+}
+
+.signup-card {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 470px);
+  padding: 38px 42px 32px;
+  border: 1px solid $chalk-line;
+  border-radius: 12px;
+  color: #fff;
+  background: $chalkboard-light;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 30px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid $chalk-line;
+  }
+
+  &__logo {
+    width: 56px;
+    height: 56px;
+    flex: 0 0 auto;
+    object-fit: contain;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: 30px;
+    font-weight: 400;
+    line-height: 1.2;
+    letter-spacing: 0.025em;
+  }
+
+  &__login-link {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 24px;
+    color: $chalk-muted;
+    font-size: 14px;
+
+    a {
+      color: $chalk;
+      text-decoration: underline;
+      text-underline-offset: 4px;
+      transition: color 150ms ease;
+
+      &:hover,
+      &:focus-visible {
+        color: #fff;
+      }
+
+      &:focus-visible {
+        outline: 2px solid $chalk;
+        outline-offset: 4px;
+      }
+    }
+  }
+}
+
+.signup-form {
+  &__field + &__field {
+    margin-top: 17px;
+  }
+
+  &__label {
+    display: block;
+    margin-bottom: 8px;
+    color: #fff;
+    font-size: 15px;
+  }
+
+  &__control {
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 48px;
+    border: 1px solid #d7ded8;
+    border-radius: 8px;
+    background: #f8f7f0;
+    transition: border-color 160ms ease, box-shadow 160ms ease;
+
+    &:focus-within {
+      border-color: $chalk;
+      box-shadow: 0 0 0 3px rgba($chalk, 0.14);
+    }
+  }
+
+  &__icon {
+    flex: 0 0 auto;
+    margin-left: 15px;
+    color: #60756d;
+    font-size: 18px;
+  }
+
+  &__input {
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    padding: 0 14px;
+    border: 0;
+    outline: 0;
+    color: #1f3d34;
+    font-family: inherit;
+    font-size: 15px;
+    background: transparent;
+
+    &::placeholder {
+      color: #7d8c86;
+      opacity: 1;
+    }
+
+    &--password {
+      padding-right: 8px;
+    }
+  }
+
+  &__password-toggle {
+    display: grid;
+    flex: 0 0 46px;
+    align-self: stretch;
+    place-items: center;
+    border: 0;
+    border-radius: 8px;
+    color: #60756d;
+    font-family: inherit;
+    font-size: 18px;
+    background: transparent;
+    cursor: pointer;
+    transition: color 150ms ease;
+
+    &:hover,
+    &:focus-visible {
+      color: $chalkboard;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $chalkboard;
+      outline-offset: -5px;
+    }
+  }
+
+  &__help {
+    margin-top: 6px;
+    color: #bdcbc5;
+    font-size: 12px;
+    line-height: 1.4;
+  }
+
+  &__submit {
+    width: 100%;
+    height: 50px;
+    margin-top: 26px;
+    border: 1px solid $chalk;
+    border-radius: 8px;
+    color: $chalkboard;
+    font-family: inherit;
+    font-size: 18px;
+    font-weight: 700;
+    background: $chalk;
+    cursor: pointer;
+    transition: border-color 150ms ease, color 150ms ease, background 150ms ease;
+
+    &:hover {
+      border-color: #fff;
+      color: #1f4438;
+      background: #fffaf0;
+    }
+
+    &:active {
+      background: #e2d7b8;
+    }
+
+    &:focus-visible {
+      outline: 3px solid rgba($chalk, 0.28);
+      outline-offset: 3px;
+    }
+  }
+}
+
+@media (max-width: 560px) {
+  .signup-page {
+    align-items: start;
+    padding: 24px 16px;
+  }
+
+  .signup-card {
+    padding: 28px 20px 26px;
+
+    &__header {
+      margin-bottom: 24px;
+    }
+
+    &__logo {
+      width: 50px;
+      height: 50px;
+    }
+
+    &__title {
+      font-size: 27px;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .signup-card__login-link a,
+  .signup-form__control,
+  .signup-form__password-toggle,
+  .signup-form__submit {
+    transition: none;
+  }
+}

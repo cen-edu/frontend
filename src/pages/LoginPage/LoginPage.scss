@@ -395,16 +395,18 @@ $chalk-line: #6f8c82;
   }
 
   &__links {
-    display: grid;
-    grid-template-columns: 1fr 1px 1fr;
+    display: flex;
     align-items: center;
+    justify-content: center;
+    gap: 8px;
     margin-top: 24px;
-    color: $chalk;
+    color: $chalk-muted;
     font-size: 13px;
     font-weight: 600;
     text-align: center;
 
     a {
+      color: $chalk;
       transition: color 150ms ease;
 
       &:hover,
@@ -414,12 +416,6 @@ $chalk-line: #6f8c82;
         text-underline-offset: 4px;
       }
     }
-  }
-
-  &__divider {
-    width: 1px;
-    height: 16px;
-    background: $chalk-line;
   }
 }
 

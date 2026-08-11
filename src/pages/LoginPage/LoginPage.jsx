@@ -1,6 +1,6 @@
 import mainLogo from '../../assets/images/login-main-logo.png'
 import loginSymbol from '../../assets/images/logo-symbol.png'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 import './LoginPage.scss'
 
@@ -101,11 +101,8 @@ const LoginPage = () => {
                         </button>
 
                         <div className="login-form__links">
-                            <a href="#">회원가입</a>
-
-                            <span className="login-form__divider" />
-
-                            <a href="#">비밀번호 찾기</a>
+                            <span>계정이 없으신가요?</span>
+                            <Link to="/signup">회원가입</Link>
                         </div>
                     </div>
                 </div>
