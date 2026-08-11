@@ -413,46 +413,6 @@ $line: #dce3ed;
   }
 }
 
-.login-footer {
-  position: relative;
-  z-index: 1;
-  flex: 0 0 auto;
-  width: min(360px, calc(100% + 60px));
-  color: #52637c;
-  font-size: 13px;
-  text-align: center;
-
-  &__contact {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    line-height: 20px;
-
-    strong {
-      color: #1c2b42;
-      font-size: 15px;
-      font-weight: 650;
-    }
-  }
-
-  &__icon {
-    color: #16263d;
-    font-size: 21px;
-  }
-
-  &__divider {
-    width: 1px;
-    height: 14px;
-    margin: 0 5px;
-    background: #aebdce;
-  }
-
-  &__description {
-    margin-top: 10px;
-  }
-}
-
 @media (max-width: 1280px) {
   .login-page {
     &__panel {
@@ -492,9 +452,6 @@ $line: #dce3ed;
     margin-bottom: 36px;
   }
 
-  .login-footer {
-    margin-top: 36px;
-  }
 }
 
 @media (max-width: 520px) {
@@ -547,20 +504,6 @@ $line: #dce3ed;
     }
   }
 
-  .login-footer {
-    width: 100%;
-    margin-top: auto;
-    padding-top: 34px;
-
-    &__contact {
-      flex-wrap: wrap;
-      row-gap: 5px;
-    }
-
-    &__description {
-      font-size: 12px;
-    }
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {

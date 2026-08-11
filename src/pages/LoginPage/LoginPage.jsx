@@ -110,21 +110,6 @@ const LoginPage = () => {
                     </div>
                 </div>
 
-                <footer className="login-footer">
-                    <div className="login-footer__contact">
-                        <i className="bi bi-headset login-footer__icon" />
-
-                        <strong>고객센터 1670-1234</strong>
-
-                        <span className="login-footer__divider" />
-
-                        <span>평일 09:00 ~ 18:00</span>
-                    </div>
-
-                    <p className="login-footer__description">
-                        궁금한 내용이 있으시면 언제든지 문의해주세요.
-                    </p>
-                </footer>
             </section>
         </main>
     );
