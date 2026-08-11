@@ -18,6 +18,10 @@
 - 프로젝트는 React와 Vite 기반이며, 별도 요청이 없다면 TypeScript로 전환하지 않고 기존 `JavaScript/JSX` 구성을 유지한다.
 - 패키지 관리는 `npm`을 사용하고 기존 `package-lock.json`을 유지한다.
 - 새로운 패키지를 추가하기 전에 현재 설치된 의존성으로 구현할 수 있는지 먼저 확인한다.
+- 백엔드 API 통신은 `src/api/httpClient.js`의 Axios 인스턴스를 사용하고 페이지나 컴포넌트에서 Axios 인스턴스를 별도로 만들지 않는다.
+- 서버 데이터 조회와 변경 상태는 `@tanstack/react-query`를 사용하며 전역 기본 설정은 `src/api/queryClient.js`에서만 관리한다. 모달, 탭, 체크박스처럼 서버와 무관한 UI 상태는 React Query에 저장하지 않는다.
+- React Query의 query function에서 받은 `signal`은 Axios 요청 옵션에 전달해 사용하지 않는 요청을 취소할 수 있게 한다.
+- 클라이언트에서 사용하는 환경 변수는 `VITE_` 접두사를 사용하되 비밀번호, API Secret, 서명 키 같은 민감 정보는 Vite 환경 변수에 저장하지 않는다.
 
 ## 컴포넌트 및 스타일
 
