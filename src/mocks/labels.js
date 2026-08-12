@@ -1,7 +1,7 @@
 // 학생 화면과 교사 화면이 함께 쓰는 도메인 상수와 라벨.
 // 같은 값을 페이지나 mock에서 다시 선언하지 않고 이 파일에서만 관리한다.
 
-export const difficultyLevels = ['low', 'mid', 'high'];
+export const difficultyLevels = ['high', 'mid', 'low'];
 export const difficultyLabels = { low: '하', mid: '중', high: '상' };
 
 export const questionFormats = [
