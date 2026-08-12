@@ -21,3 +21,13 @@ export const getStudents = ({
     },
     signal,
 });
+
+export const createStudent = ({
+                                  name,
+                                  registrationYear,
+                                  grade,
+                              }) => httpClient.post('/teacher/students', {
+    name,
+    registrationYear,
+    grade,
+});

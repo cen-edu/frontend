@@ -31,7 +31,7 @@ src/pages/students/
 ├── StudentListPage/
 │   ├── StudentListPage.jsx
 │   ├── StudentListPage.scss
-│   ├── useStudentsQuery.js
+│   ├── studentHooks.js
 │   ├── studentFormConfig.js
 │   └── components/
 │       ├── StudentToolbar.jsx
@@ -69,7 +69,7 @@ src/pages/students/
 - 화면 표현은 `StudentToolbar`, `StudentTable`, `StudentSelectionBar`에 위임한다.
 - 목록 조회는 `useStudentsQuery`에 위임하며 개발용 학생·반 mock을 가져오지 않는다.
 
-### `StudentListPage/useStudentsQuery.js`
+### `StudentListPage/studentHooks.js`
 
 - React Query로 교사 학생 목록을 조회한다.
 - 필터·정렬·페이지 요청값 전체를 query key에 포함한다.

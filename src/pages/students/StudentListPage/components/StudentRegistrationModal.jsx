@@ -3,7 +3,7 @@ import StudentFormModal from '../../shared/StudentFormModal';
 import StudentGradeSelector from '../../shared/StudentGradeSelector';
 import { EMPTY_STUDENT_FORM } from '../studentFormConfig';
 
-function StudentRegistrationModal({ onClose, onRegister }) {
+function StudentRegistrationModal({ onClose, onRegister, isPending = false, }) {
     const [form, setForm] = useState(() => ({ ...EMPTY_STUDENT_FORM }));
     const [grade, setGrade] = useState('1');
     const registrationYear = String(new Date().getFullYear());
@@ -27,7 +27,17 @@ function StudentRegistrationModal({ onClose, onRegister }) {
 
                     <label className="student-form-modal__field">
                         <span>학생 이름</span>
-                        <input autoFocus name="name" value={form.name} placeholder="학생 이름 입력" required onChange={updateField} />
+                        <input
+                            autoFocus
+                            name="name"
+                            value={form.name}
+                            placeholder="학생 이름 입력"
+                            minLength={2}
+                            maxLength={50}
+                            required
+                            disabled={isPending}
+                            onChange={updateField}
+                        />
                     </label>
 
                     <div className="student-form-modal__field">
@@ -38,7 +48,13 @@ function StudentRegistrationModal({ onClose, onRegister }) {
                 </div>
 
                 <footer className="student-form-modal__footer">
-                    <button type="submit" className="student-form-modal__primary-button">등록하기</button>
+                    <button
+                        type="submit"
+                        className="student-form-modal__primary-button"
+                        disabled={isPending}
+                    >
+                        {isPending ? '등록 중...' : '등록하기'}
+                    </button>
                 </footer>
             </form>
         </StudentFormModal>

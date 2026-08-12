@@ -3,8 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import StudentSelectionBar from './components/StudentSelectionBar';
 import StudentTable from './components/StudentTable';
 import StudentToolbar from './components/StudentToolbar';
-import useStudentsQuery from './useStudentsQuery.js';
+import { useStudentsQuery, useCreateStudentMutation } from './studentHooks.js';
 import './StudentListPage.scss';
+import StudentRegistrationModal from './components/StudentRegistrationModal';
+
 
 // 표 영역 안에서 스크롤 없이 보여줄 수 있는 행 수를 계산할 때 쓰는 값. SCSS의 th/td 높이와 같아야 한다.
 const ROW_HEIGHT = 54;
@@ -104,6 +106,32 @@ function StudentListPage() {
             ? error?.message || '학생 목록을 불러오지 못했습니다.'
             : '검색 조건에 맞는 학생이 없습니다.';
 
+    const [isRegistrationOpen, setIsRegistrationOpen] = useState(false);
+    const createStudentMutation = useCreateStudentMutation();
+
+    const handleRegisterStudent = (values) => {
+        createStudentMutation.mutate({
+            name: values.name.trim(),
+            registrationYear: Number(values.registrationYear),
+            grade: Number(values.grade),
+        }, {
+            onSuccess: (student) => {
+                setIsRegistrationOpen(false);
+                setPage(1);
+                setSelectedIds([]);
+
+                window.alert(
+                    `${student.name} 학생이 등록되었습니다.\n로그인 아이디: ${student.loginId}`,
+                );
+            },
+            onError: (mutationError) => {
+                window.alert(
+                    mutationError?.message || '학생을 등록하지 못했습니다.',
+                );
+            },
+        });
+    };
+
     return (
         <section className="student-list" aria-labelledby="student-list-title">
             <header className="student-list__header">
@@ -127,7 +155,7 @@ function StudentListPage() {
                 classes={classes}
                 searchTerm={searchTerm}
                 onSearchTermChange={changeFilter(setSearchTerm)}
-                writeActionsDisabled
+                onOpenRegistration={() => setIsRegistrationOpen(true)}
             />
 
             <StudentTable
@@ -178,6 +206,18 @@ function StudentListPage() {
                 onClear={() => setSelectedIds([])}
                 deleteDisabled
             />
+
+            {isRegistrationOpen && (
+                <StudentRegistrationModal
+                    onClose={() => {
+                        if (!createStudentMutation.isPending) {
+                            setIsRegistrationOpen(false);
+                        }
+                    }}
+                    onRegister={handleRegisterStudent}
+                    isPending={createStudentMutation.isPending}
+                />
+            )}
         </section>
     );
 }
