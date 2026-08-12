@@ -1,7 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ReviewResultStrip } from '../../../../components/common/worksheets';
 import { worksheetTypeLabels } from '../../../../mocks/labels';
 import './GradingShell.scss';
+
+function GradingScanEffect() {
+    return <div className="grading-shell__scan-layer" aria-hidden="true" />;
+}
 
 // 일반 학습·종합 평가 채점 화면이 함께 쓰는 껍데기.
 // 학생이 보는 화면과 같은 순서(상단 바 → 학생 선택 → 문항 결과 막대 → 문항 카드)로 두어
@@ -22,6 +26,7 @@ function GradingShell({
     const [viewedStudentId, setViewedStudentId] = useState(student.id);
     const [aiSelectionMode, setAiSelectionMode] = useState(false);
     const [aiSelections, setAiSelections] = useState({});
+    const [isAutoGrading, setIsAutoGrading] = useState(false);
 
     // 학생을 바꾸면 다시 1번 문항부터 확인한다.
     if (viewedStudentId !== student.id) {
@@ -35,18 +40,34 @@ function GradingShell({
     const selectedQuestionCount = Object.values(aiSelections)
         .reduce((total, questionNos) => total + questionNos.length, 0);
 
+    // 실제 연동 전 자동 채점 연출은 10초 뒤 종료하고 선택 상태를 초기화한다.
+    useEffect(() => {
+        if (!isAutoGrading) return undefined;
+        const timer = window.setTimeout(() => {
+            setIsAutoGrading(false);
+            setAiSelectionMode(false);
+            setAiSelections({});
+        }, 10000);
+        return () => window.clearTimeout(timer);
+    }, [isAutoGrading]);
+
     const moveToQuestion = (index) => {
         setCurrentIndex(index);
         window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
     };
 
     const toggleAiSelectionMode = () => {
-        setAiSelectionMode((current) => {
-            if (current) {
-                setAiSelections({});
-            }
-            return !current;
-        });
+        if (isAutoGrading) return;
+        if (!aiSelectionMode) {
+            setAiSelectionMode(true);
+            return;
+        }
+        if (selectedQuestionCount > 0) {
+            setIsAutoGrading(true);
+            return;
+        }
+        setAiSelectionMode(false);
+        setAiSelections({});
     };
 
     const selectStudentForAiGrading = (studentId) => {
@@ -99,13 +120,14 @@ function GradingShell({
                     aria-pressed={aiSelectionMode}
                     className={`grading-shell__ai-grading${aiSelectionMode ? ' grading-shell__ai-grading--active' : ''}`}
                     onClick={toggleAiSelectionMode}
+                    disabled={isAutoGrading}
                 >
                     <i className="bi bi-stars" aria-hidden="true" />
-                    {aiSelectionMode ? '선택 완료' : '자동 채점하기'}
+                    {isAutoGrading ? '자동 채점 중...' : aiSelectionMode ? '선택 완료' : '자동 채점하기'}
                 </button>
             </header>
 
-            <main className="grading-shell__main">
+            <main className={`grading-shell__main${isAutoGrading ? ' grading-shell__main--scanning' : ''}`} aria-busy={isAutoGrading}>
                 {aiSelectionMode && (
                     <section className="grading-shell__ai-guide" aria-live="polite">
                         <div>
@@ -118,7 +140,7 @@ function GradingShell({
                     </section>
                 )}
 
-                <section className="grading-shell__students" aria-label="채점할 학생 선택">
+                <section className="grading-shell__students grading-shell__scan-target" aria-label="채점할 학생 선택">
                     <div className="grading-shell__students-summary">
                         <strong>{student.number}번 {student.name}</strong>
                         <span className={`grading-shell__student-status grading-shell__student-status--${studentDone ? 'done' : 'pending'}`}>
@@ -154,20 +176,25 @@ function GradingShell({
                             );
                         })}
                     </div>
+                    {isAutoGrading && <GradingScanEffect />}
                 </section>
 
-                <ReviewResultStrip
-                    summary={summary}
-                    questions={questionResults}
-                    currentIndex={currentIndex}
-                    onSelect={moveToQuestion}
-                    selectionMode={aiSelectionMode}
-                    selectedQuestionNos={selectedQuestionNos}
-                    onToggleSelection={toggleQuestionSelection}
-                />
+                <div className="grading-shell__scan-target grading-shell__scan-target--results">
+                    <ReviewResultStrip
+                        summary={summary}
+                        questions={questionResults}
+                        currentIndex={currentIndex}
+                        onSelect={moveToQuestion}
+                        selectionMode={aiSelectionMode}
+                        selectedQuestionNos={selectedQuestionNos}
+                        onToggleSelection={toggleQuestionSelection}
+                    />
+                    {isAutoGrading && <GradingScanEffect />}
+                </div>
 
-                <div className="grading-shell__content">
+                <div className="grading-shell__content grading-shell__scan-target">
                     {renderQuestion(currentIndex, moveToQuestion)}
+                    {isAutoGrading && <GradingScanEffect />}
                 </div>
             </main>
         </div>
