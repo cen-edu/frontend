@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import StudentSelectionBar from './components/StudentSelectionBar';
 import StudentTable from './components/StudentTable';
 import StudentToolbar from './components/StudentToolbar';
-import { useStudentsQuery, useCreateStudentMutation } from './studentHooks.js';
+import { useStudentsQuery, useCreateStudentMutation, useDeleteStudentsMutation } from './studentHooks.js';
 import './StudentListPage.scss';
 import StudentRegistrationModal from './components/StudentRegistrationModal';
 
@@ -132,6 +132,40 @@ function StudentListPage() {
         });
     };
 
+    const deleteStudentsMutation = useDeleteStudentsMutation();
+
+    const handleDeleteStudents = () => {
+        const selectedCount = selectedIds.length;
+
+        if (selectedCount === 0) return;
+
+        const confirmed = window.confirm(
+            `선택한 학생 ${selectedCount}명을 삭제하시겠습니까?\n삭제한 학생은 복구할 수 없습니다.`,
+        );
+
+        if (!confirmed) return;
+
+        deleteStudentsMutation.mutate(selectedIds, {
+            onSuccess: () => {
+                setSelectedIds([]);
+
+                // 현재 페이지의 학생을 전부 삭제했다면 이전 페이지로 이동
+                if (selectedCount === students.length && page > 1) {
+                    setPage((current) => current - 1);
+                }
+
+                window.alert(`학생 ${selectedCount}명이 삭제되었습니다.`);
+            },
+            onError: (mutationError) => {
+                setSelectedIds([]);
+                window.alert(
+                    mutationError?.message
+                    || '일부 학생을 삭제하지 못했습니다. 학생 목록을 확인해주세요.',
+                );
+            },
+        });
+    };
+
     return (
         <section className="student-list" aria-labelledby="student-list-title">
             <header className="student-list__header">
@@ -203,8 +237,9 @@ function StudentListPage() {
 
             <StudentSelectionBar
                 selectedCount={selectedIds.length}
+                onDelete={handleDeleteStudents}
                 onClear={() => setSelectedIds([])}
-                deleteDisabled
+                deleteDisabled={deleteStudentsMutation.isPending}
             />
 
             {isRegistrationOpen && (

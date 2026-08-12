@@ -31,3 +31,6 @@ export const createStudent = ({
     registrationYear,
     grade,
 });
+
+export const deleteStudent = (studentId) =>
+    httpClient.delete(`/teacher/students/${studentId}`);
