@@ -21,6 +21,7 @@ src/pages/students/
 ├── ClassManagementPage/
 │   ├── ClassManagementPage.jsx
 │   ├── ClassManagementPage.scss
+│   ├── classHooks.js
 │   ├── classFormConfig.js
 │   └── components/
 │       ├── ClassToolbar.jsx
@@ -78,12 +79,21 @@ src/pages/students/
 ### `ClassManagementPage.jsx`
 
 - `/students/classes` 경로에 대응하는 반 관리 페이지다.
-- 반 목록, 학년도·학년 필터, 검색어와 선택된 반 ID를 관리한다.
+- 반 목록은 `useClassesQuery`로 조회하고 학년도·학년 필터, 검색어와 선택된 반 ID를 관리한다.
+- 필터와 반 이름 검색 조건은 `GET /api/teacher/classes`의 쿼리 파라미터로 전달한다.
+- 필터 옵션과 순서 변경 요청에 필요한 전체 활성 반 ID를 위해 조건 없는 반 목록도 조회한다.
 - 페이지 제목, 반 순서 반영 안내와 현재 검색 결과 개수를 목록 위에 표시한다.
 - 검색 결과의 전체 선택과 개별 선택을 처리한다.
-- 반 만들기와 상세 수정 모달의 열림 상태를 관리하고 저장 결과를 반 목록에 즉시 반영한다.
-- 키보드 방향키와 드래그를 이용한 반 순서 변경을 반 목록에 반영한다.
-- 개발용 초기 데이터는 `src/mocks/classes.js`에서 가져온다.
+- 반 만들기와 상세 수정 모달의 열림 상태를 관리한다.
+- 선택 반 삭제는 `DELETE /api/teacher/classes`, 순서 변경은 `PATCH /api/teacher/classes/order`로 요청한다.
+- 순서 변경 시 화면 필터와 무관하게 교사가 소유한 전체 활성 반 ID를 최종 순서대로 전달한다.
+- 반 목록과 담당 교사 이름은 각각 반 API와 `GET /api/teacher/account`에서 조회하며 개발용 반·교사 mock을 가져오지 않는다.
+
+### `ClassManagementPage/classHooks.js`
+
+- 반 목록·상세·배정 가능 학생 조회와 생성·수정·삭제·순서 변경 mutation을 React Query로 관리한다.
+- 조회 조건과 반 ID를 query key에 포함하고 query function의 `signal`을 Axios 요청에 전달한다.
+- 변경 요청 성공 후 `teacher/classes` query 범위를 무효화해 목록·상세·배정 가능 학생을 서버 기준으로 다시 조회한다.
 
 ## 반 관리 컴포넌트
 
@@ -96,7 +106,7 @@ src/pages/students/
 
 ### `ClassTable.jsx`
 
-- 반 순서, `학년도 + 학년 + 반 이름` 조합 라벨, 학생 요약, 담당 선생님과 상세 버튼을 표로 표시한다.
+- 반 순서, `학년도 + 학년 + 반 이름` 조합 라벨, 서버가 반환한 학생 수, 현재 담당 선생님과 상세 버튼을 표로 표시한다.
 - 공통 `CustomCheckbox` 또는 행 전체 클릭으로 전체·개별 반을 선택하며 행 hover와 키보드 포커스 피드백을 제공한다.
 - 행 전체를 마우스로 드래그해 다른 행의 위·아래에 놓거나 이동 핸들에 포커스한 뒤 방향키를 눌러 순서를 변경할 수 있다.
 - 드래그 중인 행과 놓일 위치를 시각적으로 표시한다.
@@ -105,20 +115,21 @@ src/pages/students/
 
 - 한 개 이상의 반이 선택되면 반 관리 화면 하단에 표시된다.
 - 선택된 반 개수와 삭제·선택 해제 메뉴를 제공한다.
-- 실제 반 삭제와 선택 상태 변경은 `ClassManagementPage`에 요청한다.
+- 실제 반 일괄 삭제와 선택 상태 변경은 `ClassManagementPage`에 요청하며 삭제 중에는 중복 동작을 막는다.
 
 ### `ClassFormModal.jsx`
 
 - 반 생성과 상세 수정에 공통으로 사용하는 반 폼 모달이다.
 - `StudentFormModal` 프레임을 재사용하며 바깥 영역 클릭과 `Escape` 닫기, 본문 스크롤 잠금 동작을 공유한다.
 - 학년도는 선택할 수 없는 읽기 전용 값이다. 반 만들기에서는 현재 연도가, 상세 수정에서는 해당 반의 학년도가 고정 표시된다.
-- 반 이름, 학생 검색어와 선택된 학생 ID를 함께 관리한다.
-- 담당 선생님 선택 UI는 제공하지 않으며 등록·수정 결과에는 현재 사용자 `이하영 선생님`을 고정 배정한다.
-- 상세 수정 시 전달받은 학년도, 학년, 반 이름과 선택 ID를 사용하고 제목·제출 버튼 문구를 화면 용도에 맞게 표시한다.
-- 후보 학생은 선택한 반 학년과 학생의 현재 학년이 같은 경우만 표시하며 개별 학생 단위로 추가·제외한다.
-- 과거 반 수정 시 이미 소속된 학생은 현재 학년이 바뀌었더라도 선택 목록에 유지한다.
+- 반 이름, 학생 검색어와 선택된 학생 객체를 함께 관리한다.
+- 담당 선생님 선택 UI는 제공하지 않는다. 서버가 인증된 교사를 담임으로 지정한다.
+- 상세 수정 시 `GET /api/teacher/classes/{classId}`로 반 정보와 소속 학생을 조회한다.
+- 후보 학생은 선택 학년과 검색어로 `GET /api/teacher/classes/available-students`를 조회하며 개별 학생 단위로 추가·제외한다.
+- 학년을 변경하면 기존 선택 학생을 초기화해 다른 학년 학생이 수정 요청에 섞이지 않게 한다.
 - 추가·제외 아이콘뿐 아니라 각 목록 행 전체를 클릭할 수 있고 hover 및 키보드 포커스 피드백을 제공한다.
-- 저장 시 선택 결과를 반 목록 형식으로 정리해 `ClassManagementPage`에 전달하고 모달을 닫는다.
+- 생성은 `POST /api/teacher/classes`, 수정은 `PATCH /api/teacher/classes/{classId}`로 요청하며 성공 시 모달을 닫는다.
+- 반 이름은 서버 제한과 동일하게 최대 20자로 제한하고 조회·저장 오류와 진행 상태를 모달 안에 표시한다.
 
 ## 목록 컴포넌트
 
@@ -233,9 +244,9 @@ src/pages/students/
 
 ## 외부 의존 파일
 
-- `src/mocks/classes.js`: 반 목록 개발용 초기 데이터. 반은 `year`, `grade`, 축약된 `name`을 별도 필드로 가진다.
+- `src/api/classes/classesApi.js`: 반 목록·상세·배정 가능 학생 조회와 생성·수정·삭제·순서 변경 요청을 담당하는 API 모듈
 - `src/api/students/studentsApi.js`: `GET /api/teacher/students` 요청을 담당하는 학생 목록 API 모듈
-- `src/mocks/teachers.js`: 로그인 사용자 연동 전 담당 선생님을 고정하는 개발용 데이터
+- `src/api/teachers/teacherAccountApi.js`: 반 목록의 현재 담당 교사 이름 조회에 사용하는 계정 API 모듈
 - `src/components/Header/Header.jsx`: 서비스 공통 헤더
 - `src/components/SectionLayout/SectionLayout.jsx`: 헤더, 공용 사이드바와 중첩 화면을 배치하는 섹션 공통 레이아웃
 - `src/components/Sidebar/Sidebar.jsx`: 섹션별 메뉴 배열을 렌더링하는 공용 사이드바
@@ -264,15 +275,20 @@ StudentListPage (서버 목록·페이지 정보 표시)
 ```
 
 ```text
-src/mocks/classes.js
+ClassManagementPage (필터·검색·선택·모달 상태 관리)
         ↓
-ClassManagementPage (반 데이터와 화면 상태 관리)
-        ├── ClassToolbar (학년도·학년 필터, 검색 변경·반 생성 요청)
-        ├── ClassTable (선택·상세·순서 변경 요청)
-        ├── ClassSelectionBar (선택 반 삭제·선택 해제 요청)
-        └── ClassFormModal (학생 선택과 반 생성·수정 요청, 현재 선생님 고정 배정)
-                    ↓
-             반 목록에 즉시 반영
+useClassesQuery ──→ src/api/classes/classesApi.js ──→ GET /api/teacher/classes
+        ├── ClassToolbar (조회 조건 변경·반 생성 요청)
+        ├── ClassTable (선택·상세·전체 ID 기반 순서 변경 요청)
+        ├── ClassSelectionBar ──→ DELETE /api/teacher/classes
+        └── ClassFormModal
+                ├── GET /api/teacher/classes/{classId}
+                ├── GET /api/teacher/classes/available-students
+                ├── POST /api/teacher/classes
+                └── PATCH /api/teacher/classes/{classId}
+
+순서 변경 ──→ PATCH /api/teacher/classes/order
+변경 성공 ──→ teacher/classes query 무효화 ──→ 서버 목록 재조회
 ```
 
 학생 등록·수정·삭제 API가 연결되면 각 mutation 성공 후 학생 목록 query를 무효화해 서버 데이터를 다시 조회한다.

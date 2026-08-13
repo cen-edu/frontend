@@ -1,110 +1,157 @@
-import { useMemo, useState } from 'react';
-import initialClasses from '../../../mocks/classes';
+import { useDeferredValue, useMemo, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { getTeacherAccount } from '../../../api/teachers/teacherAccountApi';
 import ClassFormModal from './components/ClassFormModal';
 import ClassSelectionBar from './components/ClassSelectionBar';
 import ClassTable from './components/ClassTable';
 import ClassToolbar from './components/ClassToolbar';
-import { formatClassLabel } from './classFormConfig';
+import {
+    useClassesQuery,
+    useDeleteClassesMutation,
+    useUpdateClassOrderMutation,
+} from './classHooks';
 import './ClassManagementPage.scss';
 
+const ALL_FILTER = 'all';
+
+const sortClasses = (classes) => [...classes].sort((first, second) => (
+    first.displayOrder - second.displayOrder
+));
+
+const reorderClassIds = (classes, sourceId, targetId, position) => {
+    const orderedIds = sortClasses(classes).map(({ id }) => id);
+    const sourceIndex = orderedIds.indexOf(sourceId);
+    if (sourceIndex < 0) return orderedIds;
+
+    const nextIds = [...orderedIds];
+    nextIds.splice(sourceIndex, 1);
+    const targetIndex = nextIds.indexOf(targetId);
+    if (targetIndex < 0) return orderedIds;
+
+    nextIds.splice(position === 'after' ? targetIndex + 1 : targetIndex, 0, sourceId);
+    return nextIds;
+};
+
 function ClassManagementPage() {
-    const [classes, setClasses] = useState(initialClasses);
     const [selectedIds, setSelectedIds] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
-    const [yearFilter, setYearFilter] = useState('all');
-    const [gradeFilter, setGradeFilter] = useState('all');
+    const [yearFilter, setYearFilter] = useState(ALL_FILTER);
+    const [gradeFilter, setGradeFilter] = useState(ALL_FILTER);
     const [classForm, setClassForm] = useState(null);
+    const [operationError, setOperationError] = useState('');
+    const deferredSearchTerm = useDeferredValue(searchTerm);
+
+    const allClassesQuery = useClassesQuery();
+    const classesQuery = useClassesQuery({
+        academicYear: yearFilter === ALL_FILTER ? undefined : yearFilter,
+        grade: gradeFilter === ALL_FILTER ? undefined : gradeFilter,
+        keyword: deferredSearchTerm,
+    });
+    const accountQuery = useQuery({
+        queryKey: ['teacher', 'account'],
+        queryFn: ({ signal }) => getTeacherAccount({ signal }),
+    });
+    const deleteMutation = useDeleteClassesMutation();
+    const orderMutation = useUpdateClassOrderMutation();
+
+    const allClasses = useMemo(
+        () => sortClasses(allClassesQuery.data ?? []),
+        [allClassesQuery.data],
+    );
+    const classes = useMemo(
+        () => sortClasses(classesQuery.data ?? []),
+        [classesQuery.data],
+    );
 
     const yearOptions = useMemo(() => [
-        { value: 'all', label: '전체 학년도' },
-        ...[...new Set(classes.map(({ year }) => year))]
+        { value: ALL_FILTER, label: '전체 학년도' },
+        ...[...new Set(allClasses.map(({ academicYear }) => String(academicYear)))]
             .sort((first, second) => Number(second) - Number(first))
-            .map((year) => ({ value: year, label: `${year}학년도` })),
-    ], [classes]);
+            .map((academicYear) => ({
+                value: academicYear,
+                label: `${academicYear}학년도`,
+            })),
+    ], [allClasses]);
 
     const gradeOptions = useMemo(() => [
-        { value: 'all', label: '전체 학년' },
-        ...[...new Set(classes
-            .filter(({ year }) => yearFilter === 'all' || year === yearFilter)
-            .map(({ grade }) => grade))]
+        { value: ALL_FILTER, label: '전체 학년' },
+        ...[...new Set(allClasses
+            .filter(({ academicYear }) => (
+                yearFilter === ALL_FILTER || String(academicYear) === yearFilter
+            ))
+            .map(({ grade }) => String(grade)))]
             .sort((first, second) => Number(first) - Number(second))
             .map((grade) => ({ value: grade, label: `${grade}학년` })),
-    ], [classes, yearFilter]);
+    ], [allClasses, yearFilter]);
 
-    const filteredClasses = useMemo(() => {
-        const keyword = searchTerm.trim().toLowerCase();
-        return classes.filter((classItem) => (yearFilter === 'all' || classItem.year === yearFilter)
-            && (gradeFilter === 'all' || classItem.grade === gradeFilter)
-            && (!keyword || formatClassLabel(classItem).toLowerCase().includes(keyword)));
-    }, [classes, gradeFilter, searchTerm, yearFilter]);
-
-    const changeYearFilter = (year) => {
-        setYearFilter(year);
-        setGradeFilter('all');
+    const changeYearFilter = (academicYear) => {
+        setYearFilter(academicYear);
+        setGradeFilter(ALL_FILTER);
     };
 
     const toggleAll = () => {
-        const visibleIds = filteredClasses.map(({ id }) => id);
-        const isAllSelected = visibleIds.length > 0 && visibleIds.every((id) => selectedIds.includes(id));
-        setSelectedIds((current) => isAllSelected
-            ? current.filter((id) => !visibleIds.includes(id))
-            : [...new Set([...current, ...visibleIds])]);
+        const visibleIds = classes.map(({ id }) => id);
+        const isAllSelected = visibleIds.length > 0
+            && visibleIds.every((id) => selectedIds.includes(id));
+
+        setSelectedIds((current) => (
+            isAllSelected
+                ? current.filter((id) => !visibleIds.includes(id))
+                : [...new Set([...current, ...visibleIds])]
+        ));
     };
 
     const toggleClass = (classId) => {
-        setSelectedIds((current) => current.includes(classId)
-            ? current.filter((id) => id !== classId)
-            : [...current, classId]);
+        setSelectedIds((current) => (
+            current.includes(classId)
+                ? current.filter((id) => id !== classId)
+                : [...current, classId]
+        ));
     };
 
     const deleteSelectedClasses = () => {
-        setClasses((current) => current.filter(({ id }) => !selectedIds.includes(id)));
-        setSelectedIds([]);
+        const confirmed = window.confirm(`선택한 반 ${selectedIds.length}개를 삭제하시겠습니까?`);
+        if (!confirmed) return;
+
+        setOperationError('');
+        deleteMutation.mutate(
+            { classIds: selectedIds },
+            {
+                onSuccess: () => setSelectedIds([]),
+                onError: (error) => setOperationError(
+                    error?.message || '선택한 반을 삭제하지 못했습니다.',
+                ),
+            },
+        );
+    };
+
+    const reorderClasses = (sourceId, targetId, position) => {
+        if (orderMutation.isPending || allClassesQuery.isFetching || deleteMutation.isPending) return;
+
+        setOperationError('');
+        orderMutation.mutate(
+            { classIds: reorderClassIds(allClasses, sourceId, targetId, position) },
+            {
+                onError: (error) => setOperationError(
+                    error?.message || '반 순서를 변경하지 못했습니다.',
+                ),
+            },
+        );
     };
 
     const moveClass = (classId, offset) => {
-        const visibleIds = filteredClasses.map(({ id }) => id);
-        const visibleIndex = visibleIds.indexOf(classId);
-        const targetId = visibleIds[visibleIndex + offset];
-        if (targetId === undefined) return;
+        const visibleIndex = classes.findIndex(({ id }) => id === classId);
+        const targetClass = classes[visibleIndex + offset];
+        if (!targetClass) return;
 
-        setClasses((current) => {
-            const currentIndex = current.findIndex(({ id }) => id === classId);
-            if (currentIndex < 0) return current;
-            const next = [...current];
-            const [movedClass] = next.splice(currentIndex, 1);
-            const targetIndex = next.findIndex(({ id }) => id === targetId);
-            if (targetIndex < 0) return current;
-            next.splice(offset > 0 ? targetIndex + 1 : targetIndex, 0, movedClass);
-            return next;
-        });
+        reorderClasses(classId, targetClass.id, offset > 0 ? 'after' : 'before');
     };
 
-    const reorderClass = (sourceId, targetId, position) => {
-        setClasses((current) => {
-            const sourceIndex = current.findIndex(({ id }) => id === sourceId);
-            if (sourceIndex < 0) return current;
-
-            const next = [...current];
-            const [movedClass] = next.splice(sourceIndex, 1);
-            const targetIndex = next.findIndex(({ id }) => id === targetId);
-            if (targetIndex < 0) return current;
-            next.splice(position === 'after' ? targetIndex + 1 : targetIndex, 0, movedClass);
-            return next;
-        });
-    };
-
-    const saveClass = (classItem) => {
-        if (classItem.id) {
-            setClasses((current) => current.map((item) => item.id === classItem.id ? classItem : item));
-        } else {
-            setClasses((current) => {
-                const nextId = Math.max(...current.map(({ id }) => id), 0) + 1;
-                return [...current, { ...classItem, id: nextId }];
-            });
-        }
-        setClassForm(null);
-    };
+    const listError = classesQuery.error || allClassesQuery.error;
+    const isListPending = classesQuery.isPending || allClassesQuery.isPending;
+    const isOrderUnavailable = orderMutation.isPending
+        || allClassesQuery.isFetching
+        || deleteMutation.isPending;
 
     return (
         <section className="class-management" aria-labelledby="class-management-title">
@@ -113,7 +160,9 @@ function ClassManagementPage() {
                     <h1 id="class-management-title">반 관리</h1>
                     <p>목록 순서는 수업과 수업 준비 화면에도 동일하게 반영됩니다.</p>
                 </div>
-                <span className="class-management__count">검색 결과 <strong>{filteredClasses.length}</strong>개</span>
+                <span className="class-management__count">
+                    검색 결과 <strong>{classesQuery.isPending ? '-' : classes.length}</strong>개
+                </span>
             </header>
 
             <ClassToolbar
@@ -127,25 +176,57 @@ function ClassManagementPage() {
                 onSearchTermChange={setSearchTerm}
                 onOpenCreate={() => setClassForm({ mode: 'create' })}
             />
-            <ClassTable
-                classes={filteredClasses}
-                selectedIds={selectedIds}
-                onToggleAll={toggleAll}
-                onToggleClass={toggleClass}
-                onOpenDetail={(classItem) => setClassForm({ mode: 'detail', classItem })}
-                onMoveClass={moveClass}
-                onReorderClass={reorderClass}
-            />
+
+            {isListPending && (
+                <div className="class-management__request-state" role="status">
+                    반 목록을 불러오는 중입니다.
+                </div>
+            )}
+            {listError && (
+                <div className="class-management__request-state class-management__request-state--error" role="alert">
+                    <span>{listError?.message || '반 목록을 불러오지 못했습니다.'}</span>
+                    <button
+                        type="button"
+                        onClick={() => {
+                            allClassesQuery.refetch();
+                            classesQuery.refetch();
+                        }}
+                        disabled={allClassesQuery.isFetching || classesQuery.isFetching}
+                    >
+                        다시 불러오기
+                    </button>
+                </div>
+            )}
+            {!isListPending && !listError && (
+                <ClassTable
+                    classes={classes}
+                    selectedIds={selectedIds}
+                    teacherName={accountQuery.data?.name}
+                    onToggleAll={toggleAll}
+                    onToggleClass={toggleClass}
+                    onOpenDetail={(classItem) => setClassForm({ mode: 'detail', classItem })}
+                    onMoveClass={moveClass}
+                    onReorderClass={reorderClasses}
+                    reorderDisabled={isOrderUnavailable}
+                />
+            )}
+
+            {operationError && (
+                <p className="class-management__operation-error" role="alert">{operationError}</p>
+            )}
+
             <ClassSelectionBar
                 selectedCount={selectedIds.length}
                 onDelete={deleteSelectedClasses}
                 onClear={() => setSelectedIds([])}
+                isDeleting={deleteMutation.isPending}
             />
+
             {classForm && (
                 <ClassFormModal
                     initialClass={classForm.classItem}
                     onClose={() => setClassForm(null)}
-                    onSave={saveClass}
+                    onSaved={() => setClassForm(null)}
                 />
             )}
         </section>

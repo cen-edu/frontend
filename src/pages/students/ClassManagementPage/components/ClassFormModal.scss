@@ -30,6 +30,7 @@
     outline: 0;
     &::placeholder { color: #949eaa; }
     &:focus { border-color: #176fc1; box-shadow: 0 0 0 2px rgba(23, 111, 193, .1); }
+    &:disabled { background: #f5f6f8; color: #747f91; cursor: default; }
   }
 
   &__readonly {
@@ -122,6 +123,7 @@
     > i { color: #176fc1; font-size: 14px; }
     em { color: #747f91; font-size: 11px; font-style: normal; font-weight: 400; }
     &--remove > i { color: #596579; }
+    &:disabled { background: #f7f8fa; color: #949eaa; cursor: default; }
   }
   &__empty {
     min-height: 198px;
@@ -133,6 +135,41 @@
     font-size: 12px;
     line-height: 1.6;
     text-align: center;
+  }
+
+  &__request-state {
+    min-height: 198px;
+    padding: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 10px;
+    color: #b43c3c;
+    font-size: 12px;
+    line-height: 1.6;
+    text-align: center;
+
+    button {
+      min-height: 34px;
+      padding: 0 12px;
+      background: #fff;
+      border: 1px solid #d7dde4;
+      border-radius: 6px;
+      color: #176fc1;
+      font-size: 12px;
+      cursor: pointer;
+
+      &:hover { background: #edf5fc; border-color: #8eb7dc; }
+      &:disabled { cursor: default; opacity: .6; }
+    }
+  }
+
+  &__error {
+    margin: -6px 24px 16px;
+    color: #b43c3c;
+    font-size: 12px;
+    text-align: right;
   }
 
   .student-form-modal__primary-button:disabled {

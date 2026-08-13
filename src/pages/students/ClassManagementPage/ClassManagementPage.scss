@@ -99,6 +99,41 @@
 
   &__table-wrap { overflow-x: auto; }
 
+  &__request-state {
+    min-height: 222px;
+    padding: 32px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    color: #747f91;
+    font-size: 13px;
+    text-align: center;
+
+    &--error { color: #b43c3c; }
+
+    button {
+      min-height: 34px;
+      padding: 0 12px;
+      background: #fff;
+      border: 1px solid #d7dde4;
+      border-radius: 6px;
+      color: #176fc1;
+      font-size: 12px;
+      cursor: pointer;
+
+      &:hover { background: #edf5fc; border-color: #8eb7dc; }
+      &:disabled { cursor: default; opacity: .6; }
+    }
+  }
+
+  &__operation-error {
+    margin: 16px 24px 0;
+    color: #b43c3c;
+    font-size: 12px;
+    text-align: right;
+  }
+
   &__table {
     width: 100%;
     min-width: 900px;
@@ -173,6 +208,7 @@
     &:hover, &:focus-visible { background: #edf5fc; color: #176fc1; }
     &:focus-visible { outline: 2px solid rgba(23, 111, 193, .35); }
     &:active { cursor: grabbing; }
+    &:disabled { background: transparent; color: #b6bec8; cursor: default; }
   }
 
   &__empty { height: 180px !important; color: #747f91 !important; text-align: center !important; }
@@ -211,6 +247,7 @@
     cursor: pointer;
     &:hover { background: rgba(255, 255, 255, .1); }
     &:focus-visible { outline: 2px solid #9ec8eb; outline-offset: 1px; }
+    &:disabled { cursor: default; opacity: .6; }
   }
 
   &__selection-delete { color: #ffc8c8 !important; &:hover { background: rgba(207, 72, 72, .25) !important; } }

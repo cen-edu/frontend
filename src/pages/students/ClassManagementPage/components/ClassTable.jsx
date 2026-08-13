@@ -2,14 +2,24 @@ import { useRef, useState } from 'react';
 import { CustomCheckbox } from '../../../../components/common/inputs';
 import { formatClassLabel } from '../classFormConfig';
 
-function ClassTable({ classes, selectedIds, onToggleAll, onToggleClass, onOpenDetail, onMoveClass, onReorderClass }) {
+function ClassTable({
+    classes,
+    selectedIds,
+    teacherName,
+    onToggleAll,
+    onToggleClass,
+    onOpenDetail,
+    onMoveClass,
+    onReorderClass,
+    reorderDisabled,
+}) {
     const [draggedClassId, setDraggedClassId] = useState(null);
     const [dropTarget, setDropTarget] = useState(null);
     const ignoreClickAfterDragRef = useRef(false);
     const isAllSelected = classes.length > 0 && classes.every(({ id }) => selectedIds.includes(id));
 
     const handleMoveKeyDown = (event, classId) => {
-        if (event.key !== 'ArrowUp' && event.key !== 'ArrowDown') return;
+        if (reorderDisabled || (event.key !== 'ArrowUp' && event.key !== 'ArrowDown')) return;
         event.preventDefault();
         onMoveClass(classId, event.key === 'ArrowUp' ? -1 : 1);
     };
@@ -21,6 +31,10 @@ function ClassTable({ classes, selectedIds, onToggleAll, onToggleClass, onOpenDe
     };
 
     const handleDragStart = (event, classId) => {
+        if (reorderDisabled) {
+            event.preventDefault();
+            return;
+        }
         ignoreClickAfterDragRef.current = true;
         setDraggedClassId(classId);
         event.dataTransfer.effectAllowed = 'move';
@@ -79,7 +93,7 @@ function ClassTable({ classes, selectedIds, onToggleAll, onToggleClass, onOpenDe
                     </tr>
                 </thead>
                 <tbody>
-                    {classes.map((classItem, index) => {
+                    {classes.map((classItem) => {
                         const classLabel = formatClassLabel(classItem);
                         const rowClasses = [
                             'class-management__row',
@@ -93,7 +107,7 @@ function ClassTable({ classes, selectedIds, onToggleAll, onToggleClass, onOpenDe
                                 key={classItem.id}
                                 className={rowClasses}
                                 tabIndex={0}
-                                draggable
+                                draggable={!reorderDisabled}
                                 aria-selected={selectedIds.includes(classItem.id)}
                                 onClick={() => handleRowClick(classItem.id)}
                                 onKeyDown={(event) => handleRowKeyDown(event, classItem.id)}
@@ -112,10 +126,10 @@ function ClassTable({ classes, selectedIds, onToggleAll, onToggleClass, onOpenDe
                                     onChange={() => onToggleClass(classItem.id)}
                                 />
                             </td>
-                            <td>{index + 1}</td>
+                            <td>{classItem.displayOrder}</td>
                             <td className="class-management__name">{classLabel}</td>
-                            <td>{classItem.studentSummary}</td>
-                            <td>{classItem.teacher}</td>
+                            <td>{classItem.studentCount > 0 ? `${classItem.studentCount}명` : '등록된 학생 없음'}</td>
+                            <td>{teacherName ? `${teacherName} 선생님` : '-'}</td>
                             <td>
                                 <button
                                     type="button"
@@ -135,6 +149,7 @@ function ClassTable({ classes, selectedIds, onToggleAll, onToggleClass, onOpenDe
                                     aria-label={`${classLabel} 순서 이동, 행을 마우스로 끌거나 위아래 방향키 사용`}
                                     onClick={(event) => event.stopPropagation()}
                                     onKeyDown={(event) => handleMoveKeyDown(event, classItem.id)}
+                                    disabled={reorderDisabled}
                                 >
                                     <i className="bi bi-list" aria-hidden="true" />
                                 </button>
