@@ -12,8 +12,67 @@
   &__saved { padding: 9px 18px; background: #f0f9f4; border-bottom: 1px solid #d7eee0; color: #26734a; font-size: 12px; i { margin-right: 5px; } }
   &__preview-progress { min-height: 48px; flex: 0 0 48px; padding: 0 18px; display: flex; align-items: center; gap: 18px; background: #fbfdff; border-bottom: 1px solid #dfe8f0; > div { height: 8px; flex: 1; overflow: hidden; background: #e4ebf1; border-radius: 999px; span { height: 100%; display: block; background: #176fc1; border-radius: inherit; } } strong { min-width: 74px; color: #465166; font-family: '학교안심 분필', cursive; font-size: 14px; text-align: right; } }
   &__student-preview { min-width: 0; min-height: 0; flex: 1; display: flex; flex-direction: column; background-color: #f8fbfd; background-image: radial-gradient(circle, rgba(112, 143, 168, .2) 1px, transparent 1px); background-size: 20px 20px; overflow-x: hidden; overflow-y: auto; }
-  &__student-preview-content { width: min(100%, 1298px); margin: 0 auto; padding: 22px 24px 28px; flex: 0 0 auto; display: grid; grid-template-columns: minmax(0, 980px) 300px; align-items: start; gap: 18px; font-family: '학교안심 분필', cursive; }
-  &__question-preview { min-width: 0; overflow: hidden; background: #fff; border: 1px solid #d8e2ea; border-radius: 10px; box-shadow: 0 8px 24px rgba(52, 75, 94, .08); > .assessment-question { padding: 26px 28px 20px; overflow: visible; } }
+  &__student-preview-content { width: min(100%, 1180px); margin: 0 auto; padding: 22px 24px 28px; flex: 0 0 auto; display: grid; grid-template-columns: minmax(0, 1fr) 300px; align-items: start; gap: 18px; font-family: '학교안심 분필', cursive; }
+  &__question-preview {
+    min-width: 0;
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid #d8e2ea;
+    border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(52, 75, 94, .08);
+
+    > .assessment-question { padding: 30px 34px 24px; overflow: visible; }
+    > .assessment-question--edit-mode { padding-top: 64px; }
+
+    .assessment-question__header {
+      padding-bottom: 28px;
+
+      > div:first-child > span { color: #176fc1; font-size: 15px; font-weight: 700; }
+      h3 { margin-top: 9px; font-size: 24px; line-height: 1.7; word-break: keep-all; }
+    }
+
+    .assessment-question__score {
+      gap: 6px;
+      font-size: 15px;
+
+      input,
+      strong { width: 64px; height: 38px; font-size: 15px; line-height: 36px; }
+    }
+
+    .assessment-question__media { margin-top: 24px; gap: 14px; }
+    .assessment-question__media-placeholder { min-height: 116px; padding: 22px; font-size: 15px; i { font-size: 22px; } }
+
+    .assessment-question__choices {
+      margin-top: 24px;
+      gap: 12px;
+
+      li {
+        min-height: 54px;
+        padding: 10px 14px;
+        gap: 14px;
+
+        > span { width: 31px; height: 31px; font-size: 14px; }
+        p { font-size: 17px; line-height: 1.6; }
+        > strong { font-size: 14px; }
+      }
+    }
+
+    .assessment-question__short-answer,
+    .assessment-question__essay { margin-top: 24px; gap: 14px; font-size: 15px; }
+
+    .assessment-question__short-answer > div,
+    .assessment-question__essay-box { min-height: 104px; padding: 18px; }
+
+    .assessment-question__short-answer p,
+    .assessment-question__model-answer,
+    .assessment-question__rubric { padding: 18px; font-size: 17px; line-height: 1.7; }
+
+    .assessment-question__model-answer h4,
+    .assessment-question__rubric h4 { margin-bottom: 10px; font-size: 17px; }
+    .assessment-question__rubric th,
+    .assessment-question__rubric td { padding: 11px; font-size: 15px; }
+    .assessment-question__rubric-empty { padding: 16px; font-size: 15px; }
+  }
   &__edit-guide { position: absolute; z-index: 10; bottom: 22px; left: 50%; padding: 11px 16px; transform: translateX(-50%); background: #172033; border-radius: 7px; color: #fff; font-size: 12px; font-weight: 600; box-shadow: 0 8px 20px rgba(23,32,51,.18); i { margin-right: 7px; } }
   &__preview-controls { margin: 0 28px; padding: 20px 0 24px; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; border-top: 1px solid #ebeef2; button { min-height: 50px; justify-self: start; min-width: 132px; padding: 0 18px; background: #fff; border: 1px solid #d7dde4; border-radius: 8px; color: #465166; font-family: inherit; font-size: 16px; font-weight: 700; cursor: pointer; &:hover:not(:disabled) { background: #f2f7fc; border-color: #8eb7dc; color: #176fc1; } &:focus-visible { outline: 3px solid rgba(23,111,193,.25); outline-offset: 2px; } &:disabled { color: #aeb5bf; cursor: not-allowed; } } > span { color: #667185; font-size: 15px; font-weight: 600; text-align: center; } .comprehensive-assessment-page__preview-next { justify-self: end; background: #176fc1; border-color: #176fc1; color: #fff; &:hover:not(:disabled) { background: #0f5fa8; border-color: #0f5fa8; color: #fff; } } }
 }
