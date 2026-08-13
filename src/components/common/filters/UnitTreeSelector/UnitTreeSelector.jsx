@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { CustomCheckbox } from '../../inputs';
 import './UnitTreeSelector.scss';
 
-function UnitTreeSelector({ majorUnits, selectedUnitIds, onToggleUnit, onToggleMiddleUnit, isLoading = false, error = null, onRetry }) {
+function UnitTreeSelector({ majorUnits, selectedUnitIds, onToggleUnit, onToggleMiddleUnit, isLoading = false, error = null, onRetry, disabled = false }) {
     const [closedIds, setClosedIds] = useState([]);
 
     const toggleMajor = (majorId) => {
@@ -32,7 +32,7 @@ function UnitTreeSelector({ majorUnits, selectedUnitIds, onToggleUnit, onToggleM
                 const selectedCount = majorSmallUnits.filter((unit) => selectedUnitIds.includes(unit.id)).length;
                 return (
                     <section className="unit-tree__major" key={major.id}>
-                        <button type="button" className="unit-tree__major-toggle" aria-expanded={!isClosed} onClick={() => toggleMajor(major.id)}>
+                        <button type="button" className="unit-tree__major-toggle" aria-expanded={!isClosed} disabled={disabled} onClick={() => toggleMajor(major.id)}>
                             <span><i className={`bi bi-chevron-${isClosed ? 'right' : 'down'}`} aria-hidden="true" />{major.name}</span>
                             <span>{selectedCount ? `${selectedCount}개 선택` : '선택 없음'}</span>
                         </button>
@@ -44,16 +44,16 @@ function UnitTreeSelector({ majorUnits, selectedUnitIds, onToggleUnit, onToggleM
                                     return (
                                         <div className="unit-tree__middle" key={middle.id}>
                                             <div className={`unit-tree__middle-header${allSelected ? ' unit-tree__middle-header--selected' : ''}`}>
-                                                <CustomCheckbox label={`${middle.name} 소단원 전체 선택`} checked={allSelected} onChange={() => onToggleMiddleUnit(unitIds)} />
-                                                <button type="button" aria-pressed={allSelected} onClick={() => onToggleMiddleUnit(unitIds)}>{middle.name}</button>
+                                                <CustomCheckbox label={`${middle.name} 소단원 전체 선택`} checked={allSelected} disabled={disabled} onChange={() => onToggleMiddleUnit(unitIds)} />
+                                                <button type="button" aria-pressed={allSelected} disabled={disabled} onClick={() => onToggleMiddleUnit(unitIds)}>{middle.name}</button>
                                             </div>
                                             <div className="unit-tree__small-list">
                                                 {middle.children.map((unit) => {
                                                     const checked = selectedUnitIds.includes(unit.id);
                                                     return (
                                                         <div className={`unit-tree__small${checked ? ' unit-tree__small--selected' : ''}`} key={unit.id}>
-                                                            <CustomCheckbox label={`${unit.name} 선택`} checked={checked} onChange={() => onToggleUnit(unit.id)} />
-                                                            <button type="button" onClick={() => onToggleUnit(unit.id)}>{unit.name}</button>
+                                                            <CustomCheckbox label={`${unit.name} 선택`} checked={checked} disabled={disabled} onChange={() => onToggleUnit(unit.id)} />
+                                                            <button type="button" disabled={disabled} onClick={() => onToggleUnit(unit.id)}>{unit.name}</button>
                                                         </div>
                                                     );
                                                 })}

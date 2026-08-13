@@ -63,6 +63,7 @@ function PracticeProblemView({
                                 <p className="practice-problem-view__formula">
                                     {step.segments.map((segment, segmentIndex) => {
                                         if (segment.type === 'text') return <span key={`${step.id}-text-${segmentIndex}`}>{segment.value}</span>;
+                                        if (segment.type === 'answerRef') return <span key={segment.id}>{segment.value || segment.answer}</span>;
                                         if (renderBlank) return <Fragment key={segment.id}>{renderBlank(segment, step)}</Fragment>;
                                         if (isPreview) return <span key={segment.id} className="practice-problem-view__answer">{segment.answer}</span>;
                                         return <span key={segment.id} className="practice-problem-view__blank" aria-hidden="true" />;

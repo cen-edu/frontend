@@ -2,13 +2,14 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { UnitScopeFilter, UnitTreeSelector } from '../../../components/common/filters';
 import { defaultSupportModes } from '../../../mocks/labels';
-import { defaultUnitCounts, difficultyLevels, generateProblems } from '../../../mocks/problemCreation';
+import { defaultUnitCounts, difficultyLevels } from '../../../mocks/problemCreation';
 import { libraryWorksheets } from '../../../mocks/problemLibrary';
 import { PracticeProblemView, StudentSupportPreview } from '../../../components/common/worksheets';
 import sennyChatbot from '../../../assets/images/senny-chatbot.png';
 import ProblemAiEditPanel from './components/ProblemAiEditPanel';
 import UnitConfigTable from './components/UnitConfigTable';
 import { useProblemUnitsQuery } from '../problemUnitHooks.js';
+import { useProblemGenerationMutation } from '../problemGenerationHooks.js';
 import './ProblemCreationPage.scss';
 import './components/ProblemCreationComponents.scss';
 
@@ -26,6 +27,7 @@ function ProblemCreationPage() {
     const [supports, setSupports] = useState({});
 
     const unitsQuery = useProblemUnitsQuery({ gradeId, term });
+    const generationMutation = useProblemGenerationMutation();
     const majorUnits = unitsQuery.data ?? [];
 
     const unitIndex = useMemo(() => new Map(majorUnits.flatMap((major) => major.children.flatMap((middle) => middle.children.map((unit) => [unit.id, { ...unit, majorName: major.name, middleName: middle.name }])))), [majorUnits]);
@@ -37,6 +39,9 @@ function ProblemCreationPage() {
     const selectedProblemIndex = result?.problems.findIndex((problem) => problem.id === selectedProblemId) ?? -1;
     const previewProgress = result?.problems.length ? Math.round(((selectedProblemIndex + 1) / result.problems.length) * 100) : 0;
     const selectedSupport = supports[selectedProblemId] ?? defaultSupportModes.practice;
+    const generationError = generationMutation.error?.code === 'QUESTION_INVENTORY_INSUFFICIENT'
+        ? '선택한 소단원과 난이도에 요청한 수량만큼의 문제가 없습니다. 문항 수를 줄여 다시 시도해 주세요.'
+        : generationMutation.error?.message;
 
     useEffect(() => {
         if (initializedFromLibrary.current) return;
@@ -62,6 +67,7 @@ function ProblemCreationPage() {
     };
 
     const resetCreation = () => {
+        generationMutation.reset();
         setUnitConfigs([]);
         setSaved(false);
         closeResult();
@@ -73,12 +79,14 @@ function ProblemCreationPage() {
     };
 
     const toggleUnit = (unitId) => {
+        generationMutation.reset();
         setUnitConfigs((current) => current.some((config) => config.unitId === unitId)
             ? current.filter((config) => config.unitId !== unitId)
             : [...current, { unitId, counts: { ...defaultUnitCounts } }]);
     };
 
     const toggleMiddle = (unitIds) => {
+        generationMutation.reset();
         setUnitConfigs((current) => {
             const allSelected = unitIds.every((unitId) => current.some((config) => config.unitId === unitId));
             if (allSelected) return current.filter((config) => !unitIds.includes(config.unitId));
@@ -88,15 +96,19 @@ function ProblemCreationPage() {
     };
 
     const changeCount = (unitId, difficulty, value) => {
+        generationMutation.reset();
         setUnitConfigs((current) => current.map((config) => config.unitId === unitId ? { ...config, counts: { ...config.counts, [difficulty]: value } } : config));
     };
 
     const createProblems = () => {
-        const problems = generateProblems(configs);
-        setResult({ problems });
-        setSelectedProblemId(problems[0]?.id ?? '');
-        setSupports({});
-        setSaved(false);
+        generationMutation.mutate(configs, {
+            onSuccess: (problems) => {
+                setResult({ problems });
+                setSelectedProblemId(problems[0]?.id ?? '');
+                setSupports({});
+                setSaved(false);
+            },
+        });
     };
 
     const changeSupport = (mode) => {
@@ -120,17 +132,17 @@ function ProblemCreationPage() {
 
     return (
         <section className="problem-creation-page" aria-labelledby={result ? 'problem-result-title' : 'unit-selection-title'}>
-            {!result && <UnitScopeFilter gradeId={gradeId} term={term} onGradeChange={(value) => changeScope(setGradeId, value)} onTermChange={(value) => changeScope(setTerm, value)} />}
+            {!result && <UnitScopeFilter gradeId={gradeId} term={term} disabled={generationMutation.isPending} onGradeChange={(value) => changeScope(setGradeId, value)} onTermChange={(value) => changeScope(setTerm, value)} />}
 
             {!result ? (
                 <div className="problem-creation-page__configuration">
                     <section className="problem-creation-section" aria-labelledby="unit-selection-title">
                         <header><div><h2 id="unit-selection-title">단원 선택</h2><p>출제할 소단원을 선택합니다.</p></div><span>{configs.length}개 선택</span></header>
-                        <UnitTreeSelector key={`${gradeId}-${term}`} majorUnits={majorUnits} selectedUnitIds={selectedIds} onToggleUnit={toggleUnit} onToggleMiddleUnit={toggleMiddle} isLoading={unitsQuery.isPending} error={unitsQuery.error} onRetry={unitsQuery.refetch} />
+                        <UnitTreeSelector key={`${gradeId}-${term}`} majorUnits={majorUnits} selectedUnitIds={selectedIds} onToggleUnit={toggleUnit} onToggleMiddleUnit={toggleMiddle} isLoading={unitsQuery.isPending} error={unitsQuery.error} onRetry={unitsQuery.refetch} disabled={generationMutation.isPending} />
                     </section>
                     <section className="problem-creation-section" aria-labelledby="unit-config-title">
-                        <header><div><h2 id="unit-config-title">출제 구성</h2><p>소단원별로 하·중·상 문항 수를 배분합니다.</p></div><span>단원당 최대 30문항</span></header>
-                        <UnitConfigTable configs={configs} totalCount={totalCount} onCountChange={changeCount} onRemove={toggleUnit} onGenerate={createProblems} canGenerate={canGenerate} />
+                        <header><div><h2 id="unit-config-title">출제 구성</h2><p>소단원별로 하·중·상 문항 수를 배분합니다.</p></div><span>난이도별 최대 30문항</span></header>
+                        <UnitConfigTable configs={configs} totalCount={totalCount} onCountChange={changeCount} onRemove={toggleUnit} onGenerate={createProblems} canGenerate={canGenerate} isGenerating={generationMutation.isPending} error={generationError} />
                     </section>
                 </div>
             ) : (
