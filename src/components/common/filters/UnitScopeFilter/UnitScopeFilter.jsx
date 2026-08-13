@@ -1,6 +1,14 @@
 import { CustomSelect } from '../../inputs';
-import { curriculumFilterOptions } from '../../../../mocks/curriculum';
 import './UnitScopeFilter.scss';
+
+const gradeOptions = [
+    { value: 'middle-1', label: '1학년' },
+];
+
+const termOptions = [
+    { value: 'first', label: '1학기' },
+    { value: 'second', label: '2학기' },
+];
 
 function UnitScopeFilter({ gradeId, term, onGradeChange, onTermChange }) {
     return (
@@ -12,12 +20,12 @@ function UnitScopeFilter({ gradeId, term, onGradeChange, onTermChange }) {
             <div className="unit-scope-filter__controls">
                 <div className="unit-scope-filter__field">
                     <span>학년</span>
-                    <CustomSelect label="출제 학년 선택" value={gradeId} options={curriculumFilterOptions.grades} onChange={onGradeChange} width={132} />
+                    <CustomSelect label="출제 학년 선택" value={gradeId} options={gradeOptions} onChange={onGradeChange} width={132} />
                 </div>
                 <span className="unit-scope-filter__separator" aria-hidden="true"><i className="bi bi-chevron-right" /></span>
                 <div className="unit-scope-filter__field">
                     <span>학기</span>
-                    <CustomSelect label="출제 학기 선택" value={term} options={curriculumFilterOptions.terms} onChange={onTermChange} width={132} />
+                    <CustomSelect label="출제 학기 선택" value={term} options={termOptions} onChange={onTermChange} width={132} />
                 </div>
             </div>
         </section>

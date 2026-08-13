@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { UnitScopeFilter, UnitTreeSelector } from '../../../components/common/filters';
-import { curriculumUnits } from '../../../mocks/curriculum';
 import { defaultSupportModes } from '../../../mocks/labels';
 import { defaultUnitCounts, difficultyLevels, generateProblems } from '../../../mocks/problemCreation';
 import { libraryWorksheets } from '../../../mocks/problemLibrary';
@@ -9,10 +8,9 @@ import { PracticeProblemView, StudentSupportPreview } from '../../../components/
 import sennyChatbot from '../../../assets/images/senny-chatbot.png';
 import ProblemAiEditPanel from './components/ProblemAiEditPanel';
 import UnitConfigTable from './components/UnitConfigTable';
+import { useProblemUnitsQuery } from '../problemUnitHooks.js';
 import './ProblemCreationPage.scss';
 import './components/ProblemCreationComponents.scss';
-
-const subjectId = 'math';
 
 function ProblemCreationPage() {
     const [searchParams] = useSearchParams();
@@ -27,8 +25,10 @@ function ProblemCreationPage() {
     const [editTarget, setEditTarget] = useState(null);
     const [supports, setSupports] = useState({});
 
-    const majorUnits = useMemo(() => curriculumUnits.find((item) => item.gradeId === gradeId && item.subjectId === subjectId && item.term === term)?.majorUnits ?? [], [gradeId, subjectId, term]);
-    const unitIndex = useMemo(() => new Map(majorUnits.flatMap((major) => major.middleUnits.flatMap((middle) => middle.smallUnits.map((unit) => [unit.id, { ...unit, majorName: major.name, middleName: middle.name }])))), [majorUnits]);
+    const unitsQuery = useProblemUnitsQuery({ gradeId, term });
+    const majorUnits = unitsQuery.data ?? [];
+
+    const unitIndex = useMemo(() => new Map(majorUnits.flatMap((major) => major.children.flatMap((middle) => middle.children.map((unit) => [unit.id, { ...unit, majorName: major.name, middleName: middle.name }])))), [majorUnits]);
     const selectedIds = unitConfigs.map((config) => config.unitId);
     const configs = unitConfigs.map((config) => ({ ...config, unit: unitIndex.get(config.unitId) })).filter((config) => config.unit);
     const totalCount = configs.reduce((sum, config) => sum + difficultyLevels.reduce((unitSum, level) => unitSum + config.counts[level], 0), 0);
@@ -126,7 +126,7 @@ function ProblemCreationPage() {
                 <div className="problem-creation-page__configuration">
                     <section className="problem-creation-section" aria-labelledby="unit-selection-title">
                         <header><div><h2 id="unit-selection-title">단원 선택</h2><p>출제할 소단원을 선택합니다.</p></div><span>{configs.length}개 선택</span></header>
-                        <UnitTreeSelector key={`${gradeId}-${subjectId}-${term}`} majorUnits={majorUnits} selectedUnitIds={selectedIds} onToggleUnit={toggleUnit} onToggleMiddleUnit={toggleMiddle} />
+                        <UnitTreeSelector key={`${gradeId}-${term}`} majorUnits={majorUnits} selectedUnitIds={selectedIds} onToggleUnit={toggleUnit} onToggleMiddleUnit={toggleMiddle} isLoading={unitsQuery.isPending} error={unitsQuery.error} onRetry={unitsQuery.refetch} />
                     </section>
                     <section className="problem-creation-section" aria-labelledby="unit-config-title">
                         <header><div><h2 id="unit-config-title">출제 구성</h2><p>소단원별로 하·중·상 문항 수를 배분합니다.</p></div><span>단원당 최대 30문항</span></header>

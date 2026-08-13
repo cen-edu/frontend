@@ -116,6 +116,7 @@
 - `src/components/common`은 책임별로 `inputs`, `filters`, `worksheets` 그룹을 사용하고, 페이지에서는 각 그룹의 `index.js` 진입점에서 필요한 컴포넌트를 named import한다.
 - 서비스의 모든 셀렉트 드롭다운은 네이티브 `<select>` 대신 `src/components/common/inputs/CustomSelect/CustomSelect.jsx`를 사용한다.
 - 문제 생성과 종합평가 생성의 단원 선택 트리와 출제 범위 필터는 각각 `src/components/common/filters/UnitTreeSelector/UnitTreeSelector.jsx`와 `src/components/common/filters/UnitScopeFilter/UnitScopeFilter.jsx`를 재사용한다.
+- 문제 생성과 종합평가 생성의 단원 트리는 `GET /api/teacher/problems/units`로 조회하며, 학년·학기 변경 시 기존 소단원 선택과 출제 구성을 초기화한다. 응답의 `children` 계층과 숫자형 단원 `id`를 공통 단원 선택 UI에서 그대로 사용한다.
 - 대시보드와 취약점 분석처럼 학년도·학기·반·학습지를 선택하는 분석 조회 영역은 `src/components/common/filters/AnalysisFilters/AnalysisFilters.jsx`를 재사용한다.
 - 평가 결과의 반·기간 필터도 `AnalysisFilters`의 `controls` 구성을 사용하며 학습지 선택은 좌측 학습 목록으로 대체한다.
 - 평가 결과표는 학생별 행만 제공하고 등급과 문항별 평균을 표시하지 않는다. 20문항까지 가로 스크롤로 조회하며 학생 열과 채점 동작 열을 고정한다.

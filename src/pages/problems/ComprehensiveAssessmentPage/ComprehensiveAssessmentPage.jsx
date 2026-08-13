@@ -2,7 +2,6 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { UnitScopeFilter, UnitTreeSelector } from '../../../components/common/filters';
 import { generateAssessmentProblems } from '../../../mocks/assessmentCreation';
-import { curriculumUnits } from '../../../mocks/curriculum';
 import { defaultSupportModes } from '../../../mocks/labels';
 import { libraryWorksheets } from '../../../mocks/problemLibrary';
 import {
@@ -13,11 +12,11 @@ import AssessmentItemBuilder from './components/AssessmentItemBuilder';
 import AssessmentOrderModal from './components/AssessmentOrderModal';
 import sennyChatbot from '../../../assets/images/senny-chatbot.png';
 import ProblemAiEditPanel from '../ProblemCreationPage/components/ProblemAiEditPanel';
+import { useProblemUnitsQuery } from '../problemUnitHooks.js';
 import './ComprehensiveAssessmentPage.scss';
 import './components/AssessmentComponents.scss';
 
 const currentYear = new Date().getFullYear();
-const subjectId = 'math';
 let nextRowId = 1;
 const createDefaultRow = () => ({ id: `assessment-row-${nextRowId++}`, format: 'choice', difficulty: 'mid', count: 1 });
 
@@ -35,8 +34,10 @@ function ComprehensiveAssessmentPage() {
     const [editTarget, setEditTarget] = useState(null);
     const [supports, setSupports] = useState({});
 
-    const majorUnits = useMemo(() => curriculumUnits.find((item) => item.gradeId === gradeId && item.subjectId === subjectId && item.term === term)?.majorUnits ?? [], [gradeId, subjectId, term]);
-    const unitIndex = useMemo(() => new Map(majorUnits.flatMap((major) => major.middleUnits.flatMap((middle) => middle.smallUnits.map((unit) => [unit.id, { ...unit, majorName: major.name, middleName: middle.name }])))), [majorUnits]);
+    const unitsQuery = useProblemUnitsQuery({ gradeId, term });
+    const majorUnits = unitsQuery.data ?? [];
+
+    const unitIndex = useMemo(() => new Map(majorUnits.flatMap((major) => major.children.flatMap((middle) => middle.children.map((unit) => [unit.id, { ...unit, majorName: major.name, middleName: middle.name }])))), [majorUnits]);
     const groups = unitItems.map((item) => ({ ...item, unit: unitIndex.get(item.unitId) })).filter((item) => item.unit);
     const selectedUnitIds = groups.map((item) => item.unitId);
     const totalCount = groups.reduce((sum, group) => sum + group.rows.reduce((rowSum, row) => rowSum + row.count, 0), 0);
@@ -164,7 +165,7 @@ function ComprehensiveAssessmentPage() {
                     <div className="comprehensive-assessment-page__configuration">
                         <section className="assessment-section" aria-labelledby="assessment-unit-selection-title">
                             <header><div><h2 id="assessment-unit-selection-title">단원 선택</h2><p>종합 평가에 포함할 소단원을 선택합니다.</p></div><span>{groups.length}개 선택</span></header>
-                            <UnitTreeSelector key={`${gradeId}-${subjectId}-${term}`} majorUnits={majorUnits} selectedUnitIds={selectedUnitIds} onToggleUnit={toggleUnit} onToggleMiddleUnit={toggleMiddleUnit} />
+                            <UnitTreeSelector key={`${gradeId}-${term}`} majorUnits={majorUnits} selectedUnitIds={selectedUnitIds} onToggleUnit={toggleUnit} onToggleMiddleUnit={toggleMiddleUnit} isLoading={unitsQuery.isPending} error={unitsQuery.error} onRetry={unitsQuery.refetch} />
                         </section>
                         <section className="assessment-section" aria-labelledby="assessment-builder-title">
                             <header><div><h2 id="assessment-builder-title">출제 구성</h2><p>유형, 난이도, 문항 수를 행 단위로 설정합니다.</p></div><span>행당 1~10문항</span></header>
