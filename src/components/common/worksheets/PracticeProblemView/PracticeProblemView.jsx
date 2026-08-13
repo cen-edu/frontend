@@ -1,5 +1,6 @@
 import { Fragment } from 'react';
 import { difficultyLabels } from '../../../../mocks/labels';
+import MathText from '../MathText/MathText';
 import './PracticeProblemView.scss';
 
 function PracticeProblemView({
@@ -43,7 +44,7 @@ function PracticeProblemView({
             <div className="practice-problem-view__heading">
                 <div>
                     <span>{problem.title ?? problem.unitName}</span>
-                    <h2 id={headingId}>{problem.prompt}</h2>
+                    <h2 id={headingId}><MathText>{problem.prompt}</MathText></h2>
                 </div>
                 <span className="practice-problem-view__difficulty">{difficultyText ?? `난이도 ${difficultyLabels[problem.difficulty]}`}</span>
             </div>
@@ -62,10 +63,10 @@ function PracticeProblemView({
                                 <strong>{step.instruction ?? '빈칸에 알맞은 답을 써서 풀이 과정을 완성합니다.'}</strong>
                                 <p className="practice-problem-view__formula">
                                     {step.segments.map((segment, segmentIndex) => {
-                                        if (segment.type === 'text') return <span key={`${step.id}-text-${segmentIndex}`}>{segment.value}</span>;
-                                        if (segment.type === 'answerRef') return <span key={segment.id}>{segment.value || segment.answer}</span>;
+                                        if (segment.type === 'text') return <span key={`${step.id}-text-${segmentIndex}`}><MathText>{segment.value}</MathText></span>;
+                                        if (segment.type === 'answerRef') return <span key={segment.id}><MathText>{segment.value || segment.answer}</MathText></span>;
                                         if (renderBlank) return <Fragment key={segment.id}>{renderBlank(segment, step)}</Fragment>;
-                                        if (isPreview) return <span key={segment.id} className="practice-problem-view__answer">{segment.answer}</span>;
+                                        if (isPreview) return <span key={segment.id} className="practice-problem-view__answer"><MathText>{segment.answer}</MathText></span>;
                                         return <span key={segment.id} className="practice-problem-view__blank" aria-hidden="true" />;
                                     })}
                                 </p>

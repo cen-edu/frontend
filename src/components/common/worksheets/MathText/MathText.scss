@@ -1,0 +1,14 @@
+.math-text__formula {
+    display: inline-block;
+    max-width: 100%;
+    vertical-align: middle;
+}
+
+.math-text__formula--block {
+    display: block;
+    overflow-x: auto;
+}
+
+.math-text__formula .katex-display {
+    margin: 0.5em 0;
+}

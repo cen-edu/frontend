@@ -1,3 +1,4 @@
+import MathText from '../MathText/MathText';
 import './PracticeConceptView.scss';
 
 function PracticeConceptView({ concept, headingId = 'concept-title', editMode = false, selected = false, onSelect }) {
@@ -11,15 +12,15 @@ function PracticeConceptView({ concept, headingId = 'concept-title', editMode = 
                 </button>
             )}
             <span className="practice-concept-view__label">개념 설명</span>
-            <h2 id={headingId}>{concept.title}</h2>
-            <p>{concept.summary}</p>
+            <h2 id={headingId}><MathText>{concept.title}</MathText></h2>
+            <p><MathText>{concept.summary}</MathText></p>
             <ul>
-                {concept.points.map((point) => <li key={point}>{point}</li>)}
+                {concept.points.map((point) => <li key={point}><MathText>{point}</MathText></li>)}
             </ul>
             {concept.example && (
                 <div className="practice-concept-view__example">
                     <span>예시</span>
-                    <strong>{concept.example}</strong>
+                    <strong><MathText>{concept.example}</MathText></strong>
                 </div>
             )}
         </aside>

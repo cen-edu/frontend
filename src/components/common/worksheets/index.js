@@ -1,4 +1,5 @@
 export { default as ConceptChatPanel } from './ConceptChatPanel/ConceptChatPanel';
+export { default as MathText } from './MathText/MathText';
 export { default as PracticeConceptView } from './PracticeProblemView/PracticeConceptView';
 export { default as PracticeProblemView } from './PracticeProblemView/PracticeProblemView';
 export { default as AssessmentPreviewList } from './ProblemViewer/AssessmentPreviewList';
