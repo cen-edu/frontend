@@ -1,5 +1,4 @@
-import { formatLabels } from '../../../../mocks/assessmentCreation';
-import { difficultyLabels } from '../../../../mocks/problemCreation';
+import { difficultyLabels, formatLabels } from '../../../../mocks/labels';
 import './ProblemViewer.scss';
 
 function AssessmentPreviewList({ problems, selectedId, onSelect }) {

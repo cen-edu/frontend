@@ -1,6 +1,6 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { formatLabels } from '../../../../mocks/assessmentCreation';
+import { formatLabels } from '../../../../mocks/labels';
 import { difficultyLabels } from '../../../../mocks/problemCreation';
 import './AssessmentOrderModal.scss';
 

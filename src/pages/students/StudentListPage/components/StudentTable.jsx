@@ -1,7 +1,6 @@
 import { CustomCheckbox } from '../../../../components/common/inputs';
 
 function StudentTable({
-    wrapRef,
     students,
     selectedIds,
     getClassLabel,
@@ -27,7 +26,7 @@ function StudentTable({
     };
 
     return (
-        <div className="student-list__table-wrap" ref={wrapRef}>
+        <div className="student-list__table-wrap">
             <table className="student-list__table">
                 <thead>
                     <tr>

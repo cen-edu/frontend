@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import StudentSelectionBar from './components/StudentSelectionBar';
 import StudentTable from './components/StudentTable';
@@ -8,9 +8,7 @@ import './StudentListPage.scss';
 import StudentRegistrationModal from './components/StudentRegistrationModal';
 
 
-// 표 영역 안에서 스크롤 없이 보여줄 수 있는 행 수를 계산할 때 쓰는 값. SCSS의 th/td 높이와 같아야 한다.
-const ROW_HEIGHT = 54;
-const HEAD_HEIGHT = 42;
+const PAGE_SIZE = 10;
 
 function StudentListPage() {
     const navigate = useNavigate();
@@ -21,8 +19,6 @@ function StudentListPage() {
     const [sortOrder, setSortOrder] = useState('newest');
     const [searchTerm, setSearchTerm] = useState('');
     const [page, setPage] = useState(1);
-    const [pageSize, setPageSize] = useState(10);
-    const tableWrapRef = useRef(null);
 
     const queryParams = {
         registrationYear: yearFilter === 'all' ? undefined : Number(yearFilter),
@@ -32,7 +28,7 @@ function StudentListPage() {
         // 최신 등록순은 서버 기본값을 사용한다. 이름순 enum 값은 백엔드 StudentSort와 맞춰야 한다.
         sort: sortOrder === 'newest' ? undefined : sortOrder,
         page: page - 1,
-        size: pageSize,
+        size: PAGE_SIZE,
     };
 
     const { data, isPending, isError, error } = useStudentsQuery(queryParams);
@@ -51,27 +47,6 @@ function StudentListPage() {
 
         return [...classMap.values()];
     }, [students]);
-
-    // 표 안에 스크롤이 생기지 않도록, 남은 높이에 딱 들어가는 만큼만 한 페이지에 그린다.
-    useEffect(() => {
-        const tableWrap = tableWrapRef.current;
-        if (!tableWrap) return undefined;
-
-        const updatePageSize = () => {
-            const rowArea = tableWrap.clientHeight - HEAD_HEIGHT;
-            setPageSize(Math.max(1, Math.floor(rowArea / ROW_HEIGHT)));
-        };
-
-        updatePageSize();
-        const frame = requestAnimationFrame(updatePageSize);
-        const observer = new ResizeObserver(updatePageSize);
-        observer.observe(tableWrap);
-
-        return () => {
-            cancelAnimationFrame(frame);
-            observer.disconnect();
-        };
-    }, []);
 
     const getClassLabel = (student) => student.classes
         ?.map(({ name }) => name)
@@ -193,7 +168,6 @@ function StudentListPage() {
             />
 
             <StudentTable
-                wrapRef={tableWrapRef}
                 students={students}
                 selectedIds={selectedIds}
                 getClassLabel={getClassLabel}
