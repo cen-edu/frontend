@@ -9,6 +9,8 @@ function HandwritingAnswer({ storageKey, onAnswerChange, onStrokesChange, compac
     const activeStrokeRef = useRef(null);
     const onAnswerChangeRef = useRef(onAnswerChange);
     const onStrokesChangeRef = useRef(onStrokesChange);
+    const serverHasAnswerRef = useRef(serverHasAnswer);
+    const hasLocalChangeSinceLoadRef = useRef(false);
     const [strokes, setStrokes] = useState([]);
     const [tool, setTool] = useState('pen');
     const [saveState, setSaveState] = useState('saved');
@@ -20,6 +22,10 @@ function HandwritingAnswer({ storageKey, onAnswerChange, onStrokesChange, compac
     useEffect(() => {
         onStrokesChangeRef.current = onStrokesChange;
     }, [onStrokesChange]);
+
+    useEffect(() => {
+        serverHasAnswerRef.current = serverHasAnswer;
+    }, [serverHasAnswer]);
 
     const drawStroke = useCallback((context, stroke, width, height) => {
         if (stroke.points.length < 2) return;
@@ -56,23 +62,27 @@ function HandwritingAnswer({ storageKey, onAnswerChange, onStrokesChange, compac
 
     useEffect(() => {
         let active = true;
+        hasLocalChangeSinceLoadRef.current = false;
+        activeStrokeRef.current = null;
+        strokesRef.current = [];
+        setStrokes([]);
         setSaveState('loading');
 
         loadHandwriting(storageKey)
             .then((storedStrokes) => {
-                if (!active) return;
+                if (!active || hasLocalChangeSinceLoadRef.current) return;
                 strokesRef.current = storedStrokes;
                 setStrokes(storedStrokes);
-                onAnswerChangeRef.current(storedStrokes.length > 0 || serverHasAnswer);
+                onAnswerChangeRef.current(storedStrokes.length > 0 || serverHasAnswerRef.current);
                 if (storedStrokes.length > 0) onStrokesChangeRef.current?.(storedStrokes);
                 setSaveState('saved');
             })
             .catch(() => {
-                if (active) setSaveState('error');
+                if (active && !hasLocalChangeSinceLoadRef.current) setSaveState('error');
             });
 
         return () => { active = false; };
-    }, [serverHasAnswer, storageKey]);
+    }, [storageKey]);
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -105,6 +115,7 @@ function HandwritingAnswer({ storageKey, onAnswerChange, onStrokesChange, compac
     useEffect(() => redraw(), [redraw, strokes]);
 
     const commitStrokes = (nextStrokes) => {
+        hasLocalChangeSinceLoadRef.current = true;
         strokesRef.current = nextStrokes;
         setStrokes(nextStrokes);
         setSaveState('dirty');
