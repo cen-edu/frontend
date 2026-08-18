@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { UnitScopeFilter, UnitTreeSelector } from '../../../components/common/filters';
 import { defaultSupportModes } from '../../../mocks/labels';
 import { libraryWorksheets } from '../../../mocks/problemLibrary';
@@ -14,6 +14,7 @@ import ProblemAiEditPanel from '../ProblemCreationPage/components/ProblemAiEditP
 import { useProblemUnitsQuery } from '../problemUnitHooks.js';
 import { useAssessmentGenerationMutation } from '../assessmentGenerationHooks.js';
 import { useWorksheetSaveMutation } from '../worksheetHooks.js';
+import WorksheetTitleModal from '../shared/WorksheetTitleModal.jsx';
 import './ComprehensiveAssessmentPage.scss';
 import './components/AssessmentComponents.scss';
 
@@ -22,6 +23,7 @@ let nextRowId = 1;
 const createDefaultRow = () => ({ id: `assessment-row-${nextRowId++}`, format: 'choice', difficulty: 'mid', count: 1 });
 
 function ComprehensiveAssessmentPage() {
+    const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const initializedFromLibrary = useRef(false);
     const [gradeId, setGradeId] = useState('middle-1');
@@ -30,6 +32,7 @@ function ComprehensiveAssessmentPage() {
     const [result, setResult] = useState(null);
     const [selectedProblemId, setSelectedProblemId] = useState('');
     const [savedWorksheet, setSavedWorksheet] = useState(null);
+    const [titleModalOpen, setTitleModalOpen] = useState(false);
     const [orderModalOpen, setOrderModalOpen] = useState(false);
     const [editMode, setEditMode] = useState(false);
     const [editTarget, setEditTarget] = useState(null);
@@ -154,9 +157,14 @@ function ComprehensiveAssessmentPage() {
         setOrderModalOpen(false);
     };
 
-    const saveWorksheet = () => {
+    const openTitleModal = () => {
+        saveMutation.reset();
+        setTitleModalOpen(true);
+    };
+
+    const saveWorksheet = (worksheetTitle) => {
         saveMutation.mutate({
-            title,
+            title: worksheetTitle,
             type: 'assessment',
             gradeId,
             semester: term,
@@ -166,7 +174,12 @@ function ComprehensiveAssessmentPage() {
                 supports[problem.id] ?? defaultSupportModes.assessment,
             ])),
         }, {
-            onSuccess: setSavedWorksheet,
+            onSuccess: (worksheet) => {
+                setSavedWorksheet(worksheet);
+                setTitleModalOpen(false);
+                window.alert('문제 보관함에 저장했습니다.');
+                navigate('/problems/library');
+            },
         });
     };
 
@@ -216,11 +229,9 @@ function ComprehensiveAssessmentPage() {
                                 <img src={sennyChatbot} alt="" />
                                 {editMode ? '편집 모드 종료' : 'AI 에이전트로 편집'}
                             </button>
-                            <button type="button" className="assessment-button assessment-button--secondary" onClick={saveWorksheet} disabled={Boolean(savedWorksheet) || saveMutation.isPending}>{saveMutation.isPending ? '저장 중...' : savedWorksheet ? '저장 완료' : '문제 보관함에 저장'}</button>
+                            <button type="button" className="assessment-button assessment-button--secondary" onClick={openTitleModal} disabled={Boolean(savedWorksheet) || saveMutation.isPending}>{saveMutation.isPending ? '저장 중...' : savedWorksheet ? '저장 완료' : '문제 보관함에 저장'}</button>
                         </div>
                     </header>
-                    {savedWorksheet && <p className="comprehensive-assessment-page__saved" role="status"><i className="bi bi-check-circle-fill" aria-hidden="true" /> 문제 보관함에 저장했습니다. (학습지 ID: {savedWorksheet.worksheetId}, 총점: {savedWorksheet.totalScore}점)</p>}
-                    {saveMutation.isError && <p className="comprehensive-assessment-page__save-error" role="alert"><i className="bi bi-exclamation-circle-fill" aria-hidden="true" /> {saveMutation.error?.message || '문제 보관함에 저장하지 못했습니다.'}</p>}
                     <div className="comprehensive-assessment-page__preview-progress" aria-label={`미리보기 진행률 ${previewProgress}%`}>
                         <div><span style={{ width: `${previewProgress}%` }} /></div>
                         <strong>{selectedProblemIndex + 1}/{result.problems.length}문항</strong>
@@ -258,6 +269,7 @@ function ComprehensiveAssessmentPage() {
                 </section>
             )}
             {orderModalOpen && result && <AssessmentOrderModal problems={result.problems} onClose={() => setOrderModalOpen(false)} onApply={applyProblemOrder} />}
+            {titleModalOpen && result && <WorksheetTitleModal initialTitle={title} isSaving={saveMutation.isPending} error={saveMutation.isError ? saveMutation.error?.message || '문제 보관함에 저장하지 못했습니다.' : ''} onClose={() => setTitleModalOpen(false)} onSave={saveWorksheet} />}
         </section>
     );
 }

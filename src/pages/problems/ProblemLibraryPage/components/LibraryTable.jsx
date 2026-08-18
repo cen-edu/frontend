@@ -1,5 +1,5 @@
 import { Fragment, useState } from 'react';
-import { libraryTypeLabels } from '../../../../mocks/problemLibrary';
+import { libraryTypeLabels } from '../../../../mocks/labels';
 
 function LibraryTable({ worksheets, allWorksheets, defaultExpandAll = false, onOpen, onAssign, onDuplicate, onDelete }) {
     const sourceWorksheets = allWorksheets.filter((worksheet) => worksheet.origin !== 'custom');
@@ -36,10 +36,10 @@ function LibraryTable({ worksheets, allWorksheets, defaultExpandAll = false, onO
         return <tr key={worksheet.id} className={`${child ? 'library-table__row--child' : 'library-table__row--source'}${context ? ' library-table__row--context' : ''}`} tabIndex={0} onClick={() => onOpen(worksheet.id)} onKeyDown={(event) => { if (event.target === event.currentTarget && event.key === 'Enter') onOpen(worksheet.id); }}>
             <td><div className="library-table__title-cell">
                 {children.length ? <button type="button" className="library-table__disclosure" aria-expanded={expanded} aria-label={`${worksheet.title}의 맞춤 문제 ${expanded ? '접기' : '펼치기'}`} onClick={(event) => { event.stopPropagation(); toggleSource(worksheet.id); }}><i className={`bi bi-chevron-${expanded ? 'down' : 'right'}`} aria-hidden="true" /></button> : <span className="library-table__disclosure-placeholder" aria-hidden="true" />}
-                <span className="library-table__title-text"><strong>{worksheet.title}</strong>{child && worksheet.custom && <small>{worksheet.custom.studentName} · {worksheet.custom.weakConcept}</small>}</span>
+                <span className="library-table__title-text"><strong>{worksheet.title}</strong>{child && worksheet.custom?.studentName && worksheet.custom?.weakConcept && <small>{worksheet.custom.studentName} · {worksheet.custom.weakConcept}</small>}</span>
                 {children.length > 0 && <span className="library-table__custom-count">맞춤 {children.length}</span>}
             </div></td>
-            <td><span className={`library-type-badge library-type-badge--${kind}`}>{libraryTypeLabels[kind]}</span></td><td>{worksheet.unitSummary}</td><td className="library-table__number">{worksheet.problemCount}문항{worksheet.totalScore ? ` · ${worksheet.totalScore}점` : ''}</td><td>{worksheet.createdAt}</td><td><span className={`library-status library-status--${worksheet.assignments.length ? 'assigned' : 'draft'}`}>{worksheet.assignments.length ? `출제 ${worksheet.assignments.length}회` : '미출제'}</span></td>
+            <td><span className={`library-type-badge library-type-badge--${kind}`}>{libraryTypeLabels[kind]}</span></td><td>{worksheet.unitSummary}</td><td className="library-table__number">{worksheet.problemCount}문항{worksheet.totalScore ? ` · ${worksheet.totalScore}점` : ''}</td><td>{worksheet.createdAt}</td><td><span className={`library-status library-status--${worksheet.assignmentCount ? 'assigned' : 'draft'}`}>{worksheet.assignmentCount ? `출제 ${worksheet.assignmentCount}회` : '미출제'}</span></td>
             <td>{renderActions(worksheet)}</td>
         </tr>;
     };

@@ -1,0 +1,38 @@
+.worksheet-title-modal {
+  &__content {
+    padding: 24px;
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #465166;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    input {
+      width: 100%;
+      height: 42px;
+      padding: 0 12px;
+      background: #fff;
+      border: 1px solid #d7dde4;
+      border-radius: 6px;
+      color: #263247;
+      font-size: 13px;
+      outline: none;
+
+      &::placeholder { color: #949eaa; }
+      &:focus { border-color: #176fc1; box-shadow: 0 0 0 2px rgba(23, 111, 193, .1); }
+      &:disabled { background: #f5f6f8; color: #747f91; cursor: not-allowed; }
+    }
+  }
+
+  &__error {
+    margin-top: 10px;
+    color: #b23b3b;
+    font-size: 12px;
+    line-height: 1.5;
+
+    i { margin-right: 5px; }
+  }
+}

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { UnitScopeFilter, UnitTreeSelector } from '../../../components/common/filters';
 import { defaultSupportModes } from '../../../mocks/labels';
 import { defaultUnitCounts, difficultyLevels } from '../../../mocks/problemCreation';
@@ -11,10 +11,12 @@ import UnitConfigTable from './components/UnitConfigTable';
 import { useProblemUnitsQuery } from '../problemUnitHooks.js';
 import { useProblemGenerationMutation } from '../problemGenerationHooks.js';
 import { useWorksheetSaveMutation } from '../worksheetHooks.js';
+import WorksheetTitleModal from '../shared/WorksheetTitleModal.jsx';
 import './ProblemCreationPage.scss';
 import './components/ProblemCreationComponents.scss';
 
 function ProblemCreationPage() {
+    const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const initializedFromLibrary = useRef(false);
     const [gradeId, setGradeId] = useState('middle-1');
@@ -23,6 +25,7 @@ function ProblemCreationPage() {
     const [result, setResult] = useState(null);
     const [selectedProblemId, setSelectedProblemId] = useState('');
     const [savedWorksheet, setSavedWorksheet] = useState(null);
+    const [titleModalOpen, setTitleModalOpen] = useState(false);
     const [editMode, setEditMode] = useState(false);
     const [editTarget, setEditTarget] = useState(null);
     const [supports, setSupports] = useState({});
@@ -123,9 +126,14 @@ function ProblemCreationPage() {
         saveMutation.reset();
     };
 
-    const saveWorksheet = () => {
+    const openTitleModal = () => {
+        saveMutation.reset();
+        setTitleModalOpen(true);
+    };
+
+    const saveWorksheet = (title) => {
         saveMutation.mutate({
-            title: worksheetTitle,
+            title,
             type: 'practice',
             gradeId,
             semester: term,
@@ -135,7 +143,12 @@ function ProblemCreationPage() {
                 supports[problem.id] ?? defaultSupportModes.practice,
             ])),
         }, {
-            onSuccess: setSavedWorksheet,
+            onSuccess: (worksheet) => {
+                setSavedWorksheet(worksheet);
+                setTitleModalOpen(false);
+                window.alert('문제 보관함에 저장했습니다.');
+                navigate('/problems/library');
+            },
         });
     };
 
@@ -177,11 +190,9 @@ function ProblemCreationPage() {
                                 <img src={sennyChatbot} alt="" />
                                 {editMode ? '편집 모드 종료' : 'AI 에이전트로 편집'}
                             </button>
-                            <button type="button" className="problem-creation-button problem-creation-button--secondary" onClick={saveWorksheet} disabled={Boolean(savedWorksheet) || saveMutation.isPending}>{saveMutation.isPending ? '저장 중...' : savedWorksheet ? '저장 완료' : '문제 보관함에 저장'}</button>
+                            <button type="button" className="problem-creation-button problem-creation-button--secondary" onClick={openTitleModal} disabled={Boolean(savedWorksheet) || saveMutation.isPending}>{saveMutation.isPending ? '저장 중...' : savedWorksheet ? '저장 완료' : '문제 보관함에 저장'}</button>
                         </div>
                     </header>
-                    {savedWorksheet && <p className="problem-creation-page__saved" role="status"><i className="bi bi-check-circle-fill" aria-hidden="true" /> 문제 보관함에 저장했습니다. (학습지 ID: {savedWorksheet.worksheetId})</p>}
-                    {saveMutation.isError && <p className="problem-creation-page__save-error" role="alert"><i className="bi bi-exclamation-circle-fill" aria-hidden="true" /> {saveMutation.error?.message || '문제 보관함에 저장하지 못했습니다.'}</p>}
                     <div className="problem-creation-page__preview-progress" aria-label={`미리보기 진행률 ${previewProgress}%`}>
                         <div><span style={{ width: `${previewProgress}%` }} /></div>
                         <strong>{selectedProblemIndex + 1}/{result.problems.length}문항</strong>
@@ -220,6 +231,7 @@ function ProblemCreationPage() {
                     {editMode && <ProblemAiEditPanel target={editTarget} onClose={() => setEditTarget(null)} />}
                 </section>
             )}
+            {titleModalOpen && result && <WorksheetTitleModal initialTitle={worksheetTitle} isSaving={saveMutation.isPending} error={saveMutation.isError ? saveMutation.error?.message || '문제 보관함에 저장하지 못했습니다.' : ''} onClose={() => setTitleModalOpen(false)} onSave={saveWorksheet} />}
         </section>
     );
 }
