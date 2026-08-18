@@ -1,4 +1,19 @@
-import { customStageLabels } from '../../mocks/labels.js';
+import { customStageLabels, defaultSupportModes } from '../../mocks/labels.js';
+
+const normalizeEnum = (value) => value?.toLowerCase().replaceAll('_', '-') ?? null;
+
+const adaptConcept = (item) => {
+    const guide = item.concept ?? item.learningGuide ?? item.support?.concept;
+
+    if (!guide) return null;
+
+    return {
+        title: guide.title ?? guide.conceptTitle ?? '개념 설명',
+        summary: guide.summary ?? '',
+        points: guide.points ?? guide.keyPoints ?? [],
+        example: guide.example,
+    };
+};
 
 const getTextBlocks = (blocks = []) => blocks
     .filter((block) => block.blockKind?.toUpperCase() === 'TEXT')
@@ -44,6 +59,13 @@ export const adaptWorksheetItem = (item) => {
             })),
         })) ?? [],
         stageLabel: item.customStage ? customStageLabels[item.customStage] : null,
+        supportMode: normalizeEnum(item.supportMode)
+            ?? (item.customStage ? defaultSupportModes.custom : defaultSupportModes.practice),
+        concept: adaptConcept(item),
+        subUnitId: item.subUnitId
+            ?? item.curriculum?.subUnitId
+            ?? item.chatContext?.subUnitId
+            ?? null,
     };
 };
 

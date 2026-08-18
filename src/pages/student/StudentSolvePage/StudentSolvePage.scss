@@ -310,15 +310,22 @@
     small { grid-column: 2; color: #747f91; font-size: 14px; }
   }
 
-  &__choices { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
+  &__choices {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+  }
+
   &__choice {
-    min-height: 56px;
+    min-height: 88px;
+    padding: 16px 18px;
     background: #fff;
     border: 1px solid #d7dde4;
     border-radius: 8px;
     color: #465166;
     font-size: 17px;
     font-weight: 600;
+    line-height: 1.55;
     cursor: pointer;
     &:hover { background: #f8f9fb; border-color: #bfc7d1; color: #465166; }
     &--selected,

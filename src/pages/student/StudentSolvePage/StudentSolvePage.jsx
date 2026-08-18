@@ -3,7 +3,6 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { getAuth } from '../../../api/auth/authStorage.js';
 import { MathText } from '../../../components/common/worksheets';
 import Header from '../../../components/Header/Header';
-import { difficultyLabels, formatLabels } from '../../../mocks/labels';
 import {
     useSaveStudentItemMutation,
     useStudentAssignmentQuery,
@@ -13,6 +12,7 @@ import {
 } from '../studentAssignmentHooks.js';
 import { adaptWorksheetItem, getSavedAnswers } from '../studentWorksheetAdapters.js';
 import HandwritingAnswer from './HandwritingAnswer';
+import AssessmentLearningView from './AssessmentLearningView';
 import PracticeLearningView from './PracticeLearningView';
 import { recognizeHandwritingAsLatex } from './handwritingRecognition.js';
 import { createHandwritingImage, saveHandwriting } from './handwritingStorage.js';
@@ -64,7 +64,13 @@ function StudentSolvePage() {
     }, [detail]);
 
     const itemAnswers = problem ? answersByItem[problem.worksheetItemId] ?? {} : {};
-    const doneUnits = assignment?.doneUnits ?? 0;
+    const doneUnits = isAssessment
+        ? problems.filter((item) => (
+            Object.values(answersByItem[item.worksheetItemId] ?? {}).some(hasAnswer)
+        )).length
+        : Object.values(answersByItem).reduce((total, itemAnswerMap) => (
+            total + Object.values(itemAnswerMap).filter(hasAnswer).length
+        ), 0);
     const totalUnits = assignment?.totalUnits ?? (isAssessment
         ? problems.length
         : detail?.items.reduce((total, item) => total + item.answerUnits.length, 0) ?? 0);
@@ -209,23 +215,18 @@ function StudentSolvePage() {
 
                 {!isAssessment ? (
                     <PracticeLearningView assignment={detail} studentName={studentName} studentKey={studentKey} problem={problem} currentIndex={currentIndex} problemCount={problems.length} onPrevious={() => moveToProblem(currentIndex - 1)} onNext={() => moveToProblem(currentIndex + 1)} onStepAnswerChange={(answerUnitId, hasHandwriting) => updateUnitAnswer(answerUnitId, { hasHandwriting })} onStrokesChange={handleStrokesChange} answers={itemAnswers} isSaving={isSaving} isCustom={isCustom} />
-                ) : <div className="student-solve__workspace">
-                    <aside className="student-solve__navigator" aria-label="문항 바로가기">
-                        <div className="student-solve__navigator-heading"><strong>문항</strong><span>{problems.length}개</span></div>
-                        <div className="student-solve__question-grid">{problems.map((item, index) => {
-                            const answered = Object.values(answersByItem[item.worksheetItemId] ?? {}).some(hasAnswer);
-                            return <button key={item.worksheetItemId} type="button" aria-label={`${item.no}번${answered ? ', 답변 완료' : ''}`} aria-current={currentIndex === index ? 'step' : undefined} className={`${answered ? 'student-solve__question-number student-solve__question-number--answered' : 'student-solve__question-number'}${currentIndex === index ? ' student-solve__question-number--current' : ''}`} onClick={() => moveToProblem(index)}>{item.no}{bookmarked.includes(item.no) && <i className="bi bi-bookmark-fill" aria-hidden="true" />}</button>;
-                        })}</div>
-                        <div className="student-solve__legend"><span><i className="student-solve__legend-dot student-solve__legend-dot--answered" />완료</span><span><i className="student-solve__legend-dot" />미완료</span></div>
-                    </aside>
-                    <section className="student-solve__problem" aria-labelledby="current-problem-title">
-                        <div className="student-solve__problem-topline"><div><span className="student-solve__number">{problem.no}</span><span className="student-solve__difficulty">난이도 {difficultyLabels[problem.difficulty]}</span><span className="student-solve__format">{formatLabels[problem.format]} · {problem.maxScore}점</span></div><button type="button" aria-pressed={bookmarked.includes(problem.no)} className={bookmarked.includes(problem.no) ? 'student-solve__bookmark student-solve__bookmark--active' : 'student-solve__bookmark'} onClick={toggleBookmark}><i className={`bi bi-bookmark${bookmarked.includes(problem.no) ? '-fill' : ''}`} aria-hidden="true" /> 나중에 보기</button></div>
-                        <div className="student-solve__question-copy"><h2 id="current-problem-title"><MathText>{problem.prompt}</MathText></h2>{problem.subPrompt && <p><MathText>{problem.subPrompt}</MathText></p>}</div>
-                        {problem.contentBlocks.filter((block) => block.asset?.url).map((block) => <img key={block.blockId} src={block.asset.url} alt={block.asset.altText} />)}
-                        <div className="student-solve__answer-area"><h3>답 입력</h3>{renderAnswer()}</div>
-                        <footer className="student-solve__controls"><button type="button" disabled={currentIndex === 0 || isSaving} onClick={() => moveToProblem(currentIndex - 1)}><i className="bi bi-chevron-left" aria-hidden="true" /> 이전 문제</button><span>{problem.no} / {problems.length}</span><button type="button" disabled={currentIndex === problems.length - 1 || isSaving} className="student-solve__next" onClick={() => moveToProblem(currentIndex + 1)}>다음 문제 <i className="bi bi-chevron-right" aria-hidden="true" /></button></footer>
-                    </section>
-                </div>}
+                ) : <AssessmentLearningView
+                    problem={problem}
+                    studentName={studentName}
+                    currentIndex={currentIndex}
+                    problemCount={problems.length}
+                    bookmarked={bookmarked.includes(problem.no)}
+                    onToggleBookmark={toggleBookmark}
+                    renderAnswer={renderAnswer}
+                    onPrevious={() => moveToProblem(currentIndex - 1)}
+                    onNext={() => moveToProblem(currentIndex + 1)}
+                    isSaving={isSaving}
+                />}
             </main>
         </div>
     );

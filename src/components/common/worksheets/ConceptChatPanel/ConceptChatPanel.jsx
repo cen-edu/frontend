@@ -1,6 +1,8 @@
-import { useEffect, useState } from 'react';
-import { getConceptChatReply, getRecommendedQuestions } from '../../../../mocks/conceptChat';
+import { useEffect, useRef, useState } from 'react';
+import { sendStudentChat } from '../../../../api/student/studentChatApi.js';
+import { getRecommendedQuestions } from '../../../../mocks/conceptChat';
 import sennyChatbotImage from '../../../../assets/images/senny-chatbot.png';
+import MathText from '../MathText/MathText';
 import './ConceptChatPanel.scss';
 
 function ConceptChatPanel({
@@ -14,27 +16,73 @@ function ConceptChatPanel({
     readOnly = false,
 }) {
     const [messages, setMessages] = useState([]);
+    const [currentConceptId, setCurrentConceptId] = useState(null);
     const [input, setInput] = useState('');
     const [isExpanded, setIsExpanded] = useState(false);
+    const [isSending, setIsSending] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
+    const requestControllerRef = useRef(null);
     const questions = suggestions ?? getRecommendedQuestions(context);
+    const rawSubUnitId = context[0]?.subUnitId;
+    const parsedSubUnitId = Number(rawSubUnitId);
+    const subUnitId = rawSubUnitId !== null
+        && rawSubUnitId !== undefined
+        && Number.isInteger(parsedSubUnitId)
+        ? parsedSubUnitId
+        : null;
 
     useEffect(() => {
-        setMessages([{
-            id: 'welcome',
-            role: 'assistant',
-            text: welcomeMessage ?? `${studentName ? `${studentName} 학생의 ` : ''}취약 개념을 기준으로 질문해 주세요.`,
-        }]);
+        requestControllerRef.current?.abort();
+        requestControllerRef.current = null;
+        setMessages([]);
+        setCurrentConceptId(null);
         setInput('');
-    }, [studentName, welcomeMessage]);
+        setIsSending(false);
+        setErrorMessage('');
 
-    const sendMessage = (value) => {
-        if (readOnly) return;
+        return () => requestControllerRef.current?.abort();
+    }, [studentName, welcomeMessage, subUnitId]);
+
+    const sendMessage = async (value) => {
+        if (readOnly || isSending) return;
         const question = value.trim();
         if (!question) return;
-        const reply = getConceptChatReply(question, context);
-        setMessages((current) => [...current, { id: `user-${Date.now()}`, role: 'user', text: question }, { id: `assistant-${Date.now()}`, role: 'assistant', text: reply.text }]);
-        setInput('');
+
+        const controller = new AbortController();
+        requestControllerRef.current = controller;
+        setIsSending(true);
+        setErrorMessage('');
+
+        try {
+            const data = await sendStudentChat({
+                question,
+                history: messages.slice(-20).map(({ role, content }) => ({ role, content })),
+                currentConceptId,
+                subUnitId,
+                signal: controller.signal,
+            });
+
+            setMessages((current) => [
+                ...current,
+                { role: 'user', content: question },
+                { role: 'assistant', content: data.answer },
+            ]);
+            setCurrentConceptId(data.currentConceptId);
+            setInput('');
+        } catch (error) {
+            if (error.code !== 'ERR_CANCELED') {
+                setErrorMessage(error.message || '챗봇 요청에 실패했습니다.');
+            }
+        } finally {
+            if (requestControllerRef.current === controller) {
+                requestControllerRef.current = null;
+                setIsSending(false);
+            }
+        }
     };
+
+    const welcomeText = welcomeMessage
+        ?? `${studentName ? `${studentName} 학생의 ` : ''}취약 개념을 기준으로 질문해 주세요.`;
 
     return (
         <aside className={`concept-chat concept-chat--${mode}${readOnly ? ' concept-chat--readonly' : ''}${isExpanded ? ' concept-chat--expanded' : ''}`} aria-labelledby="concept-chat-title">
@@ -44,12 +92,21 @@ function ConceptChatPanel({
             </header>
             <div className="concept-chat__body">
                 <div className="concept-chat__messages" role="log" aria-live="polite">
-                    {messages.map((message) => <p key={message.id} className={`concept-chat__message concept-chat__message--${message.role}`}>{message.text}</p>)}
+                    <p className="concept-chat__message concept-chat__message--assistant"><MathText>{welcomeText}</MathText></p>
+                    {messages.map((message, index) => (
+                        <p key={`${message.role}-${index}`} className={`concept-chat__message concept-chat__message--${message.role}`}>
+                            {message.role === 'assistant'
+                                ? <MathText>{message.content}</MathText>
+                                : message.content}
+                        </p>
+                    ))}
+                    {isSending && <p className="concept-chat__message concept-chat__message--assistant concept-chat__message--loading">답변을 생각하고 있어요.</p>}
                 </div>
-                {questions.length > 0 && <div className="concept-chat__suggestions" aria-label="추천 질문">{questions.map((question) => <button type="button" key={question} disabled={readOnly} tabIndex={readOnly ? -1 : undefined} onClick={() => sendMessage(question)}>{question}</button>)}</div>}
+                {errorMessage && <p className="concept-chat__error" role="alert">{errorMessage}</p>}
+                {questions.length > 0 && <div className="concept-chat__suggestions" aria-label="추천 질문">{questions.map((question) => <button type="button" key={question} disabled={readOnly || isSending} tabIndex={readOnly ? -1 : undefined} onClick={() => sendMessage(question)}>{question}</button>)}</div>}
                 <form className="concept-chat__form" onSubmit={(event) => { event.preventDefault(); sendMessage(input); }}>
-                    <input value={input} onChange={(event) => setInput(event.target.value)} readOnly={readOnly} tabIndex={readOnly ? -1 : undefined} aria-label="개념 질문 입력" placeholder="개념이나 풀이 단계를 질문하세요" />
-                    <button type="submit" aria-label="질문 보내기" disabled={readOnly || !input.trim()} tabIndex={readOnly ? -1 : undefined}>
+                    <input value={input} onChange={(event) => setInput(event.target.value)} readOnly={readOnly} disabled={isSending} maxLength={500} tabIndex={readOnly ? -1 : undefined} aria-label="개념 질문 입력" placeholder="개념이나 풀이 단계를 질문하세요" />
+                    <button type="submit" aria-label={isSending ? '답변 생성 중' : '질문 보내기'} disabled={readOnly || isSending || !input.trim()} tabIndex={readOnly ? -1 : undefined}>
                         <img src={sennyChatbotImage} alt="" />
                     </button>
                 </form>

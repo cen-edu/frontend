@@ -1,9 +1,6 @@
-import {
-  ConceptChatPanel,
-  PracticeConceptView,
-  PracticeProblemView,
-} from '../../../components/common/worksheets';
+import { PracticeProblemView } from '../../../components/common/worksheets';
 import HandwritingAnswer from './HandwritingAnswer';
+import StudentLearningSupport from './StudentLearningSupport';
 
 function PracticeLearningView({
     assignment,
@@ -50,23 +47,7 @@ function PracticeLearningView({
                 </footer>}
             />
 
-            {isCustom ? (
-                <ConceptChatPanel
-                    mode="student"
-                    title="학습 도우미"
-                    description="문제를 풀다 막히면 질문하세요."
-                    studentName={studentName}
-                    welcomeMessage={`${problem.stageLabel} 문제를 풀고 있어요. 정답을 바로 알려주기보다 필요한 개념과 다음 풀이 방향을 함께 찾아볼게요.`}
-                    context={[{
-                        subUnitId: problem.subUnitId,
-                        conceptLabel: '맞춤 학습',
-                    }]}
-                />
-            ) : <PracticeConceptView concept={{
-                title: '개념 설명',
-                summary: 'API 수정 후 재연동 필요',
-                points: [],
-            }} />}
+            <StudentLearningSupport problem={problem} studentName={studentName} />
         </div>
     );
 }
