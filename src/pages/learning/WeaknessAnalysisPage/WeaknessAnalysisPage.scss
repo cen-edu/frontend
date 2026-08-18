@@ -32,6 +32,7 @@
   }
 
   &__workspace { display: grid; grid-template-columns: 248px minmax(0, 1fr); gap: 16px; align-items: start; }
+  &__request-state { min-height: 280px; padding: 40px 24px; display: flex; align-items: center; justify-content: center; background: #fff; border: 1px solid #dde2e8; border-radius: 10px; color: #747f91; font-size: 13px; text-align: center; }
   &__main { min-width: 0; }
   &__content-header {
     min-height: 74px;
