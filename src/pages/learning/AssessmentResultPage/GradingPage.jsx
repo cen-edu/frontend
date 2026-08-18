@@ -69,8 +69,9 @@ function GradingPage() {
         }
         if (!progressQuery.data || !wasAutoGradingRef.current) return;
         wasAutoGradingRef.current = false;
-        queryClient.invalidateQueries({ queryKey: gradingQueryKeys.all });
-    }, [progressQuery.data, queryClient]);
+        queryClient.invalidateQueries({ queryKey: gradingQueryKeys.scoreTable(assignmentId) });
+        queryClient.invalidateQueries({ queryKey: gradingQueryKeys.students(assignmentId) });
+    }, [assignmentId, progressQuery.data, queryClient]);
 
     const updateScore = (questionNo, score, selectedRubricChecks) => {
         const answer = student.answers.find((entry) => entry.no === questionNo);

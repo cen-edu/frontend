@@ -14,10 +14,9 @@ export const gradingQueryKeys = {
     all: ['teacher', 'grading'],
     list: (params) => [...gradingQueryKeys.all, 'list', params],
     scoreTable: (assignmentId) => [...gradingQueryKeys.all, 'score-table', assignmentId],
+    students: (assignmentId) => [...gradingQueryKeys.all, 'student', assignmentId],
     student: (assignmentId, assignmentStudentId) => [
-        ...gradingQueryKeys.all,
-        'student',
-        assignmentId,
+        ...gradingQueryKeys.students(assignmentId),
         assignmentStudentId,
     ],
     progress: (assignmentId) => [...gradingQueryKeys.all, 'auto-progress', assignmentId],
@@ -60,9 +59,17 @@ export const useStartAutoGradingMutation = () => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: startAutoGrading,
-        onSuccess: (_, variables) => queryClient.invalidateQueries({
-            queryKey: gradingQueryKeys.progress(variables.assignmentId),
-        }),
+        onSuccess: (_, variables) => Promise.all([
+            queryClient.invalidateQueries({
+                queryKey: gradingQueryKeys.progress(variables.assignmentId),
+            }),
+            queryClient.invalidateQueries({
+                queryKey: gradingQueryKeys.scoreTable(variables.assignmentId),
+            }),
+            queryClient.invalidateQueries({
+                queryKey: gradingQueryKeys.students(variables.assignmentId),
+            }),
+        ]),
     });
 };
 
