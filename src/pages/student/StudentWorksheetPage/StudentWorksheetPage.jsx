@@ -1,10 +1,10 @@
 import { useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { getAuth } from '../../../api/auth/authStorage.js';
 import Header from '../../../components/Header/Header';
 import { assignmentStatuses, studentAssignmentStatusLabels } from '../../../mocks/labels';
-import { getStudentAssignments } from '../../../mocks/studentAssignments';
-import students from '../../../mocks/students';
 import formatRelativeDueDate from '../../../utils/formatRelativeDueDate';
+import { useStudentAssignmentsQuery } from '../studentAssignmentHooks.js';
 import './StudentWorksheetPage.scss';
 
 const gradeOptions = ['1', '2', '3'];
@@ -80,24 +80,30 @@ function ResultCell({ assignment, onOpen }) {
 function StudentWorksheetPage() {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
-    const requestedStudentId = Number(searchParams.get('student'));
-    const student = students.find((item) => item.id === requestedStudentId) ?? students[0];
-    const assignments = useMemo(() => getStudentAssignments(student.id), [student.id]);
-    const [grade, setGrade] = useState(student.grade);
-    const [term, setTerm] = useState('second');
+    const studentQuery = searchParams.get('student');
+    const auth = getAuth();
+    const { data: assignments = [], isPending, error } = useStudentAssignmentsQuery();
+    const availableGrades = useMemo(() => [...new Set(assignments.map((item) => String(item.grade)))], [assignments]);
+    const availableTerms = useMemo(() => [...new Set(assignments.map((item) => item.semester))], [assignments]);
+    const [grade, setGrade] = useState('all');
+    const [term, setTerm] = useState('all');
     const [type, setType] = useState('all');
     const [status, setStatus] = useState('all');
 
     const filteredAssignments = assignments.filter((assignment) => (
-        assignment.grade === grade
-        && assignment.term === term
+        (grade === 'all' || String(assignment.grade) === grade)
+        && (term === 'all' || assignment.semester === term)
         && (type === 'all' || getAssignmentCategory(assignment) === type)
         && (status === 'all' || assignment.status === status)
     ));
+    const getAssignmentPath = (assignment) => {
+        const screen = assignment.status === 'submitted' ? 'review' : 'solve';
+        return `/student/worksheets/${assignment.assignmentStudentId}/${screen}${studentQuery ? `?student=${encodeURIComponent(studentQuery)}` : ''}`;
+    };
 
     return (
         <div className="student-worksheets">
-            <Header mode="student" userName={student.name} />
+            <Header mode="student" userName={auth?.name ?? '학생'} />
             <main className="student-worksheets__main">
                 <div className="student-worksheets__heading">
                     <div>
@@ -108,8 +114,8 @@ function StudentWorksheetPage() {
                 </div>
 
                 <section className="student-worksheets__filters" aria-label="학습지 조회 조건">
-                    <FilterButtons label="학년" options={gradeOptions} value={grade} onChange={setGrade} />
-                    <FilterButtons label="학기" options={termOptions} value={term} onChange={setTerm} />
+                    <FilterButtons label="학년" options={[{ value: 'all', label: '전체' }, ...(availableGrades.length ? availableGrades : gradeOptions)]} value={grade} onChange={setGrade} />
+                    <FilterButtons label="학기" options={[{ value: 'all', label: '전체' }, ...termOptions.filter((option) => !availableTerms.length || availableTerms.includes(option.value))]} value={term} onChange={setTerm} />
                     <FilterButtons label="유형" options={typeOptions} value={type} onChange={setType} />
                     <FilterButtons label="상태" options={statusOptions} value={status} onChange={setStatus} />
                 </section>
@@ -127,9 +133,11 @@ function StudentWorksheetPage() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {filteredAssignments.map((assignment) => (
-                                    <tr key={assignment.id}>
-                                        <td>{assignment.assignedAt}</td>
+                                {isPending && <tr><td colSpan="5" className="student-worksheets__empty">학습지를 불러오는 중입니다.</td></tr>}
+                                {error && <tr><td colSpan="5" className="student-worksheets__empty" role="alert">{error.message}</td></tr>}
+                                {!isPending && !error && filteredAssignments.map((assignment) => (
+                                    <tr key={assignment.assignmentStudentId}>
+                                        <td>{new Intl.DateTimeFormat('ko-KR').format(new Date(assignment.assignedAt))}</td>
                                         <td>
                                             <span className={`student-worksheets__status student-worksheets__status--${assignment.status}`}>
                                                 {studentAssignmentStatusLabels[assignment.status]}
@@ -138,7 +146,8 @@ function StudentWorksheetPage() {
                                         <td className="student-worksheets__title">
                                             <button
                                                 type="button"
-                                                onClick={() => navigate(`/student/worksheets/${assignment.id}/solve?student=${student.id}`)}
+                                                disabled={assignment.status === 'not-submitted'}
+                                                onClick={() => navigate(getAssignmentPath(assignment))}
                                             >
                                                 {assignment.title}
                                                 <i className="bi bi-chevron-right" aria-hidden="true" />
@@ -147,13 +156,13 @@ function StudentWorksheetPage() {
                                         <td className="student-worksheets__result">
                                             <ResultCell
                                                 assignment={assignment}
-                                                onOpen={() => navigate(`/student/worksheets/${assignment.id}/review?student=${student.id}`)}
+                                                onOpen={() => navigate(`/student/worksheets/${assignment.assignmentStudentId}/review${studentQuery ? `?student=${encodeURIComponent(studentQuery)}` : ''}`)}
                                             />
                                         </td>
                                         <td>{formatRelativeDueDate(assignment.dueAt)}</td>
                                     </tr>
                                 ))}
-                                {filteredAssignments.length === 0 && (
+                                {!isPending && !error && filteredAssignments.length === 0 && (
                                     <tr>
                                         <td colSpan="5" className="student-worksheets__empty">
                                             선택한 조건에 해당하는 학습지가 없습니다.

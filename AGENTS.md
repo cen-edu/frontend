@@ -167,3 +167,6 @@
 - 문제 보관함 상세(`/problems/library/:worksheetId`)는 공통 헤더와 사이드바가 없는 독립 라우트로 표시하고 화면 전체 높이에 맞춘다. 상세 미리보기의 문제·정답·보기·답안 영역과 타이포그래피는 일반 학습 및 종합평가 생성 결과 미리보기와 같은 크기를 사용하며, 별도의 해설 보기 버튼이나 해설 모달은 제공하지 않는다.
 - 문제 보관함의 출제 상태는 별도 필드로 저장하지 않고 `assignments` 배열의 길이에서 파생한다.
 - 문제 보관함의 맞춤 문제는 `custom.sourceWorksheetId`로 원본 일반 학습 또는 종합 평가에 연결하고, 원본 학습지 행 아래의 접을 수 있는 하위 항목으로 표시한다. 유형 탭 분류도 맞춤 문제 자체의 `type`이 아니라 연결된 원본 학습지 유형을 기준으로 한다.
+- 학생 학습지 목록·상세·문항 저장·제출·결과 조회는 `src/api/student/studentAssignmentsApi.js`와 `src/pages/student/studentAssignmentHooks.js`를 사용한다. 화면에서는 `assignmentStudentId`, `worksheetItemId`, `answerUnitId`를 서버 식별자로 유지하고 저장 응답의 `doneUnits`, `totalUnits`, `status`를 진행 상태의 기준으로 사용한다.
+- 학생 필기 답안은 문항 이탈 시 IndexedDB 원본 획을 저장하고 같은 획으로 PNG를 만든 뒤 답안 이미지 API에 업로드한 다음 문항 답안 저장 API에 `hasHandwriting: true`를 전달한다. 풀이 상세 API가 개념 설명 데이터를 제공하기 전까지 일반 학습의 우측 개념 설명 영역에는 `API 수정 후 재연동 필요`를 표시한다.
+- 학생 풀이와 채점 결과 화면의 발문·보기·학생 답안·정답·단계별 풀이·해설에 포함된 LaTeX는 교사 문제 미리보기와 같은 공통 `MathText` 컴포넌트로 렌더링한다.

@@ -47,15 +47,15 @@ function AssignmentBrowser({ assignments, activeFilter, onFilterChange, selected
             <div className="student-home__worksheet-grid" role="tabpanel">
                 {filteredAssignments.map((assignment) => {
                     const progress = Math.round((assignment.doneUnits / assignment.totalUnits) * 100);
-                    const isSelected = selectedId === assignment.id;
+                    const isSelected = selectedId === assignment.assignmentStudentId;
 
                     return (
                         <button
-                            key={assignment.id}
+                            key={assignment.assignmentStudentId}
                             type="button"
                             aria-pressed={isSelected}
                             className={`student-home__worksheet${isSelected ? ' student-home__worksheet--selected' : ''}`}
-                            onClick={() => onSelect(assignment.id)}
+                            onClick={() => onSelect(assignment.assignmentStudentId)}
                         >
                             <span className="student-home__worksheet-topline">
                                 <span className={`student-home__worksheet-type student-home__worksheet-type--${getCategory(assignment)}`}>

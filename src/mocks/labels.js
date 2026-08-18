@@ -35,11 +35,12 @@ export const customStageLabels = { retrace: '복습', basic: '유사', independe
 export const customStageStepLabels = { retrace: '① 복습', basic: '② 유사', independent: '③ 응용' };
 
 // 학습 진행 상태 키는 학생·교사 화면이 공유하고, 라벨만 보는 사람 기준으로 나눈다.
-export const assignmentStatuses = ['not-started', 'in-progress', 'submitted'];
+export const assignmentStatuses = ['not-started', 'in-progress', 'submitted', 'not-submitted'];
 export const studentAssignmentStatusLabels = {
     'not-started': '학습 가능',
     'in-progress': '풀이 중',
     submitted: '학습 완료',
+    'not-submitted': '미제출',
 };
 // 문항별 정오 판정. 교사 채점 결과표와 학생앱 채점 결과 화면이 함께 사용한다.
 export const questionResultLabels = {

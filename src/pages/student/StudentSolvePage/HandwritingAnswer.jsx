@@ -3,7 +3,7 @@ import { loadHandwriting, saveHandwriting } from './handwritingStorage';
 
 const DRAW_COLOR = '#172033';
 
-function HandwritingAnswer({ storageKey, onAnswerChange, onStrokesChange, compact = false, saveMode = 'auto' }) {
+function HandwritingAnswer({ storageKey, onAnswerChange, onStrokesChange, compact = false, saveMode = 'auto', serverHasAnswer = false }) {
     const canvasRef = useRef(null);
     const strokesRef = useRef([]);
     const activeStrokeRef = useRef(null);
@@ -63,8 +63,8 @@ function HandwritingAnswer({ storageKey, onAnswerChange, onStrokesChange, compac
                 if (!active) return;
                 strokesRef.current = storedStrokes;
                 setStrokes(storedStrokes);
-                onAnswerChangeRef.current(storedStrokes.length > 0);
-                onStrokesChangeRef.current?.(storedStrokes);
+                onAnswerChangeRef.current(storedStrokes.length > 0 || serverHasAnswer);
+                if (storedStrokes.length > 0) onStrokesChangeRef.current?.(storedStrokes);
                 setSaveState('saved');
             })
             .catch(() => {
@@ -72,7 +72,7 @@ function HandwritingAnswer({ storageKey, onAnswerChange, onStrokesChange, compac
             });
 
         return () => { active = false; };
-    }, [storageKey]);
+    }, [serverHasAnswer, storageKey]);
 
     useEffect(() => {
         const canvas = canvasRef.current;

@@ -1,4 +1,5 @@
 import { questionResultLabels } from '../../../../mocks/labels';
+import { MathText } from '../../../../components/common/worksheets';
 import './ReviewExplanation.scss';
 
 function ReviewExplanation({ question }) {
@@ -16,7 +17,7 @@ function ReviewExplanation({ question }) {
             <div className="review-explanation__body">
                 <div className="review-explanation__block">
                     <h3>정답</h3>
-                    <p className="review-explanation__answer">{explanation.answerText}</p>
+                    <p className="review-explanation__answer"><MathText>{explanation.answerText}</MathText></p>
                 </div>
 
                 {explanation.steps?.length > 0 && (
@@ -27,8 +28,8 @@ function ReviewExplanation({ question }) {
                                 <li key={step.id}>
                                     <span>{index + 1}</span>
                                     <div>
-                                        <strong>{step.instruction}</strong>
-                                        <p>{step.formula}</p>
+                                        <strong><MathText>{step.instruction}</MathText></strong>
+                                        <p><MathText>{step.formula}</MathText></p>
                                     </div>
                                 </li>
                             ))}
@@ -39,21 +40,21 @@ function ReviewExplanation({ question }) {
                 {explanation.summary && (
                     <div className="review-explanation__block">
                         <h3>왜 이렇게 풀까요?</h3>
-                        <p className="review-explanation__summary">{explanation.summary}</p>
+                        <p className="review-explanation__summary"><MathText>{explanation.summary}</MathText></p>
                     </div>
                 )}
 
                 {explanation.concept && (
                     <div className="review-explanation__block review-explanation__block--concept">
-                        <h3>개념 정리 · {explanation.concept.title}</h3>
-                        <p>{explanation.concept.summary}</p>
+                        <h3>개념 정리 · <MathText>{explanation.concept.title}</MathText></h3>
+                        <p><MathText>{explanation.concept.summary}</MathText></p>
                         <ul>
-                            {explanation.concept.points.map((point) => <li key={point}>{point}</li>)}
+                            {explanation.concept.points.map((point) => <li key={point}><MathText>{point}</MathText></li>)}
                         </ul>
                         {explanation.concept.example && (
                             <div className="review-explanation__example">
                                 <span>예시</span>
-                                <strong>{explanation.concept.example}</strong>
+                                <strong><MathText>{explanation.concept.example}</MathText></strong>
                             </div>
                         )}
                     </div>
