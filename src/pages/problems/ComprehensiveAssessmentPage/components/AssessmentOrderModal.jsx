@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { MathText } from '../../../../components/common/worksheets';
 import { formatLabels } from '../../../../mocks/labels';
 import { difficultyLabels } from '../../../../mocks/problemCreation';
 import './AssessmentOrderModal.scss';
@@ -112,7 +113,7 @@ function AssessmentOrderModal({ problems, onClose, onApply }) {
                                     <span className={`assessment-difficulty-badge assessment-difficulty-badge--${problem.difficulty}`}>{difficultyLabels[problem.difficulty]}</span>
                                     <span>{problem.unitName}</span>
                                 </div>
-                                <p>{problem.prompt}</p>
+                                <p><MathText>{problem.prompt}</MathText></p>
                             </div>
                         </article>
                     ))}

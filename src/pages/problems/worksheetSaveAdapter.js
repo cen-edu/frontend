@@ -65,6 +65,7 @@ export const buildWorksheetSavePayload = ({
         questionId: Number(problem.id),
         displayOrder: index + 1,
         supportMode: supports[problem.id],
+        ...(type === 'assessment' ? { maxScore: Number(problem.maxScore) } : {}),
         ...(problem.stage ? { customStage: problem.stage } : {}),
     })),
 });
