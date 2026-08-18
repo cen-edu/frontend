@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { ReviewResultStrip } from '../../../../components/common/worksheets';
-import { worksheetTypeLabels } from '../../../../mocks/labels';
+import { getWorksheetTypeLabel } from '../../../../mocks/labels';
 import './GradingShell.scss';
 
 function GradingScanEffect() {
@@ -20,13 +20,15 @@ function GradingShell({
     onSelectStudent,
     onComplete,
     onExit,
+    onAutoGrade,
+    isAutoGrading,
+    errorMessage,
     renderQuestion,
 }) {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [viewedStudentId, setViewedStudentId] = useState(student.id);
     const [aiSelectionMode, setAiSelectionMode] = useState(false);
     const [aiSelections, setAiSelections] = useState({});
-    const [isAutoGrading, setIsAutoGrading] = useState(false);
 
     // 학생을 바꾸면 다시 1번 문항부터 확인한다.
     if (viewedStudentId !== student.id) {
@@ -35,21 +37,12 @@ function GradingShell({
     }
 
     const studentDone = isComplete(student);
+    // TODO(API): studentNumber가 제공되면 이름 앞에 출석번호를 함께 표시한다.
+    const currentStudentLabel = student.number == null ? student.name : `${student.number}번 ${student.name}`;
     const selectedQuestionNos = aiSelections[String(student.id)] ?? [];
     const selectedStudentCount = Object.values(aiSelections).filter((questionNos) => questionNos.length > 0).length;
     const selectedQuestionCount = Object.values(aiSelections)
         .reduce((total, questionNos) => total + questionNos.length, 0);
-
-    // 실제 연동 전 자동 채점 연출은 10초 뒤 종료하고 선택 상태를 초기화한다.
-    useEffect(() => {
-        if (!isAutoGrading) return undefined;
-        const timer = window.setTimeout(() => {
-            setIsAutoGrading(false);
-            setAiSelectionMode(false);
-            setAiSelections({});
-        }, 10000);
-        return () => window.clearTimeout(timer);
-    }, [isAutoGrading]);
 
     const moveToQuestion = (index) => {
         setCurrentIndex(index);
@@ -63,7 +56,9 @@ function GradingShell({
             return;
         }
         if (selectedQuestionCount > 0) {
-            setIsAutoGrading(true);
+            onAutoGrade(aiSelections);
+            setAiSelectionMode(false);
+            setAiSelections({});
             return;
         }
         setAiSelectionMode(false);
@@ -72,7 +67,6 @@ function GradingShell({
 
     const selectStudentForAiGrading = (studentId) => {
         const studentKey = String(studentId);
-        onSelectStudent(studentId);
 
         // 선택 상태를 학생별로 저장해 한 학생을 해제해도 다른 학생의 문항 선택은 유지한다.
         setAiSelections((current) => {
@@ -113,7 +107,7 @@ function GradingShell({
                 </button>
                 <div className="grading-shell__title-group">
                     <h1>{worksheet.title}</h1>
-                    <span>{worksheet.className} · {worksheetTypeLabels[worksheet.type]}</span>
+                    <span>{worksheet.className} · {getWorksheetTypeLabel(worksheet)}</span>
                 </div>
                 <button
                     type="button"
@@ -128,6 +122,7 @@ function GradingShell({
             </header>
 
             <main className={`grading-shell__main${isAutoGrading ? ' grading-shell__main--scanning' : ''}`} aria-busy={isAutoGrading}>
+                {errorMessage && <p className="grading-shell__request-error" role="alert">{errorMessage}</p>}
                 {aiSelectionMode && (
                     <section className="grading-shell__ai-guide" aria-live="polite">
                         <div>
@@ -142,30 +137,31 @@ function GradingShell({
 
                 <section className="grading-shell__students grading-shell__scan-target" aria-label="채점할 학생 선택">
                     <div className="grading-shell__students-summary">
-                        <strong>{student.number}번 {student.name}</strong>
+                        <strong>{currentStudentLabel}</strong>
                         <span className={`grading-shell__student-status grading-shell__student-status--${studentDone ? 'done' : 'pending'}`}>
                             {studentDone ? '채점 완료' : '채점 대기'}
                         </span>
                         <span className="grading-shell__students-count">학생 채점 {completedCount}/{worksheet.students.length}</span>
-                        <button type="button" className="grading-shell__complete" onClick={onComplete}>
-                            <i className="bi bi-check2" aria-hidden="true" /> {student.name} 채점 완료
+                        <button type="button" className="grading-shell__complete" disabled={!studentDone || isAutoGrading} onClick={onComplete}>
+                            <i className="bi bi-check2" aria-hidden="true" /> {studentDone ? `${student.name} 채점 완료` : '남은 문항을 채점해 주세요'}
                         </button>
                     </div>
                     <div className="grading-shell__student-list">
                         {worksheet.students.map((candidate) => {
                             const done = isComplete(candidate);
                             const selected = (aiSelections[String(candidate.id)]?.length ?? 0) > 0;
+                            const candidateLabel = candidate.number == null ? candidate.name : `${candidate.number}번 ${candidate.name}`;
                             return (
                                 <button
                                     key={candidate.id}
                                     type="button"
                                     aria-current={!aiSelectionMode && candidate.id === student.id ? 'true' : undefined}
                                     aria-pressed={aiSelectionMode ? selected : undefined}
-                                    aria-label={`${candidate.number}번 ${candidate.name} ${done ? '채점 완료' : '채점 대기'}${aiSelectionMode ? `, AI 채점 ${selected ? '선택됨' : '선택 안 됨'}` : ''}`}
+                                    aria-label={`${candidateLabel} ${done ? '채점 완료' : '채점 대기'}${aiSelectionMode ? `, AI 채점 ${selected ? '선택됨' : '선택 안 됨'}` : ''}`}
                                     className={`grading-shell__student grading-shell__student--${done ? 'done' : 'pending'}${!aiSelectionMode && candidate.id === student.id ? ' grading-shell__student--current' : ''}${selected ? ' grading-shell__student--selected' : ''}`}
                                     onClick={() => aiSelectionMode ? selectStudentForAiGrading(candidate.id) : onSelectStudent(candidate.id)}
                                 >
-                                    <em>{candidate.number}</em>
+                                    <em>{candidate.number ?? '—'}</em>
                                     <strong>{candidate.name}</strong>
                                     {selected && (
                                         <svg className="grading-shell__student-selection-border" aria-hidden="true">

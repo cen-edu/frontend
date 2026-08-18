@@ -1,4 +1,3 @@
-import { getPracticeQuestionResult } from '../../../mocks/assessmentResult';
 import GradingQuestionNav from './components/GradingQuestionNav';
 import GradingShell from './components/GradingShell';
 import PracticeGradingCard from './components/PracticeGradingCard';
@@ -12,13 +11,17 @@ function PracticeGradingView({
     isComplete,
     onSelectStudent,
     onMark,
+    onReset,
     onComplete,
     onExit,
+    onAutoGrade,
+    isAutoGrading,
+    errorMessage,
 }) {
     const answers = Object.fromEntries(student.answers.map((answer) => [answer.no, answer]));
     const questionResults = worksheet.questions.map((question) => ({
         no: question.no,
-        result: getPracticeQuestionResult(answers[question.no]),
+        result: question.result,
     }));
     const countResult = (result) => questionResults.filter((item) => item.result === result).length;
     const summary = {
@@ -40,6 +43,9 @@ function PracticeGradingView({
             onSelectStudent={onSelectStudent}
             onComplete={onComplete}
             onExit={onExit}
+            onAutoGrade={onAutoGrade}
+            isAutoGrading={isAutoGrading}
+            errorMessage={errorMessage}
             renderQuestion={(currentIndex, moveToQuestion) => {
                 const question = worksheet.questions[currentIndex];
                 return (
@@ -48,6 +54,7 @@ function PracticeGradingView({
                         question={question}
                         answer={answers[question.no]}
                         onMark={(blankId, correct) => onMark(question.no, blankId, correct)}
+                        onReset={(blankId) => onReset(question.no, blankId)}
                         footer={(
                             <GradingQuestionNav
                                 questionNo={question.no}

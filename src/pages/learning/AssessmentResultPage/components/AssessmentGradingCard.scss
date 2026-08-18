@@ -283,6 +283,23 @@
   }
 
   &__note { color: #747f91; font-size: 14px; }
+
+  &__reset {
+    align-self: flex-start;
+    min-height: 36px;
+    padding: 0 12px;
+    background: #fff;
+    border: 1px solid #b8c8d7;
+    border-radius: 6px;
+    color: #176fc1;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+
+    &:hover { background: #edf5fc; border-color: #176fc1; }
+    &:focus-visible { outline: 3px solid rgba(23, 111, 193, .25); outline-offset: 2px; }
+  }
 }
 
 @media (max-width: 660px) {

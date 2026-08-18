@@ -1,54 +1,93 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { AnalysisFilters } from '../../../components/common/filters';
+import { AnalysisFilters, useAcademicContextFilters } from '../../../components/common/filters';
 import { SearchInput } from '../../../components/common/inputs';
-import { assessmentResultFilterOptions, getAssessmentResults, getWorksheetMetrics, saveAssessmentResults } from '../../../mocks/assessmentResult';
+import {
+    useGradingScoreTableQuery,
+    useGradingWorksheetsQuery,
+    useReleaseGradingResultsMutation,
+} from './gradingHooks.js';
 import ResultWorksheetList from './components/ResultWorksheetList';
 import ResultSummaryBar from './components/ResultSummaryBar';
 import ScoreTable from './components/ScoreTable';
 import './AssessmentResultPage.scss';
 import './components/AssessmentResultComponents.scss';
 
-const statusTabs = [{ value: 'all', label: '전체' }, { value: 'grading', label: '채점 대기' }, { value: 'confirmed', label: '확정됨' }];
+const statusTabs = [
+    { value: 'all', label: '전체' },
+    { value: 'grading', label: '채점 대기' },
+    { value: 'graded', label: '채점 완료' },
+    { value: 'confirmed', label: '확정됨' },
+];
 
 function AssessmentResultPage() {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
-    const [results, setResults] = useState(getAssessmentResults);
-    const [gradeId, setGradeId] = useState('all');
-    const [classId, setClassId] = useState('all');
-    const [term, setTerm] = useState('all');
+    const {
+        filters: academicFilters,
+        options: academicOptions,
+        changeFilter: updateAcademicFilter,
+        query: academicContextsQuery,
+    } = useAcademicContextFilters();
     const [status, setStatus] = useState('all');
     const [searchTerm, setSearchTerm] = useState('');
-    const [selectedId, setSelectedId] = useState(() => {
-        const requestedWorksheetId = searchParams.get('worksheet');
-        return results.some((worksheet) => worksheet.id === requestedWorksheetId) ? requestedWorksheetId : results[0]?.id ?? '';
-    });
+    const [selectedId, setSelectedId] = useState(searchParams.get('worksheet') ?? '');
+    const queryParams = useMemo(() => ({
+        grade: academicFilters.grade ? Number(academicFilters.grade) : undefined,
+        classId: academicFilters.classId ? Number(academicFilters.classId) : undefined,
+        semester: academicFilters.semester || undefined,
+        status: status === 'all' ? undefined : status,
+    }), [academicFilters.classId, academicFilters.grade, academicFilters.semester, status]);
+    const worksheetsQuery = useGradingWorksheetsQuery(queryParams);
+    const results = worksheetsQuery.data ?? [];
+    const filtered = useMemo(() => results.filter((worksheet) => (
+        worksheet.title.toLowerCase().includes(searchTerm.trim().toLowerCase())
+    )), [results, searchTerm]);
+    const selectedWorksheet = filtered.find((item) => item.id === selectedId);
+    const scoreTableQuery = useGradingScoreTableQuery(Number(selectedWorksheet?.assignmentId));
+    const worksheet = scoreTableQuery.data
+        ? { ...selectedWorksheet, ...scoreTableQuery.data }
+        : null;
+    const releaseMutation = useReleaseGradingResultsMutation();
 
     useEffect(() => {
-        const refresh = () => setResults(getAssessmentResults());
-        window.addEventListener('focus', refresh);
-        return () => window.removeEventListener('focus', refresh);
-    }, []);
+        const requestedWorksheetId = searchParams.get('worksheet');
+        const nextId = filtered.some((item) => item.id === requestedWorksheetId)
+            ? requestedWorksheetId
+            : filtered[0]?.id ?? '';
+        if (!filtered.some((item) => item.id === selectedId)) setSelectedId(nextId);
+    }, [filtered, searchParams, selectedId]);
 
-    const filtered = useMemo(() => results.filter((worksheet) =>
-        (gradeId === 'all' || worksheet.gradeId === gradeId)
-        && (classId === 'all' || worksheet.classId === classId)
-        && (term === 'all' || worksheet.term === term)
-        && (status === 'all' || worksheet.status === status)
-        && worksheet.title.toLowerCase().includes(searchTerm.trim().toLowerCase())), [classId, gradeId, results, searchTerm, status, term]);
-    useEffect(() => { if (!filtered.some((worksheet) => worksheet.id === selectedId)) setSelectedId(filtered[0]?.id ?? ''); }, [filtered, selectedId]);
-    const worksheet = filtered.find((item) => item.id === selectedId);
+    const changeAcademicFilter = (key, value) => {
+        updateAcademicFilter(key, value);
+        setSelectedId('');
+    };
+
+    const filterControls = [
+        { key: 'grade', label: '학년 선택', value: academicFilters.grade, options: academicOptions.grades, onChange: (value) => changeAcademicFilter('grade', value), width: 132 },
+        { key: 'classId', label: '반 선택', value: academicFilters.classId, options: academicOptions.classes, onChange: (value) => changeAcademicFilter('classId', value), width: 104 },
+        { key: 'semester', label: '학기 선택', value: academicFilters.semester, options: academicOptions.semesters, onChange: (value) => changeAcademicFilter('semester', value), width: 112 },
+    ].map((control) => ({
+        ...control,
+        disabled: academicContextsQuery.isPending || academicContextsQuery.isError || !control.options.length,
+    }));
+
+    const requestMessage = worksheetsQuery.isPending
+        ? '평가 결과를 불러오는 중입니다.'
+        : worksheetsQuery.isError
+            ? worksheetsQuery.error?.message || '평가 결과를 불러오지 못했습니다.'
+            : scoreTableQuery.isPending
+                ? '점수표를 불러오는 중입니다.'
+                : scoreTableQuery.isError
+                    ? scoreTableQuery.error?.message || '점수표를 불러오지 못했습니다.'
+                    : '표시할 평가 결과가 없습니다.';
 
     const openGrading = (studentId) => {
         const params = new URLSearchParams();
         if (studentId) params.set('student', studentId);
-        navigate(`/learning/results/${worksheet.id}/grading?${params}`);
+        navigate(`/learning/results/${worksheet.assignmentId}/grading?${params}`);
     };
-    const confirmResults = () => {
-        const next = results.map((item) => item.id === worksheet.id ? { ...item, status: 'confirmed' } : item);
-        setResults(next); saveAssessmentResults(next);
-    };
+    const confirmResults = () => releaseMutation.mutate(worksheet.assignmentId);
 
     return (
         <section className="assessment-results" aria-labelledby="assessment-results-title">
@@ -61,11 +100,7 @@ function AssessmentResultPage() {
             </header>
             <div className="assessment-results__toolbar">
                 <div className="assessment-results__filters">
-                    <AnalysisFilters showContext={false} className="analysis-filters--results" controls={[
-                        { key: 'grade', label: '학년 선택', value: gradeId, options: assessmentResultFilterOptions.grades, onChange: (value) => { setGradeId(value); setClassId('all'); }, width: 148 },
-                        { key: 'class', label: '반 선택', value: classId, options: assessmentResultFilterOptions.classes, onChange: setClassId, width: 104 },
-                        { key: 'term', label: '학기 선택', value: term, options: assessmentResultFilterOptions.terms, onChange: setTerm, width: 112 },
-                    ]} />
+                    <AnalysisFilters showContext={false} className="analysis-filters--results" controls={filterControls} />
                     <div className="assessment-results__tabs" role="group" aria-label="채점 상태">{statusTabs.map((tab) => <button key={tab.value} type="button" className={status === tab.value ? 'assessment-results__tab assessment-results__tab--active' : 'assessment-results__tab'} onClick={() => setStatus(tab.value)}>{tab.label}</button>)}</div>
                 </div>
                 <SearchInput value={searchTerm} placeholder="학습명 검색" onChange={setSearchTerm} />
@@ -73,7 +108,7 @@ function AssessmentResultPage() {
             <div className="assessment-results__content">
                 <ResultWorksheetList worksheets={filtered} selectedId={selectedId} onSelect={setSelectedId} />
                 <main className="assessment-results__detail">
-                    {worksheet ? <><ResultSummaryBar worksheet={worksheet} metrics={getWorksheetMetrics(worksheet)} onGrade={() => openGrading()} onConfirm={confirmResults} /><ScoreTable worksheet={worksheet} onGradeStudent={openGrading} /></> : <div className="assessment-results__empty">표시할 평가 결과가 없습니다.</div>}
+                    {worksheet ? <><ResultSummaryBar worksheet={worksheet} metrics={worksheet.metrics} onGrade={() => openGrading()} onConfirm={confirmResults} isConfirming={releaseMutation.isPending} errorMessage={releaseMutation.error?.message} /><ScoreTable worksheet={worksheet} onGradeStudent={openGrading} /></> : <div className="assessment-results__empty">{requestMessage}</div>}
                 </main>
             </div>
         </section>

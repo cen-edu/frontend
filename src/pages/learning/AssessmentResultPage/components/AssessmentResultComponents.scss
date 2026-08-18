@@ -154,6 +154,14 @@
     }
   }
 
+  &__error {
+    max-width: 220px;
+    color: #b23c3c;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+
   &__grade {
     background: #fff;
     border: 1px solid #8eb7dc;
@@ -348,6 +356,10 @@
 
     &--empty {
       color: #98a2ae;
+    }
+
+    &--pending {
+      color: #8b692e;
     }
   }
 

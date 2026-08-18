@@ -57,7 +57,7 @@
     span { margin-top: 3px; display: block; color: #747f91; font-size: 14px; }
   }
 
-  // AI 채점 기능 연결 전 UI를 확인할 수 있도록 상단의 독립된 보조 동작으로 둔다.
+  // 자동 채점은 학생·문항을 고른 뒤 실행하는 상단의 독립된 보조 동작으로 둔다.
   &__ai-grading {
     justify-self: end;
     min-height: 50px;
@@ -98,6 +98,17 @@
     position: relative;
 
     &--results { border-radius: 10px; }
+  }
+
+  &__request-error {
+    margin: 0 0 14px;
+    padding: 12px 14px;
+    background: #fdeeee;
+    border: 1px solid #eab6b6;
+    border-radius: 8px;
+    color: #b23c3c;
+    font-size: 15px;
+    font-weight: 700;
   }
 
   &__scan-layer {
@@ -296,7 +307,14 @@
     font-weight: 700;
     cursor: pointer;
 
-    &:hover { background: #0f5fa8; border-color: #0f5fa8; }
+    &:hover:not(:disabled) { background: #0f5fa8; border-color: #0f5fa8; }
+
+    &:disabled {
+      background: #d7dde4;
+      border-color: #d7dde4;
+      color: #747f91;
+      cursor: not-allowed;
+    }
   }
 
   button:focus-visible { outline: 3px solid rgba(23, 111, 193, .25); outline-offset: 2px; }

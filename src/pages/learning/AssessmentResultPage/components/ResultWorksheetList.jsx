@@ -1,4 +1,4 @@
-import { worksheetTypeLabels } from '../../../../mocks/labels';
+import { getWorksheetTypeLabel } from '../../../../mocks/labels';
 
 const statusLabels = { grading: '채점 대기', graded: '채점 완료', confirmed: '확정됨' };
 
@@ -9,7 +9,7 @@ function ResultWorksheetList({ worksheets, selectedId, onSelect }) {
             <div className="result-worksheet-list__items">
                 {worksheets.map((worksheet) => (
                     <button key={worksheet.id} type="button" className={`result-worksheet-list__item${selectedId === worksheet.id ? ' result-worksheet-list__item--active' : ''}`} onClick={() => onSelect(worksheet.id)}>
-                        <span className="result-worksheet-list__meta">{worksheet.className} · {worksheetTypeLabels[worksheet.type]}</span>
+                        <span className="result-worksheet-list__meta">{worksheet.className} · {getWorksheetTypeLabel(worksheet)}</span>
                         <strong>{worksheet.title}</strong>
                         <span className={`result-worksheet-list__status result-worksheet-list__status--${worksheet.status}`}>{statusLabels[worksheet.status]}</span>
                     </button>

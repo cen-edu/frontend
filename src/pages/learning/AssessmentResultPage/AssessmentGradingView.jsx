@@ -1,4 +1,3 @@
-import { getAssessmentQuestionResult } from '../../../mocks/assessmentResult';
 import AssessmentGradingCard from './components/AssessmentGradingCard';
 import GradingQuestionNav from './components/GradingQuestionNav';
 import GradingShell from './components/GradingShell';
@@ -13,19 +12,23 @@ function AssessmentGradingView({
     deriveRubricChecks,
     onSelectStudent,
     onScore,
+    onReset,
     onRubric,
     onComplete,
     onExit,
+    onAutoGrade,
+    isAutoGrading,
+    errorMessage,
 }) {
     const answers = Object.fromEntries(student.answers.map((answer) => [answer.no, answer]));
     const questionResults = worksheet.questions.map((question) => ({
         no: question.no,
-        result: getAssessmentQuestionResult(answers[question.no], question),
+        result: question.result,
     }));
     const countResult = (result) => questionResults.filter((item) => item.result === result).length;
     const summary = {
         type: 'assessment',
-        score: worksheet.questions.reduce((sum, question) => sum + (answers[question.no]?.score ?? 0), 0),
+        score: student.totalScore ?? worksheet.questions.reduce((sum, question) => sum + (answers[question.no]?.score ?? 0), 0),
         maxScore: worksheet.questions.reduce((sum, question) => sum + question.maxScore, 0),
         correctCount: countResult('correct'),
         partialCount: countResult('partial'),
@@ -44,6 +47,9 @@ function AssessmentGradingView({
             onSelectStudent={onSelectStudent}
             onComplete={onComplete}
             onExit={onExit}
+            onAutoGrade={onAutoGrade}
+            isAutoGrading={isAutoGrading}
+            errorMessage={errorMessage}
             renderQuestion={(currentIndex, moveToQuestion) => {
                 const question = worksheet.questions[currentIndex];
                 const answer = answers[question.no];
@@ -55,6 +61,7 @@ function AssessmentGradingView({
                         result={questionResults[currentIndex].result}
                         rubricChecks={deriveRubricChecks(answer, question)}
                         onScore={(score) => onScore(question.no, score)}
+                        onReset={() => onReset(question.no)}
                         onRubric={(rubricIndex) => onRubric(question, rubricIndex)}
                         footer={(
                             <GradingQuestionNav
