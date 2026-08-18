@@ -32,5 +32,12 @@ export const createStudent = ({
     grade,
 });
 
+export const createStudentsBulk = (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    return httpClient.post('/teacher/students/bulk', formData);
+};
+
 export const deleteStudent = (studentId) =>
     httpClient.delete(`/teacher/students/${studentId}`);

@@ -67,6 +67,7 @@ src/pages/students/
 - 학생의 반은 학생 응답의 `classes` 배열을 사용하고, 반이 없으면 미배정으로 표시한다.
 - 등록·상세 수정·선택 학생 삭제는 전용 API가 연결되기 전까지 비활성 상태로 둔다.
 - 페이지 제목, 기능 설명과 현재 검색 결과 인원수를 목록 위에 표시한다.
+- 학생 일괄 등록과 개별 등록 모달의 열림 상태를 관리한다.
 - 화면 표현은 `StudentToolbar`, `StudentTable`, `StudentSelectionBar`에 위임한다.
 - 목록 조회는 `useStudentsQuery`에 위임하며 개발용 학생·반 mock을 가져오지 않는다.
 
@@ -75,6 +76,7 @@ src/pages/students/
 - React Query로 교사 학생 목록을 조회한다.
 - 필터·정렬·페이지 요청값 전체를 query key에 포함한다.
 - query function의 `signal`을 학생 목록 API 요청에 전달하고 페이지 전환 중 이전 데이터를 유지한다.
+- 개별 등록과 CSV 일괄 등록 mutation을 제공하고 성공 시 학생 목록 query를 무효화한다.
 
 ### `ClassManagementPage.jsx`
 
@@ -175,10 +177,11 @@ src/pages/students/
 ### `StudentBulkRegistrationModal.jsx`
 
 - 학생 일괄 등록을 위한 양식 다운로드와 파일 첨부 흐름을 제공한다.
-- CSV 양식을 생성해 다운로드한다.
-- 엑셀 또는 CSV 파일 첨부를 지원하고 선택한 파일명을 표시한다.
-- 파일이 첨부된 경우에만 등록 버튼을 활성화한다.
-- 실제 파일 해석과 서버 등록은 향후 API 연동 계층에서 처리한다.
+- `학생 이름,학년` 헤더와 예시 행이 포함된 UTF-8 BOM CSV 양식을 생성해 다운로드한다.
+- 1MB 이하의 CSV 파일만 선택할 수 있으며 선택한 파일명을 표시한다.
+- 파일이 첨부된 경우에만 등록 버튼을 활성화하고 업로드 중에는 파일 선택과 모달 닫기를 막는다.
+- 파일 사전 검증 오류와 서버가 반환한 행별 오류 메시지를 모달 내부에 표시한다.
+- 실제 파일 해석과 최대 500명 제한, 행별 데이터 검증은 서버에서 처리한다.
 
 ### `StudentRegistrationModal.jsx`
 
@@ -245,7 +248,7 @@ src/pages/students/
 ## 외부 의존 파일
 
 - `src/api/classes/classesApi.js`: 반 목록·상세·배정 가능 학생 조회와 생성·수정·삭제·순서 변경 요청을 담당하는 API 모듈
-- `src/api/students/studentsApi.js`: `GET /api/teacher/students` 요청을 담당하는 학생 목록 API 모듈
+- `src/api/students/studentsApi.js`: 학생 목록 조회, 개별 등록·삭제와 `POST /api/teacher/students/bulk` CSV 일괄 등록 요청을 담당하는 API 모듈
 - `src/api/teachers/teacherAccountApi.js`: 반 목록의 현재 담당 교사 이름 조회에 사용하는 계정 API 모듈
 - `src/components/Header/Header.jsx`: 서비스 공통 헤더
 - `src/components/SectionLayout/SectionLayout.jsx`: 헤더, 공용 사이드바와 중첩 화면을 배치하는 섹션 공통 레이아웃
@@ -269,9 +272,11 @@ src/api/students/studentsApi.js
 GET /api/teacher/students
         ↓
 StudentListPage (서버 목록·페이지 정보 표시)
-        ├── StudentToolbar (필터·검색 변경 요청)
+        ├── StudentToolbar (필터·검색 변경 및 등록 모달 열기 요청)
         ├── StudentTable (선택·상세보기·학생앱 이동 요청)
-        └── StudentSelectionBar (선택 해제, 삭제 API 연결 전 삭제 비활성)
+        ├── StudentSelectionBar (선택 해제·학생 삭제 요청)
+        ├── StudentBulkRegistrationModal (양식 다운로드·파일 첨부)
+        └── StudentRegistrationModal (개별 학생 등록 요청)
 ```
 
 ```text

@@ -48,6 +48,13 @@
       border-color: #8eb7dc;
       color: #176fc1;
     }
+
+    &:disabled {
+      background-color: #f0f2f4;
+      border-color: #e1e5ea;
+      color: #a0a8b3;
+      cursor: not-allowed;
+    }
   }
 
   &__download-button {
@@ -104,6 +111,17 @@
   &__attach-button {
     min-width: 80px;
     padding: 0 13px;
+  }
+
+  &__error {
+    margin-top: 12px;
+    padding: 10px 12px;
+    background-color: #fff3f3;
+    border: 1px solid #f2c6c6;
+    border-radius: 6px;
+    color: #b42318 !important;
+    line-height: 1.5;
+    white-space: pre-wrap;
   }
 
   &__footer {

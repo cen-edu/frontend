@@ -3,7 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import StudentSelectionBar from './components/StudentSelectionBar';
 import StudentTable from './components/StudentTable';
 import StudentToolbar from './components/StudentToolbar';
-import { useStudentsQuery, useCreateStudentMutation, useDeleteStudentsMutation } from './studentHooks.js';
+import StudentBulkRegistrationModal from './components/StudentBulkRegistrationModal';
+import {
+    useStudentsQuery,
+    useCreateStudentMutation,
+    useCreateStudentsBulkMutation,
+    useDeleteStudentsMutation,
+} from './studentHooks.js';
 import './StudentListPage.scss';
 import StudentRegistrationModal from './components/StudentRegistrationModal';
 
@@ -19,6 +25,8 @@ function StudentListPage() {
     const [sortOrder, setSortOrder] = useState('newest');
     const [searchTerm, setSearchTerm] = useState('');
     const [page, setPage] = useState(1);
+    const [isBulkRegistrationOpen, setIsBulkRegistrationOpen] = useState(false);
+    const [bulkRegistrationError, setBulkRegistrationError] = useState('');
 
     const queryParams = {
         registrationYear: yearFilter === 'all' ? undefined : Number(yearFilter),
@@ -83,6 +91,36 @@ function StudentListPage() {
 
     const [isRegistrationOpen, setIsRegistrationOpen] = useState(false);
     const createStudentMutation = useCreateStudentMutation();
+    const createStudentsBulkMutation = useCreateStudentsBulkMutation();
+
+    const handleOpenBulkRegistration = () => {
+        setBulkRegistrationError('');
+        setIsBulkRegistrationOpen(true);
+    };
+
+    const handleCloseBulkRegistration = () => {
+        if (createStudentsBulkMutation.isPending) return;
+
+        setBulkRegistrationError('');
+        setIsBulkRegistrationOpen(false);
+    };
+
+    const handleBulkRegister = async (file) => {
+        setBulkRegistrationError('');
+
+        try {
+            const result = await createStudentsBulkMutation.mutateAsync(file);
+
+            setIsBulkRegistrationOpen(false);
+            setPage(1);
+            setSelectedIds([]);
+            window.alert(`${result.createdCount}명의 학생을 등록했습니다.`);
+        } catch (mutationError) {
+            setBulkRegistrationError(
+                mutationError?.message || '학생 일괄 등록에 실패했습니다.',
+            );
+        }
+    };
 
     const handleRegisterStudent = (values) => {
         createStudentMutation.mutate({
@@ -164,6 +202,7 @@ function StudentListPage() {
                 classes={classes}
                 searchTerm={searchTerm}
                 onSearchTermChange={changeFilter(setSearchTerm)}
+                onOpenBulkRegistration={handleOpenBulkRegistration}
                 onOpenRegistration={() => setIsRegistrationOpen(true)}
             />
 
@@ -215,6 +254,16 @@ function StudentListPage() {
                 onClear={() => setSelectedIds([])}
                 deleteDisabled={deleteStudentsMutation.isPending}
             />
+
+            {isBulkRegistrationOpen && (
+                <StudentBulkRegistrationModal
+                    onClose={handleCloseBulkRegistration}
+                    onRegister={handleBulkRegister}
+                    onErrorClear={() => setBulkRegistrationError('')}
+                    isPending={createStudentsBulkMutation.isPending}
+                    error={bulkRegistrationError}
+                />
+            )}
 
             {isRegistrationOpen && (
                 <StudentRegistrationModal

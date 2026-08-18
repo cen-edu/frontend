@@ -1,6 +1,11 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import {createStudent, deleteStudent, getStudents } from '../../../api/students/studentsApi.js';
+import {
+    createStudent,
+    createStudentsBulk,
+    deleteStudent,
+    getStudents,
+} from '../../../api/students/studentsApi.js';
 
 
 export const studentQueryKeys = {
@@ -21,6 +26,17 @@ export const useCreateStudentMutation = () => {
         mutationFn: createStudent,
         onSuccess: () => queryClient.invalidateQueries({
             queryKey: ['teacher', 'students'],
+        }),
+    });
+};
+
+export const useCreateStudentsBulkMutation = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: createStudentsBulk,
+        onSuccess: () => queryClient.invalidateQueries({
+            queryKey: studentQueryKeys.all,
         }),
     });
 };

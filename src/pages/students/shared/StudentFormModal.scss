@@ -41,8 +41,9 @@
       color: #596579;
       font-size: 18px;
       cursor: pointer;
-      &:hover { background: #edf5fc; color: #176fc1; }
+      &:not(:disabled):hover { background: #edf5fc; color: #176fc1; }
       &:focus-visible { outline: 2px solid rgba(23, 111, 193, .35); }
+      &:disabled { color: #b3bac3; cursor: not-allowed; }
     }
   }
 

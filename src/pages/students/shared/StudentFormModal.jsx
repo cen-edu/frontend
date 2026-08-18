@@ -2,14 +2,21 @@ import { useEffect, useId } from 'react';
 import { createPortal } from 'react-dom';
 import './StudentFormModal.scss';
 
-function StudentFormModal({ title, closeLabel, onClose, children, width = 752 }) {
+function StudentFormModal({
+    title,
+    closeLabel,
+    onClose,
+    children,
+    width = 752,
+    closeDisabled = false,
+}) {
     const titleId = useId();
 
     useEffect(() => {
         const previousOverflow = document.body.style.overflow;
         document.body.style.overflow = 'hidden';
         const closeOnEscape = (event) => {
-            if (event.key === 'Escape') onClose();
+            if (event.key === 'Escape' && !closeDisabled) onClose();
         };
         document.addEventListener('keydown', closeOnEscape);
 
@@ -17,11 +24,11 @@ function StudentFormModal({ title, closeLabel, onClose, children, width = 752 })
             document.body.style.overflow = previousOverflow;
             document.removeEventListener('keydown', closeOnEscape);
         };
-    }, [onClose]);
+    }, [closeDisabled, onClose]);
 
     return createPortal(
         <div className="student-form-modal__overlay" onMouseDown={(event) => {
-            if (event.target === event.currentTarget) onClose();
+            if (event.target === event.currentTarget && !closeDisabled) onClose();
         }}>
             <section
                 className="student-form-modal"
@@ -32,7 +39,7 @@ function StudentFormModal({ title, closeLabel, onClose, children, width = 752 })
             >
                 <header className="student-form-modal__header">
                     <h2 id={titleId}>{title}</h2>
-                    <button type="button" aria-label={closeLabel} onClick={onClose}>
+                    <button type="button" aria-label={closeLabel} disabled={closeDisabled} onClick={onClose}>
                         <i className="bi bi-x-lg" aria-hidden="true" />
                     </button>
                 </header>

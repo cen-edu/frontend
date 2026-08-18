@@ -132,7 +132,8 @@
     }
 
     th { height: 42px; background: #f5f6f8; color: #667185; font-size: 12px; font-weight: 600; }
-    td { color: #465166; font-size: 13px; }
+    // 한 페이지의 10개 행이 하단 페이지네이션 영역에 가려지지 않도록 행 높이를 맞춘다.
+    td { height: 50px; color: #465166; font-size: 13px; }
     // 고정 px로 두면 남는 폭이 비율대로 분배돼 짧은 열이 과하게 넓어진다.
     // 내용 길이에 맞춘 비율로 지정해 어떤 화면 폭에서도 간격이 일정하게 유지된다.
     th:nth-child(1) { width: 5%; }
