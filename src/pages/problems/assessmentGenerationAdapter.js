@@ -53,7 +53,7 @@ const normalizeAssessmentProblem = (problem, index) => {
         }));
     const prompt = contentBlocks
         .filter((block) => block.blockKind === 'text')
-        .map((block) => block.text)
+        .map((block) => block.text || block.markup)
         .filter(Boolean)
         .join('\n');
 

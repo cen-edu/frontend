@@ -37,14 +37,16 @@ const normalizeContentBlock = (block) => ({
 
 const normalizeSegment = ({ segment, problemId, stepId, answerUnitIndex, segmentIndex }) => {
     const type = segment.type?.toUpperCase();
-    const answerUnit = answerUnitIndex.get(segment.blankId);
-    const segmentId = `${problemId}-${stepId}-${segment.blankId ?? segmentIndex}`;
+    const unitKey = segment.unitKey ?? segment.blankId;
+    const answerUnit = answerUnitIndex.get(unitKey);
+    const segmentId = `${problemId}-${stepId}-${unitKey ?? segmentIndex}`;
 
     if (type === 'BLANK') {
         return {
             type: 'blank',
             id: segmentId,
-            blankId: segment.blankId,
+            blankId: unitKey,
+            unitKey,
             answer: answerUnit?.answer ?? '',
             answerUnit,
         };
@@ -55,7 +57,8 @@ const normalizeSegment = ({ segment, problemId, stepId, answerUnitIndex, segment
             type: 'answerRef',
             id: segmentId,
             value: segment.value ?? '',
-            blankId: segment.blankId,
+            blankId: unitKey,
+            unitKey,
             answer: answerUnit?.answer ?? null,
         };
     }
@@ -70,12 +73,17 @@ const normalizeProblem = (problem, index) => {
     const curriculum = problem.curriculum ?? {};
     const answerUnits = [...(problem.answerUnits ?? [])].sort(byDisplayOrder);
     const answerUnitIndex = new Map(answerUnits.map((unit) => [unit.unitKey, unit]));
+    const assets = [...(problem.assets ?? [])].sort(byDisplayOrder);
+    const assetIndex = new Map(assets.map((asset) => [asset.assetKey, asset]));
     const contentBlocks = [...(problem.contentBlocks ?? [])]
         .sort(byDisplayOrder)
-        .map(normalizeContentBlock);
+        .map((block) => ({
+            ...normalizeContentBlock(block),
+            asset: block.assetRef ? assetIndex.get(block.assetRef) ?? null : null,
+        }));
     const prompt = contentBlocks
         .filter((block) => block.blockKind === 'text')
-        .map((block) => block.text)
+        .map((block) => block.text || block.markup)
         .filter(Boolean)
         .join('\n');
 
@@ -110,7 +118,7 @@ const normalizeProblem = (problem, index) => {
         questionType: problem.questionType,
         presentation: problem.presentation,
         contentBlocks,
-        assets: problem.assets ?? [],
+        assets,
         choices: problem.choices ?? [],
         answerUnits,
         explanation: problem.explanation,

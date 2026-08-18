@@ -3,6 +3,26 @@ import { difficultyLabels } from '../../../../mocks/labels';
 import MathText from '../MathText/MathText';
 import './PracticeProblemView.scss';
 
+function PracticeProblemMedia({ blocks = [] }) {
+    const mediaBlocks = blocks.filter((block) => block.blockKind !== 'text');
+
+    if (!mediaBlocks.length) return null;
+
+    return (
+        <div className="practice-problem-view__media">
+            {mediaBlocks.map((block) => {
+                const key = block.blockId ?? `${block.blockKind}-${block.displayOrder}`;
+
+                if (block.asset?.url) {
+                    return <img key={key} src={block.asset.url} width={block.asset.widthPx || undefined} height={block.asset.heightPx || undefined} alt={block.asset.altText || '문항 참고 자료'} />;
+                }
+
+                return <div className="practice-problem-view__media-placeholder" key={key}><i className="bi bi-image" aria-hidden="true" /><span>{block.asset?.altText || block.text || block.markup || '문항 참고 자료를 준비 중입니다.'}</span></div>;
+            })}
+        </div>
+    );
+}
+
 function PracticeProblemView({
     problem,
     answerMode = 'input',
@@ -48,6 +68,8 @@ function PracticeProblemView({
                 </div>
                 <span className="practice-problem-view__difficulty">{difficultyText ?? `난이도 ${difficultyLabels[problem.difficulty]}`}</span>
             </div>
+
+            <PracticeProblemMedia blocks={problem.contentBlocks} />
 
             <div className="practice-problem-view__steps">
                 {problem.steps.map((step, stepIndex) => (

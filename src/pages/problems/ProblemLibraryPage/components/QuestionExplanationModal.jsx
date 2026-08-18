@@ -2,8 +2,12 @@ import StudentFormModal from '../../../students/shared/StudentFormModal';
 
 const getAssessmentAnswer = (problem) => {
     if (problem.format === 'choice') {
-        const choice = problem.choices[Number(problem.answer) - 1];
-        return `${problem.answer}번${choice ? ` ${choice}` : ''}`;
+        const choiceIndex = problem.choices.findIndex((choice, index) => (
+            String(typeof choice === 'string' ? index + 1 : choice.id) === String(problem.answer)
+        ));
+        const choice = problem.choices[choiceIndex];
+        const content = typeof choice === 'string' ? choice : choice?.content;
+        return `${choiceIndex >= 0 ? choiceIndex + 1 : problem.answer}번${content ? ` ${content}` : ''}`;
     }
 
     return problem.modelAnswer ?? problem.answer;
@@ -33,13 +37,13 @@ function QuestionExplanationModal({ problem, isAssessment, onClose }) {
             <section aria-labelledby="explanation-process-title">
                 <h3 id="explanation-process-title">풀이</h3>
                 {isAssessment ? <div className="question-explanation-modal__assessment-explanation">
-                    <p>{problem.format === 'essay'
+                    <p>{problem.explanation || (problem.format === 'essay'
                         ? problem.modelAnswer
-                        : `${problem.unitName}의 정의와 성질을 문제의 조건에 적용하면 정답은 ${getAssessmentAnswer(problem)}입니다.`}</p>
+                        : `${problem.unitName}의 정의와 성질을 문제의 조건에 적용하면 정답은 ${getAssessmentAnswer(problem)}입니다.`)}</p>
                     {problem.rubric?.length > 0 && <div className="question-explanation-modal__rubric"><h4>채점 기준</h4><ul>{problem.rubric.map((item) => <li key={item.label}><span>{item.label}</span><strong>{item.score}점</strong></li>)}</ul></div>}
-                </div> : <ol className="question-explanation-modal__steps">
+                </div> : <>{problem.explanation && <p>{problem.explanation}</p>}<ol className="question-explanation-modal__steps">
                     {problem.steps.map((step, index) => <li key={step.id}><span>{index + 1}</span><p>{renderSegments(step)}</p></li>)}
-                </ol>}
+                </ol></>}
             </section>
         </div>
         <footer className="student-form-modal__footer">

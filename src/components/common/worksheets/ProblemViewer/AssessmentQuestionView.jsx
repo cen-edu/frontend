@@ -28,7 +28,7 @@ function AssessmentQuestionMedia({ blocks = [] }) {
     );
 }
 
-function AssessmentQuestionView({ problem, onScoreChange, editMode = false, selectedEditTarget, onSelectEditTarget }) {
+function AssessmentQuestionView({ problem, onScoreChange, editMode = false, selectedEditTarget, onSelectEditTarget, showRubric = true }) {
     if (!problem) return <div className="assessment-question assessment-question--empty">검토할 문항을 선택합니다.</div>;
     const editableScore = typeof onScoreChange === 'function';
     const isSelected = (type) => selectedEditTarget?.type === type;
@@ -43,7 +43,7 @@ function AssessmentQuestionView({ problem, onScoreChange, editMode = false, sele
         <AssessmentQuestionMedia blocks={problem.contentBlocks} />
         {problem.format === 'choice' && <div className={`assessment-question__sector${selectableClass('answer')}`}>{selectButton('answer', '보기와 정답')}<ol className="assessment-question__choices">{problem.choices.map((choice, index) => { const content = typeof choice === 'string' ? choice : choice.content; const choiceId = typeof choice === 'string' ? null : choice.id; const isAnswer = String(index + 1) === String(problem.answer) || String(choiceId) === String(problem.answer); return <li className={isAnswer ? 'assessment-question__choice--answer' : ''} key={choiceId ?? `${problem.id}-${index}`}><span>{index + 1}</span><p><MathText>{content}</MathText></p>{isAnswer && <strong>정답</strong>}</li>; })}</ol></div>}
         {problem.format === 'short' && <div className={`assessment-question__short-answer assessment-question__sector${selectableClass('answer')}`}>{selectButton('answer', '정답')}<span>학생 답안</span><div aria-hidden="true" /><p><strong>정답</strong><MathText>{problem.answer}</MathText></p></div>}
-        {problem.format === 'essay' && <div className="assessment-question__essay"><div className="assessment-question__essay-box"><span>학생 서술 답안</span></div><section className={`assessment-question__model-answer assessment-question__sector${selectableClass('model-answer')}`}>{selectButton('model-answer', '모범답안')}<h4>모범답안</h4><p><MathText>{problem.modelAnswer}</MathText></p></section><section className={`assessment-question__rubric assessment-question__sector${selectableClass('rubric')}`}>{selectButton('rubric', '채점 기준')}<h4>채점 기준</h4>{rubric.length ? <table><thead><tr><th>항목</th><th>부분 점수</th></tr></thead><tbody>{rubric.map((item) => <tr key={item.label}><td><MathText>{item.label}</MathText></td><td>{item.score}점</td></tr>)}</tbody></table> : <p className="assessment-question__rubric-empty">채점 기준은 아직 제공되지 않습니다.</p>}</section></div>}
+        {problem.format === 'essay' && <div className="assessment-question__essay"><div className="assessment-question__essay-box"><span>학생 서술 답안</span></div><section className={`assessment-question__model-answer assessment-question__sector${selectableClass('model-answer')}`}>{selectButton('model-answer', '모범답안')}<h4>모범답안</h4><p><MathText>{problem.modelAnswer}</MathText></p></section>{showRubric && <section className={`assessment-question__rubric assessment-question__sector${selectableClass('rubric')}`}>{selectButton('rubric', '채점 기준')}<h4>채점 기준</h4>{rubric.length ? <table><thead><tr><th>항목</th><th>부분 점수</th></tr></thead><tbody>{rubric.map((item) => <tr key={item.label}><td><MathText>{item.label}</MathText></td><td>{item.score}점</td></tr>)}</tbody></table> : <p className="assessment-question__rubric-empty">채점 기준은 아직 제공되지 않습니다.</p>}</section>}</div>}
     </article>;
 }
 
