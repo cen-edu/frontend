@@ -5,6 +5,7 @@ import {
     useQueryClient,
 } from '@tanstack/react-query';
 import {
+    assignWorksheet,
     deleteWorksheet,
     getWorksheet,
     getWorksheets,
@@ -134,5 +135,22 @@ export const useDeleteWorksheetMutation = () => {
         onSuccess: () => queryClient.invalidateQueries({
             queryKey: problemLibraryQueryKeys.all,
         }),
+    });
+};
+
+export const useAssignWorksheetMutation = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: assignWorksheet,
+        onSettled: (_data, error) => {
+            if (!error || error.code === 'WORKSHEET_DUPLICATE_ASSIGNMENT') {
+                return queryClient.invalidateQueries({
+                    queryKey: problemLibraryQueryKeys.all,
+                });
+            }
+
+            return undefined;
+        },
     });
 };

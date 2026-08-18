@@ -46,11 +46,13 @@ export const academicContextQueryKeys = {
     all: ['teacher', 'academic-contexts'],
 };
 
+export const useAcademicContextsQuery = () => useQuery({
+    queryKey: academicContextQueryKeys.all,
+    queryFn: ({ signal }) => getAcademicContexts({ signal }),
+});
+
 export function useAcademicContextFilters() {
-    const query = useQuery({
-        queryKey: academicContextQueryKeys.all,
-        queryFn: ({ signal }) => getAcademicContexts({ signal }),
-    });
+    const query = useAcademicContextsQuery();
     const [filters, setFilters] = useState(EMPTY_FILTERS);
 
     useEffect(() => {
