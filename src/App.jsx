@@ -35,8 +35,8 @@ function App() {
           <Route path="comprehensive" element={<ComprehensiveAssessmentPage />} />
           <Route path="custom" element={<CustomProblemPage />} />
           <Route path="library" element={<ProblemLibraryPage />} />
-          <Route path="library/:worksheetId" element={<ProblemLibraryDetailPage />} />
         </Route>
+        <Route path="/problems/library/:worksheetId" element={<ProblemLibraryDetailPage />} />
         <Route path="/learning" element={<SectionLayout section="learning" />}>
           <Route index element={<LearningStatusPage />} />
           <Route path="results" element={<AssessmentResultPage />} />

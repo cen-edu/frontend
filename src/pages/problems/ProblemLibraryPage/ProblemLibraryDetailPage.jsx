@@ -6,7 +6,6 @@ import {
   StudentSupportPreview,
 } from '../../../components/common/worksheets';
 import { customStageLabels, defaultSupportModes, difficultyLabels } from '../../../mocks/labels';
-import QuestionExplanationModal from './components/QuestionExplanationModal';
 import { useProblemLibraryDetailQuery } from './problemLibraryHooks.js';
 import './ProblemLibraryPage.scss';
 import './components/LibraryComponents.scss';
@@ -16,7 +15,6 @@ function ProblemLibraryDetailPage() {
     const worksheetQuery = useProblemLibraryDetailQuery(worksheetId);
     const worksheet = worksheetQuery.data;
     const [selectedProblemId, setSelectedProblemId] = useState('');
-    const [explanationOpen, setExplanationOpen] = useState(false);
 
     if (worksheetQuery.isPending) return <section className="problem-library-detail problem-library-detail--missing"><h1>학습지를 불러오는 중입니다.</h1></section>;
     if (worksheetQuery.isError || !worksheet) {
@@ -60,7 +58,7 @@ function ProblemLibraryDetailPage() {
         <h1 id="library-detail-title" className="library-sr-only">{worksheet.title}</h1>
         <div className="problem-library-detail__workspace">
             <section className="problem-library-detail__section problem-library-detail__section--preview" aria-labelledby="preview-title">
-                <header><div><h2 id="preview-title">문항 미리보기</h2><p>학생 화면과 같은 순서로 문제와 정답을 확인합니다.</p></div><div className="problem-library-detail__preview-actions"><Link className="library-button problem-library-detail__previous-button" to="/problems/library"> 이전</Link><button type="button" className="library-button library-button--primary" onClick={() => setExplanationOpen(true)}><i className="bi bi-journal-text" aria-hidden="true" /> 해설 보기</button></div></header>
+                <header><div><h2 id="preview-title">문항 미리보기</h2><p>학생 화면과 같은 순서로 문제와 정답을 확인합니다.</p></div><div className="problem-library-detail__preview-actions"><Link className="library-button problem-library-detail__previous-button" to="/problems/library"> 이전</Link></div></header>
                 <div className="problem-library-detail__preview-progress" aria-label={`미리보기 진행률 ${previewProgress}%`}>
                     <div><span style={{ width: `${previewProgress}%` }} /></div>
                     <strong>{selectedProblemIndex + 1}/{worksheet.problems.length}문항</strong>
@@ -87,7 +85,6 @@ function ProblemLibraryDetailPage() {
             </section>
             <aside className="problem-library-detail__section problem-library-detail__section--history" aria-labelledby="history-title"><header><div><h2 id="history-title">출제 이력</h2><p>반별 출제일과 제출 기한을 확인합니다.</p></div></header>{worksheet.assignments.length ? <div className="problem-library-detail__history"><ul>{worksheet.assignments.map((assignment, index) => <li key={`${assignment.classId}-${index}`}><div className="problem-library-detail__history-heading"><strong>{assignment.className}</strong><span className="library-status library-status--assigned">{assignment.status === 'completed' ? '종료' : '진행 중'}</span></div><dl><div><dt>출제일</dt><dd>{assignment.assignedAt}</dd></div><div><dt>제출 기한</dt><dd>{assignment.dueAt}</dd></div></dl><Link to={`/learning?worksheet=${worksheet.id}`}>학습 현황 <i className="bi bi-arrow-right" aria-hidden="true" /></Link></li>)}</ul></div> : <p className="problem-library-detail__no-history">아직 출제하지 않았습니다.</p>}</aside>
         </div>
-        {explanationOpen && <QuestionExplanationModal problem={selectedProblem} isAssessment={isAssessment} onClose={() => setExplanationOpen(false)} />}
     </section>;
 }
 
