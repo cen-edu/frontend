@@ -118,6 +118,7 @@
 - 문제 생성과 종합평가 생성의 단원 선택 트리와 출제 범위 필터는 각각 `src/components/common/filters/UnitTreeSelector/UnitTreeSelector.jsx`와 `src/components/common/filters/UnitScopeFilter/UnitScopeFilter.jsx`를 재사용한다.
 - 문제 생성과 종합평가 생성의 단원 트리는 `GET /api/teacher/problems/units`로 조회하며, 학년·학기 변경 시 기존 소단원 선택과 출제 구성을 초기화한다. 응답의 `children` 계층과 숫자형 단원 `id`를 공통 단원 선택 UI에서 그대로 사용한다.
 - 대시보드와 취약점 분석처럼 학년도·학기·반·학습지를 선택하는 분석 조회 영역은 `src/components/common/filters/AnalysisFilters/AnalysisFilters.jsx`를 재사용한다.
+- 대시보드, 취약점 분석, 맞춤 문제 생성의 학년도·학년·반·학기 옵션과 기본 선택은 `GET /api/teacher/academic-contexts` 및 공통 `useAcademicContextFilters` 훅을 사용한다. 학년도 변경 시 학년·반을, 학년 변경 시 반을 응답 계층의 첫 항목으로 재선택하며 학기는 반 계층과 독립적으로 유지한다.
 - 평가 결과의 반·기간 필터도 `AnalysisFilters`의 `controls` 구성을 사용하며 학습지 선택은 좌측 학습 목록으로 대체한다.
 - 평가 결과표는 학생별 행만 제공하고 등급과 문항별 평균을 표시하지 않는다. 20문항까지 가로 스크롤로 조회하며 학생 열과 채점 동작 열을 고정한다.
 - 일반 학습 결과는 배점이나 점수·정답률을 저장·표시하지 않고 문항별 O/△/X(정답/부분 정답/오답)와 학생별 정답 수로 표현한다. 부분 정답은 정답 수에 포함하지 않는다.

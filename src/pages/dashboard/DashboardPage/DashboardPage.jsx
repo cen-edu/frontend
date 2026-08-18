@@ -1,13 +1,13 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import Header from '../../../components/Header/Header';
 import {
-    dashboardFilterOptions,
     getClassTerm,
     getDashboardSummaries,
     getStudentProgress,
     getWorksheetSummary,
 } from '../../../mocks/teacherDashboard';
-import { AnalysisFilters } from '../../../components/common/filters';
+import classes from '../../../mocks/classes';
+import { AnalysisFilters, useAcademicContextFilters } from '../../../components/common/filters';
 import ClassStudentProgress from './components/ClassStudentProgress';
 import DashboardSummaryCards from './components/DashboardSummaryCards';
 import WorksheetProgressList from './components/WorksheetProgressList';
@@ -15,28 +15,29 @@ import './DashboardPage.scss';
 import './components/DashboardComponents.scss';
 
 function DashboardPage() {
-    const [filters, setFilters] = useState({
-        year: '2026',
-        grade: 'middle-1',
-        classId: 'middle-1-1',
-        term: 'second',
-    });
+    const { filters, options, changeFilter, query: academicContextsQuery } = useAcademicContextFilters();
+    const selectedClassLabel = options.classes.find((option) => option.value === filters.classId)?.label;
+    const mockClassId = classes.find((classItem) => (
+        classItem.year === filters.academicYear
+        && classItem.grade === filters.grade
+        && classItem.name === selectedClassLabel
+    ))?.classId;
+    const mockTerm = filters.semester === '1' ? 'first' : filters.semester === '2' ? 'second' : '';
 
-    const classTerm = useMemo(() => getClassTerm(filters.classId, filters.term), [filters.classId, filters.term]);
+    const classTerm = useMemo(() => getClassTerm(mockClassId, mockTerm), [mockClassId, mockTerm]);
     const students = useMemo(() => getStudentProgress(classTerm), [classTerm]);
     const worksheets = useMemo(() => getWorksheetSummary(classTerm), [classTerm]);
     const summaries = useMemo(() => getDashboardSummaries(classTerm), [classTerm]);
 
-    const selectedGradeLabel = dashboardFilterOptions.grades.find((option) => option.value === filters.grade)?.label;
-    const selectedClassLabel = dashboardFilterOptions.classes.find((option) => option.value === filters.classId)?.label;
-    const selectedTermLabel = dashboardFilterOptions.terms.find((option) => option.value === filters.term)?.label;
+    const selectedGradeLabel = options.grades.find((option) => option.value === filters.grade)?.label;
+    const selectedTermLabel = options.semesters.find((option) => option.value === filters.semester)?.label;
 
-    const changeFilter = (key, value) => setFilters((current) => ({ ...current, [key]: value }));
+    const filtersDisabled = academicContextsQuery.isPending || academicContextsQuery.isError;
     const filterControls = [
-        { key: 'year', label: '학년도 선택', value: filters.year, options: dashboardFilterOptions.years, onChange: (value) => changeFilter('year', value), width: 132 },
-        { key: 'grade', label: '학년 선택', value: filters.grade, options: dashboardFilterOptions.grades, onChange: (value) => changeFilter('grade', value), width: 132 },
-        { key: 'classId', label: '반 선택', value: filters.classId, options: dashboardFilterOptions.classes, onChange: (value) => changeFilter('classId', value), width: 104 },
-        { key: 'term', label: '학기 선택', value: filters.term, options: dashboardFilterOptions.terms, onChange: (value) => changeFilter('term', value), width: 104 },
+        { key: 'academicYear', label: '학년도 선택', value: filters.academicYear, options: options.academicYears, onChange: (value) => changeFilter('academicYear', value), width: 132, disabled: filtersDisabled || !options.academicYears.length },
+        { key: 'grade', label: '학년 선택', value: filters.grade, options: options.grades, onChange: (value) => changeFilter('grade', value), width: 132, disabled: filtersDisabled || !options.grades.length },
+        { key: 'classId', label: '반 선택', value: filters.classId, options: options.classes, onChange: (value) => changeFilter('classId', value), width: 104, disabled: filtersDisabled || !options.classes.length },
+        { key: 'semester', label: '학기 선택', value: filters.semester, options: options.semesters, onChange: (value) => changeFilter('semester', value), width: 104, disabled: filtersDisabled || !options.semesters.length },
     ];
 
     return (
@@ -47,7 +48,7 @@ function DashboardPage() {
                 <div className="dashboard-page__heading">
                     <div>
                         <h1>학급 대시보드</h1>
-                        <p className="dashboard-page__context">{filters.year}학년도 · {selectedGradeLabel} {selectedClassLabel} · {selectedTermLabel} 누적</p>
+                        <p className="dashboard-page__context">{filters.academicYear ? `${filters.academicYear}학년도 · ${selectedGradeLabel} ${selectedClassLabel} · ${selectedTermLabel} 누적` : '담당 학급이 없습니다.'}</p>
                     </div>
                     <p className="dashboard-page__description">{classTerm.updatedAt}</p>
                 </div>

@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { AnalysisFilters } from '../../../components/common/filters';
+import { AnalysisFilters, useAcademicContextFilters } from '../../../components/common/filters';
 import { buildProposal, createCustomAssignment, createManualConfig, generateCustomProblems, getAvailableCustomUnits } from '../../../mocks/customCreation';
 import { customStageLabels, defaultSupportModes, difficultyLabels } from '../../../mocks/labels';
 import { weaknessFilterOptions, weaknessWorksheets } from '../../../mocks/weaknessAnalysis';
@@ -25,14 +25,15 @@ function CustomProblemPage() {
     const queryStudents = searchParams.get('students')?.split(',').filter(Boolean) ?? [];
     const initialStudentId = initialWorksheet.students.some((student) => student.id === queryStudents[0]) ? queryStudents[0] : initialWorksheet.students[0]?.id ?? '';
 
-    const [filters, setFilters] = useState({ year: '2026', gradeId: initialWorksheet.gradeId, classId: initialWorksheet.classId, term: 'first', worksheetId: initialWorksheetId });
+    const { filters: academicFilters, options: academicOptions, changeFilter: changeAcademicFilter, query: academicContextsQuery } = useAcademicContextFilters();
+    const [worksheetId, setWorksheetId] = useState(initialWorksheetId);
     const [selectedStudentId, setSelectedStudentId] = useState(initialStudentId);
     const [studentWork, setStudentWork] = useState({});
     const [selectedProblemId, setSelectedProblemId] = useState('');
     const [editMode, setEditMode] = useState(false);
     const [editTarget, setEditTarget] = useState(null);
 
-    const worksheet = weaknessWorksheets[filters.worksheetId];
+    const worksheet = weaknessWorksheets[worksheetId];
     const proposals = useMemo(() => Object.fromEntries(worksheet.students.map((student) => {
         const proposal = buildProposal(worksheet, student);
         const preferredConcept = searchParams.get('concept');
@@ -56,12 +57,12 @@ function CustomProblemPage() {
 
     const changeFilter = (key, value) => {
         if (key !== 'worksheetId') {
-            setFilters((current) => ({ ...current, [key]: value }));
+            changeAcademicFilter(key, value);
             return;
         }
         const nextWorksheet = weaknessWorksheets[value];
         const nextStudentId = nextWorksheet.students[0]?.id ?? '';
-        setFilters((current) => ({ ...current, worksheetId: value, gradeId: nextWorksheet.gradeId, classId: nextWorksheet.classId }));
+        setWorksheetId(value);
         setSelectedStudentId(nextStudentId);
         setSelectedProblemId('');
         setEditMode(false);
@@ -111,11 +112,11 @@ function CustomProblemPage() {
     };
 
     const filterControls = [
-        { key: 'year', label: '학년도 선택', value: filters.year, options: weaknessFilterOptions.years, onChange: (value) => changeFilter('year', value), width: 132 },
-        { key: 'gradeId', label: '학년 선택', value: filters.gradeId, options: weaknessFilterOptions.grades, onChange: (value) => changeFilter('gradeId', value), width: 132 },
-        { key: 'classId', label: '반 선택', value: filters.classId, options: weaknessFilterOptions.classes, onChange: (value) => changeFilter('classId', value), width: 104 },
-        { key: 'term', label: '학기 선택', value: filters.term, options: weaknessFilterOptions.terms, onChange: (value) => changeFilter('term', value), width: 104 },
-        { key: 'worksheetId', label: '학습지 선택', value: filters.worksheetId, options: weaknessFilterOptions.worksheets.map((option) => ({ ...option, disabled: weaknessWorksheets[option.value].type !== 'practice', label: weaknessWorksheets[option.value].type === 'practice' ? option.label : `${option.label} · 분석 미완료` })), onChange: (value) => changeFilter('worksheetId', value), width: 280 },
+        { key: 'academicYear', label: '학년도 선택', value: academicFilters.academicYear, options: academicOptions.academicYears, onChange: (value) => changeFilter('academicYear', value), width: 132, disabled: academicContextsQuery.isPending || academicContextsQuery.isError || !academicOptions.academicYears.length },
+        { key: 'grade', label: '학년 선택', value: academicFilters.grade, options: academicOptions.grades, onChange: (value) => changeFilter('grade', value), width: 132, disabled: academicContextsQuery.isPending || academicContextsQuery.isError || !academicOptions.grades.length },
+        { key: 'classId', label: '반 선택', value: academicFilters.classId, options: academicOptions.classes, onChange: (value) => changeFilter('classId', value), width: 104, disabled: academicContextsQuery.isPending || academicContextsQuery.isError || !academicOptions.classes.length },
+        { key: 'semester', label: '학기 선택', value: academicFilters.semester, options: academicOptions.semesters, onChange: (value) => changeFilter('semester', value), width: 104, disabled: academicContextsQuery.isPending || academicContextsQuery.isError || !academicOptions.semesters.length },
+        { key: 'worksheetId', label: '학습지 선택', value: worksheetId, options: weaknessFilterOptions.worksheets.map((option) => ({ ...option, disabled: weaknessWorksheets[option.value].type !== 'practice', label: weaknessWorksheets[option.value].type === 'practice' ? option.label : `${option.label} · 분석 미완료` })), onChange: (value) => changeFilter('worksheetId', value), width: 280 },
     ];
 
     const workByStudentId = Object.fromEntries(worksheet.students.map((student) => [student.id, studentWork[`${worksheet.id}:${student.id}`]]));

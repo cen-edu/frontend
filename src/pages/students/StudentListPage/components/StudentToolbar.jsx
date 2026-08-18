@@ -2,7 +2,7 @@ import { CustomSelect } from '../../../../components/common/inputs';
 
 const sortOptions = [
     { value: 'newest', label: '최신 등록순' },
-    { value: 'NAME', label: '이름순' },
+    { value: 'NAME_ASC', label: '이름순' },
 ];
 
 const gradeOptions = [
@@ -38,9 +38,9 @@ function StudentToolbar({
 
     const classOptions = [
         { value: 'all', label: '전체 반' },
-        ...classes.map(({ id, academicYear, grade, name }) => ({
+        ...classes.map(({ id, name }) => ({
             value: String(id),
-            label: academicYear && grade ? `${academicYear}학년도 ${grade}학년 ${name}` : name,
+            label: name,
         })),
     ];
 
