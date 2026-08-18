@@ -10,6 +10,7 @@ import ProblemAiEditPanel from './components/ProblemAiEditPanel';
 import UnitConfigTable from './components/UnitConfigTable';
 import { useProblemUnitsQuery } from '../problemUnitHooks.js';
 import { useProblemGenerationMutation } from '../problemGenerationHooks.js';
+import { useWorksheetSaveMutation } from '../worksheetHooks.js';
 import './ProblemCreationPage.scss';
 import './components/ProblemCreationComponents.scss';
 
@@ -21,13 +22,14 @@ function ProblemCreationPage() {
     const [unitConfigs, setUnitConfigs] = useState([]);
     const [result, setResult] = useState(null);
     const [selectedProblemId, setSelectedProblemId] = useState('');
-    const [saved, setSaved] = useState(false);
+    const [savedWorksheet, setSavedWorksheet] = useState(null);
     const [editMode, setEditMode] = useState(false);
     const [editTarget, setEditTarget] = useState(null);
     const [supports, setSupports] = useState({});
 
     const unitsQuery = useProblemUnitsQuery({ gradeId, term });
     const generationMutation = useProblemGenerationMutation();
+    const saveMutation = useWorksheetSaveMutation();
     const majorUnits = unitsQuery.data ?? [];
 
     const unitIndex = useMemo(() => new Map(majorUnits.flatMap((major) => major.children.flatMap((middle) => middle.children.map((unit) => [unit.id, { ...unit, majorName: major.name, middleName: middle.name }])))), [majorUnits]);
@@ -42,6 +44,7 @@ function ProblemCreationPage() {
     const generationError = generationMutation.error?.code === 'QUESTION_INVENTORY_INSUFFICIENT'
         ? '선택한 소단원과 난이도에 요청한 수량만큼의 문제가 없습니다. 문항 수를 줄여 다시 시도해 주세요.'
         : generationMutation.error?.message;
+    const worksheetTitle = `${configs[0]?.unit.name ?? '수학'}${configs.length > 1 ? ` 외 ${configs.length - 1}개 단원` : ''} 일반 학습`;
 
     useEffect(() => {
         if (initializedFromLibrary.current) return;
@@ -69,7 +72,8 @@ function ProblemCreationPage() {
     const resetCreation = () => {
         generationMutation.reset();
         setUnitConfigs([]);
-        setSaved(false);
+        setSavedWorksheet(null);
+        saveMutation.reset();
         closeResult();
     };
 
@@ -106,7 +110,8 @@ function ProblemCreationPage() {
                 setResult({ problems });
                 setSelectedProblemId(problems[0]?.id ?? '');
                 setSupports({});
-                setSaved(false);
+                setSavedWorksheet(null);
+                saveMutation.reset();
             },
         });
     };
@@ -114,7 +119,24 @@ function ProblemCreationPage() {
     const changeSupport = (mode) => {
         if (!selectedProblemId) return;
         setSupports((current) => ({ ...current, [selectedProblemId]: mode }));
-        setSaved(false);
+        setSavedWorksheet(null);
+        saveMutation.reset();
+    };
+
+    const saveWorksheet = () => {
+        saveMutation.mutate({
+            title: worksheetTitle,
+            type: 'practice',
+            gradeId,
+            semester: term,
+            problems: result.problems,
+            supports: Object.fromEntries(result.problems.map((problem) => [
+                problem.id,
+                supports[problem.id] ?? defaultSupportModes.practice,
+            ])),
+        }, {
+            onSuccess: setSavedWorksheet,
+        });
     };
 
     const movePreview = (offset) => {
@@ -155,10 +177,11 @@ function ProblemCreationPage() {
                                 <img src={sennyChatbot} alt="" />
                                 {editMode ? '편집 모드 종료' : 'AI 에이전트로 편집'}
                             </button>
-                            <button type="button" className="problem-creation-button problem-creation-button--secondary" onClick={() => setSaved(true)} disabled={saved}>{saved ? '저장 완료' : '문제 보관함에 저장'}</button>
+                            <button type="button" className="problem-creation-button problem-creation-button--secondary" onClick={saveWorksheet} disabled={Boolean(savedWorksheet) || saveMutation.isPending}>{saveMutation.isPending ? '저장 중...' : savedWorksheet ? '저장 완료' : '문제 보관함에 저장'}</button>
                         </div>
                     </header>
-                    {saved && <p className="problem-creation-page__saved" role="status"><i className="bi bi-check-circle-fill" aria-hidden="true" /> 문제 보관함에 저장했습니다.</p>}
+                    {savedWorksheet && <p className="problem-creation-page__saved" role="status"><i className="bi bi-check-circle-fill" aria-hidden="true" /> 문제 보관함에 저장했습니다. (학습지 ID: {savedWorksheet.worksheetId})</p>}
+                    {saveMutation.isError && <p className="problem-creation-page__save-error" role="alert"><i className="bi bi-exclamation-circle-fill" aria-hidden="true" /> {saveMutation.error?.message || '문제 보관함에 저장하지 못했습니다.'}</p>}
                     <div className="problem-creation-page__preview-progress" aria-label={`미리보기 진행률 ${previewProgress}%`}>
                         <div><span style={{ width: `${previewProgress}%` }} /></div>
                         <strong>{selectedProblemIndex + 1}/{result.problems.length}문항</strong>

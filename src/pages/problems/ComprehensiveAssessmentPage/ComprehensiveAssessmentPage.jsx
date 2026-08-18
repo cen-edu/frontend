@@ -13,6 +13,7 @@ import sennyChatbot from '../../../assets/images/senny-chatbot.png';
 import ProblemAiEditPanel from '../ProblemCreationPage/components/ProblemAiEditPanel';
 import { useProblemUnitsQuery } from '../problemUnitHooks.js';
 import { useAssessmentGenerationMutation } from '../assessmentGenerationHooks.js';
+import { useWorksheetSaveMutation } from '../worksheetHooks.js';
 import './ComprehensiveAssessmentPage.scss';
 import './components/AssessmentComponents.scss';
 
@@ -28,7 +29,7 @@ function ComprehensiveAssessmentPage() {
     const [unitItems, setUnitItems] = useState([]);
     const [result, setResult] = useState(null);
     const [selectedProblemId, setSelectedProblemId] = useState('');
-    const [saved, setSaved] = useState(false);
+    const [savedWorksheet, setSavedWorksheet] = useState(null);
     const [orderModalOpen, setOrderModalOpen] = useState(false);
     const [editMode, setEditMode] = useState(false);
     const [editTarget, setEditTarget] = useState(null);
@@ -36,6 +37,7 @@ function ComprehensiveAssessmentPage() {
 
     const unitsQuery = useProblemUnitsQuery({ gradeId, term });
     const generationMutation = useAssessmentGenerationMutation();
+    const saveMutation = useWorksheetSaveMutation();
     const majorUnits = unitsQuery.data ?? [];
 
     const unitIndex = useMemo(() => new Map(majorUnits.flatMap((major) => major.children.flatMap((middle) => middle.children.map((unit) => [unit.id, { ...unit, majorName: major.name, middleName: middle.name }])))), [majorUnits]);
@@ -74,7 +76,8 @@ function ComprehensiveAssessmentPage() {
     const invalidateResult = () => {
         setResult(null);
         setSelectedProblemId('');
-        setSaved(false);
+        setSavedWorksheet(null);
+        saveMutation.reset();
         setEditMode(false);
         setEditTarget(null);
         setSupports({});
@@ -117,7 +120,8 @@ function ComprehensiveAssessmentPage() {
             onSuccess: (problems) => {
                 setResult({ problems });
                 setSelectedProblemId(problems[0]?.id ?? '');
-                setSaved(false);
+                setSavedWorksheet(null);
+                saveMutation.reset();
                 setEditMode(false);
                 setEditTarget(null);
                 setSupports({});
@@ -128,14 +132,16 @@ function ComprehensiveAssessmentPage() {
     const changeSupport = (mode) => {
         if (!selectedProblemId) return;
         setSupports((current) => ({ ...current, [selectedProblemId]: mode }));
-        setSaved(false);
+        setSavedWorksheet(null);
+        saveMutation.reset();
     };
 
     const changeScore = (problemId, value) => {
         const score = Number(value);
         if (!Number.isFinite(score) || score < 1 || score > 100) return;
         setResult((current) => ({ ...current, problems: current.problems.map((problem) => problem.id === problemId ? { ...problem, maxScore: score } : problem) }));
-        setSaved(false);
+        setSavedWorksheet(null);
+        saveMutation.reset();
     };
 
     const applyProblemOrder = (orderedProblems) => {
@@ -143,8 +149,25 @@ function ComprehensiveAssessmentPage() {
             ...current,
             problems: orderedProblems.map((problem, index) => ({ ...problem, no: index + 1 })),
         }));
-        setSaved(false);
+        setSavedWorksheet(null);
+        saveMutation.reset();
         setOrderModalOpen(false);
+    };
+
+    const saveWorksheet = () => {
+        saveMutation.mutate({
+            title,
+            type: 'assessment',
+            gradeId,
+            semester: term,
+            problems: result.problems,
+            supports: Object.fromEntries(result.problems.map((problem) => [
+                problem.id,
+                supports[problem.id] ?? defaultSupportModes.assessment,
+            ])),
+        }, {
+            onSuccess: setSavedWorksheet,
+        });
     };
 
     const movePreview = (offset) => {
@@ -193,10 +216,11 @@ function ComprehensiveAssessmentPage() {
                                 <img src={sennyChatbot} alt="" />
                                 {editMode ? '편집 모드 종료' : 'AI 에이전트로 편집'}
                             </button>
-                            <button type="button" className="assessment-button assessment-button--secondary" onClick={() => setSaved(true)} disabled={saved}>{saved ? '저장 완료' : '문제 보관함에 저장'}</button>
+                            <button type="button" className="assessment-button assessment-button--secondary" onClick={saveWorksheet} disabled={Boolean(savedWorksheet) || saveMutation.isPending}>{saveMutation.isPending ? '저장 중...' : savedWorksheet ? '저장 완료' : '문제 보관함에 저장'}</button>
                         </div>
                     </header>
-                    {saved && <p className="comprehensive-assessment-page__saved" role="status"><i className="bi bi-check-circle-fill" aria-hidden="true" /> 문제 보관함에 저장했습니다.</p>}
+                    {savedWorksheet && <p className="comprehensive-assessment-page__saved" role="status"><i className="bi bi-check-circle-fill" aria-hidden="true" /> 문제 보관함에 저장했습니다. (학습지 ID: {savedWorksheet.worksheetId}, 총점: {savedWorksheet.totalScore}점)</p>}
+                    {saveMutation.isError && <p className="comprehensive-assessment-page__save-error" role="alert"><i className="bi bi-exclamation-circle-fill" aria-hidden="true" /> {saveMutation.error?.message || '문제 보관함에 저장하지 못했습니다.'}</p>}
                     <div className="comprehensive-assessment-page__preview-progress" aria-label={`미리보기 진행률 ${previewProgress}%`}>
                         <div><span style={{ width: `${previewProgress}%` }} /></div>
                         <strong>{selectedProblemIndex + 1}/{result.problems.length}문항</strong>
