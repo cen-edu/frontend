@@ -1,6 +1,7 @@
 import { Fragment } from 'react';
 import { difficultyLabels } from '../../../../mocks/labels';
 import MathText from '../MathText/MathText';
+import { omitPeriodAfterTerminalBlank } from '../problemSegmentUtils';
 import './PracticeProblemView.scss';
 
 function PracticeProblemMedia({ blocks = [] }) {
@@ -84,7 +85,7 @@ function PracticeProblemView({
                             <div>
                                 <strong>{step.instruction ?? '빈칸에 알맞은 답을 써서 풀이 과정을 완성합니다.'}</strong>
                                 <p className="practice-problem-view__formula">
-                                    {step.segments.map((segment, segmentIndex) => {
+                                    {omitPeriodAfterTerminalBlank(step.segments).map((segment, segmentIndex) => {
                                         if (segment.type === 'text') return <span key={`${step.id}-text-${segmentIndex}`}><MathText>{segment.value}</MathText></span>;
                                         if (segment.type === 'answerRef') return <span key={segment.id}><MathText>{segment.value || segment.answer}</MathText></span>;
                                         if (renderBlank) return <Fragment key={segment.id}>{renderBlank(segment, step)}</Fragment>;

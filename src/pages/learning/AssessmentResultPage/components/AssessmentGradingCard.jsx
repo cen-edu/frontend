@@ -2,11 +2,18 @@ import { difficultyLabels, formatLabels, questionResultLabels } from '../../../.
 import { MathText } from '../../../../components/common/worksheets';
 import './AssessmentGradingCard.scss';
 
+const asInlineMath = (value) => {
+    const text = String(value ?? '').trim();
+    if (!text || text.startsWith('$')) return text;
+    return `$${text}$`;
+};
+
 // 종합 평가 채점 카드. 학생 채점 결과 화면(AssessmentReviewCard)과 같은 색·크기를 쓰고,
 // 채점 기준·점수처럼 교사가 바꿀 수 있는 부분만 아래에 덧붙인다.
 function AssessmentGradingCard({ student, question, answer, result, rubricChecks, footer, onScore, onRubric, onReset }) {
     const isUnsubmitted = !answer?.input && !answer?.answerImage;
     const isChoice = question.format === 'choice';
+    const isShort = question.format === 'short';
     const isEssay = question.format === 'essay';
     const selectedChoiceIndex = isChoice ? Number(answer?.input) - 1 : -1;
     const correctChoiceIndex = isChoice ? Number(question.answer) - 1 : -1;
@@ -59,11 +66,15 @@ function AssessmentGradingCard({ student, question, answer, result, rubricChecks
                     <div className="assessment-grading-card__answers">
                         <div className="assessment-grading-card__answer-block">
                             <span>{student.name}의 답</span>
-                            <p className={isUnsubmitted ? 'assessment-grading-card__answer-empty' : undefined}><MathText>{answer?.input || (answer?.answerImage ? '필기 답안 제출' : '미제출')}</MathText></p>
+                            <p className={isUnsubmitted ? 'assessment-grading-card__answer-empty' : undefined}>
+                                <MathText>{isShort && answer?.input
+                                    ? asInlineMath(answer.input)
+                                    : answer?.input || (answer?.answerImage ? '필기 답안 제출' : '미제출')}</MathText>
+                            </p>
                         </div>
                         <div className="assessment-grading-card__answer-block assessment-grading-card__answer-block--correct">
                             <span>{isEssay ? '모범답안' : '정답'}</span>
-                            <p><MathText>{question.answer}</MathText></p>
+                            <p><MathText>{isShort ? asInlineMath(question.answer) : question.answer}</MathText></p>
                         </div>
                     </div>
                     {isChoice && (

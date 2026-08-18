@@ -14,6 +14,7 @@ import {
 import { adaptWorksheetItem, getSavedAnswers } from '../studentWorksheetAdapters.js';
 import HandwritingAnswer from './HandwritingAnswer';
 import PracticeLearningView from './PracticeLearningView';
+import { recognizeHandwritingAsLatex } from './handwritingRecognition.js';
 import { createHandwritingImage, saveHandwriting } from './handwritingStorage.js';
 import './StudentSolvePage.scss';
 
@@ -88,7 +89,10 @@ function StudentSolvePage() {
 
     const handleStrokesChange = (answerUnitId, storageKey, strokes) => {
         draftsRef.current[answerUnitId] = { storageKey, strokes };
-        updateUnitAnswer(answerUnitId, { hasHandwriting: strokes.length > 0 });
+        updateUnitAnswer(answerUnitId, {
+            hasHandwriting: strokes.length > 0,
+            rawLatex: null,
+        });
     };
 
     const saveCurrentItem = async () => {
@@ -104,23 +108,35 @@ function StudentSolvePage() {
             .filter(hasAnswer);
 
         try {
-            await Promise.all(answers.map(async (answer) => {
+            const preparedAnswers = await Promise.all(answers.map(async (answer) => {
                 const draft = draftsRef.current[answer.answerUnitId];
-                if (!draft?.strokes.length) return;
+                if (!draft?.strokes.length) return answer;
+
+                const imageHeight = isAssessment ? 520 : 260;
                 await saveHandwriting(draft.storageKey, draft.strokes);
-                const file = await createHandwritingImage(draft.strokes, { height: isAssessment ? 520 : 260 });
+                const rawLatex = await recognizeHandwritingAsLatex(draft.strokes, { height: imageHeight });
+                const file = await createHandwritingImage(draft.strokes, { height: imageHeight });
                 await uploadMutation.mutateAsync({ assignmentStudentId, answerUnitId: answer.answerUnitId, file });
+
+                return { ...answer, rawLatex };
             }));
 
             await saveMutation.mutateAsync({
                 assignmentStudentId,
                 worksheetItemId: problem.worksheetItemId,
                 timeSpentSeconds: Math.max(0, Math.round((Date.now() - enteredAtRef.current) / 1000)),
-                answers: answers.map(({ answerUnitId, selectedChoiceId, rawLatex, hasHandwriting }) => ({
+                answers: preparedAnswers.map(({ answerUnitId, selectedChoiceId, rawLatex, hasHandwriting }) => ({
                     answerUnitId, selectedChoiceId, rawLatex, hasHandwriting,
                 })),
             });
-            answers.forEach((answer) => delete draftsRef.current[answer.answerUnitId]);
+            setAnswersByItem((current) => ({
+                ...current,
+                [problem.worksheetItemId]: {
+                    ...current[problem.worksheetItemId],
+                    ...Object.fromEntries(preparedAnswers.map((answer) => [answer.answerUnitId, answer])),
+                },
+            }));
+            preparedAnswers.forEach((answer) => delete draftsRef.current[answer.answerUnitId]);
             enteredAtRef.current = Date.now();
         } catch (saveError) {
             setActionError(saveError.message || '답안을 저장하지 못했습니다.');
