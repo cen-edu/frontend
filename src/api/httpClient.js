@@ -32,6 +32,10 @@ httpClient.interceptors.request.use((config) => {
 
 httpClient.interceptors.response.use(
     (response) => {
+        if (response.status === 204) {
+            return null;
+        }
+
         const apiResponse = response.data;
 
         if (!apiResponse.success) {

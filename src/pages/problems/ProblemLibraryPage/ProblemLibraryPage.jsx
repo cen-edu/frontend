@@ -3,9 +3,11 @@ import { Link, useNavigate } from 'react-router-dom';
 import { CustomSelect, SearchInput } from '../../../components/common/inputs';
 import { libraryTypeLabels } from '../../../mocks/labels';
 import AssignWorksheetModal from './components/AssignWorksheetModal';
-import DeleteWorksheetModal from './components/DeleteWorksheetModal';
 import LibraryTable from './components/LibraryTable';
-import { useProblemLibraryQuery } from './problemLibraryHooks.js';
+import {
+    useDeleteWorksheetMutation,
+    useProblemLibraryQuery,
+} from './problemLibraryHooks.js';
 import './ProblemLibraryPage.scss';
 import './components/LibraryComponents.scss';
 
@@ -25,17 +27,14 @@ function ProblemLibraryPage() {
     const [status, setStatus] = useState('all');
     const [search, setSearch] = useState('');
     const [assignTarget, setAssignTarget] = useState(null);
-    const [deleteTarget, setDeleteTarget] = useState(null);
     const [notice, setNotice] = useState('');
     const [localAssignmentCounts, setLocalAssignmentCounts] = useState({});
-    const [locallyDeletedIds, setLocallyDeletedIds] = useState([]);
     const worksheetsQuery = useProblemLibraryQuery({ tab, gradeId, semester: term, q: search });
-    const worksheets = useMemo(() => (worksheetsQuery.data ?? [])
-        .filter((worksheet) => !locallyDeletedIds.includes(worksheet.id))
-        .map((worksheet) => ({
+    const deleteWorksheetMutation = useDeleteWorksheetMutation();
+    const worksheets = useMemo(() => (worksheetsQuery.data ?? []).map((worksheet) => ({
             ...worksheet,
             assignmentCount: localAssignmentCounts[worksheet.id] ?? worksheet.assignmentCount,
-        })), [localAssignmentCounts, locallyDeletedIds, worksheetsQuery.data]);
+        })), [localAssignmentCounts, worksheetsQuery.data]);
 
     const filtered = useMemo(() => {
         return worksheets.filter((worksheet) => {
@@ -53,7 +52,22 @@ function ProblemLibraryPage() {
         setNotice(`${assignTarget.title}을 출제했습니다.`);
         setAssignTarget(null);
     };
-    const remove = () => { setLocallyDeletedIds((current) => [...current, deleteTarget.id]); setNotice(`${deleteTarget.title}을 삭제했습니다.`); setDeleteTarget(null); };
+    const remove = (worksheet) => {
+        const confirmed = window.confirm(
+            `${worksheet.title}을 삭제하시겠습니까?\n삭제한 학습지는 복구할 수 없습니다.`,
+        );
+
+        if (!confirmed) return;
+
+        setNotice('');
+        deleteWorksheetMutation.mutate(worksheet.id, {
+            onError: (mutationError) => {
+                window.alert(
+                    mutationError?.message || '학습지를 삭제하지 못했습니다.',
+                );
+            },
+        });
+    };
 
     const emptyContent = worksheetsQuery.isPending
         ? <div className="problem-library-page__empty"><i className="bi bi-arrow-repeat" aria-hidden="true" /><p>학습지 목록을 불러오는 중입니다.</p></div>
@@ -65,9 +79,8 @@ function ProblemLibraryPage() {
         <header className="problem-library-page__page-header"><div><h1 id="problem-library-title">문제 보관함</h1><p>생성한 학습지와 평가를 조회하고 출제하거나 복제해 재구성합니다.</p></div><span>검색 결과 <strong>{filtered.length}</strong>건</span></header>
         <div className="problem-library-page__toolbar"><div className="problem-library-page__tabs" role="tablist" aria-label="학습지 유형">{tabs.map((item) => <button type="button" role="tab" aria-selected={tab === item.value} className={`problem-library-page__tab${tab === item.value ? ' problem-library-page__tab--active' : ''}`} key={item.value} onClick={() => setTab(item.value)}>{item.label}</button>)}</div><div className="problem-library-page__filters"><CustomSelect label="학년 선택" value={gradeId} options={gradeOptions} onChange={setGradeId} width={120} /><CustomSelect label="학기 선택" value={term} options={termOptions} onChange={setTerm} width={112} /><CustomSelect label="출제 상태 선택" value={status} options={statusOptions} onChange={setStatus} width={140} /><SearchInput value={search} onChange={setSearch} placeholder="학습지 제목 검색" label="학습지 제목 검색" width={210} /></div></div>
         {notice && <p className="problem-library-page__notice" role="status"><i className="bi bi-check-circle-fill" aria-hidden="true" /> {notice}</p>}
-        <section className="problem-library-page__content" aria-label="보관된 학습지">{filtered.length ? <LibraryTable key={`${tab}-${gradeId}-${term}-${status}-${search.trim()}`} worksheets={filtered} allWorksheets={worksheets} defaultExpandAll={tab === 'custom' || Boolean(search.trim())} onOpen={(id) => navigate(`/problems/library/${id}`)} onAssign={setAssignTarget} onDuplicate={duplicate} onDelete={setDeleteTarget} /> : emptyContent}</section>
+        <section className="problem-library-page__content" aria-label="보관된 학습지">{filtered.length ? <LibraryTable key={`${tab}-${gradeId}-${term}-${status}-${search.trim()}`} worksheets={filtered} allWorksheets={worksheets} defaultExpandAll={tab === 'custom' || Boolean(search.trim())} onOpen={(id) => navigate(`/problems/library/${id}`)} onAssign={setAssignTarget} onDuplicate={duplicate} onDelete={remove} deleteDisabled={deleteWorksheetMutation.isPending} /> : emptyContent}</section>
         {assignTarget && <AssignWorksheetModal worksheet={assignTarget} onClose={() => setAssignTarget(null)} onAssign={assign} />}
-        {deleteTarget && <DeleteWorksheetModal worksheet={deleteTarget} onClose={() => setDeleteTarget(null)} onConfirm={remove} />}
     </section>;
 }
 

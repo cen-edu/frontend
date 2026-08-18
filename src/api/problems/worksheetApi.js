@@ -23,3 +23,7 @@ export const getWorksheet = ({ worksheetId, signal }) => (
 export const createWorksheet = (worksheet) => (
     httpClient.post('/teacher/worksheets', worksheet)
 );
+
+export const deleteWorksheet = (worksheetId) => (
+    httpClient.delete(`/teacher/worksheets/${worksheetId}`)
+);

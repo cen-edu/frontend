@@ -1,7 +1,7 @@
 import { Fragment, useState } from 'react';
 import { libraryTypeLabels } from '../../../../mocks/labels';
 
-function LibraryTable({ worksheets, allWorksheets, defaultExpandAll = false, onOpen, onAssign, onDuplicate, onDelete }) {
+function LibraryTable({ worksheets, allWorksheets, defaultExpandAll = false, onOpen, onAssign, onDuplicate, onDelete, deleteDisabled = false }) {
     const sourceWorksheets = allWorksheets.filter((worksheet) => worksheet.origin !== 'custom');
     const visibleIds = new Set(worksheets.map((worksheet) => worksheet.id));
     const visibleCustomWorksheets = worksheets.filter((worksheet) => worksheet.origin === 'custom');
@@ -27,7 +27,7 @@ function LibraryTable({ worksheets, allWorksheets, defaultExpandAll = false, onO
     const renderActions = (worksheet) => <div className="library-table__actions">
         {worksheet.origin !== 'custom' && <button type="button" className="library-table__primary-action" aria-label={`${worksheet.title} 출제`} onClick={(event) => { event.stopPropagation(); onAssign(worksheet); }}>출제</button>}
         <button type="button" aria-label={`${worksheet.title} 복제 후 재구성`} title="복제 후 재구성" onClick={(event) => { event.stopPropagation(); onDuplicate(worksheet); }}><i className="bi bi-copy" aria-hidden="true" /></button>
-        <button type="button" className="library-table__delete" aria-label={`${worksheet.title} 삭제`} title="삭제" onClick={(event) => { event.stopPropagation(); onDelete(worksheet); }}><i className="bi bi-trash3" aria-hidden="true" /></button>
+        <button type="button" className="library-table__delete" aria-label={`${worksheet.title} 삭제`} title="삭제" disabled={deleteDisabled} onClick={(event) => { event.stopPropagation(); onDelete(worksheet); }}><i className="bi bi-trash3" aria-hidden="true" /></button>
     </div>;
 
     const renderRow = (worksheet, { children = [], child = false, context = false } = {}) => {

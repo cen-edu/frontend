@@ -1,5 +1,14 @@
-import { keepPreviousData, useQuery } from '@tanstack/react-query';
-import { getWorksheet, getWorksheets } from '../../../api/problems/worksheetApi.js';
+import {
+    keepPreviousData,
+    useMutation,
+    useQuery,
+    useQueryClient,
+} from '@tanstack/react-query';
+import {
+    deleteWorksheet,
+    getWorksheet,
+    getWorksheets,
+} from '../../../api/problems/worksheetApi.js';
 import { normalizeGeneratedAssessmentProblems } from '../assessmentGenerationAdapter.js';
 import { normalizeGeneratedProblems } from '../problemGenerationAdapter.js';
 
@@ -116,3 +125,14 @@ export const useProblemLibraryDetailQuery = (worksheetId) => useQuery({
     select: normalizeWorksheetDetail,
     enabled: Boolean(worksheetId),
 });
+
+export const useDeleteWorksheetMutation = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: deleteWorksheet,
+        onSuccess: () => queryClient.invalidateQueries({
+            queryKey: problemLibraryQueryKeys.all,
+        }),
+    });
+};
