@@ -5,6 +5,7 @@ import { buildProposal, createCustomAssignment, createManualConfig, generateCust
 import { customStageLabels, defaultSupportModes, difficultyLabels } from '../../../mocks/labels';
 import { weaknessFilterOptions, weaknessWorksheets } from '../../../mocks/weaknessAnalysis';
 import { PracticeProblemView, StudentSupportPreview } from '../../../components/common/worksheets';
+import useSectionFocusMode from '../../../components/SectionLayout/useSectionFocusMode';
 import sennyChatbot from '../../../assets/images/senny-chatbot.png';
 import ProblemAiEditPanel from '../ProblemCreationPage/components/ProblemAiEditPanel';
 import CustomAssignBar from './components/CustomAssignBar';
@@ -45,6 +46,7 @@ function CustomProblemPage() {
     const selectedProposal = proposals[selectedStudent.id];
     const workKey = `${worksheet.id}:${selectedStudent.id}`;
     const currentWork = studentWork[workKey] ?? { configs: selectedProposal.configs, problems: [], assignment: null, supports: {} };
+    useSectionFocusMode(currentWork.problems.length > 0);
     const selectedProblem = currentWork.problems.find((problem) => problem.id === selectedProblemId) ?? currentWork.problems[0] ?? null;
     const selectedProblemIndex = currentWork.problems.findIndex((problem) => problem.id === selectedProblem?.id);
     const previewProgress = currentWork.problems.length ? Math.round(((selectedProblemIndex + 1) / currentWork.problems.length) * 100) : 0;

@@ -7,6 +7,7 @@ import {
   AssessmentQuestionView,
   StudentSupportPreview,
 } from '../../../components/common/worksheets';
+import useSectionFocusMode from '../../../components/SectionLayout/useSectionFocusMode';
 import AssessmentItemBuilder from './components/AssessmentItemBuilder';
 import AssessmentOrderModal from './components/AssessmentOrderModal';
 import sennyChatbot from '../../../assets/images/senny-chatbot.png';
@@ -37,6 +38,8 @@ function ComprehensiveAssessmentPage() {
     const [editMode, setEditMode] = useState(false);
     const [editTarget, setEditTarget] = useState(null);
     const [supports, setSupports] = useState({});
+
+    useSectionFocusMode(Boolean(result));
 
     const unitsQuery = useProblemUnitsQuery({ gradeId, term });
     const generationMutation = useAssessmentGenerationMutation();

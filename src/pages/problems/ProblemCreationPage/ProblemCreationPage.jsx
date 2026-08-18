@@ -5,6 +5,7 @@ import { defaultSupportModes } from '../../../mocks/labels';
 import { defaultUnitCounts, difficultyLevels } from '../../../mocks/problemCreation';
 import { libraryWorksheets } from '../../../mocks/problemLibrary';
 import { PracticeProblemView, StudentSupportPreview } from '../../../components/common/worksheets';
+import useSectionFocusMode from '../../../components/SectionLayout/useSectionFocusMode';
 import sennyChatbot from '../../../assets/images/senny-chatbot.png';
 import ProblemAiEditPanel from './components/ProblemAiEditPanel';
 import UnitConfigTable from './components/UnitConfigTable';
@@ -29,6 +30,8 @@ function ProblemCreationPage() {
     const [editMode, setEditMode] = useState(false);
     const [editTarget, setEditTarget] = useState(null);
     const [supports, setSupports] = useState({});
+
+    useSectionFocusMode(Boolean(result));
 
     const unitsQuery = useProblemUnitsQuery({ gradeId, term });
     const generationMutation = useProblemGenerationMutation();
