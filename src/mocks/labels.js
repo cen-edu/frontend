@@ -56,5 +56,6 @@ export const teacherProgressStatusLabels = {
     'not-started': '미시작',
     'in-progress': '풀이 중',
     submitted: '제출 완료',
+    'not-submitted': '미제출',
     unassigned: '미배정',
 };

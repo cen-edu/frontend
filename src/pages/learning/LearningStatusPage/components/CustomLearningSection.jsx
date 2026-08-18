@@ -1,21 +1,23 @@
 import { useState } from 'react';
+import { useLearningStatusStudentsQuery } from '../learningStatusHooks';
 import AssignmentProgressPanel from './AssignmentProgressPanel';
 
 function CustomLearningDetail({ assignment, statusOptions }) {
     const [status, setStatus] = useState('all');
-    const students = assignment.students.filter((student) => {
-        if (status === 'unsubmitted') return student.status !== 'submitted';
-        return status === 'all' || student.status === status;
+    const studentsQuery = useLearningStatusStudentsQuery({
+        assignmentId: assignment.assignmentId,
+        status: status === 'all' ? undefined : status,
     });
+    const detailAssignment = { ...assignment, ...studentsQuery.data };
 
     return (
         <AssignmentProgressPanel
-            assignment={assignment}
-            students={students}
+            assignment={detailAssignment}
+            students={studentsQuery.data?.students ?? []}
             status={status}
             statusOptions={statusOptions}
             onStatusChange={setStatus}
-            titleId={`custom-learning-title-${assignment.id}`}
+            titleId={`custom-learning-title-${assignment.assignmentId}`}
             className="custom-learning-detail"
         />
     );
@@ -27,7 +29,7 @@ function CustomLearningSection({ assignments, statusOptions }) {
     return (
         <section className="custom-learning-list" aria-label="맞춤 학습 현황">
             <div className="custom-learning-list__items">
-                {assignments.map((assignment) => <CustomLearningDetail key={assignment.id} assignment={assignment} statusOptions={statusOptions} />)}
+                {assignments.map((assignment) => <CustomLearningDetail key={assignment.assignmentId} assignment={assignment} statusOptions={statusOptions} />)}
             </div>
         </section>
     );

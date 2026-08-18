@@ -18,7 +18,7 @@ function LearningSummary({ summary, activeKey, onSelect }) {
                 >
                     <div>
                         <p>{item.label}</p>
-                        <strong>{summary[item.key]}<small>{item.key === 'assignments' ? '개' : '명'}</small></strong>
+                        <strong>{summary[item.key]}<small>{item.key === 'assignments' ? '개' : '건'}</small></strong>
                     </div>
                 </button>
             ))}
