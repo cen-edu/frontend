@@ -84,7 +84,7 @@ function QuestionResultCard({ item, reportMessage = null }) {
                 })}</ol>
                 : <p className="question-result__empty">표시할 답안 단위 결과가 없습니다.</p>}
             {reportMessage && <aside className="question-result__report" aria-label={`${item.itemNumber}번 문항 AI 분석`}>
-                <div><span>AI 관찰</span><p><MathText>{reportMessage.observation}</MathText></p></div>
+                <div><span><i className="bi bi-stars" aria-hidden="true" />AI 관찰</span><p><MathText>{reportMessage.observation}</MathText></p></div>
                 <dl>
                     <div><dt>학습 포인트</dt><dd><MathText>{reportMessage.learningPoint}</MathText></dd></div>
                     <div><dt>다시 풀기</dt><dd><MathText>{reportMessage.retryGuide}</MathText></dd></div>

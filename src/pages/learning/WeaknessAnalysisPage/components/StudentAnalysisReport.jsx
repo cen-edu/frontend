@@ -49,9 +49,9 @@ function StudentAnalysisReport({ reportState }) {
             <span className="student-analysis-report__ready"><i className="bi bi-check-circle" aria-hidden="true" /> 분석 완료</span>
         </div>
         <div className="student-analysis-report__messages">
-            {report.summaryMessage && <div><strong>핵심 요약</strong><p><MathText>{report.summaryMessage}</MathText></p></div>}
+            {report.summaryMessage && <div><strong><i className="bi bi-stars" aria-hidden="true" />핵심 요약</strong><p><MathText>{report.summaryMessage}</MathText></p></div>}
             {report.customLearningMessage && <div><strong>맞춤 학습 관찰</strong><p><MathText>{report.customLearningMessage}</MathText></p></div>}
-            {report.overallObservation && <div><strong>종합 관찰</strong><p><MathText>{report.overallObservation}</MathText></p></div>}
+            {report.overallObservation && <div><strong><i className="bi bi-stars" aria-hidden="true" />종합 관찰</strong><p><MathText>{report.overallObservation}</MathText></p></div>}
             {!report.summaryMessage && !report.customLearningMessage && !report.overallObservation
                 && <p className="student-analysis-report__empty">표시할 종합 분석 문장이 없습니다.</p>}
         </div>

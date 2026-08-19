@@ -86,6 +86,14 @@
   &__row { display: grid; grid-template-columns: 92px 1fr; align-items: center; gap: 12px; > div:first-child { display: flex; flex-direction: column; gap: 3px; } strong { color: #38485b; font-size: 12px; } small { color: #8a94a1; font-size: 11px; } &--reference { opacity: .62; } }
   &__bars { display: grid; gap: 5px; }
   &__bar { height: 20px; position: relative; display: block; background: #eef1f4; border-radius: 3px; overflow: hidden; i { height: 100%; display: block; background: #4f806b; } b { position: absolute; top: 2px; right: 6px; color: #27384b; font-size: 11px; line-height: 16px; } &--comparison i { background: #8da2b5; } }
+  &--vertical { display: flex; flex-direction: column; }
+  &__vertical-chart { width: 100%; min-height: 250px; svg { width: 100%; height: auto; display: block; overflow: visible; } }
+  &__grid-line { stroke: #e7ebef; stroke-width: 1; vector-effect: non-scaling-stroke; }
+  &__axis-label, &__count { fill: #8a94a1; font-size: 11px; }
+  &__vertical-bar { fill: #4f806b; &--comparison { fill: #8da2b5; } }
+  &__value { fill: #27384b; font-size: 11px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  &__category { fill: #38485b; font-size: 12px; font-weight: 700; }
+  &__svg-group--reference { opacity: .62; }
 }
 
 .analysis-legend { margin-top: 13px; display: flex; justify-content: flex-end; gap: 12px; color: #747f91; font-size: 11px; span { display: flex; align-items: center; gap: 5px; } i { width: 12px; height: 5px; background: #4f806b; border-radius: 1px; } span:last-child i { background: #8da2b5; } }
@@ -105,7 +113,7 @@
 .difficulty-radar {
   display: flex;
   flex-direction: column;
-  &__chart { height: 218px; margin: -6px 0 2px; }
+  &__chart { width: min(100%, 440px); height: 290px; margin: -8px auto 12px; }
   &__values { margin-top: auto; padding-top: 13px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; border-top: 1px solid #ebeef2; li { display: flex; flex-direction: column; align-items: center; gap: 3px; text-align: center; } span { color: #8a94a1; font-size: 11px; } strong { color: #27384b; font-size: 17px; } small { color: #747f91; font-size: 11px; } }
   &__value--reference { opacity: .62; }
 }

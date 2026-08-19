@@ -1,7 +1,7 @@
 .student-analysis-report {
   &__state { min-height: 132px; padding: 22px; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 7px; background: #f7f9fb; border: 1px solid #ebeef2; border-radius: 8px; text-align: center; > i { color: #6385a1; font-size: 22px; } strong { color: #35475a; font-size: 14px; } p { color: #747f91; font-size: 12px; line-height: 1.55; } button { min-height: 34px; margin-top: 4px; padding: 0 13px; background: #fff; border: 1px solid #8eb9d9; border-radius: 6px; color: #176fc1; font-size: 12px; font-weight: 600; cursor: pointer; &:hover, &:focus-visible { background: #edf6fc; border-color: #5e9bc7; color: #0f5595; } } }
   &__ready { display: inline-flex; align-items: center; gap: 5px; color: #356c55; font-size: 11px; font-weight: 600; }
-  &__messages { display: grid; gap: 10px; > div { padding: 13px 15px; background: #f7f9fb; border-left: 3px solid #8da2b5; border-radius: 0 6px 6px 0; } strong { color: #35475a; font-size: 12px; } p { margin-top: 5px; color: #596579; font-size: 13px; line-height: 1.65; } }
+  &__messages { display: grid; gap: 10px; > div { padding: 13px 15px; background: #f7f9fb; border-left: 3px solid #8da2b5; border-radius: 0 6px 6px 0; } strong { display: flex; align-items: center; gap: 5px; color: #35475a; font-size: 12px; } strong i { color: #176fc1; font-size: 13px; } p { margin-top: 5px; color: #596579; font-size: 13px; line-height: 1.65; } }
   &__empty { padding: 22px; color: #747f91; font-size: 12px; text-align: center; }
   &__item-notice { margin-top: 12px; color: #667185; font-size: 11px; i { margin-right: 5px; } }
 }

@@ -10,7 +10,7 @@ function DifficultyRadar({ items, comparisonItems }) {
             <div className="diagnosis-card__heading"><div><span>문항 난이도 기준</span><h2>난이도별 학생 vs 학급</h2></div></div>
             <div className="difficulty-radar__chart" role="img" aria-label={`난이도별 정답률 비교 그래프. ${summary}`}>
                 <ResponsiveContainer width="100%" height="100%">
-                    <RadarChart data={data} outerRadius="70%" margin={{ top: 10, right: 10, bottom: 6, left: 10 }}>
+                    <RadarChart data={data} cy="55%" outerRadius="88%" margin={{ top: 16, right: 16, bottom: 12, left: 16 }}>
                         <PolarGrid stroke="#e0e5ea" />
                         <PolarAngleAxis dataKey="label" tick={{ fill: '#596579', fontSize: 12 }} />
                         <PolarRadiusAxis domain={[0, 100]} tickCount={5} tick={false} axisLine={false} />

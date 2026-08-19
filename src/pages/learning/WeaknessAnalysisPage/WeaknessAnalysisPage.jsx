@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { AnalysisFilters, useAcademicContextFilters } from '../../../components/common/filters';
 import { getWorksheetTypeLabel } from '../../../mocks/labels';
+import { WorksheetType } from '../../../api/analysis/analysisConstants.js';
 import {
     adaptAnalysisStudents,
     formatAnalysisCalculatedAt,
@@ -36,6 +37,11 @@ const ASSIGNMENT_TYPE_MISMATCH = 'ANALYSIS_ASSIGNMENT_TYPE_MISMATCH';
 const LEARNING_ASSESSMENT_TYPE_MISMATCH = 'ANALYSIS_LEARNING_ASSESSMENT_TYPE_MISMATCH';
 const FORBIDDEN = 'FORBIDDEN';
 const STUDENT_NOT_ASSIGNED = 'ANALYSIS_STUDENT_NOT_ASSIGNED';
+const worksheetTypeOptions = [
+    { value: '', label: '전체' },
+    { value: WorksheetType.COMPREHENSIVE_ASSESSMENT, label: '종합 평가' },
+    { value: WorksheetType.GENERAL_LEARNING, label: '일반 학습' },
+];
 
 function WeaknessAnalysisPage() {
     const { id: studentId } = useParams();
@@ -49,6 +55,7 @@ function WeaknessAnalysisPage() {
         query: academicContextsQuery,
     } = useAcademicContextFilters();
     const [worksheetId, setWorksheetId] = useState(initialWorksheet);
+    const [worksheetTypeFilter, setWorksheetTypeFilter] = useState('');
     const [requiresWorksheetReselection, setRequiresWorksheetReselection] = useState(false);
     const [assignmentNotice, setAssignmentNotice] = useState('');
     const [targetSort, setTargetSort] = useState('status');
@@ -59,6 +66,7 @@ function WeaknessAnalysisPage() {
     const assignmentQuery = useAnalysisAssignmentsQuery({
         classId: academicFilters.classId,
         semester: academicFilters.semester,
+        worksheetType: worksheetTypeFilter,
     });
     const overviewQuery = useAnalysisOverviewQuery(worksheetId);
     const studentsQuery = useAnalysisStudentsQuery(worksheetId);
@@ -215,6 +223,13 @@ function WeaknessAnalysisPage() {
             return;
         }
 
+        if (key === 'worksheetType') {
+            setWorksheetTypeFilter(value);
+            setWorksheetId('');
+            navigate('/learning/weaknesses', { replace: true });
+            return;
+        }
+
         changeAcademicFilter(key, value);
         setWorksheetId('');
         navigate('/learning/weaknesses', { replace: true });
@@ -253,6 +268,7 @@ function WeaknessAnalysisPage() {
         { key: 'grade', label: '학년 선택', value: academicFilters.grade, options: academicOptions.grades, onChange: (value) => changeFilter('grade', value), width: 132, disabled: academicContextsQuery.isPending || academicContextsQuery.isError || !academicOptions.grades.length },
         { key: 'classId', label: '반 선택', value: academicFilters.classId, options: academicOptions.classes, onChange: (value) => changeFilter('classId', value), width: 104, disabled: academicContextsQuery.isPending || academicContextsQuery.isError || !academicOptions.classes.length },
         { key: 'semester', label: '학기 선택', value: academicFilters.semester, options: academicOptions.semesters, onChange: (value) => changeFilter('semester', value), width: 104, disabled: academicContextsQuery.isPending || academicContextsQuery.isError || !academicOptions.semesters.length },
+        { key: 'worksheetType', label: '학습 유형 선택', value: worksheetTypeFilter, options: worksheetTypeOptions, onChange: (value) => changeFilter('worksheetType', value), width: 132, disabled: !hasAcademicClass || academicContextsQuery.isPending || academicContextsQuery.isError },
         { key: 'worksheet', label: '학습지 선택', value: worksheetId, options: worksheetOptions, onChange: (value) => changeFilter('worksheet', value), width: 252, disabled: !hasAcademicClass || isAssignmentPending || assignmentQuery.isError || !assignments.some((assignment) => assignment.analysisAvailable) },
     ];
     const typeLabel = worksheet ? getWorksheetTypeLabel(worksheet) : '';
