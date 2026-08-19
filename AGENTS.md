@@ -21,6 +21,12 @@
 - 백엔드 API 통신은 `src/api/httpClient.js`의 Axios 인스턴스를 사용하고 페이지나 컴포넌트에서 Axios 인스턴스를 별도로 만들지 않는다.
 - 서버 데이터 조회와 변경 상태는 `@tanstack/react-query`를 사용하며 전역 기본 설정은 `src/api/queryClient.js`에서만 관리한다. 모달, 탭, 체크박스처럼 서버와 무관한 UI 상태는 React Query에 저장하지 않는다.
 - React Query의 query function에서 받은 `signal`은 Axios 요청 옵션에 전달해 사용하지 않는 요청을 취소할 수 있게 한다.
+- 교사용 분석 API는 `src/api/analysis/analysisApi.js`의 `/teacher/analysis` 기본 경로와 `analysisApi` 요청 함수를 재사용한다. 공통 `httpClient`가 이미 `response.data.data`를 반환하므로 분석 API 함수에서 응답을 다시 해제하거나 별도 Axios 인스턴스를 만들지 않는다. 분석 응답의 비율은 백분율 값 그대로 표시하고, 시간은 밀리초에서 초·분으로 변환하며, `null`과 빈 배열은 오류가 아닌 데이터 없음 상태로 처리한다. 공통 enum은 `src/api/analysis/analysisConstants.js`에서 관리한다.
+- 일반 학습(`worksheetType: 'GENERAL_LEARNING'`)의 학급 분석은 `/learning-assessment-insights`와 `/learning-assessment-achievement`를 독립 React Query로 병렬 조회한다. 난이도 응답 `LOW | MID | HIGH`는 소문자로 변환하지 않고 API enum 그대로 유지하며 화면 라벨만 별도로 매핑한다. `accuracyRate: null`과 `gradedCount: 0`은 0%가 아니라 데이터 없음·미채점 상태로 표시한다.
+- 종합평가(`worksheetType: 'COMPREHENSIVE_ASSESSMENT'`)의 학급 분석은 `/comprehensive-assessment-insights`, `/item-achievement`, `/score-time-distribution`을 독립 React Query로 병렬 조회한다. 학생별 문항 결과는 배열 순서가 아니라 `worksheetItemId`로 결합하고, `NOT_GRADED`와 `FAILED`를 구분해 표시한다. 득점률이나 총 풀이 시간이 `null`인 학생은 산점도에서 제외하고 자료 부족 인원으로 안내하며 중앙값은 API 값을 사용한다.
+- 취약점 분석의 학생 상세 공통 영역은 `/assignments/{assignmentId}/students/{studentId}/summary`와 `/items`를 독립 React Query로 병렬 조회한다. 문항과 답안 단위는 각각 `itemNumber`, `displayOrder` 순으로 표시하며 `assignmentStudentId`를 학생 ID로 사용하지 않는다. 비율과 시간의 `null`은 0으로 바꾸지 않고, 빈 취약 소분류와 빈 문항·답안 단위 배열은 정상적인 데이터 없음 상태로 처리한다.
+- 취약점 분석의 학생 상세 성취는 일반 학습이면 `/learning-assessment-performance`, 종합평가면 `/comprehensive-assessment-performance`를 조회하고 `/custom-learning-sessions`를 함께 독립 React Query로 병렬 조회한다. 난이도 `LOW | MID | HIGH`는 API enum 그대로 유지하고 화면 라벨만 매핑하며, `referenceOnly`는 참고 데이터 스타일로 표시한다. 맞춤 학습 회차는 API가 반환한 최신순을 유지하고 `IN_PROGRESS | RESOLVED | UNRESOLVED`, `REVIEW | SIMILAR | ADVANCED`를 화면 라벨로만 변환한다. 비율 `null`, 미완료 날짜, 빈 회차·소분류 배열은 0으로 바꾸거나 오류로 처리하지 않는다.
+- 취약점 분석의 AI 학생 보고서는 학생 상세 진입과 재시도 시 `/assignments/{assignmentId}/students/{studentId}/report`에 POST한 뒤 GET 결과를 조회한다. POST가 `GENERATING`이면 응답의 `retryAfterMs` 간격으로 `PENDING | GENERATING` 동안만 폴링하고 `READY | FAILED`에서 중지하며, 학생 변경·페이지 이탈 시 이전 GET 요청을 취소한다. 보고서 문장은 `READY`일 때만 표시하고 문항 메시지는 배열 순서가 아니라 `worksheetItemId`로 문항 결과와 결합한다. `ANALYSIS_REPORT_NOT_GRADED`는 생성 실패가 아닌 조건 미충족 안내로 처리하며 재시도는 기존 보고서 캐시를 제거하고 POST부터 다시 시작한다.
 - 클라이언트에서 사용하는 환경 변수는 `VITE_` 접두사를 사용하되 비밀번호, API Secret, 서명 키 같은 민감 정보는 Vite 환경 변수에 저장하지 않는다.
 
 ## 컴포넌트 및 스타일
@@ -70,6 +76,7 @@
 - 맞춤 학습 결과는 학생별 회차 배열 `student.customSessions[]`(`sourceWorksheetId`, `conceptId`, `assignedAt`, `completedAt`, `problems[{ no, stage, difficulty, correct }]`)로 저장한다. `correct: null`은 미풀이를 뜻하고, 해소 판정은 미풀이가 있으면 `pending`, ③ 응용 문항을 모두 맞히면 `resolved`, 아니면 `unresolved`로 파생한다.
 - 맞춤 학습 결과는 상단 학습지 필터를 늘리지 않고, 원 학습지 개인 분석 화면 안의 `CustomLearningResult` 섹션(전후 비교·단계별 결과·회차 선택)과 학급 분석의 `PrescriptionTable`에서 조회한다. 맞춤 학습지를 취약점 분석의 학습지 선택 항목으로 따로 두지 않고, 학습 현황의 맞춤 학습 배포는 `analysisWorksheetId`로 원 학습지를 가리킨다.
 - 취약점 분석 개인 뷰의 영역별 결과는 막대(`ResultBreakdown`), 난이도별 결과는 Recharts `RadarChart`(`DifficultyRadar`)로 표시하고 같은 행에 나란히 배치한다. 두 표현에 같은 집계 기준을 중복해 넣지 않는다.
+- 취약점 분석에서 학습지를 선택하면 `/api/teacher/analysis/assignments/{assignmentId}/overview`와 `/students`를 서로 독립된 React Query로 병렬 조회한다. 학급 요약과 좌측 학생 목록은 이 응답을 사용하고, 응답 enum 및 시간·상태 변환은 `WeaknessAnalysisPage/analysisAdapters.js`에서 관리한다. 한 요청이 실패해도 다른 요청의 성공 데이터는 표시하며, `ANALYSIS_ASSIGNMENT_ACCESS_DENIED`와 `ANALYSIS_ASSIGNMENT_NOT_FOUND`는 선택을 해제하고 배정 목록을 갱신한 뒤 재선택을 안내한다.
 - 학생과 학급을 함께 표시하는 그래프의 범례는 공통 클래스 `analysis-legend`를 사용하고, 학생은 `#4f806b`, 학급은 `#8da2b5`로 통일한다.
 - 교사용 대시보드의 학생 성취 분포 그래프는 Recharts의 `ScatterChart`를 사용하며, X축은 학기 학습 참여율, Y축은 학기 누적 정답률로 표현한다.
 - 학습지 유형 데이터는 `practice`(일반 학습), `assessment`(종합평가)로 통일하고, 맞춤 출제 여부는 `origin: 'custom'`으로 구분한다.

@@ -1,16 +1,88 @@
-import { areaLabels } from '../../../../mocks/weaknessAnalysis';
+import {
+    DiagnosticStage,
+    GradingStatus,
+    StudentItemResultType,
+} from '../../../../api/analysis/analysisConstants.js';
+import {
+    difficultyBandLabels,
+    evaluationAreaLabels,
+    formatAnalysisDuration,
+    questionTypeGroupLabels,
+} from '../analysisAdapters.js';
+import './QuestionResultCard.scss';
 
-function QuestionResultCard({ worksheet, student, question, classAccuracy }) {
-    const response = student.responses.find((item) => item.no === question.no); const ratio = response.maxScore ? response.score / response.maxScore : 0;
-    const isAssessment = worksheet.type === 'assessment';
-    const outcome = response.gradedBy === null ? 'pending' : ratio === 1 && response.hintUsed ? 'hint' : ratio === 1 ? 'correct' : ratio > 0 ? 'partial' : 'wrong';
-    const outcomeLabel = { pending: '채점 대기', hint: '힌트 후 정답', correct: isAssessment ? '독립 정답' : '정답', partial: '부분 정답', wrong: '오답' }[outcome];
-    const studentAnswer = isAssessment ? (ratio === 1 ? question.correctAnswer : '학생 제출 답안') : response.steps.map((item) => item.input || '미응답').join(' → ');
-    const concept = question.steps?.[0]?.conceptId ? worksheet.concepts.find((item) => item.id === question.steps[0].conceptId)?.label : areaLabels[question.area];
-    return <article className="question-result"><header><span>{question.no}</span><h3>{question.prompt}</h3><strong className={`question-result__score question-result__score--${outcome}`}>{outcomeLabel}</strong></header>
-        <dl className="question-result__answers"><div><dt>학생 답안</dt><dd>{studentAnswer}</dd></div><div><dt>정답</dt><dd>{question.correctAnswer}</dd></div><div><dt>학급 정답률</dt><dd>{classAccuracy?.rate ?? 0}% ({classAccuracy?.correct ?? 0}/{classAccuracy?.total ?? 0}명)</dd></div></dl>
-        {!isAssessment && <ol className="question-result__steps">{question.steps.map((step) => { const result = response.steps.find((item) => item.order === step.order); return <li key={step.order}><span>0{step.order}</span><strong>{step.label}</strong><em>{result?.input || '미응답'}</em><i className={`bi ${result?.correct ? 'bi-check-circle-fill' : 'bi-x-circle-fill'}`} /></li>; })}</ol>}
-        <dl className="question-result__guidance"><div><dt>확인된 점</dt><dd>{outcome === 'correct' ? isAssessment ? '힌트 없이 풀이를 완료했습니다.' : '풀이를 스스로 완료했습니다.' : outcome === 'hint' ? '힌트가 주어지면 해결할 수 있습니다.' : '풀이 과정에서 개념 적용이 끊겼습니다.'}</dd></div><div><dt>핵심 개념</dt><dd>{concept || areaLabels[question.area]}</dd></div><div><dt>다시 풀 때</dt><dd>{outcome === 'correct' ? '다른 수 구조에서도 같은 방법을 설명하게 합니다.' : '핵심 조건을 먼저 표시하고 각 단계의 근거를 말하게 합니다.'}</dd></div></dl>
-    </article>;
+const resultLabels = {
+    [StudentItemResultType.NOT_GRADED]: '채점 대기',
+    [StudentItemResultType.CORRECT]: '정답',
+    [StudentItemResultType.PARTIAL_CORRECT]: '부분 정답',
+    [StudentItemResultType.INCORRECT]: '오답',
+};
+
+const resultTones = {
+    [StudentItemResultType.NOT_GRADED]: 'pending',
+    [StudentItemResultType.CORRECT]: 'correct',
+    [StudentItemResultType.PARTIAL_CORRECT]: 'partial',
+    [StudentItemResultType.INCORRECT]: 'wrong',
+};
+
+const diagnosticStageLabels = {
+    [DiagnosticStage.INTERPRET]: '문제 해석',
+    [DiagnosticStage.MODEL]: '식 세우기',
+    [DiagnosticStage.EXECUTE]: '계산·실행',
+    [DiagnosticStage.ANSWER]: '답 작성',
+};
+
+const formatRate = (value) => value == null ? '-' : `${value}%`;
+
+function QuestionResultCard({ item, reportMessage = null }) {
+    const isFailed = item.gradingStatus === GradingStatus.FAILED;
+    const outcomeLabel = isFailed ? '채점 실패' : resultLabels[item.resultType] ?? '결과 없음';
+    const outcomeTone = isFailed ? 'wrong' : resultTones[item.resultType] ?? 'pending';
+    const answerUnits = [...(item.answerUnits ?? [])].sort((a, b) => a.displayOrder - b.displayOrder);
+    const categoryLabel = item.questionTypeGroup
+        ? questionTypeGroupLabels[item.questionTypeGroup] ?? item.questionTypeGroup
+        : item.evaluationArea
+            ? evaluationAreaLabels[item.evaluationArea] ?? item.evaluationArea
+            : '-';
+
+    return (
+        <article className="question-result">
+            <header>
+                <span>{item.itemNumber}</span>
+                <h3>{item.questionTitle}</h3>
+                <strong className={`question-result__score question-result__score--${outcomeTone}`}>{outcomeLabel}</strong>
+            </header>
+            <dl className="question-result__answers">
+                <div><dt>유형·난이도</dt><dd>{categoryLabel} · {difficultyBandLabels[item.difficultyBand] ?? item.difficultyBand}</dd></div>
+                <div><dt>점수</dt><dd>{item.score === null || item.maxScore === null ? '-' : `${item.score}/${item.maxScore}점`}</dd></div>
+                <div><dt>학급 정답률</dt><dd>{formatRate(item.classAccuracyRate)} ({item.classCorrectStudentCount}/{item.classGradedStudentCount}명)</dd></div>
+            </dl>
+            {(item.solvingDurationMs != null || item.classMedianSolvingDurationMs != null) && <dl className="question-result__timing">
+                <div><dt>학생 풀이 시간</dt><dd>{formatAnalysisDuration(item.solvingDurationMs)}</dd></div>
+                <div><dt>학급 중앙값</dt><dd>{formatAnalysisDuration(item.classMedianSolvingDurationMs)}</dd></div>
+            </dl>}
+            {answerUnits.length
+                ? <ol className="question-result__answer-units">{answerUnits.map((answerUnit) => {
+                    const unitFailed = answerUnit.gradingStatus === GradingStatus.FAILED;
+                    const unitLabel = unitFailed ? '채점 실패' : resultLabels[answerUnit.resultType] ?? '결과 없음';
+                    const unitTone = unitFailed ? 'wrong' : resultTones[answerUnit.resultType] ?? 'pending';
+                    return <li key={answerUnit.answerUnitId}>
+                        <span>{String(answerUnit.displayOrder).padStart(2, '0')}</span>
+                        <div><strong>{answerUnit.label}</strong><small>{answerUnit.diagnosticStage ? diagnosticStageLabels[answerUnit.diagnosticStage] ?? answerUnit.diagnosticStage : '답안 단위'}</small></div>
+                        <dl><div><dt>학생 답안</dt><dd>{answerUnit.studentAnswer ?? '-'}</dd></div><div><dt>정답</dt><dd>{answerUnit.correctAnswer ?? '-'}</dd></div></dl>
+                        <em className={`question-result__unit-status question-result__unit-status--${unitTone}`}>{unitLabel}{answerUnit.score !== null ? ` · ${answerUnit.score}점` : ''}</em>
+                    </li>;
+                })}</ol>
+                : <p className="question-result__empty">표시할 답안 단위 결과가 없습니다.</p>}
+            {reportMessage && <aside className="question-result__report" aria-label={`${item.itemNumber}번 문항 AI 분석`}>
+                <div><span>AI 관찰</span><p>{reportMessage.observation}</p></div>
+                <dl>
+                    <div><dt>학습 포인트</dt><dd>{reportMessage.learningPoint}</dd></div>
+                    <div><dt>다시 풀기</dt><dd>{reportMessage.retryGuide}</dd></div>
+                </dl>
+            </aside>}
+        </article>
+    );
 }
+
 export default QuestionResultCard;

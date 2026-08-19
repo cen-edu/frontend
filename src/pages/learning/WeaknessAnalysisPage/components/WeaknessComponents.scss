@@ -43,6 +43,7 @@
 .matrix-cell { &--full { background: #e9f1ed; color: #356c55; } &--partial { background: #f3efe5; color: #80652f; } &--weak { background: #f4eae9; color: #9a4f49; } &--empty { background: #f1f3f5; color: #747f91; } }
 .matrix-table--questions .question-cell { min-width: 0; }
 .question-cell { &--full { background: #dbe9e2; color: #2c6249; font-weight: 700; } &--partial { background: #f0ead9; color: #7a5c23; } &--zero { background: #f4e3e1; color: #93443d; } &--pending { background: #f1f3f5; color: #98a1ad; } }
+.question-cell--failed { background: #f4e3e1; color: #93443d; }
 .status-badge { padding: 0; display: inline-flex; align-items: center; gap: 6px; background: transparent; color: #667185; font-weight: 600; &::before { width: 7px; height: 7px; border-radius: 50%; background: #9aa4b1; content: ""; } &--priority, &--unresolved { background: transparent; color: #8f4d48; &::before { background: #a96762; } } &--review, &--pending { background: transparent; color: #80652f; &::before { background: #a58a55; } } &--stable, &--resolved { background: transparent; color: #356c55; &::before { background: #4f806b; } } }
 .concept-bars { margin-top: 18px; display: grid; gap: 4px; list-style: none;
   &__row { padding: 9px 8px; display: grid; grid-template-columns: 16px 1fr auto; align-items: center; gap: 8px; }

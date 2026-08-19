@@ -1,16 +1,22 @@
-import { areaLabels, difficultyLabels, getQuestionAccuracy } from '../../../../mocks/weaknessAnalysis';
+import { difficultyBandLabels, evaluationAreaLabels } from '../analysisAdapters.js';
 
-function PriorityQuestionsTable({ worksheet, onSelect }) {
-    const rows = worksheet.questions.map((question) => ({ question, ...getQuestionAccuracy(worksheet, question.no) })).sort((a, b) => a.rate - b.rate);
+const formatRate = (value) => value === null ? '-' : `${Math.round(value * 10) / 10}%`;
+
+function PriorityQuestionsTable({ items, showEvaluationArea = true }) {
     return (
         <section className="diagnosis-card priority-questions">
-            <div className="diagnosis-card__heading"><div><span>학급 정답률 낮은 순</span><h2>먼저 확인할 문항</h2></div><small>자료 부족 학생 제외</small></div>
+            <div className="diagnosis-card__heading"><div><span>완전 정답률 낮은 순</span><h2>우선 확인 문항</h2></div><small>최대 5문항</small></div>
             <div className="priority-questions__wrap"><table>
-                <thead><tr><th>문항</th><th>영역</th><th>난이도</th><th>정답 수</th><th>학급 정답률</th></tr></thead>
-                <tbody>{rows.map(({ question, correct, total, rate }) => <tr key={question.no} tabIndex={0} onClick={() => onSelect({ type: 'question', questionNo: question.no })} onKeyDown={(event) => { if (event.key === 'Enter') onSelect({ type: 'question', questionNo: question.no }); }}>
-                    <td><strong>{question.no}번</strong> {question.prompt}</td><td>{areaLabels[question.area]}</td><td>{difficultyLabels[question.difficulty]}</td><td>{correct}/{total}명</td><td><b className={rate < 60 ? 'score-rate score-rate--low' : 'score-rate'}>{rate}%</b></td>
+                <thead><tr><th>문항</th>{showEvaluationArea && <th>영역</th>}<th>난이도</th><th>정답 수</th><th>학급 정답률</th></tr></thead>
+                <tbody>{items.map((item) => <tr key={item.worksheetItemId}>
+                    <td><strong>{item.itemNumber}번</strong> {item.questionTitle}</td>
+                    {showEvaluationArea && <td>{item.evaluationArea ? evaluationAreaLabels[item.evaluationArea] ?? item.evaluationArea : '-'}</td>}
+                    <td>{difficultyBandLabels[item.difficultyBand] ?? item.difficultyBand}</td>
+                    <td>{item.correctStudentCount}/{item.gradedStudentCount}명</td>
+                    <td><b className={item.accuracyRate !== null && item.accuracyRate < 60 ? 'score-rate score-rate--low' : 'score-rate'}>{formatRate(item.accuracyRate)}</b></td>
                 </tr>)}</tbody>
             </table></div>
+            {!items.length && <p className="priority-questions__empty">우선 확인할 문항이 없습니다.</p>}
         </section>
     );
 }

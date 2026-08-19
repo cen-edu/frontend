@@ -1,6 +1,6 @@
 import axios from 'axios';
 import ApiError from './ApiError';
-import {getAuth} from "./auth/authStorage.js";
+import { clearAuth, getAuth } from './auth/authStorage.js';
 
 const DEFAULT_API_BASE_URL = '/api';
 const DEFAULT_API_TIMEOUT_MS = 10000;
@@ -53,12 +53,21 @@ httpClient.interceptors.response.use(
             return Promise.reject(error);
         }
 
+        const status = error.response?.status ?? null;
         const responseData = error.response?.data;
         const errorBody = responseData?.error;
         const isTimeout = error.code === 'ECONNABORTED';
 
+        if (status === 401) {
+            clearAuth();
+
+            if (window.location.pathname !== '/') {
+                window.location.replace('/');
+            }
+        }
+
         return Promise.reject(new ApiError({
-            status: error.response?.status ?? null,
+            status,
             code: errorBody?.code ?? error.code ?? null,
             message: errorBody?.message
                 || (isTimeout

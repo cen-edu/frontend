@@ -1,6 +1,25 @@
+import { GradingStatus } from '../../../../api/analysis/analysisConstants.js';
+import { formatAnalysisDuration, getItemAchievementResult } from '../analysisAdapters.js';
+
 const views = [['score', '득점'], ['time', '시간']];
 
-function QuestionMatrix({ worksheet, view, onViewChange, onSelect, selection }) {
+const getScoreState = (result, item) => {
+    if (!result || result.gradingStatus === GradingStatus.NOT_GRADED) return 'pending';
+    if (result.gradingStatus === GradingStatus.FAILED || result.score === null) return 'failed';
+    if (result.score === item.maxScore) return 'full';
+    if (result.score > 0) return 'partial';
+    return 'zero';
+};
+
+const getScoreLabel = (result, item) => {
+    if (!result || result.gradingStatus === GradingStatus.NOT_GRADED) return '미채점';
+    if (result.gradingStatus === GradingStatus.FAILED) return '채점 실패';
+    return result.score === null ? '-' : `${result.score}점 / ${item.maxScore}점`;
+};
+
+function QuestionMatrix({ achievement, view, onViewChange }) {
+    const { items = [], students = [] } = achievement ?? {};
+
     return (
         <section className="diagnosis-card matrix-card">
             <div className="diagnosis-card__heading">
@@ -12,31 +31,24 @@ function QuestionMatrix({ worksheet, view, onViewChange, onSelect, selection }) 
                     </div>
                 </div>
             </div>
-            <div className="matrix-table__wrap">
-                <table className="matrix-table matrix-table--questions" style={{ '--question-count': worksheet.questions.length }}>
-                    <thead><tr><th>학생</th>{worksheet.questions.map((question) => <th key={question.no}><button type="button" onClick={() => onSelect({ type: 'question', questionNo: question.no })}>{question.no}번<small>{question.maxScore}점</small></button></th>)}</tr></thead>
+            {items.length && students.length ? <div className="matrix-table__wrap">
+                <table className="matrix-table matrix-table--questions" style={{ '--question-count': items.length }}>
+                    <thead><tr><th>학생</th>{items.map((item) => <th key={item.worksheetItemId}>{item.itemNumber}번<small>{item.maxScore}점</small></th>)}</tr></thead>
                     <tbody>
-                        {worksheet.students.map((student) => (
-                            <tr key={student.id}>
-                                <th>{student.name}</th>
-                                {student.responses.map((response) => {
-                                    const pending = response.gradedBy === null;
-                                    const ratio = response.score / response.maxScore;
-                                    const level = pending ? 'pending' : ratio === 1 ? 'full' : ratio > 0 ? 'partial' : 'zero';
-                                    const label = `${student.name} ${response.no}번 ${pending ? '채점 대기' : `${response.score}점 / 배점 ${response.maxScore}점`}`;
+                        {students.map((student) => (
+                            <tr key={student.studentId}>
+                                <th>{student.studentName}</th>
+                                {items.map((item) => {
+                                    const result = getItemAchievementResult(student, item.worksheetItemId);
+                                    const scoreLabel = getScoreLabel(result, item);
+                                    const durationLabel = formatAnalysisDuration(result?.solvingDurationMs);
                                     return (
-                                        <td key={response.no}>
-                                            <button
-                                                type="button"
-                                                className={`question-cell question-cell--${view === 'score' ? level : 'time'}${selection?.type === 'question' && selection.questionNo === response.no ? ' question-cell--selected' : ''}`}
-                                                style={view === 'time' ? { '--time-opacity': Math.min(.82, .14 + response.seconds / 360) } : undefined}
-                                                onClick={() => onSelect({ type: 'question', questionNo: response.no })}
-                                                aria-label={view === 'score' ? label : `${student.name} ${response.no}번 ${response.seconds}초`}
-                                            >
-                                                {view === 'score'
-                                                    ? pending ? '–' : response.score
-                                                    : `${Math.floor(response.seconds / 60)}:${String(response.seconds % 60).padStart(2, '0')}`}
-                                            </button>
+                                        <td key={item.worksheetItemId}>
+                                            <span
+                                                className={`question-cell question-cell--${view === 'score' ? getScoreState(result, item) : 'time'}`}
+                                                style={view === 'time' && result?.solvingDurationMs != null ? { '--time-opacity': Math.min(.82, .14 + result.solvingDurationMs / 360000) } : undefined}
+                                                aria-label={`${student.studentName} ${item.itemNumber}번 ${view === 'score' ? scoreLabel : durationLabel}`}
+                                            >{view === 'score' ? scoreLabel : durationLabel}</span>
                                         </td>
                                     );
                                 })}
@@ -44,7 +56,7 @@ function QuestionMatrix({ worksheet, view, onViewChange, onSelect, selection }) 
                         ))}
                     </tbody>
                 </table>
-            </div>
+            </div> : <p className="question-matrix__empty">표시할 학생별 문항 성취 데이터가 없습니다.</p>}
         </section>
     );
 }

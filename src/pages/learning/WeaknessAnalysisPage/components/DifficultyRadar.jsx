@@ -1,8 +1,9 @@
 import { PolarAngleAxis, PolarGrid, PolarRadiusAxis, Radar, RadarChart, ResponsiveContainer } from 'recharts';
 
 function DifficultyRadar({ items, comparisonItems }) {
-    const data = items.map((item) => ({ ...item, studentRate: item.rate, classRate: comparisonItems.find((value) => value.key === item.key)?.rate ?? 0 }));
-    const summary = data.map((item) => `${item.label} 난이도 ${item.questionCount}문항, 학생 ${item.studentRate}%, 학급 ${item.classRate}%`).join(', ');
+    const formatRate = (value) => value == null ? '-' : `${value}%`;
+    const data = items.map((item) => ({ ...item, studentRate: item.rate, classRate: comparisonItems.find((value) => value.key === item.key)?.rate ?? null }));
+    const summary = data.map((item) => `${item.label} 난이도 ${item.questionCount}문항, 학생 ${formatRate(item.studentRate)}, 학급 ${formatRate(item.classRate)}`).join(', ');
 
     return (
         <section className="diagnosis-card difficulty-radar">
@@ -19,7 +20,7 @@ function DifficultyRadar({ items, comparisonItems }) {
                 </ResponsiveContainer>
             </div>
             <ul className="difficulty-radar__values">
-                {data.map((item) => <li key={item.key}><span>{item.label} · {item.questionCount}문항{item.questionCount < 2 ? ' · 참고용' : ''}</span><strong>{item.studentRate}%</strong><small>학급 {item.classRate}%</small></li>)}
+                {data.map((item) => <li key={item.key} className={item.referenceOnly ? 'difficulty-radar__value difficulty-radar__value--reference' : 'difficulty-radar__value'}><span>{item.label} · {item.questionCount}문항{item.referenceOnly ? ' · 참고용' : ''}</span><strong>{formatRate(item.studentRate)}</strong><small>학급 {formatRate(item.classRate)}</small></li>)}
             </ul>
             <div className="analysis-legend"><span><i /> 학생</span><span><i /> 학급</span></div>
         </section>
