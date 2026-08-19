@@ -88,16 +88,22 @@ function PracticeProblemView({
                                 <strong>{step.instruction ?? '빈칸에 알맞은 답을 써서 풀이 과정을 완성합니다.'}</strong>
                                 <p className="practice-problem-view__formula">
                                     {omitPeriodAfterTerminalBlank(step.segments).map((segment, segmentIndex) => {
-                                        if (segment.type === 'text') return <span key={`${step.id}-text-${segmentIndex}`}><MathText>{segment.value}</MathText></span>;
-                                        if (segment.type === 'answerRef') return <span key={segment.id}><MathText>{segment.value || segment.answer}</MathText></span>;
+                                        if (segment.type === 'text') return <span key={`${step.id}-text-${segmentIndex}`}><MathText inlineLatex>{segment.value}</MathText></span>;
+                                        if (segment.type === 'answerRef') return <span key={segment.id}><MathText inlineLatex>{segment.value || segment.answer}</MathText></span>;
                                         if (renderBlank) return <Fragment key={segment.id}>{renderBlank(segment, step)}</Fragment>;
-                                        if (isPreview) return <span key={segment.id} className="practice-problem-view__answer"><MathText>{segment.answer}</MathText></span>;
+                                        if (isPreview) return <span key={segment.id} className="practice-problem-view__answer"><MathText inlineLatex>{segment.answer}</MathText></span>;
                                         return <span key={segment.id} className="practice-problem-view__blank" aria-hidden="true" />;
                                     })}
                                 </p>
                             </div>
                         </div>
-                        {!isPreview && step.segments.filter((segment) => segment.type === 'blank').map((blank) => renderAnswer?.(blank, step))}
+                        {!isPreview && renderAnswer && (
+                            <div className="practice-problem-view__answers">
+                                {step.segments
+                                    .filter((segment) => segment.type === 'blank')
+                                    .map((blank) => renderAnswer(blank, step))}
+                            </div>
+                        )}
                         {stepIndex < problem.steps.length - 1 && <i className="bi bi-arrow-down practice-problem-view__arrow" aria-hidden="true" />}
                     </section>
                 ))}

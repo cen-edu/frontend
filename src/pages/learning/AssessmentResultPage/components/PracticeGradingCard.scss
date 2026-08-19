@@ -52,11 +52,19 @@
 
   &__answer {
     padding-left: 8px;
-    border-left: 1px solid rgba(178, 60, 60, .3);
-    color: #8a4b4b;
     font-size: 15px;
     font-style: normal;
     font-weight: 700;
+
+    &--correct {
+      border-left: 1px solid rgba(47, 115, 87, .3);
+      color: #2f7357;
+    }
+
+    &--wrong {
+      border-left: 1px solid rgba(178, 60, 60, .3);
+      color: #8a4b4b;
+    }
   }
 
   // 풀이 과정 라벨 칸(116px)과 간격(18px)만큼 밀어 수식과 왼쪽 선을 맞춘다.

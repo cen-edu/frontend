@@ -56,7 +56,6 @@ function ComprehensiveAssessmentPage() {
     const groups = unitItems.map((item) => ({ ...item, unit: unitIndex.get(item.unitId) })).filter((item) => item.unit);
     const selectedUnitIds = groups.map((item) => item.unitId);
     const totalCount = groups.reduce((sum, group) => sum + group.rows.reduce((rowSum, row) => rowSum + row.count, 0), 0);
-    const resultScore = result?.problems.reduce((sum, problem) => sum + problem.maxScore, 0) ?? 0;
     const selectedProblem = result?.problems.find((problem) => problem.id === selectedProblemId) ?? null;
     const selectedProblemIndex = result?.problems.findIndex((problem) => problem.id === selectedProblemId) ?? -1;
     const previewProgress = result?.problems.length ? Math.round(((selectedProblemIndex + 1) / result.problems.length) * 100) : 0;
@@ -145,14 +144,6 @@ function ComprehensiveAssessmentPage() {
         saveMutation.reset();
     };
 
-    const changeScore = (problemId, value) => {
-        const score = Number(value);
-        if (!Number.isFinite(score) || score < 1 || score > 100) return;
-        setResult((current) => ({ ...current, problems: current.problems.map((problem) => problem.id === problemId ? { ...problem, maxScore: score } : problem) }));
-        setSavedWorksheet(null);
-        saveMutation.reset();
-    };
-
     const applyProblemOrder = (orderedProblems) => {
         setResult((current) => ({
             ...current,
@@ -227,7 +218,7 @@ function ComprehensiveAssessmentPage() {
             ) : (
                 <section className="comprehensive-assessment-page__result" aria-labelledby="assessment-result-title">
                     <header className="comprehensive-assessment-page__result-header">
-                        <div><h2 id="assessment-result-title">생성 결과</h2><p>{title} · 총 {result.problems.length}문항 · {resultScore}점</p></div>
+                        <div><h2 id="assessment-result-title">생성 결과</h2><p>{title} · 총 {result.problems.length}문항</p></div>
                         <div className="comprehensive-assessment-page__result-actions">
                             <button type="button" className="assessment-button assessment-button--secondary" onClick={invalidateResult}>이전</button>
                             <button type="button" className="assessment-button assessment-button--secondary" onClick={() => setOrderModalOpen(true)}><i className="bi bi-arrow-down-up" aria-hidden="true" /> 문항 순서 변경</button>
@@ -247,7 +238,7 @@ function ComprehensiveAssessmentPage() {
                             <div className="comprehensive-assessment-page__question-preview">
                                 <AssessmentQuestionView
                                     problem={selectedProblem}
-                                    onScoreChange={changeScore}
+                                    showScore={false}
                                     editMode={editMode}
                                     selectedEditTarget={editTarget}
                                     onSelectEditTarget={setEditTarget}

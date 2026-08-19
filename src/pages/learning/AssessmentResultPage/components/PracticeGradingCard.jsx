@@ -26,7 +26,11 @@ function PracticeGradingCard({ student, question, answer, footer, onMark, onRese
                     <span className={`practice-grading-card__blank practice-grading-card__blank--${state}`}>
                         <span className="practice-grading-card__input"><MathText>{blank?.input || '미작성'}</MathText></span>
                         <span className="practice-grading-card__reader">{blankStateLabels[state]}</span>
-                        {state === 'wrong' && <em className="practice-grading-card__answer">정답 <MathText>{segment.answer}</MathText></em>}
+                        {(state === 'correct' || state === 'wrong') && (
+                            <em className={`practice-grading-card__answer practice-grading-card__answer--${state}`}>
+                                정답 <MathText>{segment.answer}</MathText>
+                            </em>
+                        )}
                     </span>
                 );
             }}

@@ -28,7 +28,7 @@ function AssessmentQuestionMedia({ blocks = [] }) {
     );
 }
 
-function AssessmentQuestionView({ problem, onScoreChange, editMode = false, selectedEditTarget, onSelectEditTarget, showRubric = true }) {
+function AssessmentQuestionView({ problem, onScoreChange, editMode = false, selectedEditTarget, onSelectEditTarget, showRubric = true, showScore = true }) {
     if (!problem) return <div className="assessment-question assessment-question--empty">검토할 문항을 선택합니다.</div>;
     const editableScore = typeof onScoreChange === 'function';
     const isSelected = (type) => selectedEditTarget?.type === type;
@@ -39,7 +39,7 @@ function AssessmentQuestionView({ problem, onScoreChange, editMode = false, sele
 
     return <article className={`assessment-question${editMode ? ' assessment-question--edit-mode' : ''}${isSelected('problem') ? ' assessment-question--selected' : ''}`} aria-labelledby={`assessment-question-${problem.id}`}>
         {editMode && <button type="button" className="assessment-question__sector-button assessment-question__sector-button--problem" aria-pressed={isSelected('problem')} onClick={() => selectTarget('problem', '문제 전체')}><i className="bi bi-bounding-box" aria-hidden="true" /> 문제 전체 선택</button>}
-        <header className="assessment-question__header"><div><span>{problem.unitPath} · {formatLabels[problem.format]} · 난이도 {difficultyLabels[problem.difficulty]}</span><h3 id={`assessment-question-${problem.id}`}>{problem.no}. <MathText>{problem.prompt || '문항 내용이 없습니다.'}</MathText></h3></div><div className="assessment-question__score"><span>배점</span>{editableScore ? <input type="number" min="1" max="100" value={problem.maxScore} aria-label={`${problem.no}번 문항 배점`} onChange={(event) => onScoreChange(problem.id, event.target.value)} /> : <strong>{problem.maxScore}</strong>}<span>점</span></div></header>
+        <header className="assessment-question__header"><div><span>{problem.unitPath} · {formatLabels[problem.format]} · 난이도 {difficultyLabels[problem.difficulty]}</span><h3 id={`assessment-question-${problem.id}`}>{problem.no}. <MathText>{problem.prompt || '문항 내용이 없습니다.'}</MathText></h3></div>{showScore && <div className="assessment-question__score"><span>배점</span>{editableScore ? <input type="number" min="1" max="100" value={problem.maxScore} aria-label={`${problem.no}번 문항 배점`} onChange={(event) => onScoreChange(problem.id, event.target.value)} /> : <strong>{problem.maxScore}</strong>}<span>점</span></div>}</header>
         <AssessmentQuestionMedia blocks={problem.contentBlocks} />
         {problem.format === 'choice' && <div className={`assessment-question__sector${selectableClass('answer')}`}>{selectButton('answer', '보기와 정답')}<ol className="assessment-question__choices">{problem.choices.map((choice, index) => { const content = typeof choice === 'string' ? choice : choice.content; const choiceId = typeof choice === 'string' ? null : choice.id; const isAnswer = String(index + 1) === String(problem.answer) || String(choiceId) === String(problem.answer); return <li className={isAnswer ? 'assessment-question__choice--answer' : ''} key={choiceId ?? `${problem.id}-${index}`}><span>{index + 1}</span><p><MathText>{content}</MathText></p>{isAnswer && <strong>정답</strong>}</li>; })}</ol></div>}
         {problem.format === 'short' && <div className={`assessment-question__short-answer assessment-question__sector${selectableClass('answer')}`}>{selectButton('answer', '정답')}<span>학생 답안</span><div aria-hidden="true" /><p><strong>정답</strong><MathText>{problem.answer}</MathText></p></div>}

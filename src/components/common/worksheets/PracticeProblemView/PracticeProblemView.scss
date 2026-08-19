@@ -171,6 +171,11 @@
     gap: 8px;
   }
 
+  &__answers {
+    display: grid;
+    gap: 24px;
+  }
+
   &__blank,
   &__answer {
     min-width: 68px;

@@ -55,11 +55,40 @@ const tokenize = (value) => {
     return tokens;
 };
 
-function MathText({ children, latex = false }) {
+const tokenizeBareLatex = (value) => {
+    const text = String(value ?? '');
+    const tokens = [];
+    const candidatePattern = new RegExp(String.raw`[0-9A-Za-z\\{}()[\]^_+*/=<>|.,:\s-]+`, 'g');
+    let textStart = 0;
+
+    for (const match of text.matchAll(candidatePattern)) {
+        if (!/\\[A-Za-z]+/.test(match[0])) continue;
+
+        const leadingSpaceLength = match[0].length - match[0].trimStart().length;
+        const trailingSpaceLength = match[0].length - match[0].trimEnd().length;
+        const formulaStart = match.index + leadingSpaceLength;
+        const formulaEnd = match.index + match[0].length - trailingSpaceLength;
+
+        if (formulaStart > textStart) tokens.push({ type: 'text', value: text.slice(textStart, formulaStart) });
+        tokens.push({ type: 'math', value: text.slice(formulaStart, formulaEnd), displayMode: false });
+        textStart = formulaEnd;
+    }
+
+    if (textStart < text.length) tokens.push({ type: 'text', value: text.slice(textStart) });
+
+    return tokens;
+};
+
+function MathText({ children, latex = false, inlineLatex = false }) {
     const value = String(children ?? '');
-    const tokens = latex && !value.includes('$')
+    const delimitedTokens = latex && !value.includes('$')
         ? [{ type: 'math', value, displayMode: false }]
         : tokenize(value);
+    const tokens = inlineLatex
+        ? delimitedTokens.flatMap((token) => (
+            token.type === 'text' ? tokenizeBareLatex(token.value) : token
+        ))
+        : delimitedTokens;
 
     return tokens.map((token, index) => {
         if (token.type === 'text') return token.value;

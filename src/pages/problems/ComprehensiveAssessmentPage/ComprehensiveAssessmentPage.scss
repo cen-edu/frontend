@@ -50,7 +50,7 @@
         padding: 10px 14px;
         gap: 14px;
 
-        > span { width: 31px; height: 31px; font-size: 14px; }
+        > span { width: 31px; height: 31px; flex: 0 0 31px; font-size: 14px; }
         p { font-size: 17px; line-height: 1.6; }
         > strong { font-size: 14px; }
       }
