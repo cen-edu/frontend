@@ -1,6 +1,8 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { resultStatusLabels, weakAccuracyThreshold, worksheetTypeLabels } from '../../../../mocks/teacherDashboard';
+import { teacherProgressStatusLabels as resultStatusLabels, worksheetTypeLabels } from '../../../../mocks/labels';
+
+const weakAccuracyThreshold = 60;
 
 const columns = [
     { key: 'name', label: '학생', direction: 'ascending' },
@@ -13,6 +15,7 @@ const filters = [
     { key: 'overdue', label: '미제출 지연', match: (student) => student.status === 'overdue' },
     { key: 'weak', label: '보완 필요', match: (student) => student.status === 'weak' },
     { key: 'steady', label: '양호', match: (student) => student.status === 'steady' },
+    { key: 'noData', label: '자료 부족', match: (student) => student.status === 'noData' },
 ];
 
 const accuracyLevel = (accuracy) => (accuracy < weakAccuracyThreshold ? 'critical' : accuracy < 75 ? 'warning' : 'good');

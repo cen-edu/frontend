@@ -65,6 +65,24 @@
 
     > .ant-col { display: flex; }
   }
+
+  &__request-state {
+    min-height: 142px;
+    margin-bottom: 28px;
+    padding: 32px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    border: 1px solid #dde2e8;
+    border-radius: 10px;
+    color: #747f91;
+    font-size: 13px;
+    text-align: center;
+
+    &--section { min-height: 180px; margin: 20px 0 0; }
+    &--error { color: #b94343; }
+  }
 }
 
 .summary-card {

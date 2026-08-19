@@ -1,16 +1,10 @@
 import { useNavigate } from 'react-router-dom';
-import { worksheetTypeLabels } from '../../../../mocks/teacherDashboard';
+import { worksheetTypeLabels } from '../../../../mocks/labels';
 
 function WorksheetProgressList({ worksheets }) {
     const navigate = useNavigate();
 
     const moveToAction = (worksheet) => {
-        if (worksheet.type === 'assessment' && worksheet.resultStatus !== 'confirmed') {
-            const params = new URLSearchParams();
-            params.set('worksheet', worksheet.resultId ?? worksheet.id);
-            navigate(`/learning/results?${params}`);
-            return;
-        }
         navigate(`/learning/weaknesses?worksheet=${worksheet.analysisId}`);
     };
 
@@ -19,7 +13,7 @@ function WorksheetProgressList({ worksheets }) {
             <div className="dashboard-section__header">
                 <div>
                     <h2 id="worksheet-progress-title">학습지별 현황</h2>
-                    {worksheets.length > 0 && <p>배정 순서대로 정렬했고 맞춤 학습은 원본 학습지 아래에 묶었습니다. 앞의 번호는 학생별 학습 현황의 결과 칸 순서와 같습니다.</p>}
+                    {worksheets.length > 0 && <p>배정 순서대로 정렬했습니다. API에서 제공하지 않는 맞춤 학습 연결 정보와 종합평가 결과 상태는 정보 부족으로 표시합니다.</p>}
                 </div>
             </div>
 
@@ -43,6 +37,7 @@ function WorksheetProgressList({ worksheets }) {
                                         <strong>{worksheet.title}</strong>
                                         <span className={`worksheet-list__type worksheet-list__type--${worksheet.type}`}>{worksheetTypeLabels[worksheet.type]}</span>
                                         {worksheet.origin === 'custom' && <span className="worksheet-list__type worksheet-list__type--custom">맞춤</span>}
+                                        {worksheet.sourceInformationMissing && <span className="worksheet-list__missing">정보 부족</span>}
                                         {worksheet.childCount > 0 && <span className="worksheet-list__custom-count">맞춤 {worksheet.childCount}</span>}
                                     </div>
                                 </div>
@@ -50,7 +45,7 @@ function WorksheetProgressList({ worksheets }) {
 
                             <span className="worksheet-list__period">{worksheet.assignedAt} ~ {worksheet.dueAt}</span>
                             <span className={`worksheet-list__status worksheet-list__status--${worksheet.status}`}>
-                                {worksheet.status === 'ongoing' ? '진행 중' : '마감'}
+                                {worksheet.status === 'ongoing' ? '진행 중' : worksheet.status === 'overdue' ? '기한 초과' : '완료'}
                             </span>
                             <span className="worksheet-list__submission">{worksheet.submittedCount}/{worksheet.assignedCount}명</span>
 
@@ -61,13 +56,9 @@ function WorksheetProgressList({ worksheets }) {
                             </div>
 
                             <div className="worksheet-list__action">
-                                <button
-                                    type="button"
-                                    className={worksheet.type === 'assessment' && worksheet.resultStatus !== 'confirmed' ? 'worksheet-list__action-button worksheet-list__action-button--grading' : 'worksheet-list__action-button'}
-                                    onClick={() => moveToAction(worksheet)}
-                                >
-                                    {worksheet.type === 'assessment' && worksheet.resultStatus !== 'confirmed' ? '채점하기' : '분석 보기'}
-                                </button>
+                                {worksheet.resultInformationMissing
+                                    ? <button type="button" className="worksheet-list__action-button worksheet-list__action-button--missing" disabled title="종합평가 결과 상태 정보가 API 응답에 없습니다.">정보 부족</button>
+                                    : <button type="button" className="worksheet-list__action-button" onClick={() => moveToAction(worksheet)}>분석 보기</button>}
                             </div>
                         </li>
                     ))}
