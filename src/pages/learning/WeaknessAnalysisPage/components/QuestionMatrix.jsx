@@ -14,7 +14,7 @@ const getScoreState = (result, item) => {
 const getScoreLabel = (result, item) => {
     if (!result || result.gradingStatus === GradingStatus.NOT_GRADED) return '미채점';
     if (result.gradingStatus === GradingStatus.FAILED) return '채점 실패';
-    return result.score === null ? '-' : `${result.score}점 / ${item.maxScore}점`;
+    return result.score === null ? '-' : `${result.score} / ${item.maxScore}점`;
 };
 
 function QuestionMatrix({ achievement, view, onViewChange }) {

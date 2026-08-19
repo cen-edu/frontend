@@ -1,6 +1,6 @@
 .library-sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
 .problem-library-page, .problem-library-detail { min-height: calc(100vh - 112px); color: #465166; }
-.problem-library-detail { width: 100%; height: 100vh; padding: 20px; box-sizing: border-box; display: flex; flex-direction: column; overflow: hidden; background: #f6f8fa; }
+.problem-library-detail { width: 100%; height: 100vh; padding: 20px; box-sizing: border-box; display: flex; flex-direction: column; overflow: hidden; background-color: var(--app-canvas-background-color); background-image: var(--app-canvas-background-image); background-size: var(--app-canvas-background-size); }
 .problem-library-page__page-header { min-height: 92px; margin-bottom: 16px; padding: 22px 24px 18px; display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; background: #fff; border: 1px solid #dde2e8; border-radius: 10px; h1 { color: #172033; font-size: 24px; } p { margin-top: 5px; color: #747f91; font-size: 13px; } > span { color: #747f91; font-size: 12px; strong { color: #172033; font-size: 14px; } } }
 .problem-library-page__toolbar { position: relative; margin-bottom: 16px; padding: 13px 14px; display: flex; align-items: center; justify-content: space-between; gap: 16px; background: #fff; border: 1px solid #dde2e8; border-radius: 10px; z-index: 4; }
 .problem-library-page__tabs { padding: 3px; display: flex; flex: 0 0 auto; background: #f2f5f7; border-radius: 7px; }
@@ -21,7 +21,7 @@
 .problem-library-detail__preview-actions { display: flex; align-items: center; gap: 8px; flex: 0 0 auto; }
 .problem-library-detail__previous-button { display: inline-flex; align-items: center; gap: 5px; text-decoration: none; }
 .problem-library-detail__preview-progress { min-height: 48px; flex: 0 0 48px; padding: 0 18px; display: flex; align-items: center; gap: 18px; background: #fbfdff; border-bottom: 1px solid #dfe8f0; > div { height: 8px; flex: 1; overflow: hidden; background: #e4ebf1; border-radius: 999px; span { height: 100%; display: block; background: #176fc1; border-radius: inherit; } } strong { min-width: 74px; color: #465166; font-family: '학교안심 분필', cursive; font-size: 14px; text-align: right; } }
-.problem-library-detail__student-preview { min-width: 0; min-height: 0; flex: 1; display: flex; flex-direction: column; overflow-x: hidden; overflow-y: auto; background-color: #f8fbfd; background-image: radial-gradient(circle, rgba(112,143,168,.2) 1px, transparent 1px); background-size: 20px 20px; }
+.problem-library-detail__student-preview { min-width: 0; min-height: 0; flex: 1; display: flex; flex-direction: column; overflow-x: hidden; overflow-y: auto; background-color: var(--app-canvas-background-color); background-image: var(--app-canvas-background-image); background-size: var(--app-canvas-background-size); }
 .problem-library-detail__student-preview-content { width: min(100%, 1180px); margin: 0 auto; padding: 22px 24px 28px; flex: 0 0 auto; display: grid; grid-template-columns: minmax(0,1fr) 300px; align-items: start; gap: 18px; font-family: '학교안심 분필', cursive; .practice-problem-view, .practice-concept-view { border-color: #d8e2ea; box-shadow: 0 8px 24px rgba(52,75,94,.08); } }
 .problem-library-detail__question-preview {
   min-width: 0;

@@ -2,7 +2,9 @@
   --section-header-height: 72px;
 
   min-height: 100vh;
-  background-color: #f6f8fa;
+  background-color: var(--app-canvas-background-color);
+  background-image: var(--app-canvas-background-image);
+  background-size: var(--app-canvas-background-size);
 
   &--header-hidden {
     --section-header-height: 0px;

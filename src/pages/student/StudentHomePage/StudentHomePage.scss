@@ -1,6 +1,8 @@
 .student-home {
   min-height: 100vh;
-  background: #f5f6f8;
+  background-color: var(--app-canvas-background-color);
+  background-image: var(--app-canvas-background-image);
+  background-size: var(--app-canvas-background-size);
   color: #172033;
   font-family: '학교안심 분필', cursive;
 

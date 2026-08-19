@@ -1,6 +1,8 @@
 .dashboard-page {
   min-height: 100vh;
-  background: #f5f6f8;
+  background-color: var(--app-canvas-background-color);
+  background-image: var(--app-canvas-background-image);
+  background-size: var(--app-canvas-background-size);
   color: #465166;
 
   &__main {
