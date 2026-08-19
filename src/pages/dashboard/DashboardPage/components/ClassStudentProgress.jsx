@@ -90,8 +90,10 @@ function ClassStudentProgress({ students, worksheets }) {
                 )}
             </div>
 
-            {worksheets.length === 0
-                ? <p className="dashboard-empty">이번 학기에 배정한 학습지가 없습니다.</p>
+            {students.length === 0
+                ? <p className="dashboard-empty">등록된 학생이 없습니다.</p>
+                : worksheets.length === 0
+                    ? <p className="dashboard-empty">이번 학기에 배정한 학습지가 없습니다.</p>
                 : <>
                     <div className="student-progress__table-wrap">
                         <table className="student-progress__table">

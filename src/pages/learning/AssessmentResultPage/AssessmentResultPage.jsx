@@ -32,6 +32,11 @@ function AssessmentResultPage() {
     const [status, setStatus] = useState('all');
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedId, setSelectedId] = useState(searchParams.get('worksheet') ?? '');
+    const hasAcademicClass = Boolean(
+        academicFilters.grade
+        && academicFilters.classId
+        && academicFilters.semester,
+    );
     const queryParams = useMemo(() => ({
         grade: academicFilters.grade ? Number(academicFilters.grade) : undefined,
         classId: academicFilters.classId ? Number(academicFilters.classId) : undefined,
@@ -39,7 +44,7 @@ function AssessmentResultPage() {
         status: status === 'all' ? undefined : status,
     }), [academicFilters.classId, academicFilters.grade, academicFilters.semester, status]);
     const worksheetsQuery = useGradingWorksheetsQuery(queryParams);
-    const results = worksheetsQuery.data ?? [];
+    const results = hasAcademicClass ? worksheetsQuery.data ?? [] : [];
     const filtered = useMemo(() => results.filter((worksheet) => (
         worksheet.title.toLowerCase().includes(searchTerm.trim().toLowerCase())
     )), [results, searchTerm]);
@@ -72,15 +77,23 @@ function AssessmentResultPage() {
         disabled: academicContextsQuery.isPending || academicContextsQuery.isError || !control.options.length,
     }));
 
-    const requestMessage = worksheetsQuery.isPending
-        ? '평가 결과를 불러오는 중입니다.'
-        : worksheetsQuery.isError
-            ? worksheetsQuery.error?.message || '평가 결과를 불러오지 못했습니다.'
-            : scoreTableQuery.isPending
-                ? '점수표를 불러오는 중입니다.'
-                : scoreTableQuery.isError
-                    ? scoreTableQuery.error?.message || '점수표를 불러오지 못했습니다.'
-                    : '표시할 평가 결과가 없습니다.';
+    const requestMessage = academicContextsQuery.isPending
+        ? '담당 학급을 불러오는 중입니다.'
+        : academicContextsQuery.isError
+            ? academicContextsQuery.error?.message || '담당 학급을 불러오지 못했습니다.'
+            : !hasAcademicClass
+                ? '조회할 담당 학급이 없습니다. 학생 관리에서 반을 먼저 등록해 주세요.'
+                : worksheetsQuery.isPending
+                    ? '평가 결과를 불러오는 중입니다.'
+                    : worksheetsQuery.isError
+                        ? worksheetsQuery.error?.message || '평가 결과를 불러오지 못했습니다.'
+                        : !selectedWorksheet
+                            ? '표시할 평가 결과가 없습니다.'
+                            : scoreTableQuery.isPending
+                                ? '점수표를 불러오는 중입니다.'
+                                : scoreTableQuery.isError
+                                    ? scoreTableQuery.error?.message || '점수표를 불러오지 못했습니다.'
+                                    : '표시할 평가 결과가 없습니다.';
 
     const openGrading = (studentId) => {
         const params = new URLSearchParams();
@@ -106,7 +119,12 @@ function AssessmentResultPage() {
                 <SearchInput value={searchTerm} placeholder="학습명 검색" onChange={setSearchTerm} />
             </div>
             <div className="assessment-results__content">
-                <ResultWorksheetList worksheets={filtered} selectedId={selectedId} onSelect={setSelectedId} />
+                <ResultWorksheetList
+                    worksheets={filtered}
+                    selectedId={selectedId}
+                    onSelect={setSelectedId}
+                    emptyMessage={!hasAcademicClass ? '등록된 담당 학급이 없습니다.' : undefined}
+                />
                 <main className="assessment-results__detail">
                     {worksheet ? <><ResultSummaryBar worksheet={worksheet} metrics={worksheet.metrics} onGrade={() => openGrading()} onConfirm={confirmResults} isConfirming={releaseMutation.isPending} errorMessage={releaseMutation.error?.message} /><ScoreTable worksheet={worksheet} onGradeStudent={openGrading} /></> : <div className="assessment-results__empty">{requestMessage}</div>}
                 </main>

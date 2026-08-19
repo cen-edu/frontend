@@ -2,7 +2,7 @@ import { getWorksheetTypeLabel } from '../../../../mocks/labels';
 
 const statusLabels = { grading: '채점 대기', graded: '채점 완료', confirmed: '확정됨' };
 
-function ResultWorksheetList({ worksheets, selectedId, onSelect }) {
+function ResultWorksheetList({ worksheets, selectedId, onSelect, emptyMessage = '조건에 맞는 학습이 없습니다.' }) {
     return (
         <aside className="result-worksheet-list" aria-label="학습 목록">
             <div className="result-worksheet-list__heading"><h2>학습 목록</h2><span>{worksheets.length}건</span></div>
@@ -14,7 +14,7 @@ function ResultWorksheetList({ worksheets, selectedId, onSelect }) {
                         <span className={`result-worksheet-list__status result-worksheet-list__status--${worksheet.status}`}>{statusLabels[worksheet.status]}</span>
                     </button>
                 ))}
-                {!worksheets.length && <p className="result-worksheet-list__empty">조건에 맞는 학습이 없습니다.</p>}
+                {!worksheets.length && <p className="result-worksheet-list__empty">{emptyMessage}</p>}
             </div>
         </aside>
     );

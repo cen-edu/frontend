@@ -54,9 +54,15 @@ const useClassMutation = (mutationFn) => {
 
     return useMutation({
         mutationFn,
-        onSuccess: () => queryClient.invalidateQueries({
-            queryKey: classQueryKeys.all,
-        }),
+        onSuccess: () => Promise.all([
+            queryClient.invalidateQueries({ queryKey: classQueryKeys.all }),
+            queryClient.invalidateQueries({ queryKey: ['teacher', 'students'] }),
+            queryClient.invalidateQueries({ queryKey: ['teacher', 'academic-contexts'] }),
+            queryClient.invalidateQueries({ queryKey: ['teacher', 'dashboard'] }),
+            queryClient.invalidateQueries({ queryKey: ['teacher', 'analysis'] }),
+            queryClient.invalidateQueries({ queryKey: ['teacher', 'grading'] }),
+            queryClient.invalidateQueries({ queryKey: ['teacher', 'learning-status'] }),
+        ]),
     });
 };
 

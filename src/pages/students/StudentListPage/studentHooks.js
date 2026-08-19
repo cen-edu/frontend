@@ -13,6 +13,14 @@ export const studentQueryKeys = {
     list: (params) => [...studentQueryKeys.all, 'list', params],
 };
 
+const invalidateStudentDependentQueries = (queryClient) => Promise.all([
+    queryClient.invalidateQueries({ queryKey: studentQueryKeys.all }),
+    queryClient.invalidateQueries({ queryKey: ['teacher', 'dashboard'] }),
+    queryClient.invalidateQueries({ queryKey: ['teacher', 'analysis'] }),
+    queryClient.invalidateQueries({ queryKey: ['teacher', 'grading'] }),
+    queryClient.invalidateQueries({ queryKey: ['teacher', 'learning-status'] }),
+]);
+
 export const useStudentsQuery = (params) => useQuery({
     queryKey: studentQueryKeys.list(params),
     queryFn: ({ signal }) => getStudents({ ...params, signal }),
@@ -24,9 +32,7 @@ export const useCreateStudentMutation = () => {
 
     return useMutation({
         mutationFn: createStudent,
-        onSuccess: () => queryClient.invalidateQueries({
-            queryKey: ['teacher', 'students'],
-        }),
+        onSuccess: () => invalidateStudentDependentQueries(queryClient),
     });
 };
 
@@ -35,9 +41,7 @@ export const useCreateStudentsBulkMutation = () => {
 
     return useMutation({
         mutationFn: createStudentsBulk,
-        onSuccess: () => queryClient.invalidateQueries({
-            queryKey: studentQueryKeys.all,
-        }),
+        onSuccess: () => invalidateStudentDependentQueries(queryClient),
     });
 };
 
@@ -47,8 +51,6 @@ export const useDeleteStudentsMutation = () => {
     return useMutation({
         mutationFn: (studentIds) =>
             Promise.all(studentIds.map((studentId) => deleteStudent(studentId))),
-        onSettled: () => queryClient.invalidateQueries({
-            queryKey: studentQueryKeys.all,
-        }),
+        onSettled: () => invalidateStudentDependentQueries(queryClient),
     });
 };

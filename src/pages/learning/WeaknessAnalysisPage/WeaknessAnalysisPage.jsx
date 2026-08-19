@@ -63,6 +63,8 @@ function WeaknessAnalysisPage() {
     const overviewQuery = useAnalysisOverviewQuery(worksheetId);
     const studentsQuery = useAnalysisStudentsQuery(worksheetId);
     const assignments = assignmentQuery.data?.assignments ?? [];
+    const hasAcademicClass = Boolean(academicFilters.classId && academicFilters.semester);
+    const isAssignmentPending = hasAcademicClass && assignmentQuery.isPending;
     const selectedAssignment = assignments.find((assignment) => (
         String(assignment.assignmentId) === worksheetId && assignment.analysisAvailable
     ));
@@ -187,7 +189,7 @@ function WeaknessAnalysisPage() {
     }, [achievementQuery.error, achievementQuery.errorUpdatedAt, assignmentQuery.refetch, comprehensiveInsightsQuery.error, comprehensiveInsightsQuery.errorUpdatedAt, insightsQuery.error, insightsQuery.errorUpdatedAt, itemAchievementQuery.error, itemAchievementQuery.errorUpdatedAt, navigate, overviewQuery.error, overviewQuery.errorUpdatedAt, scoreTimeDistributionQuery.error, scoreTimeDistributionQuery.errorUpdatedAt, studentComprehensivePerformanceQuery.error, studentComprehensivePerformanceQuery.errorUpdatedAt, studentCustomLearningQuery.error, studentCustomLearningQuery.errorUpdatedAt, studentItemsQuery.error, studentItemsQuery.errorUpdatedAt, studentLearningPerformanceQuery.error, studentLearningPerformanceQuery.errorUpdatedAt, studentReportState.error, studentReportState.errorUpdatedAt, studentSummaryQuery.error, studentSummaryQuery.errorUpdatedAt, studentsQuery.error, studentsQuery.errorUpdatedAt]);
 
     useEffect(() => {
-        if (assignmentQuery.isPending || assignmentQuery.isError || requiresWorksheetReselection) return;
+        if (!hasAcademicClass || assignmentQuery.isPending || assignmentQuery.isError || requiresWorksheetReselection) return;
 
         const currentAssignment = assignments.find((assignment) => (
             String(assignment.assignmentId) === worksheetId && assignment.analysisAvailable
@@ -200,7 +202,7 @@ function WeaknessAnalysisPage() {
         setWorksheetId(nextWorksheetId);
         setStudentSearch('');
         navigate(`/learning/weaknesses${nextWorksheetId ? `?worksheet=${nextWorksheetId}` : ''}`, { replace: true });
-    }, [assignmentQuery.isError, assignmentQuery.isPending, assignments, navigate, requiresWorksheetReselection, worksheetId]);
+    }, [assignmentQuery.isError, assignmentQuery.isPending, assignments, hasAcademicClass, navigate, requiresWorksheetReselection, worksheetId]);
 
     const changeFilter = (key, value) => {
         setAssignmentNotice('');
@@ -224,7 +226,13 @@ function WeaknessAnalysisPage() {
         if (nextStudent) selectStudent(nextStudent.id);
     };
 
-    const worksheetOptions = assignmentQuery.isPending
+    const worksheetOptions = academicContextsQuery.isPending
+        ? [{ value: '', label: '담당 학급을 불러오는 중입니다.' }]
+        : academicContextsQuery.isError
+            ? [{ value: '', label: '담당 학급을 불러오지 못했습니다.' }]
+            : !hasAcademicClass
+                ? [{ value: '', label: '등록된 담당 학급이 없습니다.' }]
+                : assignmentQuery.isPending
         ? [{ value: '', label: '학습지를 불러오는 중입니다.' }]
         : assignmentQuery.isError
             ? [{ value: '', label: '학습지를 불러오지 못했습니다.' }]
@@ -245,14 +253,20 @@ function WeaknessAnalysisPage() {
         { key: 'grade', label: '학년 선택', value: academicFilters.grade, options: academicOptions.grades, onChange: (value) => changeFilter('grade', value), width: 132, disabled: academicContextsQuery.isPending || academicContextsQuery.isError || !academicOptions.grades.length },
         { key: 'classId', label: '반 선택', value: academicFilters.classId, options: academicOptions.classes, onChange: (value) => changeFilter('classId', value), width: 104, disabled: academicContextsQuery.isPending || academicContextsQuery.isError || !academicOptions.classes.length },
         { key: 'semester', label: '학기 선택', value: academicFilters.semester, options: academicOptions.semesters, onChange: (value) => changeFilter('semester', value), width: 104, disabled: academicContextsQuery.isPending || academicContextsQuery.isError || !academicOptions.semesters.length },
-        { key: 'worksheet', label: '학습지 선택', value: worksheetId, options: worksheetOptions, onChange: (value) => changeFilter('worksheet', value), width: 252, disabled: assignmentQuery.isPending || assignmentQuery.isError || !assignments.some((assignment) => assignment.analysisAvailable) },
+        { key: 'worksheet', label: '학습지 선택', value: worksheetId, options: worksheetOptions, onChange: (value) => changeFilter('worksheet', value), width: 252, disabled: !hasAcademicClass || isAssignmentPending || assignmentQuery.isError || !assignments.some((assignment) => assignment.analysisAvailable) },
     ];
     const typeLabel = worksheet ? getWorksheetTypeLabel(worksheet) : '';
-    const requestStateMessage = assignmentNotice || (assignmentQuery.isPending
-        ? '분석 대상 학습지를 불러오는 중입니다.'
-        : assignmentQuery.isError
-            ? assignmentQuery.error?.message || '분석 대상 학습지를 불러오지 못했습니다.'
-            : '분석 가능한 학습지가 없습니다.');
+    const requestStateMessage = assignmentNotice || (academicContextsQuery.isPending
+        ? '담당 학급을 불러오는 중입니다.'
+        : academicContextsQuery.isError
+            ? academicContextsQuery.error?.message || '담당 학급을 불러오지 못했습니다.'
+            : !hasAcademicClass
+                ? '분석할 담당 학급이 없습니다. 학생 관리에서 반을 먼저 등록해 주세요.'
+                : assignmentQuery.isPending
+                    ? '분석 대상 학습지를 불러오는 중입니다.'
+                    : assignmentQuery.isError
+                        ? assignmentQuery.error?.message || '분석 대상 학습지를 불러오지 못했습니다.'
+                        : '분석 가능한 학습지가 없습니다.');
 
     const renderAnalysisContent = () => {
         if (studentId) {

@@ -1,8 +1,10 @@
 import {
     DiagnosticStage,
     GradingStatus,
+    QuestionTypeGroup,
     StudentItemResultType,
 } from '../../../../api/analysis/analysisConstants.js';
+import { MathText } from '../../../../components/common/worksheets';
 import {
     difficultyBandLabels,
     evaluationAreaLabels,
@@ -44,12 +46,19 @@ function QuestionResultCard({ item, reportMessage = null }) {
         : item.evaluationArea
             ? evaluationAreaLabels[item.evaluationArea] ?? item.evaluationArea
             : '-';
+    const answerIsLatex = !item.questionTypeGroup
+        || item.questionTypeGroup === QuestionTypeGroup.SHORT_ANSWER;
+    const renderAnswer = (value) => (
+        value === null || value === undefined || value === ''
+            ? '-'
+            : <MathText latex={answerIsLatex}>{value}</MathText>
+    );
 
     return (
         <article className="question-result">
             <header>
                 <span>{item.itemNumber}</span>
-                <h3>{item.questionTitle}</h3>
+                <h3><MathText>{item.questionTitle}</MathText></h3>
                 <strong className={`question-result__score question-result__score--${outcomeTone}`}>{outcomeLabel}</strong>
             </header>
             <dl className="question-result__answers">
@@ -68,17 +77,17 @@ function QuestionResultCard({ item, reportMessage = null }) {
                     const unitTone = unitFailed ? 'wrong' : resultTones[answerUnit.resultType] ?? 'pending';
                     return <li key={answerUnit.answerUnitId}>
                         <span>{String(answerUnit.displayOrder).padStart(2, '0')}</span>
-                        <div><strong>{answerUnit.label}</strong><small>{answerUnit.diagnosticStage ? diagnosticStageLabels[answerUnit.diagnosticStage] ?? answerUnit.diagnosticStage : '답안 단위'}</small></div>
-                        <dl><div><dt>학생 답안</dt><dd>{answerUnit.studentAnswer ?? '-'}</dd></div><div><dt>정답</dt><dd>{answerUnit.correctAnswer ?? '-'}</dd></div></dl>
+                        <div><strong><MathText>{answerUnit.label}</MathText></strong><small>{answerUnit.diagnosticStage ? diagnosticStageLabels[answerUnit.diagnosticStage] ?? answerUnit.diagnosticStage : '답안 단위'}</small></div>
+                        <dl><div><dt>학생 답안</dt><dd>{renderAnswer(answerUnit.studentAnswer)}</dd></div><div><dt>정답</dt><dd>{renderAnswer(answerUnit.correctAnswer)}</dd></div></dl>
                         <em className={`question-result__unit-status question-result__unit-status--${unitTone}`}>{unitLabel}{answerUnit.score !== null ? ` · ${answerUnit.score}점` : ''}</em>
                     </li>;
                 })}</ol>
                 : <p className="question-result__empty">표시할 답안 단위 결과가 없습니다.</p>}
             {reportMessage && <aside className="question-result__report" aria-label={`${item.itemNumber}번 문항 AI 분석`}>
-                <div><span>AI 관찰</span><p>{reportMessage.observation}</p></div>
+                <div><span>AI 관찰</span><p><MathText>{reportMessage.observation}</MathText></p></div>
                 <dl>
-                    <div><dt>학습 포인트</dt><dd>{reportMessage.learningPoint}</dd></div>
-                    <div><dt>다시 풀기</dt><dd>{reportMessage.retryGuide}</dd></div>
+                    <div><dt>학습 포인트</dt><dd><MathText>{reportMessage.learningPoint}</MathText></dd></div>
+                    <div><dt>다시 풀기</dt><dd><MathText>{reportMessage.retryGuide}</MathText></dd></div>
                 </dl>
             </aside>}
         </article>

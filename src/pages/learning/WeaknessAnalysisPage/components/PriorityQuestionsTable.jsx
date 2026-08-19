@@ -1,3 +1,4 @@
+import { MathText } from '../../../../components/common/worksheets';
 import { difficultyBandLabels, evaluationAreaLabels } from '../analysisAdapters.js';
 
 const formatRate = (value) => value === null ? '-' : `${Math.round(value * 10) / 10}%`;
@@ -9,7 +10,7 @@ function PriorityQuestionsTable({ items, showEvaluationArea = true }) {
             <div className="priority-questions__wrap"><table>
                 <thead><tr><th>문항</th>{showEvaluationArea && <th>영역</th>}<th>난이도</th><th>정답 수</th><th>학급 정답률</th></tr></thead>
                 <tbody>{items.map((item) => <tr key={item.worksheetItemId}>
-                    <td><strong>{item.itemNumber}번</strong> {item.questionTitle}</td>
+                    <td><strong>{item.itemNumber}번</strong> <MathText>{item.questionTitle}</MathText></td>
                     {showEvaluationArea && <td>{item.evaluationArea ? evaluationAreaLabels[item.evaluationArea] ?? item.evaluationArea : '-'}</td>}
                     <td>{difficultyBandLabels[item.difficultyBand] ?? item.difficultyBand}</td>
                     <td>{item.correctStudentCount}/{item.gradedStudentCount}명</td>

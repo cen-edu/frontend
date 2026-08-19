@@ -76,7 +76,7 @@ src/pages/students/
 - React Query로 교사 학생 목록을 조회한다.
 - 필터·정렬·페이지 요청값 전체를 query key에 포함한다.
 - query function의 `signal`을 학생 목록 API 요청에 전달하고 페이지 전환 중 이전 데이터를 유지한다.
-- 개별 등록과 CSV 일괄 등록 mutation을 제공하고 성공 시 학생 목록 query를 무효화한다.
+- 개별 등록과 CSV 일괄 등록, 삭제 mutation은 학생 목록과 학생 구성을 사용하는 대시보드·학습 현황·평가 결과·취약점 분석 query를 무효화한다.
 
 ### `ClassManagementPage.jsx`
 
@@ -95,7 +95,7 @@ src/pages/students/
 
 - 반 목록·상세·배정 가능 학생 조회와 생성·수정·삭제·순서 변경 mutation을 React Query로 관리한다.
 - 조회 조건과 반 ID를 query key에 포함하고 query function의 `signal`을 Axios 요청에 전달한다.
-- 변경 요청 성공 후 `teacher/classes` query 범위를 무효화해 목록·상세·배정 가능 학생을 서버 기준으로 다시 조회한다.
+- 변경 요청 성공 후 `teacher/classes`, `teacher/students`, `teacher/academic-contexts`와 학급 구성을 사용하는 대시보드·학습 현황·평가 결과·취약점 분석 query를 무효화해 삭제된 반이 다른 화면에 남지 않게 한다.
 
 ## 반 관리 컴포넌트
 
@@ -293,10 +293,10 @@ useClassesQuery ──→ src/api/classes/classesApi.js ──→ GET /api/teach
                 └── PATCH /api/teacher/classes/{classId}
 
 순서 변경 ──→ PATCH /api/teacher/classes/order
-변경 성공 ──→ teacher/classes query 무효화 ──→ 서버 목록 재조회
+변경 성공 ──→ 반·학생·학급 문맥·관련 업무 query 무효화 ──→ 서버 데이터 재조회
 ```
 
-학생 등록·수정·삭제 API가 연결되면 각 mutation 성공 후 학생 목록 query를 무효화해 서버 데이터를 다시 조회한다.
+학생 등록·삭제 후에는 학생 목록뿐 아니라 학생 구성을 집계하는 업무 query도 무효화해 서버 데이터를 다시 조회한다.
 
 ## 변경 시 원칙
 

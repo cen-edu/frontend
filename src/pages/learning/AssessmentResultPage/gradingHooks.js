@@ -27,6 +27,7 @@ export const useGradingWorksheetsQuery = (params) => useQuery({
     queryFn: ({ signal }) => getGradingWorksheets({ ...params, signal }),
     select: (data) => (data?.worksheets ?? []).map(normalizeGradingWorksheet),
     placeholderData: keepPreviousData,
+    enabled: Boolean(params.grade && params.classId && params.semester),
 });
 
 export const useGradingScoreTableQuery = (assignmentId) => useQuery({
