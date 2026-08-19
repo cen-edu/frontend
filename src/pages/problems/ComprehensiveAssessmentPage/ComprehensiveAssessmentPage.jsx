@@ -2,7 +2,6 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { UnitScopeFilter, UnitTreeSelector } from '../../../components/common/filters';
 import { defaultSupportModes } from '../../../mocks/labels';
-import { libraryWorksheets } from '../../../mocks/problemLibrary';
 import {
   AssessmentQuestionView,
   StudentSupportPreview,
@@ -14,18 +13,24 @@ import sennyChatbot from '../../../assets/images/senny-chatbot.png';
 import ProblemAiEditPanel from '../ProblemCreationPage/components/ProblemAiEditPanel';
 import { useProblemUnitsQuery } from '../problemUnitHooks.js';
 import { useAssessmentGenerationMutation } from '../assessmentGenerationHooks.js';
-import { useWorksheetSaveMutation } from '../worksheetHooks.js';
+import {
+    useWorksheetGenSpecQuery,
+    useWorksheetSaveMutation,
+} from '../worksheetHooks.js';
+import { buildAssessmentPrefillGroups } from '../worksheetGenSpecAdapter.js';
 import WorksheetTitleModal from '../shared/WorksheetTitleModal.jsx';
 import './ComprehensiveAssessmentPage.scss';
 import './components/AssessmentComponents.scss';
 
 const currentYear = new Date().getFullYear();
 let nextRowId = 1;
+const createRowId = () => `assessment-row-${nextRowId++}`;
 const createDefaultRow = () => ({ id: `assessment-row-${nextRowId++}`, format: 'choice', difficulty: 'mid', count: 1 });
 
 function ComprehensiveAssessmentPage() {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
+    const sourceWorksheetId = searchParams.get('from');
     const initializedFromLibrary = useRef(false);
     const [gradeId, setGradeId] = useState('middle-1');
     const [term, setTerm] = useState('first');
@@ -42,6 +47,7 @@ function ComprehensiveAssessmentPage() {
     useSectionFocusMode(Boolean(result));
 
     const unitsQuery = useProblemUnitsQuery({ gradeId, term });
+    const genSpecQuery = useWorksheetGenSpecQuery(sourceWorksheetId);
     const generationMutation = useAssessmentGenerationMutation();
     const saveMutation = useWorksheetSaveMutation();
     const majorUnits = unitsQuery.data ?? [];
@@ -56,28 +62,25 @@ function ComprehensiveAssessmentPage() {
     const previewProgress = result?.problems.length ? Math.round(((selectedProblemIndex + 1) / result.problems.length) * 100) : 0;
     const canGenerate = totalCount > 0;
     const selectedSupport = supports[selectedProblemId] ?? defaultSupportModes.assessment;
-    const title = `${currentYear} ${term === 'first' ? '1' : '2'}학기 종합 평가`;
+    const semesterLabel = { first: '1학기', second: '2학기', common: '공통' }[term];
+    const title = `${currentYear} ${semesterLabel} 종합 평가`;
     const generationError = generationMutation.error?.code === 'QUESTION_INVENTORY_INSUFFICIENT'
         ? '선택한 소단원, 문항 유형, 난이도에 요청한 수량만큼의 문제가 없습니다. 문항 수를 줄여 다시 시도해 주세요.'
         : generationMutation.error?.message;
+    const configurationError = genSpecQuery.isError
+        ? genSpecQuery.error?.message || '복제할 학습지의 출제 조건을 불러오지 못했습니다.'
+        : generationError;
+    const isConfigurationLoading = genSpecQuery.isFetching;
 
     useEffect(() => {
         if (initializedFromLibrary.current) return;
-        const source = libraryWorksheets.find((item) => item.id === searchParams.get('from') && item.type === 'assessment');
-        if (!source) return;
+        const source = genSpecQuery.data;
+        if (!source || source.type !== 'assessment') return;
         initializedFromLibrary.current = true;
         setGradeId(source.gradeId);
-        setTerm(source.term ?? 'first');
-        const grouped = source.problems.reduce((acc, problem) => {
-            acc[problem.unitId] ??= [];
-            const key = `${problem.format}-${problem.difficulty}`;
-            const row = acc[problem.unitId].find((item) => item.key === key);
-            if (row) row.count += 1;
-            else acc[problem.unitId].push({ id: `assessment-row-${nextRowId++}`, key, format: problem.format, difficulty: problem.difficulty, count: 1 });
-            return acc;
-        }, {});
-        setUnitItems(Object.entries(grouped).map(([unitId, rows]) => ({ unitId, rows: rows.map(({ key, ...row }) => row) })));
-    }, [searchParams]);
+        setTerm(source.term);
+        setUnitItems(buildAssessmentPrefillGroups(source.genSpec, createRowId));
+    }, [genSpecQuery.data]);
 
     const invalidateResult = () => {
         setResult(null);
@@ -206,18 +209,18 @@ function ComprehensiveAssessmentPage() {
                     <UnitScopeFilter
                         gradeId={gradeId}
                         term={term}
-                        disabled={generationMutation.isPending}
+                        disabled={generationMutation.isPending || isConfigurationLoading}
                         onGradeChange={(value) => resetScope(setGradeId, value)}
                         onTermChange={(value) => resetScope(setTerm, value)}
                     />
                     <div className="comprehensive-assessment-page__configuration">
                         <section className="assessment-section" aria-labelledby="assessment-unit-selection-title">
                             <header><div><h2 id="assessment-unit-selection-title">단원 선택</h2><p>종합 평가에 포함할 소단원을 선택합니다.</p></div><span>{groups.length}개 선택</span></header>
-                            <UnitTreeSelector key={`${gradeId}-${term}`} majorUnits={majorUnits} selectedUnitIds={selectedUnitIds} onToggleUnit={toggleUnit} onToggleMiddleUnit={toggleMiddleUnit} isLoading={unitsQuery.isPending} error={unitsQuery.error} onRetry={unitsQuery.refetch} disabled={generationMutation.isPending} />
+                            <UnitTreeSelector key={`${gradeId}-${term}`} majorUnits={majorUnits} selectedUnitIds={selectedUnitIds} onToggleUnit={toggleUnit} onToggleMiddleUnit={toggleMiddleUnit} isLoading={unitsQuery.isPending} error={unitsQuery.error} onRetry={unitsQuery.refetch} disabled={generationMutation.isPending || isConfigurationLoading} />
                         </section>
                         <section className="assessment-section" aria-labelledby="assessment-builder-title">
                             <header><div><h2 id="assessment-builder-title">출제 구성</h2><p>유형, 난이도, 문항 수를 행 단위로 설정합니다.</p></div><span>행당 1~10문항</span></header>
-                            <AssessmentItemBuilder groups={groups} totalCount={totalCount} canGenerate={canGenerate} isGenerating={generationMutation.isPending} error={generationError} onAddRow={addRow} onChangeRow={changeRow} onRemoveRow={removeRow} onRemoveUnit={toggleUnit} onGenerate={createAssessment} />
+                            <AssessmentItemBuilder groups={groups} totalCount={totalCount} canGenerate={canGenerate} isGenerating={generationMutation.isPending || isConfigurationLoading} error={configurationError} onAddRow={addRow} onChangeRow={changeRow} onRemoveRow={removeRow} onRemoveUnit={toggleUnit} onGenerate={createAssessment} />
                         </section>
                     </div>
                 </>

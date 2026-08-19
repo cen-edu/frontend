@@ -173,7 +173,7 @@
 - 문제 보관함의 학습지 삭제는 `DELETE /api/teacher/worksheets/{worksheetId}`를 사용하고 별도 삭제 모달 없이 `window.confirm`으로 확인한다. 성공하면 목록 쿼리를 무효화해 다시 조회하며, 이미 배포된 학습지의 `WORKSHEET_ALREADY_ASSIGNED` 오류 메시지는 사용자에게 표시한다.
 - 문제 보관함의 학습지 출제는 `POST /api/teacher/worksheets/{worksheetId}/assignments`에 숫자형 `classId`와 ISO 8601 `dueAt`만 전달한다. 출제 모달의 반은 `GET /api/teacher/academic-contexts`에서 기본 학년도의 학습지 학년과 일치하는 반만 제공하고, 미래 기한을 클라이언트에서도 검사하며, 성공 또는 `WORKSHEET_DUPLICATE_ASSIGNMENT` 응답 후에는 보관함 목록·상세 쿼리를 갱신한다.
 - 일반 학습·맞춤 학습·종합평가 생성 결과는 `senny-chatbot.png`를 사용한 AI 편집 버튼으로 편집 모드에 진입한 뒤 수정 섹터를 선택하고 `ProblemAiEditPanel`에서 요청을 입력한다. 일반 학습은 문제 전체·풀이 과정별·개념 설명 전체, 맞춤 학습은 문제 전체·풀이 과정별, 종합평가는 문제 전체·보기와 정답·모범답안·채점 기준 영역을 선택한다. LLM 연동 전까지는 UI 피드백만 제공하고 문제 데이터를 변형하지 않는다.
-- 문제 보관함에서는 제목만 직접 수정하며, 내용 변경은 `from` 쿼리로 문제 생성 또는 종합평가 생성 화면에 구성값을 전달해 재구성한다.
+- 문제 보관함에서는 제목만 직접 수정하며, 내용 변경은 `from` 쿼리로 문제 생성 또는 종합평가 생성 화면에 이동한 뒤 `GET /api/teacher/worksheets/{worksheetId}/gen-spec`의 `type`, `grade`, `semester`, `genSpec`만 프리필해 재구성한다. `genSpec`은 반환 순서에 의존하지 않고 소단원·문항 유형·난이도 기준으로 정렬·집계하며, 제목과 실제 문항 목록을 원본에서 복사하지 않는다.
 - 문제 보관함 상세는 `GET /api/teacher/worksheets/{worksheetId}`를 사용한다. `items[].question`은 공통 문제 미리보기 모델로 변환하고, 단계형 문제의 `steps[].segments[].unitKey`는 `answerUnits[].unitKey`와 연결해 정답을 구성하며, 문항별 `supportMode`, `customStage`, `maxScore`는 worksheet item 값을 사용한다. 상세 응답에는 서술형 rubric이 없으므로 문제 보관함 상세에서는 채점 기준 영역을 표시하지 않는다.
 - 문제 보관함 상세(`/problems/library/:worksheetId`)는 공통 헤더와 사이드바가 없는 독립 라우트로 표시하고 화면 전체 높이에 맞춘다. 상세 미리보기의 문제·정답·보기·답안 영역과 타이포그래피는 일반 학습 및 종합평가 생성 결과 미리보기와 같은 크기를 사용하며, 별도의 해설 보기 버튼이나 해설 모달은 제공하지 않는다.
 - 문제 보관함의 출제 상태는 별도 필드로 저장하지 않고 `assignments` 배열의 길이에서 파생한다.

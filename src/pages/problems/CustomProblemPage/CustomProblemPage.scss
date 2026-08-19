@@ -1,5 +1,4 @@
 .custom-problem-page { min-width: 940px; height: calc(100vh - var(--section-header-height, 72px) - 40px); display: flex; flex-direction: column; overflow: hidden; color: #465166;
-  &__page-header { min-height: 92px; flex: 0 0 auto; margin-bottom: 16px; padding: 22px 24px 18px; display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; background: #fff; border: 1px solid #dde2e8; border-radius: 10px; h1 { color: #172033; font-size: 24px; font-weight: 700; line-height: 1.35; letter-spacing: -.4px; } p { margin-top: 5px; color: #747f91; font-size: 13px; } > span { color: #747f91; font-size: 12px; white-space: nowrap; } }
   &__filters { flex: 0 0 auto; margin-bottom: 16px; }
   &__workspace { min-height: 0; flex: 1; display: grid; grid-template-columns: minmax(190px,.6fr) minmax(480px,2.2fr) minmax(230px,.85fr); gap: 14px; align-items: stretch; overflow: hidden; }
   &__main { min-width: 0; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
@@ -21,5 +20,5 @@
   .custom-problem-result {
     &__student-preview { grid-template-columns: minmax(0, 980px); }
   }
-  .custom-problem-page { min-width: 0; &__workspace { grid-template-columns: 1fr; grid-template-rows: minmax(0,.7fr) minmax(0,2fr) minmax(0,.9fr); > .weakness-summary { grid-column: auto; } } &__page-header { align-items: flex-start; flex-direction: column; } } }
+  .custom-problem-page { min-width: 0; &__workspace { grid-template-columns: 1fr; grid-template-rows: minmax(0,.7fr) minmax(0,2fr) minmax(0,.9fr); > .weakness-summary { grid-column: auto; } } } }
 @media (max-width: 720px) { .custom-config__footer { align-items: stretch; flex-direction: column; } .custom-config__add, .custom-config__generate { justify-content: space-between; } .custom-problem-result { &__header { align-items: flex-start; flex-direction: column; flex-basis: auto; } &__actions { width: 100%; flex-wrap: wrap; } &__student-preview { padding-inline: 14px; } &__preview-controls { grid-template-columns: 1fr 1fr; gap: 10px; > span { display: none; } button { min-width: 0; width: 100%; } } } }

@@ -3,7 +3,6 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { UnitScopeFilter, UnitTreeSelector } from '../../../components/common/filters';
 import { defaultSupportModes } from '../../../mocks/labels';
 import { defaultUnitCounts, difficultyLevels } from '../../../mocks/problemCreation';
-import { libraryWorksheets } from '../../../mocks/problemLibrary';
 import { PracticeProblemView, StudentSupportPreview } from '../../../components/common/worksheets';
 import useSectionFocusMode from '../../../components/SectionLayout/useSectionFocusMode';
 import sennyChatbot from '../../../assets/images/senny-chatbot.png';
@@ -11,7 +10,11 @@ import ProblemAiEditPanel from './components/ProblemAiEditPanel';
 import UnitConfigTable from './components/UnitConfigTable';
 import { useProblemUnitsQuery } from '../problemUnitHooks.js';
 import { useProblemGenerationMutation } from '../problemGenerationHooks.js';
-import { useWorksheetSaveMutation } from '../worksheetHooks.js';
+import {
+    useWorksheetGenSpecQuery,
+    useWorksheetSaveMutation,
+} from '../worksheetHooks.js';
+import { buildPracticePrefillConfigs } from '../worksheetGenSpecAdapter.js';
 import WorksheetTitleModal from '../shared/WorksheetTitleModal.jsx';
 import './ProblemCreationPage.scss';
 import './components/ProblemCreationComponents.scss';
@@ -19,6 +22,7 @@ import './components/ProblemCreationComponents.scss';
 function ProblemCreationPage() {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
+    const sourceWorksheetId = searchParams.get('from');
     const initializedFromLibrary = useRef(false);
     const [gradeId, setGradeId] = useState('middle-1');
     const [term, setTerm] = useState('first');
@@ -34,6 +38,7 @@ function ProblemCreationPage() {
     useSectionFocusMode(Boolean(result));
 
     const unitsQuery = useProblemUnitsQuery({ gradeId, term });
+    const genSpecQuery = useWorksheetGenSpecQuery(sourceWorksheetId);
     const generationMutation = useProblemGenerationMutation();
     const saveMutation = useWorksheetSaveMutation();
     const majorUnits = unitsQuery.data ?? [];
@@ -50,22 +55,21 @@ function ProblemCreationPage() {
     const generationError = generationMutation.error?.code === 'QUESTION_INVENTORY_INSUFFICIENT'
         ? '선택한 소단원과 난이도에 요청한 수량만큼의 문제가 없습니다. 문항 수를 줄여 다시 시도해 주세요.'
         : generationMutation.error?.message;
+    const configurationError = genSpecQuery.isError
+        ? genSpecQuery.error?.message || '복제할 학습지의 출제 조건을 불러오지 못했습니다.'
+        : generationError;
+    const isConfigurationLoading = genSpecQuery.isFetching;
     const worksheetTitle = `${configs[0]?.unit.name ?? '수학'}${configs.length > 1 ? ` 외 ${configs.length - 1}개 단원` : ''} 일반 학습`;
 
     useEffect(() => {
         if (initializedFromLibrary.current) return;
-        const source = libraryWorksheets.find((item) => item.id === searchParams.get('from') && item.type === 'practice' && item.origin !== 'custom');
-        if (!source) return;
+        const source = genSpecQuery.data;
+        if (!source || source.type !== 'practice') return;
         initializedFromLibrary.current = true;
         setGradeId(source.gradeId);
-        setTerm(source.term ?? 'first');
-        const countsByUnit = source.problems.reduce((acc, problem) => {
-            acc[problem.unitId] ??= { ...defaultUnitCounts };
-            acc[problem.unitId][problem.difficulty] += 1;
-            return acc;
-        }, {});
-        setUnitConfigs(Object.entries(countsByUnit).map(([unitId, counts]) => ({ unitId, counts })));
-    }, [searchParams]);
+        setTerm(source.term);
+        setUnitConfigs(buildPracticePrefillConfigs(source.genSpec));
+    }, [genSpecQuery.data]);
 
     const closeResult = () => {
         setEditMode(false);
@@ -170,17 +174,17 @@ function ProblemCreationPage() {
 
     return (
         <section className="problem-creation-page" aria-labelledby={result ? 'problem-result-title' : 'unit-selection-title'}>
-            {!result && <UnitScopeFilter gradeId={gradeId} term={term} disabled={generationMutation.isPending} onGradeChange={(value) => changeScope(setGradeId, value)} onTermChange={(value) => changeScope(setTerm, value)} />}
+            {!result && <UnitScopeFilter gradeId={gradeId} term={term} disabled={generationMutation.isPending || isConfigurationLoading} onGradeChange={(value) => changeScope(setGradeId, value)} onTermChange={(value) => changeScope(setTerm, value)} />}
 
             {!result ? (
                 <div className="problem-creation-page__configuration">
                     <section className="problem-creation-section" aria-labelledby="unit-selection-title">
                         <header><div><h2 id="unit-selection-title">단원 선택</h2><p>출제할 소단원을 선택합니다.</p></div><span>{configs.length}개 선택</span></header>
-                        <UnitTreeSelector key={`${gradeId}-${term}`} majorUnits={majorUnits} selectedUnitIds={selectedIds} onToggleUnit={toggleUnit} onToggleMiddleUnit={toggleMiddle} isLoading={unitsQuery.isPending} error={unitsQuery.error} onRetry={unitsQuery.refetch} disabled={generationMutation.isPending} />
+                        <UnitTreeSelector key={`${gradeId}-${term}`} majorUnits={majorUnits} selectedUnitIds={selectedIds} onToggleUnit={toggleUnit} onToggleMiddleUnit={toggleMiddle} isLoading={unitsQuery.isPending} error={unitsQuery.error} onRetry={unitsQuery.refetch} disabled={generationMutation.isPending || isConfigurationLoading} />
                     </section>
                     <section className="problem-creation-section" aria-labelledby="unit-config-title">
                         <header><div><h2 id="unit-config-title">출제 구성</h2><p>소단원별로 하·중·상 문항 수를 배분합니다.</p></div><span>난이도별 최대 30문항</span></header>
-                        <UnitConfigTable configs={configs} totalCount={totalCount} onCountChange={changeCount} onRemove={toggleUnit} onGenerate={createProblems} canGenerate={canGenerate} isGenerating={generationMutation.isPending} error={generationError} />
+                        <UnitConfigTable configs={configs} totalCount={totalCount} onCountChange={changeCount} onRemove={toggleUnit} onGenerate={createProblems} canGenerate={canGenerate} isGenerating={generationMutation.isPending || isConfigurationLoading} error={configurationError} />
                     </section>
                 </div>
             ) : (

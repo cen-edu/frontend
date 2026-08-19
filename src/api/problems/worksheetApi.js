@@ -20,6 +20,10 @@ export const getWorksheet = ({ worksheetId, signal }) => (
     httpClient.get(`/teacher/worksheets/${worksheetId}`, { signal })
 );
 
+export const getWorksheetGenSpec = ({ worksheetId, signal }) => (
+    httpClient.get(`/teacher/worksheets/${worksheetId}/gen-spec`, { signal })
+);
+
 export const createWorksheet = (worksheet) => (
     httpClient.post('/teacher/worksheets', worksheet)
 );

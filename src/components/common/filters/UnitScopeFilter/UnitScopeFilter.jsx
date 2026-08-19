@@ -3,11 +3,14 @@ import './UnitScopeFilter.scss';
 
 const gradeOptions = [
     { value: 'middle-1', label: '1학년' },
+    { value: 'middle-2', label: '2학년' },
+    { value: 'middle-3', label: '3학년' },
 ];
 
 const termOptions = [
     { value: 'first', label: '1학기' },
     { value: 'second', label: '2학기' },
+    { value: 'common', label: '공통' },
 ];
 
 function UnitScopeFilter({ gradeId, term, onGradeChange, onTermChange, disabled = false }) {

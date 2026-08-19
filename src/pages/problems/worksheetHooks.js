@@ -1,7 +1,39 @@
-import { useMutation } from '@tanstack/react-query';
-import { createWorksheet } from '../../api/problems/worksheetApi.js';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+    createWorksheet,
+    getWorksheetGenSpec,
+} from '../../api/problems/worksheetApi.js';
 import { buildWorksheetSavePayload } from './worksheetSaveAdapter.js';
+import { normalizeWorksheetGenSpec } from './worksheetGenSpecAdapter.js';
 
-export const useWorksheetSaveMutation = () => useMutation({
-    mutationFn: (worksheet) => createWorksheet(buildWorksheetSavePayload(worksheet)),
-});
+export const worksheetGenSpecQueryKeys = {
+    all: ['teacher', 'worksheets', 'gen-spec'],
+    detail: (worksheetId) => [...worksheetGenSpecQueryKeys.all, worksheetId],
+};
+
+export const useWorksheetGenSpecQuery = (worksheetId) => {
+    const normalizedWorksheetId = Number(worksheetId);
+    const enabled = Number.isInteger(normalizedWorksheetId) && normalizedWorksheetId > 0;
+
+    return useQuery({
+        queryKey: worksheetGenSpecQueryKeys.detail(normalizedWorksheetId),
+        queryFn: ({ signal }) => getWorksheetGenSpec({
+            worksheetId: normalizedWorksheetId,
+            signal,
+        }),
+        select: normalizeWorksheetGenSpec,
+        enabled,
+    });
+};
+
+export const useWorksheetSaveMutation = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (worksheet) => createWorksheet(buildWorksheetSavePayload(worksheet)),
+        onSuccess: () => queryClient.invalidateQueries({
+            queryKey: ['teacher', 'worksheets', 'list'],
+            refetchType: 'all',
+        }),
+    });
+};

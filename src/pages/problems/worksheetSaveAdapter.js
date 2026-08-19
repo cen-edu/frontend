@@ -7,9 +7,11 @@ const gradeValues = {
 const questionTypeValues = {
     MULTIPLE_CHOICE: 'choice',
     SHORT_INPUT: 'short',
+    STEP_FILL: 'step',
     ESSAY: 'essay',
     choice: 'choice',
     short: 'short',
+    step: 'step',
     essay: 'essay',
 };
 

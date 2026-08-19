@@ -3,11 +3,14 @@ import { getProblemUnits } from '../../api/problems/problemUnitsApi.js';
 
 const gradeValues = {
     'middle-1': 1,
+    'middle-2': 2,
+    'middle-3': 3,
 };
 
 const semesterValues = {
-    first: 1,
-    second: 2,
+    first: 'first',
+    second: 'second',
+    common: 'common',
 };
 
 const sortUnits = (units = []) => [...units]

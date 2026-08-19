@@ -123,8 +123,7 @@ function CustomProblemPage() {
 
     const workByStudentId = Object.fromEntries(worksheet.students.map((student) => [student.id, studentWork[`${worksheet.id}:${student.id}`]]));
 
-    return <section className="custom-problem-page" aria-labelledby="custom-problem-title">
-        {!currentWork.problems.length && <header className="custom-problem-page__page-header"><div><h1 id="custom-problem-title">맞춤 문제 생성</h1><p>풀이 단계별 오답을 바탕으로 비계를 줄이는 3단계 문제를 구성합니다.</p></div><span>{worksheet.className} · {worksheet.title}</span></header>}
+    return <section className="custom-problem-page" aria-label="맞춤 문제 생성">
         {currentWork.problems.length ? <section className="custom-problem-result" aria-labelledby="custom-result-title">
             <header className="custom-problem-result__header">
                 <div><h2 id="custom-result-title">생성 결과</h2><p>{selectedStudent.name} 학생 · 총 {currentWork.problems.length}문항을 학생 화면과 같은 순서로 검토합니다.</p></div>
