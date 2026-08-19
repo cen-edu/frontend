@@ -4,6 +4,10 @@ import { AnalysisFilters, useAcademicContextFilters } from '../../../components/
 import { getWorksheetTypeLabel } from '../../../mocks/labels';
 import { WorksheetType } from '../../../api/analysis/analysisConstants.js';
 import {
+    getClassAnalysisReportPdf,
+    getStudentAnalysisReportPdf,
+} from '../../../api/analysis/analysisApi.js';
+import {
     adaptAnalysisStudents,
     formatAnalysisCalculatedAt,
     normalizeAnalysisWorksheetType,
@@ -43,6 +47,18 @@ const worksheetTypeOptions = [
     { value: WorksheetType.GENERAL_LEARNING, label: '일반 학습' },
 ];
 
+const downloadBlob = (blob, fileName) => {
+    const objectUrl = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+
+    anchor.href = objectUrl;
+    anchor.download = fileName;
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    URL.revokeObjectURL(objectUrl);
+};
+
 function WeaknessAnalysisPage() {
     const { id: studentId } = useParams();
     const navigate = useNavigate();
@@ -60,6 +76,8 @@ function WeaknessAnalysisPage() {
     const [assignmentNotice, setAssignmentNotice] = useState('');
     const [targetSort, setTargetSort] = useState('status');
     const [studentSearch, setStudentSearch] = useState('');
+    const [isReportDownloading, setIsReportDownloading] = useState(false);
+    const [reportDownloadError, setReportDownloadError] = useState('');
     const refreshedMissingClassErrorAt = useRef(0);
     const handledAssignmentErrorAt = useRef(0);
 
@@ -127,6 +145,10 @@ function WeaknessAnalysisPage() {
             behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
         });
     }, [studentId]);
+
+    useEffect(() => {
+        setReportDownloadError('');
+    }, [studentId, worksheetId]);
 
     useEffect(() => {
         if (
@@ -240,6 +262,52 @@ function WeaknessAnalysisPage() {
         const nextStudent = worksheet.students[selectedIndex + delta];
         if (nextStudent) selectStudent(nextStudent.id);
     };
+    const downloadReport = async () => {
+        setIsReportDownloading(true);
+        setReportDownloadError('');
+
+        try {
+            if (studentId) {
+                const report = await getStudentAnalysisReportPdf({
+                    assignmentId: worksheetId,
+                    studentId,
+                });
+                downloadBlob(report, `analysis-report-${worksheetId}-${studentId}.pdf`);
+            } else {
+                const report = await getClassAnalysisReportPdf({ assignmentId: worksheetId });
+                downloadBlob(report, `class-analysis-report-${worksheetId}.pdf`);
+            }
+        } catch (error) {
+            if (error?.code === STUDENT_NOT_ASSIGNED) {
+                setAssignmentNotice('선택한 학생은 이 학습지의 배정 대상이 아닙니다. 갱신된 학생 목록을 확인해 주세요.');
+                studentsQuery.refetch();
+                navigate(`/learning/weaknesses?worksheet=${worksheetId}`, { replace: true });
+                return;
+            }
+
+            if (
+                error?.code === ASSIGNMENT_ACCESS_DENIED
+                || error?.code === ASSIGNMENT_NOT_FOUND
+                || error?.code === FORBIDDEN
+            ) {
+                setRequiresWorksheetReselection(true);
+                setAssignmentNotice(
+                    error.code === ASSIGNMENT_NOT_FOUND
+                        ? '선택한 학습지가 없어졌습니다. 갱신된 목록에서 다시 선택해 주세요.'
+                        : '이 학습지에 접근할 수 없습니다. 학습지 목록에서 다시 선택해 주세요.',
+                );
+                setWorksheetId('');
+                setStudentSearch('');
+                assignmentQuery.refetch();
+                navigate('/learning/weaknesses', { replace: true });
+                return;
+            }
+
+            setReportDownloadError(error?.message || '보고서를 내려받지 못했습니다. 잠시 후 다시 시도해 주세요.');
+        } finally {
+            setIsReportDownloading(false);
+        }
+    };
 
     const worksheetOptions = academicContextsQuery.isPending
         ? [{ value: '', label: '담당 학급을 불러오는 중입니다.' }]
@@ -346,8 +414,19 @@ function WeaknessAnalysisPage() {
                             <h2>{studentId ? `${studentSummaryQuery.data?.studentName ?? selectedStudent?.name ?? '학생'} 분석 결과` : `${worksheet.className} 분석 결과`}</h2>
                             <p>{worksheet.title} · {worksheet.date}</p>
                         </div>
-                        <button type="button" disabled title="보고서 다운로드는 다음 단계에서 제공됩니다."><i className="bi bi-download" aria-hidden="true" /> {studentId ? '개인 보고서' : '학급 보고서'} 다운로드</button>
+                        <button
+                            type="button"
+                            onClick={downloadReport}
+                            disabled={isReportDownloading}
+                            aria-busy={isReportDownloading}
+                        >
+                            <i className={`bi ${isReportDownloading ? 'bi-hourglass-split' : 'bi-download'}`} aria-hidden="true" />
+                            {isReportDownloading
+                                ? '보고서 생성 중...'
+                                : `${studentId ? '개인 보고서' : '학급 보고서'} 다운로드`}
+                        </button>
                     </div>
+                    {reportDownloadError && <div className="weakness-page__inline-notice weakness-page__inline-notice--error" role="alert">{reportDownloadError}</div>}
                     {renderAnalysisContent()}
                 </main>
             </div>}

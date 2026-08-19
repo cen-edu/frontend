@@ -1,4 +1,5 @@
 import httpClient from '../httpClient.js';
+import ApiError from '../ApiError.js';
 
 export const ANALYSIS_API_BASE_PATH = '/teacher/analysis';
 
@@ -20,6 +21,39 @@ export const analysisApi = {
         data,
         { signal },
     ),
+};
+
+const getAnalysisPdf = async (path, { signal } = {}) => {
+    const response = await httpClient.get(
+        `${ANALYSIS_API_BASE_PATH}${path}`,
+        {
+            signal,
+            responseType: 'blob',
+            returnRawResponse: true,
+            headers: {
+                Accept: 'application/pdf',
+            },
+        },
+    );
+    const contentType = response.headers?.['content-type'] ?? '';
+
+    if (!contentType.includes('application/pdf')) {
+        let errorBody = null;
+
+        try {
+            errorBody = JSON.parse(await response.data.text());
+        } catch {
+            // PDF가 아닌 알 수 없는 응답은 공통 오류 문구로 처리한다.
+        }
+
+        throw new ApiError({
+            status: response.status,
+            code: errorBody?.error?.code ?? null,
+            message: errorBody?.error?.message || '보고서 파일을 내려받지 못했습니다.',
+        });
+    }
+
+    return response.data;
 };
 
 /**
@@ -111,5 +145,15 @@ export const requestStudentAnalysisReport = ({ assignmentId, studentId, signal }
 
 export const getStudentAnalysisReport = ({ assignmentId, studentId, signal }) => analysisApi.get(
     `/assignments/${Number(assignmentId)}/students/${Number(studentId)}/report`,
+    { signal },
+);
+
+export const getClassAnalysisReportPdf = ({ assignmentId, signal }) => getAnalysisPdf(
+    `/assignments/${Number(assignmentId)}/report.pdf`,
+    { signal },
+);
+
+export const getStudentAnalysisReportPdf = ({ assignmentId, studentId, signal }) => getAnalysisPdf(
+    `/assignments/${Number(assignmentId)}/students/${Number(studentId)}/report.pdf`,
     { signal },
 );

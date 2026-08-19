@@ -19,6 +19,18 @@ const httpClient = axios.create({
     },
 });
 
+const parseBlobResponse = async (responseData) => {
+    if (typeof Blob === 'undefined' || !(responseData instanceof Blob)) {
+        return responseData;
+    }
+
+    try {
+        return JSON.parse(await responseData.text());
+    } catch {
+        return null;
+    }
+};
+
 httpClient.interceptors.request.use((config) => {
     const auth = getAuth();
 
@@ -32,6 +44,10 @@ httpClient.interceptors.request.use((config) => {
 
 httpClient.interceptors.response.use(
     (response) => {
+        if (response.config.returnRawResponse) {
+            return response;
+        }
+
         if (response.status === 204) {
             return null;
         }
@@ -48,13 +64,13 @@ httpClient.interceptors.response.use(
 
         return apiResponse.data;
     },
-    (error) => {
+    async (error) => {
         if (axios.isCancel(error)) {
             return Promise.reject(error);
         }
 
         const status = error.response?.status ?? null;
-        const responseData = error.response?.data;
+        const responseData = await parseBlobResponse(error.response?.data);
         const errorBody = responseData?.error;
         const isTimeout = error.code === 'ECONNABORTED';
 
