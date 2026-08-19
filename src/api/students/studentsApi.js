@@ -22,6 +22,9 @@ export const getStudents = ({
     signal,
 });
 
+export const getStudentDetail = ({ studentId, signal }) =>
+    httpClient.get(`/teacher/students/${studentId}`, { signal });
+
 export const createStudent = ({
                                   name,
                                   registrationYear,
@@ -41,3 +44,6 @@ export const createStudentsBulk = (file) => {
 
 export const deleteStudent = (studentId) =>
     httpClient.delete(`/teacher/students/${studentId}`);
+
+export const resetStudentPassword = (studentId) =>
+    httpClient.patch(`/teacher/students/${studentId}/password/reset`);

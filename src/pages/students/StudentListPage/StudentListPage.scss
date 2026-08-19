@@ -117,7 +117,7 @@
 
   &__table {
     width: 100%;
-    min-width: 880px;
+    min-width: 760px;
     border-collapse: collapse;
     table-layout: fixed;
 
@@ -140,10 +140,9 @@
     th:nth-child(2) { width: 12%; }
     th:nth-child(3) { width: 9%; }
     th:nth-child(4) { width: 10%; }
-    th:nth-child(5) { width: 15%; }
-    th:nth-child(6) { width: 18%; }
-    th:nth-child(7) { width: 18%; }
-    th:nth-child(8) { width: 13%; }
+    th:nth-child(5) { width: 18%; }
+    th:nth-child(6) { width: 25%; }
+    th:nth-child(7) { width: 21%; }
     td:nth-child(5) { color: #263247; font-weight: 600; }
   }
 

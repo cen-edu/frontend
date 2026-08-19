@@ -86,6 +86,7 @@
 
     &:hover { background: #0f5fa8; border-color: #0f5fa8; }
     &:focus-visible { outline: 3px solid rgba(23, 111, 193, .25); outline-offset: 2px; }
+    &:disabled { cursor: default; opacity: .65; }
   }
 
   &__info-list {
@@ -110,6 +111,35 @@
       color: #172033;
       font-size: 17px;
       font-weight: 700;
+    }
+  }
+
+  &__account-error {
+    margin-top: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    color: #b42318;
+    font-size: 15px;
+    line-height: 1.5;
+
+    button {
+      min-height: 50px;
+      padding: 0 16px;
+      flex-shrink: 0;
+      background: #fff;
+      border: 1px solid #cfd6df;
+      border-radius: 8px;
+      color: #465166;
+      font-family: inherit;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+
+      &:hover { background: #f8f9fb; border-color: #8a94a3; color: #172033; }
+      &:focus-visible { outline: 3px solid rgba(23, 111, 193, .22); outline-offset: 2px; }
+      &:disabled { cursor: default; opacity: .65; }
     }
   }
 
@@ -148,18 +178,8 @@
         border-color: #176fc1;
         outline: 3px solid rgba(23, 111, 193, .18);
       }
+      &:disabled { background: #f4f6f8; cursor: default; }
     }
-  }
-
-  &__message {
-    grid-column: 1 / -1;
-    min-height: 23px;
-    color: #747f91;
-    font-size: 15px;
-    line-height: 1.5;
-
-    &--error { color: #b42318; }
-    &--success { color: #2f7357; }
   }
 
   &__logout {
@@ -207,6 +227,8 @@
     &__section-topline { align-items: stretch; flex-direction: column; }
     &__password-submit { width: 100%; }
     &__info-list > div { grid-template-columns: 110px minmax(0, 1fr); }
+    &__account-error { align-items: stretch; flex-direction: column; }
+    &__account-error button { width: 100%; }
     &__logout { align-items: stretch; flex-direction: column; }
     &__logout button { width: 100%; }
   }

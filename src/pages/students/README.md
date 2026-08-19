@@ -8,7 +8,6 @@
 | --- | --- | --- |
 | `/students` | `StudentListPage` | 학생 목록 조회, 필터링, 선택, 등록, 수정 |
 | `/students/classes` | `ClassManagementPage` | 반 목록 조회, 검색, 선택, 순서 변경, 생성, 수정 |
-| `/student?student={학생 ID}` | `StudentHomePage` | 선택한 학생의 학생앱 메인 화면 미리보기 |
 
 `/students`, `/students/classes`는 `StudentManagementLayout`을 공통 부모로 사용한다. `StudentManagementLayout`은 공용 `SectionLayout`에 학생 관리 메뉴 설정을 전달하며, 자식 화면은 `SectionLayout`의 `Outlet` 위치에 렌더링된다. 반 생성과 상세 수정은 별도 경로로 이동하지 않고 `/students/classes` 목록 위에 모달로 표시한다.
 
@@ -152,8 +151,7 @@ src/pages/students/
 - 반 이름은 `getClassLabel`로 전달받고 값이 없으면 흐린 색의 `미배정`으로 표시한다.
 - 전체 선택과 개별 학생 선택을 처리한다.
 - 행 클릭 및 `Enter`, `Space` 키를 통한 선택을 지원한다.
-- 학생앱 이동 및 상세보기 버튼을 렌더링한다.
-- 학생앱 이동은 선택한 학생 ID를 `student` 쿼리로 전달해 독립 라우트의 `StudentHomePage`를 연다.
+- 상세보기 버튼을 렌더링한다.
 - 상세보기 요청은 선택된 학생 객체를 상위 페이지에 전달한다.
 
 ### `StudentSelectionBar.jsx`
@@ -194,12 +192,11 @@ src/pages/students/
 
 ### `StudentDetailModal.jsx`
 
-- 기존 학생 정보를 확인하고 수정하는 폼이다.
-- 학생 이름과 학년을 수정한다.
-- 등록 연도와 학생 ID는 읽기 전용으로 표시한다.
-- 등록 모달과 동일하게 섹션 제목 없이 네 개 필드를 세로 1열로 나열한다.
+- 상세보기 진입 시 `GET /api/teacher/students/{studentId}`로 최신 학생 정보를 조회한다.
+- 등록 연도, 학생 이름, 학년, 로그인 ID와 활성 소속 반을 읽기 전용으로 표시한다.
+- 상세 조회의 로딩·오류 상태와 재시도 동작을 모달 안에서 제공한다.
 - 학생 비밀번호 초기화 UI를 제공한다.
-- 저장 결과를 `onSave`로 상위 페이지에 전달한다.
+- 사용자 확인 후 `PATCH /api/teacher/students/{studentId}/password/reset`을 호출하며 처리 중 중복 요청과 모달 닫기를 막고 성공·오류 상태를 표시한다.
 
 ### `StudentGradeSelector.jsx`
 
@@ -248,7 +245,7 @@ src/pages/students/
 ## 외부 의존 파일
 
 - `src/api/classes/classesApi.js`: 반 목록·상세·배정 가능 학생 조회와 생성·수정·삭제·순서 변경 요청을 담당하는 API 모듈
-- `src/api/students/studentsApi.js`: 학생 목록 조회, 개별 등록·삭제와 `POST /api/teacher/students/bulk` CSV 일괄 등록 요청을 담당하는 API 모듈
+- `src/api/students/studentsApi.js`: 학생 목록·상세 조회, 개별 등록·삭제, 비밀번호 초기화와 `POST /api/teacher/students/bulk` CSV 일괄 등록 요청을 담당하는 API 모듈
 - `src/api/teachers/teacherAccountApi.js`: 반 목록의 현재 담당 교사 이름 조회에 사용하는 계정 API 모듈
 - `src/components/Header/Header.jsx`: 서비스 공통 헤더
 - `src/components/SectionLayout/SectionLayout.jsx`: 헤더, 공용 사이드바와 중첩 화면을 배치하는 섹션 공통 레이아웃
@@ -257,8 +254,6 @@ src/pages/students/
 - `src/components/common/CustomSelect/CustomSelect.jsx`: 공통 드롭다운
 - `src/components/common/CustomCheckbox/CustomCheckbox.jsx`: 목록 선택용 공통 체크박스
 - `src/App.jsx`: 학생 관리 중첩 라우트 등록
-- `src/pages/student/StudentHomePage`: 학생별 배정 학습지를 `전체 / 숙제 / 평가`로 조회하고 카드 단위로 선택하는 독립 학생앱 메인 화면
-- `src/mocks/studentAssignments.js`: 학생앱 메인 화면의 배정 데이터와 유형·상태·맞춤 단계 라벨
 
 ## 데이터 흐름
 
@@ -273,7 +268,7 @@ GET /api/teacher/students
         ↓
 StudentListPage (서버 목록·페이지 정보 표시)
         ├── StudentToolbar (필터·검색 변경 및 등록 모달 열기 요청)
-        ├── StudentTable (선택·상세보기·학생앱 이동 요청)
+        ├── StudentTable (선택·상세보기 요청)
         ├── StudentSelectionBar (선택 해제·학생 삭제 요청)
         ├── StudentBulkRegistrationModal (양식 다운로드·파일 첨부)
         └── StudentRegistrationModal (개별 학생 등록 요청)

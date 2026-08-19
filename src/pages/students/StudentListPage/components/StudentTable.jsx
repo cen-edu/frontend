@@ -7,7 +7,6 @@ function StudentTable({
     onToggleAll,
     onToggleStudent,
     onOpenDetail,
-    onOpenStudentApp,
     emptyMessage = '검색 조건에 맞는 학생이 없습니다.',
     detailDisabled = false,
 }) {
@@ -38,7 +37,6 @@ function StudentTable({
                         <th>반</th>
                         <th>학생 이름</th>
                         <th>학생 ID</th>
-                        <th>학생앱</th>
                         <th>상세</th>
                     </tr>
                 </thead>
@@ -65,12 +63,11 @@ function StudentTable({
                                 ?? <span className="student-list__unassigned">미배정</span>}</td>
                             <td>{student.name}</td>
                             <td>{student.loginId}</td>
-                            <td><button type="button" className="student-list__table-button" onClick={() => onOpenStudentApp(student)}>학생앱으로 이동</button></td>
                             <td><button type="button" className="student-list__table-button" disabled={detailDisabled} onClick={() => onOpenDetail(student)}>상세보기</button></td>
                         </tr>
                     ))}
                     {students.length === 0 && (
-                        <tr><td className="student-list__empty" colSpan="8">{emptyMessage}</td></tr>
+                        <tr><td className="student-list__empty" colSpan="7">{emptyMessage}</td></tr>
                     )}
                 </tbody>
             </table>

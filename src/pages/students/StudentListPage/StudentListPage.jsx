@@ -1,5 +1,4 @@
 import { useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import StudentSelectionBar from './components/StudentSelectionBar';
 import StudentTable from './components/StudentTable';
 import StudentToolbar from './components/StudentToolbar';
@@ -9,15 +8,17 @@ import {
     useCreateStudentMutation,
     useCreateStudentsBulkMutation,
     useDeleteStudentsMutation,
+    useResetStudentPasswordMutation,
+    useStudentDetailQuery,
 } from './studentHooks.js';
 import './StudentListPage.scss';
 import StudentRegistrationModal from './components/StudentRegistrationModal';
+import StudentDetailModal from './components/StudentDetailModal';
 
 
 const PAGE_SIZE = 10;
 
 function StudentListPage() {
-    const navigate = useNavigate();
     const [selectedIds, setSelectedIds] = useState([]);
     const [yearFilter, setYearFilter] = useState('all');
     const [gradeFilter, setGradeFilter] = useState('all');
@@ -27,6 +28,7 @@ function StudentListPage() {
     const [page, setPage] = useState(1);
     const [isBulkRegistrationOpen, setIsBulkRegistrationOpen] = useState(false);
     const [bulkRegistrationError, setBulkRegistrationError] = useState('');
+    const [detailStudentId, setDetailStudentId] = useState(null);
 
     const queryParams = {
         registrationYear: yearFilter === 'all' ? undefined : Number(yearFilter),
@@ -44,6 +46,8 @@ function StudentListPage() {
     const totalElements = data?.totalElements ?? 0;
     const totalPages = data?.totalPages ?? 0;
     const currentPage = (data?.page ?? page - 1) + 1;
+    const studentDetailQuery = useStudentDetailQuery(detailStudentId);
+    const resetStudentPasswordMutation = useResetStudentPasswordMutation();
 
     // 별도 반 목록 API가 연결되기 전에는 현재 조회 결과에 포함된 반만 필터 옵션으로 노출한다.
     const classes = useMemo(() => {
@@ -179,6 +183,25 @@ function StudentListPage() {
         });
     };
 
+    const handleCloseDetail = () => {
+        if (resetStudentPasswordMutation.isPending) return;
+
+        setDetailStudentId(null);
+        resetStudentPasswordMutation.reset();
+    };
+
+    const handleResetPassword = () => {
+        if (!detailStudentId) return;
+
+        const confirmed = window.confirm(
+            '이 학생의 비밀번호를 초기화하시겠습니까?',
+        );
+
+        if (!confirmed) return;
+
+        resetStudentPasswordMutation.mutate(detailStudentId);
+    };
+
     return (
         <section className="student-list" aria-labelledby="student-list-title">
             <header className="student-list__header">
@@ -212,10 +235,8 @@ function StudentListPage() {
                 getClassLabel={getClassLabel}
                 onToggleAll={toggleAll}
                 onToggleStudent={toggleStudent}
-                onOpenDetail={() => {}}
-                onOpenStudentApp={(student) => navigate(`/student?student=${student.id}`)}
+                onOpenDetail={(student) => setDetailStudentId(student.id)}
                 emptyMessage={emptyMessage}
-                detailDisabled
             />
 
             <div className="student-list__pagination" aria-label="페이지 이동">
@@ -274,6 +295,20 @@ function StudentListPage() {
                     }}
                     onRegister={handleRegisterStudent}
                     isPending={createStudentMutation.isPending}
+                />
+            )}
+
+            {detailStudentId && (
+                <StudentDetailModal
+                    student={studentDetailQuery.data}
+                    isPending={studentDetailQuery.isPending}
+                    error={studentDetailQuery.error}
+                    onRetry={() => studentDetailQuery.refetch()}
+                    onClose={handleCloseDetail}
+                    onResetPassword={handleResetPassword}
+                    isPasswordResetPending={resetStudentPasswordMutation.isPending}
+                    isPasswordResetSuccess={resetStudentPasswordMutation.isSuccess}
+                    passwordResetError={resetStudentPasswordMutation.error}
                 />
             )}
         </section>

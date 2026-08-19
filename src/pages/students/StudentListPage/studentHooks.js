@@ -4,13 +4,17 @@ import {
     createStudent,
     createStudentsBulk,
     deleteStudent,
+    getStudentDetail,
     getStudents,
+    resetStudentPassword,
 } from '../../../api/students/studentsApi.js';
 
 
 export const studentQueryKeys = {
     all: ['teacher', 'students'],
     list: (params) => [...studentQueryKeys.all, 'list', params],
+    details: () => [...studentQueryKeys.all, 'detail'],
+    detail: (studentId) => [...studentQueryKeys.details(), studentId],
 };
 
 const invalidateStudentDependentQueries = (queryClient) => Promise.all([
@@ -25,6 +29,12 @@ export const useStudentsQuery = (params) => useQuery({
     queryKey: studentQueryKeys.list(params),
     queryFn: ({ signal }) => getStudents({ ...params, signal }),
     placeholderData: keepPreviousData,
+});
+
+export const useStudentDetailQuery = (studentId) => useQuery({
+    queryKey: studentQueryKeys.detail(studentId),
+    queryFn: ({ signal }) => getStudentDetail({ studentId, signal }),
+    enabled: Boolean(studentId),
 });
 
 export const useCreateStudentMutation = () => {
@@ -54,3 +64,7 @@ export const useDeleteStudentsMutation = () => {
         onSettled: () => invalidateStudentDependentQueries(queryClient),
     });
 };
+
+export const useResetStudentPasswordMutation = () => useMutation({
+    mutationFn: resetStudentPassword,
+});

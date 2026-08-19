@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
+import { getAuth } from "../../api/auth/authStorage.js";
 import logoSymbol from "../../assets/images/logo-symbol.png";
 import teachers from "../../mocks/teachers";
 import "./Header.scss";
@@ -11,6 +12,7 @@ function Header({ hideOnWheel = false, onHiddenChange, mode = 'teacher', userNam
     const studentHomePath = `/student${studentQuery}`;
     const studentWorksheetsPath = `/student/worksheets${studentQuery}`;
     const studentProfilePath = `/student/profile${studentQuery}`;
+    const isStudentAccount = getAuth()?.role === 'STUDENT';
     const currentTeacher = teachers[0];
     const [isHidden, setIsHidden] = useState(false);
     const downwardWheelCount = useRef(0);
@@ -163,9 +165,11 @@ function Header({ hideOnWheel = false, onHiddenChange, mode = 'teacher', userNam
                             {userName} 학생
                             <i className="bi bi-chevron-right header__student-name-arrow" aria-hidden="true" />
                         </NavLink>
-                        <Link to="/students" className="header__return-link">
-                            교사 화면으로 돌아가기
-                        </Link>
+                        {!isStudentAccount && (
+                            <Link to="/students" className="header__return-link">
+                                교사 화면으로 돌아가기
+                            </Link>
+                        )}
                     </div>
                 )}
             </div>
