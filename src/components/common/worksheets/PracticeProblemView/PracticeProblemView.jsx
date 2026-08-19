@@ -5,7 +5,9 @@ import { omitPeriodAfterTerminalBlank } from '../problemSegmentUtils';
 import './PracticeProblemView.scss';
 
 function PracticeProblemMedia({ blocks = [] }) {
-    const mediaBlocks = blocks.filter((block) => block.blockKind !== 'text');
+    const mediaBlocks = blocks.filter((block) => (
+        block.blockKind !== 'text' || block.asset || block.assetRef
+    ));
 
     if (!mediaBlocks.length) return null;
 

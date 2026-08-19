@@ -21,11 +21,24 @@ const getTextBlocks = (blocks = []) => blocks
     .map((block) => block.text)
     .filter(Boolean);
 
-export const adaptContentBlocks = (blocks = []) => blocks.map((block) => ({
-    ...block,
-    blockKind: block.blockKind?.toLowerCase(),
-    asset: block.imageUrl ? { url: block.imageUrl, altText: block.text || '문항 참고 자료' } : undefined,
-}));
+export const adaptContentBlocks = (blocks = [], assets = []) => {
+    const assetsByKey = Object.fromEntries(
+        assets.map((asset) => [asset.assetKey, asset]),
+    );
+
+    return blocks.map((block) => {
+        const referencedAsset = block.assetRef ? assetsByKey[block.assetRef] : null;
+
+        return {
+            ...block,
+            blockKind: block.blockKind?.toLowerCase(),
+            asset: referencedAsset ?? (block.imageUrl ? {
+                url: block.imageUrl,
+                altText: block.text || '문항 참고 자료',
+            } : undefined),
+        };
+    });
+};
 
 export const adaptWorksheetItem = (item) => {
     const textBlocks = getTextBlocks(item.contentBlocks);
@@ -40,7 +53,7 @@ export const adaptWorksheetItem = (item) => {
         title: item.customStage ? `${customStageLabels[item.customStage]} 학습` : '풀이 문제',
         prompt: textBlocks[0] || '문제의 발문을 확인하세요.',
         subPrompt: textBlocks.slice(1).join('\n'),
-        contentBlocks: adaptContentBlocks(item.contentBlocks),
+        contentBlocks: adaptContentBlocks(item.contentBlocks, item.assets),
         choices: item.choices?.map((choice) => ({
             id: choice.choiceId,
             text: choice.text,
