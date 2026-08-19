@@ -11,12 +11,12 @@ const asInlineMath = (value) => {
 // 종합 평가 채점 카드. 학생 채점 결과 화면(AssessmentReviewCard)과 같은 색·크기를 쓰고,
 // 채점 기준·점수처럼 교사가 바꿀 수 있는 부분만 아래에 덧붙인다.
 function AssessmentGradingCard({ student, question, answer, result, rubricChecks, footer, onScore, onRubric, onReset }) {
-    const isUnsubmitted = !answer?.input && !answer?.answerImage;
     const isChoice = question.format === 'choice';
     const isShort = question.format === 'short';
     const isEssay = question.format === 'essay';
-    const selectedChoiceIndex = isChoice ? Number(answer?.input) - 1 : -1;
-    const correctChoiceIndex = isChoice ? Number(question.answer) - 1 : -1;
+    const isUnsubmitted = isChoice
+        ? answer?.selectedChoiceId === null || answer?.selectedChoiceId === undefined
+        : !answer?.input && !answer?.answerImage;
     // 객관식은 맞고 틀림만 있고, 나머지는 배점 안에서 1점 단위로 고른다.
     const scoreOptions = isChoice ? [0, question.maxScore] : Array.from({ length: question.maxScore + 1 }, (_, score) => score);
     // 채점 기준이 있는 문항은 기준을 체크해 점수를 만든다. 주관식은 기준이 정답 하나뿐이라 점수 버튼만 쓴다.
@@ -39,15 +39,17 @@ function AssessmentGradingCard({ student, question, answer, result, rubricChecks
             {isChoice && question.choices.length > 0 ? (
                 <ol className="assessment-grading-card__choices" aria-label={`${question.no}번 객관식 보기`}>
                     {question.choices.map((choice, index) => {
-                        const isPicked = index === selectedChoiceIndex;
-                        const isAnswer = index === correctChoiceIndex;
+                        const choiceId = typeof choice === 'string' ? index + 1 : choice.id;
+                        const choiceText = typeof choice === 'string' ? choice : choice.text;
+                        const isPicked = String(choiceId) === String(answer?.selectedChoiceId);
+                        const isAnswer = String(choiceId) === String(question.correctChoiceId);
                         return (
                             <li
-                                key={`${index}-${choice}`}
+                                key={choiceId}
                                 className={`assessment-grading-card__choice${isAnswer ? ' assessment-grading-card__choice--answer' : ''}${isPicked && !isAnswer ? ' assessment-grading-card__choice--picked' : ''}`}
                             >
                                 <b>{index + 1}</b>
-                                <span><MathText>{choice}</MathText></span>
+                                <span><MathText>{choiceText}</MathText></span>
                                 {isPicked && <em>{student.name}의 답</em>}
                                 {isAnswer && <strong>정답</strong>}
                             </li>
@@ -79,7 +81,6 @@ function AssessmentGradingCard({ student, question, answer, result, rubricChecks
                     </div>
                     {isChoice && (
                         <p className="assessment-grading-card__note">
-                            {/* TODO(API): 객관식 choices와 선택/정답 choice id가 제공되면 전체 5지선다 보기를 표시한다. */}
                             전체 보기 정보가 제공되기 전까지 제출 답안과 정답만 표시합니다.
                         </p>
                     )}

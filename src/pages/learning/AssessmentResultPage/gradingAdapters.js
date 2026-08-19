@@ -110,9 +110,13 @@ const normalizeAssessmentItem = (item, contentBlocks, prompt) => {
         no: item.displayOrder,
         prompt: prompt || '문제의 발문을 확인하세요.',
         contentBlocks,
-        // TODO(API): 전체 객관식 보기와 선택/정답 choice id가 추가되면 실제 보기 목록을 표시한다.
-        choices: item.choices ?? [],
+        choices: [...(item.choices ?? [])].sort(byDisplayOrder).map((choice) => ({
+            id: choice.choiceId,
+            text: choice.text,
+            displayOrder: choice.displayOrder,
+        })),
         answer: unit?.correctAnswer ?? '',
+        correctChoiceId: unit?.correctChoiceId ?? null,
         rubric,
         gradingStatus: unit?.gradedBy === 'auto' ? 'auto' : 'pending',
     };
@@ -140,6 +144,7 @@ const normalizeAssessmentAnswer = (item) => {
         no: item.displayOrder,
         submissionAnswerId: unit?.submissionAnswerId,
         input: unit?.studentAnswer,
+        selectedChoiceId: unit?.selectedChoiceId ?? null,
         answerImage: unit?.handwritingUrl,
         score: unit?.finalScore ?? null,
         autoScore: unit?.autoScore ?? null,
