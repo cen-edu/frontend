@@ -17,7 +17,9 @@ function ReviewExplanation({ question }) {
             <div className="review-explanation__body">
                 <div className="review-explanation__block">
                     <h3>정답</h3>
-                    <p className="review-explanation__answer"><MathText>{explanation.answerText}</MathText></p>
+                    <p className="review-explanation__answer">
+                        <MathText latex={!question.format || question.format === 'short'}>{explanation.answerText}</MathText>
+                    </p>
                 </div>
 
                 {explanation.steps?.length > 0 && (
@@ -29,7 +31,7 @@ function ReviewExplanation({ question }) {
                                     <span>{index + 1}</span>
                                     <div>
                                         <strong><MathText>{step.instruction}</MathText></strong>
-                                        <p><MathText>{step.formula}</MathText></p>
+                                        <p><MathText latex>{step.formula}</MathText></p>
                                     </div>
                                 </li>
                             ))}

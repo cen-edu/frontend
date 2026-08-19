@@ -40,11 +40,13 @@ function AssessmentReviewCard({ question }) {
                 <div className="assessment-review-card__answers">
                     <div className="assessment-review-card__answer-block">
                         <span>내 답안</span>
-                        <p><MathText>{question.input || '미작성'}</MathText></p>
+                        <p>{question.input
+                            ? <MathText latex={question.format === 'short'}>{question.input}</MathText>
+                            : '미작성'}</p>
                     </div>
                     <div className="assessment-review-card__answer-block assessment-review-card__answer-block--correct">
                         <span>{question.format === 'essay' ? '모범답안' : '정답'}</span>
-                        <p><MathText>{question.answer}</MathText></p>
+                        <p><MathText latex={question.format === 'short'}>{question.answer}</MathText></p>
                     </div>
                 </div>
             )}

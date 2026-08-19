@@ -55,8 +55,13 @@ const tokenize = (value) => {
     return tokens;
 };
 
-function MathText({ children }) {
-    return tokenize(children).map((token, index) => {
+function MathText({ children, latex = false }) {
+    const value = String(children ?? '');
+    const tokens = latex && !value.includes('$')
+        ? [{ type: 'math', value, displayMode: false }]
+        : tokenize(value);
+
+    return tokens.map((token, index) => {
         if (token.type === 'text') return token.value;
 
         const markup = katex.renderToString(token.value, {

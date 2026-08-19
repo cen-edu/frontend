@@ -10,9 +10,11 @@ function PracticeReviewCard({ question, isCustom }) {
             difficultyText={isCustom ? `${question.stageLabel} 문제` : undefined}
             renderBlank={(blank) => (
                 <span className={`practice-review-card__blank practice-review-card__blank--${blank.correct ? 'correct' : 'wrong'}`}>
-                    <span className="practice-review-card__input"><MathText>{blank.input || '미작성'}</MathText></span>
+                    <span className="practice-review-card__input">{blank.input
+                        ? <MathText latex>{blank.input}</MathText>
+                        : '미작성'}</span>
                     <span className="practice-review-card__reader">{blank.correct ? '정답' : '오답'}</span>
-                    {!blank.correct && <em className="practice-review-card__answer">정답 <MathText>{blank.answer}</MathText></em>}
+                    {!blank.correct && <em className="practice-review-card__answer">정답 <MathText latex>{blank.answer}</MathText></em>}
                 </span>
             )}
         />
