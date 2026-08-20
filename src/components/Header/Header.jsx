@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { getAuth } from "../../api/auth/authStorage.js";
+import { getTeacherAccount } from "../../api/teachers/teacherAccountApi.js";
 import logoSymbol from "../../assets/images/logo-symbol.png";
-import teachers from "../../mocks/teachers";
 import "./Header.scss";
 
 function Header({ hideOnWheel = false, onHiddenChange, mode = 'teacher', userName }) {
@@ -13,7 +14,14 @@ function Header({ hideOnWheel = false, onHiddenChange, mode = 'teacher', userNam
     const studentWorksheetsPath = `/student/worksheets${studentQuery}`;
     const studentProfilePath = `/student/profile${studentQuery}`;
     const isStudentAccount = getAuth()?.role === 'STUDENT';
-    const currentTeacher = teachers[0];
+    const teacherAccountQuery = useQuery({
+        queryKey: ['teacher', 'account'],
+        queryFn: ({ signal }) => getTeacherAccount({ signal }),
+        enabled: mode === 'teacher',
+    });
+    const teacherName = teacherAccountQuery.data?.name
+        ? `${teacherAccountQuery.data.name} 선생님`
+        : '선생님';
     const [isHidden, setIsHidden] = useState(false);
     const downwardWheelCount = useRef(0);
     const updateVisibility = useCallback((hidden) => {
@@ -151,7 +159,7 @@ function Header({ hideOnWheel = false, onHiddenChange, mode = 'teacher', userNam
             <i className="bi bi-person-fill" />
           </span>
 
-                    <span className="header__profile-name">{currentTeacher.name}</span>
+                    <span className="header__profile-name">{teacherName}</span>
 
                     <i className="bi bi-chevron-right header__profile-arrow" aria-hidden="true" />
                 </NavLink> : (
