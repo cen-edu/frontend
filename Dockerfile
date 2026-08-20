@@ -1,5 +1,5 @@
-# 배포 이미지. 정적 빌드 산출물을 nginx 로 서빙만 한다.
-# /api 프록시는 앞단(백엔드 저장소 deploy/nginx)의 nginx 가 맡는다.
+# 배포 이미지. nginx 가 정적 빌드 산출물을 서빙하면서 /api 를 백엔드 컨테이너로 넘긴다.
+# EC2 에서 이 컨테이너만 80 을 열고, 백엔드와 DB 는 그 뒤에 숨는다.
 #
 #   docker build -t $DOCKERHUB_USER/cen-edu-frontend:1.0.0 \
 #     --build-arg VITE_MYSCRIPT_APPLICATION_KEY=... \
