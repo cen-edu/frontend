@@ -12,6 +12,10 @@ const difficultyKeys = {
     3: 'high',
 };
 
+const getDifficultyKey = (difficulty) => (
+    difficultyKeys[difficulty] ?? difficulty
+);
+
 const byDisplayOrder = (left, right) => (
     (left.displayOrder ?? 0) - (right.displayOrder ?? 0)
 );
@@ -95,7 +99,7 @@ const normalizeProblem = (problem, index) => {
         unitPath: [curriculum.majorUnitName, curriculum.middleUnitName, curriculum.subUnitName]
             .filter(Boolean)
             .join(' > '),
-        difficulty: difficultyKeys[problem.difficulty],
+        difficulty: getDifficultyKey(problem.difficulty),
         prompt,
         concept: problem.learningGuide ? {
             title: problem.learningGuide.conceptTitle,
@@ -127,3 +131,76 @@ const normalizeProblem = (problem, index) => {
 };
 
 export const normalizeGeneratedProblems = (problems = []) => problems.map(normalizeProblem);
+
+export const normalizeAuthoringPreview = ({ preview, existingProblem, slotIndex }) => {
+    const snapshot = preview?.snapshot ?? {};
+    const metadata = snapshot.metadata ?? {};
+    const sessionId = preview?.sessionId ?? existingProblem?.sessionId;
+    const baseProblem = {
+        id: existingProblem?.id ?? `session-${sessionId}`,
+        sessionId,
+        versionId: preview?.versionId,
+        curriculum: {
+            subUnitId: metadata.subUnitId,
+            subUnitName: existingProblem?.unitName ?? '',
+        },
+        difficulty: metadata.difficulty,
+        questionType: metadata.questionType,
+        presentation: metadata.presentation,
+        contentBlocks: snapshot.contentBlocks ?? [],
+        assets: snapshot.assets ?? [],
+        choices: snapshot.choices ?? [],
+        steps: (snapshot.steps ?? []).map((step) => ({
+            ...step,
+            id: step.stepKey,
+            segments: (step.segments ?? []).map((segment) => ({
+                ...segment,
+                value: segment.text,
+                blankId: segment.unitKey,
+            })),
+        })),
+        answerUnits: (snapshot.answerUnits ?? []).map((unit) => ({
+            ...unit,
+            answer: unit.answerRaw,
+        })),
+        explanation: snapshot.explanation,
+        learningGuide: snapshot.learningGuide,
+    };
+    const normalized = normalizeProblem(baseProblem, (slotIndex ?? existingProblem?.no ?? 1) - 1);
+
+    return {
+        ...normalized,
+        id: baseProblem.id,
+        no: existingProblem?.no ?? normalized.no,
+        sessionId,
+        versionId: preview?.versionId,
+        unitId: metadata.subUnitId ?? existingProblem?.unitId,
+        unitName: existingProblem?.unitName ?? normalized.unitName,
+        unitPath: existingProblem?.unitPath ?? normalized.unitPath,
+    };
+};
+
+export const normalizeAuthoringGenerationSlots = (slots = [], configs = []) => {
+    const unitsById = new Map(configs.map(({ unit }) => [Number(unit.id), unit]));
+
+    return [...slots]
+        .filter((slot) => slot.status === 'READY' && slot.preview)
+        .sort((left, right) => left.slotIndex - right.slotIndex)
+        .map((slot) => {
+            const unit = unitsById.get(Number(slot.preview.snapshot?.metadata?.subUnitId));
+            const existingProblem = unit ? {
+                id: `session-${slot.sessionId}`,
+                sessionId: slot.sessionId,
+                no: slot.slotIndex,
+                unitId: unit.id,
+                unitName: unit.name,
+                unitPath: [unit.majorName, unit.middleName, unit.name].filter(Boolean).join(' > '),
+            } : null;
+
+            return normalizeAuthoringPreview({
+                preview: slot.preview,
+                existingProblem,
+                slotIndex: slot.slotIndex,
+            });
+        });
+};

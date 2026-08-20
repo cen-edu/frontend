@@ -133,6 +133,15 @@ function ProblemCreationPage() {
         saveMutation.reset();
     };
 
+    const updateEditedProblem = (problem) => {
+        setResult((current) => ({
+            ...current,
+            problems: current.problems.map((item) => item.id === problem.id ? problem : item),
+        }));
+        setSavedWorksheet(null);
+        saveMutation.reset();
+    };
+
     const openTitleModal = () => {
         saveMutation.reset();
         setTitleModalOpen(true);
@@ -235,7 +244,14 @@ function ProblemCreationPage() {
                         </div>
                     </div>
                     {editMode && !editTarget && <p className="problem-creation-page__edit-guide" role="status"><i className="bi bi-cursor" aria-hidden="true" /> 편집할 문제 전체, 풀이 과정 또는 개념 설명 영역을 선택하세요.</p>}
-                    {editMode && <ProblemAiEditPanel target={editTarget} onClose={() => setEditTarget(null)} />}
+                    {editMode && (
+                        <ProblemAiEditPanel
+                            currentProblem={selectedProblem}
+                            target={editTarget}
+                            onProblemUpdated={updateEditedProblem}
+                            onClose={() => setEditTarget(null)}
+                        />
+                    )}
                 </section>
             )}
             {titleModalOpen && result && <WorksheetTitleModal initialTitle={worksheetTitle} isSaving={saveMutation.isPending} error={saveMutation.isError ? saveMutation.error?.message || '문제 보관함에 저장하지 못했습니다.' : ''} onClose={() => setTitleModalOpen(false)} onSave={saveWorksheet} />}
