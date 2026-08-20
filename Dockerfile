@@ -13,8 +13,8 @@ WORKDIR /app
 # Vite 는 VITE_ 값을 빌드 시점에 번들에 박는다. 런타임 환경 변수로는 바뀌지 않으므로
 # 값이 달라지면 이미지를 다시 빌드해야 한다.
 ARG VITE_API_BASE_URL=/api
-# 기본값 10초는 개발 기준이다. 서술형 채점·문항 생성은 LLM 호출을 여러 번 물고 있어
-# 10초를 넘기고, 그러면 서버가 아직 처리 중인데 브라우저가 먼저 끊는다.
+# 기본값 10초는 개발 기준이다. 채점·문항 생성은 백엔드에서 비동기 잡으로 돌아 요청
+# 자체는 짧지만, 보고서 PDF 렌더링처럼 동기로 도는 경로가 10초를 넘길 수 있다.
 ARG VITE_API_TIMEOUT_MS=60000
 ARG VITE_MYSCRIPT_APPLICATION_KEY=
 ARG VITE_MYSCRIPT_HMAC_KEY=
