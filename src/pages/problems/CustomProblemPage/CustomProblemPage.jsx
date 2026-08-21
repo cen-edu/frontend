@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { AnalysisFilters, useAcademicContextFilters } from '../../../components/common/filters';
-import { WorksheetType } from '../../../api/analysis/analysisConstants.js';
 import {
     useAnalysisAssignmentsQuery,
     useAnalysisStudentsQuery,
@@ -33,11 +32,10 @@ function CustomProblemPage() {
     const assignmentQuery = useAnalysisAssignmentsQuery({
         classId: academicFilters.classId,
         semester: academicFilters.semester,
-        worksheetType: WorksheetType.GENERAL_LEARNING,
     });
-    const assignments = useMemo(() => (assignmentQuery.data?.assignments ?? []).filter((assignment) => (
-        assignment.analysisAvailable && assignment.worksheetType === WorksheetType.GENERAL_LEARNING
-    )), [assignmentQuery.data]);
+    const assignments = useMemo(() => (assignmentQuery.data?.assignments ?? []).filter(
+        (assignment) => assignment.analysisAvailable,
+    ), [assignmentQuery.data]);
     const selectedAssignment = assignments.find((assignment) => String(assignment.assignmentId) === assignmentId);
     const studentsQuery = useAnalysisStudentsQuery(selectedAssignment ? assignmentId : '');
     const students = useMemo(() => adaptAnalysisStudents(studentsQuery.data), [studentsQuery.data]);
@@ -162,7 +160,7 @@ function CustomProblemPage() {
                         ? '맞춤 문제를 만들 학습지를 불러오는 중입니다.'
                         : assignmentQuery.isError
                             ? assignmentQuery.error?.message || '학습지를 불러오지 못했습니다.'
-                            : '분석이 완료된 일반 학습 학습지가 없습니다.'}
+                            : '분석이 완료된 학습지가 없습니다.'}
         </div> : <div className="custom-problem-page__workspace">
             <StudentWeaknessList
                 students={students}
