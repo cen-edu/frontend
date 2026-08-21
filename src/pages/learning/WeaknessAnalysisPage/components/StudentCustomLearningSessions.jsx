@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import {
     CustomResolutionStatus,
     CustomStage,
@@ -30,11 +31,23 @@ const formatDate = (value) => {
     }).format(date);
 };
 
-function StudentCustomLearningSessions({ query }) {
+// 맞춤 문제 생성 화면은 학습지(배정)와 학생을 쿼리로 받는다. concept 은 그 화면에서
+// 취약 소분류를 위로 올려 주는 값이라 없어도 동작한다.
+const customProblemPath = (assignmentId, studentId, subcategoryId) => {
+    const params = new URLSearchParams({ worksheet: String(assignmentId), students: String(studentId) });
+    if (subcategoryId != null) params.set('concept', String(subcategoryId));
+    return `/problems/custom?${params}`;
+};
+
+function StudentCustomLearningSessions({ query, worksheet, student }) {
     const sessions = query.data?.sessions ?? [];
     const [selectedSessionId, setSelectedSessionId] = useState(null);
+    // 서버는 배정 순(오래된 순)으로 준다. 교사가 먼저 볼 것은 가장 최근 회차라 끝을 기본으로 둔다.
     const session = sessions.find(({ customAssignmentId }) => String(customAssignmentId) === selectedSessionId)
-        ?? sessions[0];
+        ?? sessions[sessions.length - 1];
+
+    // 학습지나 학생이 아직 정해지지 않았으면 만들러 갈 주소를 세울 수 없다.
+    const canCreate = Boolean(worksheet?.id && student?.id);
 
     if (query.isPending) return <div className="student-analysis-view__section-state">맞춤 학습 회차를 불러오는 중입니다.</div>;
     if (query.isError) return <div className="student-analysis-view__section-state" role="alert">{query.error?.message || '맞춤 학습 회차를 불러오지 못했습니다.'}</div>;
@@ -45,10 +58,15 @@ function StudentCustomLearningSessions({ query }) {
             {!!sessions.length && <small>총 {sessions.length}회차</small>}
         </div>
         {!session
-            ? <p className="custom-learning__empty">맞춤 학습 이력이 없습니다.</p>
+            ? <p className="custom-learning__empty">
+                맞춤 학습 이력이 없습니다.
+                {canCreate && <Link to={customProblemPath(worksheet.id, student.id)}>맞춤 문제 만들기</Link>}
+            </p>
             : <>
                 {sessions.length > 1 && <div className="diagnosis-tabs custom-learning__rounds" role="group" aria-label="맞춤 학습 회차 선택">
-                    {sessions.map((item, index) => {
+                    {/* 차수는 서버가 sessionNumber 로 정한다. 배열 위치로 계산하면 정렬이 바뀔 때
+                        1차와 2차가 뒤바뀌어 붙는다. */}
+                    {sessions.map((item) => {
                         const id = String(item.customAssignmentId);
                         return <button
                             type="button"
@@ -56,7 +74,7 @@ function StudentCustomLearningSessions({ query }) {
                             className={item === session ? 'diagnosis-tabs__button diagnosis-tabs__button--active' : 'diagnosis-tabs__button'}
                             aria-pressed={item === session}
                             onClick={() => setSelectedSessionId(id)}
-                        >{sessions.length - index}회차 · {formatDate(item.assignedAt)}</button>;
+                        >{item.sessionNumber}회차 · {formatDate(item.assignedAt)}</button>;
                     })}
                 </div>}
                 <div className="custom-learning__summary">
@@ -91,6 +109,10 @@ function StudentCustomLearningSessions({ query }) {
                                     <small>{stage.totalCount ? `${stage.totalCount}문항 중 정답` : '진행 전'}</small>
                                 </li>)}
                             </ul>
+                            {canCreate && subcategory.resolutionStatus === CustomResolutionStatus.UNRESOLVED
+                                && <p className="custom-learning__note">
+                                    <Link to={customProblemPath(worksheet.id, student.id, subcategory.subcategoryId)}>이 개념으로 새 문제 만들기</Link>
+                                </p>}
                         </article>;
                     })}</div>
                     : <p className="student-analysis-view__empty">이 회차의 소분류 결과가 없습니다.</p>}

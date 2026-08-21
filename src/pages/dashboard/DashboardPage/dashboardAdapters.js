@@ -77,6 +77,8 @@ export const adaptDashboardSummaries = (data) => {
     const threshold = formatMetric(summary.weaknessThresholdRate);
     return [
         {
+            // 맞춤 학습은 세지 않는다. 학생마다 나가는 보강이라 함께 세면 25명 반에서
+            // 숫자가 수십 개로 불어나 '이번 학기에 무엇을 냈는가' 를 읽을 수 없다.
             id: 'worksheets',
             label: '배정 학습지',
             valueLabel: '이번 학기 누적',
@@ -88,7 +90,7 @@ export const adaptDashboardSummaries = (data) => {
         {
             id: 'accuracy',
             label: '반 평균 정답률',
-            valueLabel: '채점 완료 기준',
+            valueLabel: '원본 학습지 기준',
             value: summary.classAccuracyRate === null ? '-' : `${formatMetric(summary.classAccuracyRate)}%`,
             support: `집계 학생 ${summary.aggregatedStudentCount ?? 0}명`,
         },
@@ -112,16 +114,33 @@ export const adaptDashboardSummaries = (data) => {
     ];
 };
 
-const adaptColumns = (data) => (data?.worksheetColumns ?? []).map((worksheet, index) => ({
-    id: String(worksheet.assignmentId),
-    assignmentId: worksheet.assignmentId,
-    title: worksheet.worksheetTitle,
-    type: worksheetTypes[worksheet.worksheetType] ?? 'practice',
-    origin: worksheetOrigins[worksheet.worksheetOrigin] ?? 'manual',
-    orderLabel: String(index + 1),
-    depth: 0,
-    sourceInformationMissing: worksheet.worksheetOrigin === 'CUSTOM',
-}));
+const adaptColumns = (data) => {
+    const columns = (data?.worksheetColumns ?? []).map((worksheet, index) => ({
+        id: String(worksheet.assignmentId),
+        assignmentId: worksheet.assignmentId,
+        title: worksheet.worksheetTitle,
+        type: worksheetTypes[worksheet.worksheetType] ?? 'practice',
+        origin: worksheetOrigins[worksheet.worksheetOrigin] ?? 'manual',
+        sourceAssignmentId: worksheet.sourceAssignmentId === null
+            || worksheet.sourceAssignmentId === undefined
+            ? null
+            : String(worksheet.sourceAssignmentId),
+        orderLabel: String(index + 1),
+        depth: 0,
+        sourceInformationMissing: false,
+    }));
+
+    // 열 번호도 목록과 같은 규칙으로 매긴다. 맞춤 학습은 원본 번호에 -1, -2 를 붙인다.
+    const childCountByParent = new Map();
+    return columns.map((column) => {
+        if (!column.sourceAssignmentId) return column;
+        const parent = columns.find((candidate) => candidate.id === column.sourceAssignmentId);
+        if (!parent) return column;
+        const order = (childCountByParent.get(parent.id) ?? 0) + 1;
+        childCountByParent.set(parent.id, order);
+        return { ...column, depth: 1, orderLabel: `${parent.orderLabel}-${order}` };
+    });
+};
 
 const adaptResult = (column, result) => {
     const backendStatus = result?.status ?? 'NOT_ASSIGNED';
@@ -192,7 +211,7 @@ export const adaptAssignments = (data, progressData) => {
         });
     });
 
-    return (data?.assignments ?? []).map((assignment, index) => {
+    const rows = (data?.assignments ?? []).map((assignment, index) => {
         const id = String(assignment.assignmentId);
         const type = worksheetTypes[assignment.worksheetType] ?? 'practice';
         const resultAverage = average(valuesByAssignment.get(id) ?? []);
@@ -204,12 +223,19 @@ export const adaptAssignments = (data, progressData) => {
             title: assignment.worksheetTitle,
             type,
             origin: worksheetOrigins[assignment.worksheetOrigin] ?? 'manual',
+            // 맞춤 학습을 원본 아래로 옮길 때 쓴다. 화면에는 노출하지 않는다.
+            sourceAssignmentId: assignment.sourceAssignmentId === null
+                || assignment.sourceAssignmentId === undefined
+                ? null
+                : String(assignment.sourceAssignmentId),
             orderLabel: columnOrder.get(id) ?? String(index + 1),
             depth: 0,
             childCount: 0,
-            sourceInformationMissing: assignment.worksheetOrigin === 'CUSTOM',
-            resultInformationMissing: type === 'assessment',
+            sourceInformationMissing: false,
+            resultInformationMissing: false,
             assignedAt: formatDate(assignment.assignedAt),
+            // 차수 정렬용 원본 값. 화면에 쓰는 형식은 날짜까지라 같은 날 배정을 구분하지 못한다.
+            assignedAtRaw: assignment.assignedAt,
             dueAt: formatDate(assignment.dueAt),
             status: assignmentStatuses[assignment.status] ?? 'ongoing',
             assignedCount: assignment.studentCount ?? 0,
@@ -219,4 +245,63 @@ export const adaptAssignments = (data, progressData) => {
             score: type === 'assessment' ? resultAverage : null,
         };
     });
+
+    return nestCustomLearning(rows);
+};
+
+/**
+ * 맞춤 학습을 원본 학습지 바로 아래로 옮긴다.
+ *
+ * 맞춤 학습은 원본에서 파생된 보강이라 목록에서 동급으로 나열하면 몇 번째 학습인지 읽히지 않는다.
+ * 원본을 찾지 못한 맞춤(예: 원본이 다른 학기라 목록에 없음)은 제자리에 두어 사라지지 않게 한다.
+ */
+const nestCustomLearning = (rows) => {
+    const parents = rows.filter((row) => row.origin !== 'custom' || !row.sourceAssignmentId);
+    const childrenByParent = new Map();
+
+    rows.forEach((row) => {
+        if (row.origin !== 'custom' || !row.sourceAssignmentId) return;
+        const hasParent = rows.some((candidate) => candidate.id === row.sourceAssignmentId);
+        if (!hasParent) return;
+        const siblings = childrenByParent.get(row.sourceAssignmentId) ?? [];
+        childrenByParent.set(row.sourceAssignmentId, [...siblings, row]);
+
+    });
+
+    const orphans = rows.filter((row) => (
+        row.origin === 'custom'
+        && row.sourceAssignmentId
+        && !rows.some((candidate) => candidate.id === row.sourceAssignmentId)
+    ));
+
+    // 번호 순서대로 읽히게 정렬한다. 목록이 최신순인데 번호는 오름차순이라 1 아래 2 가
+    // 아니라 2 아래 1 이 오는 상태였다.
+    const ordered = [...parents, ...orphans].sort(compareOrderLabel);
+
+    return ordered.flatMap((row) => {
+        // 맞춤은 1차, 2차로 이어지는 사슬이다. 깊이를 더하지 않고 형제로 두되 배정한
+        // 순서대로 번호를 붙여 1-1 이 1차, 1-2 가 2차가 되게 한다. API 는 최신순으로 준다.
+        const children = [...(childrenByParent.get(row.id) ?? [])]
+            .sort((left, right) => (
+                new Date(left.assignedAtRaw ?? 0) - new Date(right.assignedAtRaw ?? 0)
+            ));
+        return [
+            { ...row, childCount: children.length },
+            ...children.map((child, index) => ({
+                ...child,
+                depth: 1,
+                orderLabel: `${row.orderLabel}-${index + 1}`,
+                sessionLabel: `${index + 1}차`,
+            })),
+        ];
+    });
+};
+
+/** 1, 2, 10 순으로 읽히도록 번호를 숫자로 비교한다. 문자열 정렬이면 10 이 2 앞에 온다. */
+const compareOrderLabel = (left, right) => {
+    const toNumber = (row) => {
+        const parsed = Number.parseInt(row.orderLabel, 10);
+        return Number.isNaN(parsed) ? Number.MAX_SAFE_INTEGER : parsed;
+    };
+    return toNumber(left) - toNumber(right);
 };

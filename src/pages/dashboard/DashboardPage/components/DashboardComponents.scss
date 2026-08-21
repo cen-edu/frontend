@@ -195,8 +195,18 @@
 
     &:nth-child(2) { border-top: 0; }
 
-    // 맞춤 학습은 원본 학습지 아래에 들여쓰기와 옅은 배경으로 항상 펼쳐 둔다.
+    // 맞춤 학습은 원본 학습지 아래에 들여쓰기와 옅은 배경으로 둔다.
     &--child { padding-left: 38px; background: #fbfcfd; }
+  }
+
+  &__collapse {
+    padding: 2px 8px;
+    border: 1px solid #d6dde5;
+    border-radius: 999px;
+    background: #fff;
+    color: #556071;
+    font-size: 11px;
+    cursor: pointer;
   }
 
   &__order {

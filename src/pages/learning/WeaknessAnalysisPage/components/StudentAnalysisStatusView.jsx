@@ -92,7 +92,7 @@ function StudentAnalysisStatusView({
 
         <StudentAnalysisReport reportState={reportState} />
 
-        <StudentCustomLearningSessions query={customLearningQuery} />
+        <StudentCustomLearningSessions query={customLearningQuery} worksheet={worksheet} student={student} />
 
         <StudentPerformanceAnalysis
             worksheetType={summary?.worksheetType ?? (worksheet.type === 'assessment'
