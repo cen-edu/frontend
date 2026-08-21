@@ -33,8 +33,9 @@ const formatDate = (value) => {
 function StudentCustomLearningSessions({ query }) {
     const sessions = query.data?.sessions ?? [];
     const [selectedSessionId, setSelectedSessionId] = useState(null);
+    // 서버는 배정 순(오래된 순)으로 준다. 교사가 먼저 볼 것은 가장 최근 회차라 끝을 기본으로 둔다.
     const session = sessions.find(({ customAssignmentId }) => String(customAssignmentId) === selectedSessionId)
-        ?? sessions[0];
+        ?? sessions[sessions.length - 1];
 
     if (query.isPending) return <div className="student-analysis-view__section-state">맞춤 학습 회차를 불러오는 중입니다.</div>;
     if (query.isError) return <div className="student-analysis-view__section-state" role="alert">{query.error?.message || '맞춤 학습 회차를 불러오지 못했습니다.'}</div>;
@@ -48,7 +49,9 @@ function StudentCustomLearningSessions({ query }) {
             ? <p className="custom-learning__empty">맞춤 학습 이력이 없습니다.</p>
             : <>
                 {sessions.length > 1 && <div className="diagnosis-tabs custom-learning__rounds" role="group" aria-label="맞춤 학습 회차 선택">
-                    {sessions.map((item, index) => {
+                    {/* 차수는 서버가 sessionNumber 로 정한다. 배열 위치로 계산하면 정렬이 바뀔 때
+                        1차와 2차가 뒤바뀌어 붙는다. */}
+                    {sessions.map((item) => {
                         const id = String(item.customAssignmentId);
                         return <button
                             type="button"
@@ -56,7 +59,7 @@ function StudentCustomLearningSessions({ query }) {
                             className={item === session ? 'diagnosis-tabs__button diagnosis-tabs__button--active' : 'diagnosis-tabs__button'}
                             aria-pressed={item === session}
                             onClick={() => setSelectedSessionId(id)}
-                        >{sessions.length - index}회차 · {formatDate(item.assignedAt)}</button>;
+                        >{item.sessionNumber}회차 · {formatDate(item.assignedAt)}</button>;
                     })}
                 </div>}
                 <div className="custom-learning__summary">
