@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import {
     CustomResolutionStatus,
     CustomStage,
+    WorksheetType,
 } from '../../../../api/analysis/analysisConstants.js';
 import { difficultyBandLabels } from '../analysisAdapters.js';
 
@@ -46,8 +47,10 @@ function StudentCustomLearningSessions({ query, worksheet, student }) {
     const session = sessions.find(({ customAssignmentId }) => String(customAssignmentId) === selectedSessionId)
         ?? sessions[sessions.length - 1];
 
-    // 학습지나 학생이 아직 정해지지 않았으면 만들러 갈 주소를 세울 수 없다.
-    const canCreate = Boolean(worksheet?.id && student?.id);
+    // 맞춤 문제 생성 화면은 일반 학습 학습지만 목록에 올린다. 종합평가를 실어 보내면
+    // 그 화면이 첫 학습지·첫 학생으로 말없이 갈아치우므로, 링크를 걸지 않는다.
+    const canCreate = Boolean(worksheet?.id && student?.id)
+        && worksheet.worksheetType === WorksheetType.GENERAL_LEARNING;
 
     if (query.isPending) return <div className="student-analysis-view__section-state">맞춤 학습 회차를 불러오는 중입니다.</div>;
     if (query.isError) return <div className="student-analysis-view__section-state" role="alert">{query.error?.message || '맞춤 학습 회차를 불러오지 못했습니다.'}</div>;
