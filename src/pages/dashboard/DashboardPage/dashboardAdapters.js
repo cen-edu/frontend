@@ -112,16 +112,33 @@ export const adaptDashboardSummaries = (data) => {
     ];
 };
 
-const adaptColumns = (data) => (data?.worksheetColumns ?? []).map((worksheet, index) => ({
-    id: String(worksheet.assignmentId),
-    assignmentId: worksheet.assignmentId,
-    title: worksheet.worksheetTitle,
-    type: worksheetTypes[worksheet.worksheetType] ?? 'practice',
-    origin: worksheetOrigins[worksheet.worksheetOrigin] ?? 'manual',
-    orderLabel: String(index + 1),
-    depth: 0,
-    sourceInformationMissing: worksheet.worksheetOrigin === 'CUSTOM',
-}));
+const adaptColumns = (data) => {
+    const columns = (data?.worksheetColumns ?? []).map((worksheet, index) => ({
+        id: String(worksheet.assignmentId),
+        assignmentId: worksheet.assignmentId,
+        title: worksheet.worksheetTitle,
+        type: worksheetTypes[worksheet.worksheetType] ?? 'practice',
+        origin: worksheetOrigins[worksheet.worksheetOrigin] ?? 'manual',
+        sourceAssignmentId: worksheet.sourceAssignmentId === null
+            || worksheet.sourceAssignmentId === undefined
+            ? null
+            : String(worksheet.sourceAssignmentId),
+        orderLabel: String(index + 1),
+        depth: 0,
+        sourceInformationMissing: false,
+    }));
+
+    // 열 번호도 목록과 같은 규칙으로 매긴다. 맞춤 학습은 원본 번호에 -1, -2 를 붙인다.
+    const childCountByParent = new Map();
+    return columns.map((column) => {
+        if (!column.sourceAssignmentId) return column;
+        const parent = columns.find((candidate) => candidate.id === column.sourceAssignmentId);
+        if (!parent) return column;
+        const order = (childCountByParent.get(parent.id) ?? 0) + 1;
+        childCountByParent.set(parent.id, order);
+        return { ...column, depth: 1, orderLabel: `${parent.orderLabel}-${order}` };
+    });
+};
 
 const adaptResult = (column, result) => {
     const backendStatus = result?.status ?? 'NOT_ASSIGNED';
@@ -192,7 +209,7 @@ export const adaptAssignments = (data, progressData) => {
         });
     });
 
-    return (data?.assignments ?? []).map((assignment, index) => {
+    const rows = (data?.assignments ?? []).map((assignment, index) => {
         const id = String(assignment.assignmentId);
         const type = worksheetTypes[assignment.worksheetType] ?? 'practice';
         const resultAverage = average(valuesByAssignment.get(id) ?? []);
@@ -204,11 +221,16 @@ export const adaptAssignments = (data, progressData) => {
             title: assignment.worksheetTitle,
             type,
             origin: worksheetOrigins[assignment.worksheetOrigin] ?? 'manual',
+            // 맞춤 학습을 원본 아래로 옮길 때 쓴다. 화면에는 노출하지 않는다.
+            sourceAssignmentId: assignment.sourceAssignmentId === null
+                || assignment.sourceAssignmentId === undefined
+                ? null
+                : String(assignment.sourceAssignmentId),
             orderLabel: columnOrder.get(id) ?? String(index + 1),
             depth: 0,
             childCount: 0,
-            sourceInformationMissing: assignment.worksheetOrigin === 'CUSTOM',
-            resultInformationMissing: type === 'assessment',
+            sourceInformationMissing: false,
+            resultInformationMissing: false,
             assignedAt: formatDate(assignment.assignedAt),
             dueAt: formatDate(assignment.dueAt),
             status: assignmentStatuses[assignment.status] ?? 'ongoing',
@@ -218,5 +240,44 @@ export const adaptAssignments = (data, progressData) => {
             accuracy: type === 'practice' ? resultAverage : null,
             score: type === 'assessment' ? resultAverage : null,
         };
+    });
+
+    return nestCustomLearning(rows);
+};
+
+/**
+ * 맞춤 학습을 원본 학습지 바로 아래로 옮긴다.
+ *
+ * 맞춤 학습은 원본에서 파생된 보강이라 목록에서 동급으로 나열하면 몇 번째 학습인지 읽히지 않는다.
+ * 원본을 찾지 못한 맞춤(예: 원본이 다른 학기라 목록에 없음)은 제자리에 두어 사라지지 않게 한다.
+ */
+const nestCustomLearning = (rows) => {
+    const parents = rows.filter((row) => row.origin !== 'custom' || !row.sourceAssignmentId);
+    const childrenByParent = new Map();
+
+    rows.forEach((row) => {
+        if (row.origin !== 'custom' || !row.sourceAssignmentId) return;
+        const hasParent = rows.some((candidate) => candidate.id === row.sourceAssignmentId);
+        if (!hasParent) return;
+        const siblings = childrenByParent.get(row.sourceAssignmentId) ?? [];
+        childrenByParent.set(row.sourceAssignmentId, [...siblings, row]);
+    });
+
+    const orphans = rows.filter((row) => (
+        row.origin === 'custom'
+        && row.sourceAssignmentId
+        && !rows.some((candidate) => candidate.id === row.sourceAssignmentId)
+    ));
+
+    return [...parents, ...orphans].flatMap((row) => {
+        const children = childrenByParent.get(row.id) ?? [];
+        return [
+            { ...row, childCount: children.length },
+            ...children.map((child, index) => ({
+                ...child,
+                depth: 1,
+                orderLabel: `${row.orderLabel}-${index + 1}`,
+            })),
+        ];
     });
 };

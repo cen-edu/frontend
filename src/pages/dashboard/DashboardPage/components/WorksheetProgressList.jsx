@@ -13,7 +13,7 @@ function WorksheetProgressList({ worksheets }) {
             <div className="dashboard-section__header">
                 <div>
                     <h2 id="worksheet-progress-title">학습지별 현황</h2>
-                    {worksheets.length > 0 && <p>배정 순서대로 정렬했습니다. API에서 제공하지 않는 맞춤 학습 연결 정보와 종합평가 결과 상태는 정보 부족으로 표시합니다.</p>}
+                    {worksheets.length > 0 && <p>배정 순서대로 정렬하고, 맞춤 학습은 파생된 원본 학습지 아래에 붙였습니다.</p>}
                 </div>
             </div>
 
@@ -56,9 +56,7 @@ function WorksheetProgressList({ worksheets }) {
                             </div>
 
                             <div className="worksheet-list__action">
-                                {worksheet.resultInformationMissing
-                                    ? <button type="button" className="worksheet-list__action-button worksheet-list__action-button--missing" disabled title="종합평가 결과 상태 정보가 API 응답에 없습니다.">정보 부족</button>
-                                    : <button type="button" className="worksheet-list__action-button" onClick={() => moveToAction(worksheet)}>분석 보기</button>}
+                                <button type="button" className="worksheet-list__action-button" onClick={() => moveToAction(worksheet)}>분석 보기</button>
                             </div>
                         </li>
                     ))}
