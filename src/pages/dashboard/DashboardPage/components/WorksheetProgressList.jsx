@@ -126,7 +126,7 @@ function WorksheetProgressList({ worksheets }) {
                                     <div className="worksheet-list__title">
                                         <strong>{worksheet.title}</strong>
                                         <span className={`worksheet-list__type worksheet-list__type--${worksheet.type}`}>{worksheetTypeLabels[worksheet.type]}</span>
-                                        {worksheet.origin === 'custom' && <span className="worksheet-list__type worksheet-list__type--custom">맞춤</span>}
+                                        {worksheet.origin === 'custom' && <span className="worksheet-list__type worksheet-list__type--custom">맞춤 {worksheet.sessionLabel ?? ''}</span>}
                                         {worksheet.sourceInformationMissing && <span className="worksheet-list__missing">정보 부족</span>}
                                         {worksheet.childCount > 0 && <span className="worksheet-list__custom-count">맞춤 {worksheet.childCount}</span>}
                                         {worksheet.childCount > COLLAPSE_THRESHOLD && expandedParents.has(worksheet.id)

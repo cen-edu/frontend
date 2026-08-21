@@ -243,6 +243,8 @@ export const adaptAssignments = (data, progressData) => {
             sourceInformationMissing: false,
             resultInformationMissing: false,
             assignedAt: formatDate(assignment.assignedAt),
+            // 차수 정렬용 원본 값. 화면에 쓰는 형식은 날짜까지라 같은 날 배정을 구분하지 못한다.
+            assignedAtRaw: assignment.assignedAt,
             dueAt: formatDate(assignment.dueAt),
             status: assignmentStatuses[assignment.status] ?? 'ongoing',
             assignedCount: assignment.studentCount ?? 0,
@@ -272,6 +274,7 @@ const nestCustomLearning = (rows) => {
         if (!hasParent) return;
         const siblings = childrenByParent.get(row.sourceAssignmentId) ?? [];
         childrenByParent.set(row.sourceAssignmentId, [...siblings, row]);
+
     });
 
     const orphans = rows.filter((row) => (
@@ -285,13 +288,19 @@ const nestCustomLearning = (rows) => {
     const ordered = [...parents, ...orphans].sort(compareOrderLabel);
 
     return ordered.flatMap((row) => {
-        const children = childrenByParent.get(row.id) ?? [];
+        // 맞춤은 1차, 2차로 이어지는 사슬이다. 깊이를 더하지 않고 형제로 두되 배정한
+        // 순서대로 번호를 붙여 1-1 이 1차, 1-2 가 2차가 되게 한다. API 는 최신순으로 준다.
+        const children = [...(childrenByParent.get(row.id) ?? [])]
+            .sort((left, right) => (
+                new Date(left.assignedAtRaw ?? 0) - new Date(right.assignedAtRaw ?? 0)
+            ));
         return [
             { ...row, childCount: children.length },
             ...children.map((child, index) => ({
                 ...child,
                 depth: 1,
                 orderLabel: `${row.orderLabel}-${index + 1}`,
+                sessionLabel: `${index + 1}차`,
             })),
         ];
     });
