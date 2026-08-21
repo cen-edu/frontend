@@ -197,14 +197,6 @@
 
     // 맞춤 학습은 원본 학습지 아래에 들여쓰기와 옅은 배경으로 둔다.
     &--child { padding-left: 38px; background: #fbfcfd; }
-
-    // 맞춤이 많아 접었을 때 대신 보여 주는 한 줄.
-    &--summary { min-height: 48px; }
-  }
-
-  &__summary-detail {
-    color: #687487;
-    font-size: 12px;
   }
 
   &__collapse {

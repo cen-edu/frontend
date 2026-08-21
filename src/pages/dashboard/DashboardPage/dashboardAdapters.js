@@ -88,15 +88,6 @@ export const adaptDashboardSummaries = (data) => {
                 : '진행 중인 학습지 없음',
         },
         {
-            id: 'custom',
-            label: '맞춤 학습',
-            valueLabel: '취약 학생 보강',
-            value: `${summary.customAssignmentCount ?? 0}건`,
-            support: summary.customAssignmentCount > 0
-                ? `완료 ${summary.customCompletedAssignmentCount ?? 0}건`
-                : '배정한 보강 없음',
-        },
-        {
             id: 'accuracy',
             label: '반 평균 정답률',
             valueLabel: '원본 학습지 기준',

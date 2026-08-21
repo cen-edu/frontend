@@ -26,52 +26,23 @@ function WorksheetProgressList({ worksheets }) {
         });
     };
 
-    // 접힌 원본의 자식은 빼고, 그 자리에 요약 한 줄을 넣는다.
+    // 접힌 원본의 자식은 목록에서 뺀다. 접었을 때는 아무 줄도 남기지 않는다 —
+    // 요약 줄을 두면 접은 의미가 옅어지고, 필요한 수치는 펼쳐서 보면 된다.
     const visibleRows = useMemo(() => {
-        const rows = [];
-        let currentParent = null;
+        const collapsedParents = new Set(
+            worksheets
+                .filter((worksheet) => worksheet.depth === 0
+                    && worksheet.childCount > COLLAPSE_THRESHOLD
+                    && !expandedParents.has(worksheet.id))
+                .map((worksheet) => worksheet.orderLabel),
+        );
 
-        worksheets.forEach((worksheet) => {
-            if (worksheet.depth > 0) {
-                const collapsed = currentParent
-                    && currentParent.childCount > COLLAPSE_THRESHOLD
-                    && !expandedParents.has(currentParent.id);
-                if (!collapsed) rows.push(worksheet);
-                return;
-            }
-
-            currentParent = worksheet;
-            rows.push(worksheet);
-            if (worksheet.childCount > COLLAPSE_THRESHOLD && !expandedParents.has(worksheet.id)) {
-                const children = worksheets.filter((row) => (
-                    row.depth > 0 && row.orderLabel.startsWith(`${worksheet.orderLabel}-`)
-                ));
-                const done = children.filter((row) => row.status === 'completed').length;
-
-                // 배정마다 학생 수가 다르다. 한 명짜리 개별 배정과 스물다섯 명짜리 반 배정을
-                // 같은 무게로 평균내면 실제 학생들의 성취와 어긋난다. 배정 인원으로 가중한다.
-                const weighted = children
-                    .filter((row) => row.accuracy !== null && row.accuracy !== undefined)
-                    .map((row) => ({ accuracy: row.accuracy, weight: row.assignedCount || 1 }));
-                const totalWeight = weighted.reduce((sum, row) => sum + row.weight, 0);
-                const average = totalWeight === 0
-                    ? null
-                    : Math.round((weighted.reduce(
-                        (sum, row) => sum + (row.accuracy * row.weight), 0,
-                    ) / totalWeight) * 10) / 10;
-
-                rows.push({
-                    id: `${worksheet.id}-summary`,
-                    isCustomSummary: true,
-                    parentId: worksheet.id,
-                    childCount: worksheet.childCount,
-                    doneCount: done,
-                    average,
-                });
-            }
-        });
-
-        return rows;
+        return worksheets.filter((worksheet) => (
+            worksheet.depth === 0
+            || ![...collapsedParents].some(
+                (parentLabel) => worksheet.orderLabel.startsWith(`${parentLabel}-`),
+            )
+        ));
     }, [worksheets, expandedParents]);
 
     return (
@@ -94,31 +65,7 @@ function WorksheetProgressList({ worksheets }) {
                         <span>학습 결과</span>
                         <span>동작</span>
                     </li>
-                    {visibleRows.map((worksheet) => (worksheet.isCustomSummary
-                        ? (
-                            <li key={worksheet.id} className="worksheet-list__item worksheet-list__item--child worksheet-list__item--summary">
-                                <div className="worksheet-list__content">
-                                    <span className="worksheet-list__order" aria-hidden="true">└</span>
-                                    <div className="worksheet-list__title-block">
-                                        <div className="worksheet-list__title">
-                                            <strong>맞춤 학습 {worksheet.childCount}건</strong>
-                                            <span className="worksheet-list__summary-detail">학생별 보강</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <span className="worksheet-list__period" aria-hidden="true">—</span>
-                                <span className="worksheet-list__status" aria-hidden="true" />
-                                <span className="worksheet-list__submission">{worksheet.doneCount}/{worksheet.childCount}건</span>
-                                <div className="worksheet-list__metric">
-                                    <strong>{worksheet.average === null ? '-' : `${worksheet.average}%`}</strong>
-                                    <span>평균 정답률</span>
-                                </div>
-                                <div className="worksheet-list__action">
-                                    <button type="button" className="worksheet-list__action-button" onClick={() => toggleParent(worksheet.parentId)}>펼치기</button>
-                                </div>
-                            </li>
-                        )
-                        : (
+                    {visibleRows.map((worksheet) => (
                         <li key={worksheet.id} className={`worksheet-list__item${worksheet.depth > 0 ? ' worksheet-list__item--child' : ''}`}>
                             <div className="worksheet-list__content">
                                 <span className="worksheet-list__order">{worksheet.orderLabel}</span>
@@ -129,8 +76,11 @@ function WorksheetProgressList({ worksheets }) {
                                         {worksheet.origin === 'custom' && <span className="worksheet-list__type worksheet-list__type--custom">맞춤 {worksheet.sessionLabel ?? ''}</span>}
                                         {worksheet.sourceInformationMissing && <span className="worksheet-list__missing">정보 부족</span>}
                                         {worksheet.childCount > 0 && <span className="worksheet-list__custom-count">맞춤 {worksheet.childCount}</span>}
-                                        {worksheet.childCount > COLLAPSE_THRESHOLD && expandedParents.has(worksheet.id)
-                                            && <button type="button" className="worksheet-list__collapse" onClick={() => toggleParent(worksheet.id)}>접기</button>}
+                                        {worksheet.childCount > COLLAPSE_THRESHOLD && (
+                                            <button type="button" className="worksheet-list__collapse" onClick={() => toggleParent(worksheet.id)}>
+                                                {expandedParents.has(worksheet.id) ? '접기' : '펼치기'}
+                                            </button>
+                                        )}
                                     </div>
                                 </div>
                             </div>
@@ -151,7 +101,7 @@ function WorksheetProgressList({ worksheets }) {
                                 <button type="button" className="worksheet-list__action-button" onClick={() => moveToAction(worksheet)}>분석 보기</button>
                             </div>
                         </li>
-                        )))}
+                    ))}
                 </ol>}
         </section>
     );
