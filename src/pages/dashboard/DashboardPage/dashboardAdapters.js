@@ -77,6 +77,8 @@ export const adaptDashboardSummaries = (data) => {
     const threshold = formatMetric(summary.weaknessThresholdRate);
     return [
         {
+            // 맞춤 학습은 세지 않는다. 학생마다 나가는 보강이라 함께 세면 25명 반에서
+            // 숫자가 수십 개로 불어나 '이번 학기에 무엇을 냈는가' 를 읽을 수 없다.
             id: 'worksheets',
             label: '배정 학습지',
             valueLabel: '이번 학기 누적',
@@ -86,9 +88,18 @@ export const adaptDashboardSummaries = (data) => {
                 : '진행 중인 학습지 없음',
         },
         {
+            id: 'custom',
+            label: '맞춤 학습',
+            valueLabel: '취약 학생 보강',
+            value: `${summary.customAssignmentCount ?? 0}건`,
+            support: summary.customAssignmentCount > 0
+                ? `완료 ${summary.customCompletedAssignmentCount ?? 0}건`
+                : '배정한 보강 없음',
+        },
+        {
             id: 'accuracy',
             label: '반 평균 정답률',
-            valueLabel: '채점 완료 기준',
+            valueLabel: '원본 학습지 기준',
             value: summary.classAccuracyRate === null ? '-' : `${formatMetric(summary.classAccuracyRate)}%`,
             support: `집계 학생 ${summary.aggregatedStudentCount ?? 0}명`,
         },
@@ -269,7 +280,11 @@ const nestCustomLearning = (rows) => {
         && !rows.some((candidate) => candidate.id === row.sourceAssignmentId)
     ));
 
-    return [...parents, ...orphans].flatMap((row) => {
+    // 번호 순서대로 읽히게 정렬한다. 목록이 최신순인데 번호는 오름차순이라 1 아래 2 가
+    // 아니라 2 아래 1 이 오는 상태였다.
+    const ordered = [...parents, ...orphans].sort(compareOrderLabel);
+
+    return ordered.flatMap((row) => {
         const children = childrenByParent.get(row.id) ?? [];
         return [
             { ...row, childCount: children.length },
@@ -280,4 +295,13 @@ const nestCustomLearning = (rows) => {
             })),
         ];
     });
+};
+
+/** 1, 2, 10 순으로 읽히도록 번호를 숫자로 비교한다. 문자열 정렬이면 10 이 2 앞에 온다. */
+const compareOrderLabel = (left, right) => {
+    const toNumber = (row) => {
+        const parsed = Number.parseInt(row.orderLabel, 10);
+        return Number.isNaN(parsed) ? Number.MAX_SAFE_INTEGER : parsed;
+    };
+    return toNumber(left) - toNumber(right);
 };
