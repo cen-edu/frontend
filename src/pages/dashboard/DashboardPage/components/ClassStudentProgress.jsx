@@ -70,7 +70,7 @@ function ClassStudentProgress({ students, worksheets }) {
                     <p>
                         {worksheets.length === 0
                             ? `재적 ${students.length}명 기준입니다.`
-                            : `이번 학기에 배정한 학습지 ${worksheets.length}개를 학생별로 누적한 값입니다. 학생을 선택하면 개인 취약점 분석으로 이동합니다.`}
+                            : `이번 학기에 배정한 학습지 ${worksheets.filter((worksheet) => worksheet.depth === 0).length}개와 맞춤 학습 ${worksheets.filter((worksheet) => worksheet.depth > 0).length}건을 학생별로 누적한 값입니다. 학생을 선택하면 개인 취약점 분석으로 이동합니다.`}
                     </p>
                 </div>
                 {worksheets.length > 0 && (

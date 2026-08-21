@@ -2,8 +2,12 @@ import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { worksheetTypeLabels } from '../../../../mocks/labels';
 
-// 맞춤이 이보다 많으면 기본으로 접는다. 학생마다 보강이 나가면 25줄이 되어 목록이 무너진다.
-const COLLAPSE_THRESHOLD = 3;
+// 맞춤이 이보다 많으면 기본으로 접는다. 0 이면 한 건이라도 접는다.
+//
+// 대시보드는 요약이다. 맞춤은 학생마다 나가는 보강이라 한 건일 때와 스물다섯 건일 때
+// 목록 모양이 달라지면 읽는 방식도 달라진다. 항상 같은 자리에 한 줄로 접어 두고,
+// 필요할 때만 펼치게 한다.
+const COLLAPSE_THRESHOLD = 0;
 
 function WorksheetProgressList({ worksheets }) {
     const navigate = useNavigate();
@@ -43,13 +47,18 @@ function WorksheetProgressList({ worksheets }) {
                     row.depth > 0 && row.orderLabel.startsWith(`${worksheet.orderLabel}-`)
                 ));
                 const done = children.filter((row) => row.status === 'completed').length;
-                const accuracies = children
-                    .map((row) => row.accuracy)
-                    .filter((value) => value !== null && value !== undefined);
-                const average = accuracies.length === 0
+
+                // 배정마다 학생 수가 다르다. 한 명짜리 개별 배정과 스물다섯 명짜리 반 배정을
+                // 같은 무게로 평균내면 실제 학생들의 성취와 어긋난다. 배정 인원으로 가중한다.
+                const weighted = children
+                    .filter((row) => row.accuracy !== null && row.accuracy !== undefined)
+                    .map((row) => ({ accuracy: row.accuracy, weight: row.assignedCount || 1 }));
+                const totalWeight = weighted.reduce((sum, row) => sum + row.weight, 0);
+                const average = totalWeight === 0
                     ? null
-                    : Math.round((accuracies.reduce((sum, value) => sum + value, 0)
-                        / accuracies.length) * 10) / 10;
+                    : Math.round((weighted.reduce(
+                        (sum, row) => sum + (row.accuracy * row.weight), 0,
+                    ) / totalWeight) * 10) / 10;
 
                 rows.push({
                     id: `${worksheet.id}-summary`,
@@ -93,17 +102,17 @@ function WorksheetProgressList({ worksheets }) {
                                     <div className="worksheet-list__title-block">
                                         <div className="worksheet-list__title">
                                             <strong>맞춤 학습 {worksheet.childCount}건</strong>
-                                            <span className="worksheet-list__summary-detail">
-                                                완료 {worksheet.doneCount}건
-                                                {worksheet.average === null ? '' : ` · 평균 정답률 ${worksheet.average}%`}
-                                            </span>
+                                            <span className="worksheet-list__summary-detail">학생별 보강</span>
                                         </div>
                                     </div>
                                 </div>
-                                <span className="worksheet-list__period" />
-                                <span className="worksheet-list__status" />
-                                <span className="worksheet-list__submission" />
-                                <div className="worksheet-list__metric" />
+                                <span className="worksheet-list__period" aria-hidden="true">—</span>
+                                <span className="worksheet-list__status" aria-hidden="true" />
+                                <span className="worksheet-list__submission">{worksheet.doneCount}/{worksheet.childCount}건</span>
+                                <div className="worksheet-list__metric">
+                                    <strong>{worksheet.average === null ? '-' : `${worksheet.average}%`}</strong>
+                                    <span>평균 정답률</span>
+                                </div>
                                 <div className="worksheet-list__action">
                                     <button type="button" className="worksheet-list__action-button" onClick={() => toggleParent(worksheet.parentId)}>펼치기</button>
                                 </div>
