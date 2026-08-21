@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { teacherProgressStatusLabels as resultStatusLabels, worksheetTypeLabels } from '../../../../mocks/labels';
+import { getWorksheetTypeLabel, teacherProgressStatusLabels as resultStatusLabels } from '../../../../mocks/labels';
 
 const weakAccuracyThreshold = 60;
 
@@ -27,7 +27,7 @@ const cellState = (result) => {
 };
 
 const cellDescription = (result) => {
-    const type = `${worksheetTypeLabels[result.type]}${result.origin === 'custom' ? ' · 맞춤' : ''}`;
+    const type = getWorksheetTypeLabel(result);
     const prefix = `${result.orderLabel}. ${result.title} · ${type}`;
     if (result.status === 'unassigned') return `${prefix} · 미배정`;
     if (result.status !== 'submitted') return `${prefix} · ${resultStatusLabels[result.status]}${result.overdue ? ' · 기한 초과' : ''}`;

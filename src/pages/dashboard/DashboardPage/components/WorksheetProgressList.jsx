@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { worksheetTypeLabels } from '../../../../mocks/labels';
+import { customLearningLabel, worksheetTypeLabels } from '../../../../mocks/labels';
 
 // 맞춤이 이보다 많으면 기본으로 접는다. 0 이면 한 건이라도 접는다.
 //
@@ -72,8 +72,15 @@ function WorksheetProgressList({ worksheets }) {
                                 <div className="worksheet-list__title-block">
                                     <div className="worksheet-list__title">
                                         <strong>{worksheet.title}</strong>
-                                        <span className={`worksheet-list__type worksheet-list__type--${worksheet.type}`}>{worksheetTypeLabels[worksheet.type]}</span>
-                                        {worksheet.origin === 'custom' && <span className="worksheet-list__type worksheet-list__type--custom">맞춤 {worksheet.sessionLabel ?? ''}</span>}
+                                        {/* 유형(일반/평가)과 출처(원본/맞춤)는 다른 축이라 둘 다 그리면
+                                            "일반 학습 · 맞춤 2차" 처럼 겹쳐 읽힌다. 맞춤이면 출처만 보인다. */}
+                                        {worksheet.origin === 'custom'
+                                            ? (
+                                                <span className="worksheet-list__type worksheet-list__type--custom">
+                                                    {customLearningLabel}{worksheet.sessionLabel ? ` ${worksheet.sessionLabel}` : ''}
+                                                </span>
+                                            )
+                                            : <span className={`worksheet-list__type worksheet-list__type--${worksheet.type}`}>{worksheetTypeLabels[worksheet.type]}</span>}
                                         {worksheet.sourceInformationMissing && <span className="worksheet-list__missing">정보 부족</span>}
                                         {worksheet.childCount > 0 && <span className="worksheet-list__custom-count">맞춤 {worksheet.childCount}</span>}
                                         {worksheet.childCount > COLLAPSE_THRESHOLD && (
