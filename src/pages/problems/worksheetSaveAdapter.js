@@ -64,7 +64,9 @@ export const buildWorksheetSavePayload = ({
     ...(sourceAssignmentId == null ? {} : { sourceAssignmentId: Number(sourceAssignmentId) }),
     genSpec: buildGenerationSpec(problems),
     items: problems.map((problem, index) => ({
-        questionId: Number(problem.id),
+        ...(problem.sessionId
+            ? { sessionId: Number(problem.sessionId) }
+            : { questionId: Number(problem.id) }),
         displayOrder: index + 1,
         supportMode: supports[problem.id],
         ...(type === 'assessment' ? { maxScore: Number(problem.maxScore) } : {}),

@@ -138,6 +138,11 @@ export const getStudentCustomLearningSessions = ({ assignmentId, studentId, sign
     { signal },
 );
 
+export const getStudentReissueProposal = ({ assignmentId, studentId, signal }) => analysisApi.get(
+    `/assignments/${Number(assignmentId)}/students/${Number(studentId)}/reissue-proposal`,
+    { signal },
+);
+
 export const requestStudentAnalysisReport = ({ assignmentId, studentId, signal }) => analysisApi.post(
     `/assignments/${Number(assignmentId)}/students/${Number(studentId)}/report`,
     { signal },
