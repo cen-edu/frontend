@@ -2,6 +2,7 @@ import { GradingStatus } from '../../../../api/analysis/analysisConstants.js';
 import { formatAnalysisDuration, getItemAchievementResult } from '../analysisAdapters.js';
 
 const views = [['score', '득점'], ['time', '시간']];
+const formatScore = (score) => Math.round(score);
 
 const getScoreState = (result, item) => {
     if (!result || result.gradingStatus === GradingStatus.NOT_GRADED) return 'pending';
@@ -14,7 +15,7 @@ const getScoreState = (result, item) => {
 const getScoreLabel = (result, item) => {
     if (!result || result.gradingStatus === GradingStatus.NOT_GRADED) return '미채점';
     if (result.gradingStatus === GradingStatus.FAILED) return '채점 실패';
-    return result.score === null ? '-' : `${result.score} / ${item.maxScore}점`;
+    return result.score === null ? '-' : `${formatScore(result.score)} / ${formatScore(item.maxScore)}점`;
 };
 
 function QuestionMatrix({ achievement, view, onViewChange }) {
@@ -33,7 +34,7 @@ function QuestionMatrix({ achievement, view, onViewChange }) {
             </div>
             {items.length && students.length ? <div className="matrix-table__wrap">
                 <table className="matrix-table matrix-table--questions" style={{ '--question-count': items.length }}>
-                    <thead><tr><th>학생</th>{items.map((item) => <th key={item.worksheetItemId}>{item.itemNumber}번<small>{item.maxScore}점</small></th>)}</tr></thead>
+                    <thead><tr><th>학생</th>{items.map((item) => <th key={item.worksheetItemId}>{item.itemNumber}번<small>{formatScore(item.maxScore)}점</small></th>)}</tr></thead>
                     <tbody>
                         {students.map((student) => (
                             <tr key={student.studentId}>
