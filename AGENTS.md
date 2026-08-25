@@ -134,7 +134,7 @@
 - 일반 학습 문제 생성은 `POST /api/teacher/problems/generate/async`로 시작하고 `GET /api/teacher/problems/generation-jobs/{jobId}`를 완료 상태까지 조회한다. `READY` 슬롯의 `sessionId`와 `preview.snapshot`을 미리보기 모델로 변환하며, 생성·수정 문항을 학습지에 저장할 때는 `questionId` 대신 `sessionId`를 전달해 서버의 최종화 흐름을 사용한다.
 - AI 문제 편집은 `/api/teacher/problems/authoring-sessions/{sessionId}`의 `/edit/turns`, `/status`, `/preview`를 사용한다. 화면 선택 영역은 스냅샷의 `stepKey` 같은 논리 키와 API `targetType`으로 변환하며 `semanticPatch.operations`를 클라이언트에서 직접 적용하지 않는다. 명시적인 확인·취소 계약과 다중 대화 `history` 처리가 백엔드에서 확정되기 전에는 첫 편집 요청과 변경 제안 표시까지만 제공한다.
 - 대시보드와 취약점 분석처럼 학년도·학기·반·학습지를 선택하는 분석 조회 영역은 `src/components/common/filters/AnalysisFilters/AnalysisFilters.jsx`를 재사용한다.
-- 대시보드, 취약점 분석, 맞춤 문제 생성의 학년도·학년·반·학기 옵션과 기본 선택은 `GET /api/teacher/academic-contexts` 및 공통 `useAcademicContextFilters` 훅을 사용한다. 학년도 변경 시 학년·반을, 학년 변경 시 반을 응답 계층의 첫 항목으로 재선택하며 학기는 반 계층과 독립적으로 유지한다.
+- 대시보드, 취약점 분석, 맞춤 문제 생성의 학년도·학년·반·학기 옵션과 기본 선택은 `GET /api/teacher/academic-contexts` 및 공통 `useAcademicContextFilters` 훅을 사용한다. 학년도 변경 시 학년·반을, 학년 변경 시 반을 응답 계층의 첫 항목으로 재선택하며 학기는 반 계층과 독립적으로 유지한다. 선택 가능한 담당 반이 없으면 학기 값과 옵션도 비워 학기 셀렉트를 비활성화한다.
 - 평가 결과의 반·기간 필터도 `AnalysisFilters`의 `controls` 구성을 사용하며 학습지 선택은 좌측 학습 목록으로 대체한다.
 - 평가 결과표는 학생별 행만 제공하고 등급과 문항별 평균을 표시하지 않는다. 20문항까지 가로 스크롤로 조회하며 학생 열과 채점 동작 열을 고정한다.
 - 일반 학습 결과는 배점이나 점수·정답률을 저장·표시하지 않고 문항별 O/△/X(정답/부분 정답/오답)와 학생별 정답 수로 표현한다. 부분 정답은 정답 수에 포함하지 않는다.

@@ -10,7 +10,6 @@ const gradeValues = {
 const semesterValues = {
     first: 'first',
     second: 'second',
-    common: 'common',
 };
 
 const sortUnits = (units = []) => [...units]

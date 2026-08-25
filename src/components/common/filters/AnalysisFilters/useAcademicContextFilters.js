@@ -25,7 +25,9 @@ const getAvailableFilters = (data, filters) => {
     const grade = findGrade(year, filters.grade) ?? year?.grades[0];
     const classItem = grade?.classes.find(({ id }) => toValue(id) === filters.classId) ?? grade?.classes[0];
     const semesters = data?.semesters ?? [];
-    const semester = semesters.find(({ value }) => toValue(value) === filters.semester) ?? semesters[0];
+    const semester = classItem
+        ? semesters.find(({ value }) => toValue(value) === filters.semester) ?? semesters[0]
+        : undefined;
 
     return {
         academicYear: toValue(year?.year),
@@ -69,6 +71,7 @@ export function useAcademicContextFilters() {
         const academicYears = query.data?.academicYears ?? [];
         const selectedYear = findAcademicYear(academicYears, filters.academicYear);
         const selectedGrade = findGrade(selectedYear, filters.grade);
+        const hasAvailableClass = Boolean(selectedGrade?.classes.length);
 
         return {
             academicYears: academicYears.map(({ year }) => ({
@@ -83,7 +86,7 @@ export function useAcademicContextFilters() {
                 value: toValue(classItem.id),
                 label: classItem.name,
             })),
-            semesters: (query.data?.semesters ?? []).map(({ value, label }) => ({
+            semesters: (hasAvailableClass ? query.data?.semesters ?? [] : []).map(({ value, label }) => ({
                 value: toValue(value),
                 label,
             })),

@@ -10,7 +10,6 @@ const gradeOptions = [
 const termOptions = [
     { value: 'first', label: '1학기' },
     { value: 'second', label: '2학기' },
-    { value: 'common', label: '공통' },
 ];
 
 function UnitScopeFilter({ gradeId, term, onGradeChange, onTermChange, disabled = false }) {

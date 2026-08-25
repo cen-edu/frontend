@@ -63,7 +63,7 @@ function ComprehensiveAssessmentPage() {
     const previewProgress = result?.problems.length ? Math.round(((selectedProblemIndex + 1) / result.problems.length) * 100) : 0;
     const canGenerate = totalCount > 0;
     const selectedSupport = supports[selectedProblemId] ?? defaultSupportModes.assessment;
-    const semesterLabel = { first: '1학기', second: '2학기', common: '공통' }[term];
+    const semesterLabel = { first: '1학기', second: '2학기' }[term];
     const title = `${currentYear} ${semesterLabel} 종합 평가`;
     const generationError = generationMutation.error?.code === 'QUESTION_INVENTORY_INSUFFICIENT'
         ? '선택한 소단원, 문항 유형, 난이도에 요청한 수량만큼의 문제가 없습니다. 문항 수를 줄여 다시 시도해 주세요.'

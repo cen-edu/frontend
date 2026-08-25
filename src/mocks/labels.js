@@ -5,7 +5,7 @@ export const difficultyLevels = ['high', 'mid', 'low'];
 export const difficultyLabels = { low: '하', mid: '중', high: '상' };
 
 export const questionFormats = [
-    { value: 'choice', label: '5지선다 객관식' },
+    { value: 'choice', label: '객관식' },
     { value: 'short', label: '주관식' },
     { value: 'essay', label: '서술형' },
 ];

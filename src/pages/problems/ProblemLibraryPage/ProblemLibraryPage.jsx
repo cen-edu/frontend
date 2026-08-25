@@ -17,7 +17,7 @@ const tabs = [
     ...Object.entries(libraryTypeLabels).map(([value, label]) => ({ value, label })),
 ];
 const gradeOptions = [{ value: 'all', label: '전체 학년' }, { value: 'middle-1', label: '1학년' }, { value: 'middle-2', label: '2학년' }, { value: 'middle-3', label: '3학년' }];
-const termOptions = [{ value: 'all', label: '전체 학기' }, { value: 'first', label: '1학기' }, { value: 'second', label: '2학기' }, { value: 'common', label: '공통' }];
+const termOptions = [{ value: 'all', label: '전체 학기' }, { value: 'first', label: '1학기' }, { value: 'second', label: '2학기' }];
 const statusOptions = [{ value: 'all', label: '전체 출제 상태' }, { value: 'draft', label: '미출제' }, { value: 'assigned', label: '출제됨' }];
 
 function ProblemLibraryPage() {

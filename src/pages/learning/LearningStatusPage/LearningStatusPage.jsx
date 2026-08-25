@@ -30,7 +30,6 @@ const semesterOptions = [
     { value: 'all', label: '전체 학기' },
     { value: 'first', label: '1학기' },
     { value: 'second', label: '2학기' },
-    { value: 'common', label: '공통' },
 ];
 
 const studentStatusOptions = [
