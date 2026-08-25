@@ -5,9 +5,11 @@ import loginSymbol from '../../../assets/images/logo-symbol.png'
 import './SignupPage.scss'
 import {useMutation} from "@tanstack/react-query";
 import {signup} from "../../../api/auth/authApi.js";
+import { useDialog } from '../../../components/common/feedback';
 
 const SignupPage = () => {
     const navigate = useNavigate();
+    const { alert } = useDialog();
 
     const [email, setEmail] = useState('');
     const [name, setName] = useState('');
@@ -17,12 +19,20 @@ const SignupPage = () => {
 
     const signupMutation = useMutation({
         mutationFn: signup,
-        onSuccess: (response) => {
-            window.alert(`${response.name}님, 회원가입이 완료되었습니다.`);
+        onSuccess: async (response) => {
+            await alert({
+                title: '회원가입 완료',
+                message: `${response.name}님, 회원가입이 완료되었습니다.`,
+                tone: 'success',
+            });
             navigate('/', { replace: true });
         },
         onError: (error) => {
-            window.alert(error?.message || '회원가입에 실패했습니다.');
+            alert({
+                title: '회원가입을 완료하지 못했습니다',
+                message: error?.message || '회원가입에 실패했습니다.',
+                tone: 'danger',
+            });
         },
     });
 
@@ -30,7 +40,11 @@ const SignupPage = () => {
         event.preventDefault();
 
         if (password !== passwordConfirm) {
-            window.alert('비밀번호가 일치하지 않습니다.');
+            alert({
+                title: '입력 내용을 확인해 주세요',
+                message: '비밀번호가 일치하지 않습니다.',
+                tone: 'warning',
+            });
             return;
         }
 

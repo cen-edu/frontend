@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { UnitScopeFilter, UnitTreeSelector } from '../../../components/common/filters';
+import { useDialog } from '../../../components/common/feedback';
 import { defaultSupportModes } from '../../../mocks/labels';
 import {
   AssessmentQuestionView,
@@ -29,6 +30,7 @@ const createDefaultRow = () => ({ id: `assessment-row-${nextRowId++}`, format: '
 
 function ComprehensiveAssessmentPage() {
     const navigate = useNavigate();
+    const { alert } = useDialog();
     const [searchParams] = useSearchParams();
     const sourceWorksheetId = searchParams.get('from');
     const initializedFromLibrary = useRef(false);
@@ -171,10 +173,14 @@ function ComprehensiveAssessmentPage() {
                 supports[problem.id] ?? defaultSupportModes.assessment,
             ])),
         }, {
-            onSuccess: (worksheet) => {
+            onSuccess: async (worksheet) => {
                 setSavedWorksheet(worksheet);
                 setTitleModalOpen(false);
-                window.alert('문제 보관함에 저장했습니다.');
+                await alert({
+                    title: '평가 저장 완료',
+                    message: '문제 보관함에 저장했습니다.',
+                    tone: 'success',
+                });
                 navigate('/problems/library');
             },
         });

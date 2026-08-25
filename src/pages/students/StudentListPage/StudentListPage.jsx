@@ -14,11 +14,13 @@ import {
 import './StudentListPage.scss';
 import StudentRegistrationModal from './components/StudentRegistrationModal';
 import StudentDetailModal from './components/StudentDetailModal';
+import { useDialog } from '../../../components/common/feedback';
 
 
 const PAGE_SIZE = 10;
 
 function StudentListPage() {
+    const { alert, confirm } = useDialog();
     const [selectedIds, setSelectedIds] = useState([]);
     const [yearFilter, setYearFilter] = useState('all');
     const [gradeFilter, setGradeFilter] = useState('all');
@@ -118,7 +120,11 @@ function StudentListPage() {
             setIsBulkRegistrationOpen(false);
             setPage(1);
             setSelectedIds([]);
-            window.alert(`${result.createdCount}명의 학생을 등록했습니다.`);
+            alert({
+                title: '학생 일괄 등록 완료',
+                message: `${result.createdCount}명의 학생을 등록했습니다.`,
+                tone: 'success',
+            });
         } catch (mutationError) {
             setBulkRegistrationError(
                 mutationError?.message || '학생 일괄 등록에 실패했습니다.',
@@ -137,28 +143,35 @@ function StudentListPage() {
                 setPage(1);
                 setSelectedIds([]);
 
-                window.alert(
-                    `${student.name} 학생이 등록되었습니다.\n로그인 아이디: ${student.loginId}`,
-                );
+                alert({
+                    title: '학생 등록 완료',
+                    message: `${student.name} 학생이 등록되었습니다.\n로그인 아이디: ${student.loginId}`,
+                    tone: 'success',
+                });
             },
             onError: (mutationError) => {
-                window.alert(
-                    mutationError?.message || '학생을 등록하지 못했습니다.',
-                );
+                alert({
+                    title: '학생을 등록하지 못했습니다',
+                    message: mutationError?.message || '학생을 등록하지 못했습니다.',
+                    tone: 'danger',
+                });
             },
         });
     };
 
     const deleteStudentsMutation = useDeleteStudentsMutation();
 
-    const handleDeleteStudents = () => {
+    const handleDeleteStudents = async () => {
         const selectedCount = selectedIds.length;
 
         if (selectedCount === 0) return;
 
-        const confirmed = window.confirm(
-            `선택한 학생 ${selectedCount}명을 삭제하시겠습니까?\n삭제한 학생은 복구할 수 없습니다.`,
-        );
+        const confirmed = await confirm({
+            title: '학생 삭제',
+            message: `선택한 학생 ${selectedCount}명을 삭제하시겠습니까?\n삭제한 학생은 복구할 수 없습니다.`,
+            confirmText: '삭제하기',
+            tone: 'danger',
+        });
 
         if (!confirmed) return;
 
@@ -171,14 +184,20 @@ function StudentListPage() {
                     setPage((current) => current - 1);
                 }
 
-                window.alert(`학생 ${selectedCount}명이 삭제되었습니다.`);
+                alert({
+                    title: '학생 삭제 완료',
+                    message: `학생 ${selectedCount}명이 삭제되었습니다.`,
+                    tone: 'success',
+                });
             },
             onError: (mutationError) => {
                 setSelectedIds([]);
-                window.alert(
-                    mutationError?.message
-                    || '일부 학생을 삭제하지 못했습니다. 학생 목록을 확인해주세요.',
-                );
+                alert({
+                    title: '학생을 삭제하지 못했습니다',
+                    message: mutationError?.message
+                        || '일부 학생을 삭제하지 못했습니다. 학생 목록을 확인해주세요.',
+                    tone: 'danger',
+                });
             },
         });
     };
@@ -190,12 +209,15 @@ function StudentListPage() {
         resetStudentPasswordMutation.reset();
     };
 
-    const handleResetPassword = () => {
+    const handleResetPassword = async () => {
         if (!detailStudentId) return;
 
-        const confirmed = window.confirm(
-            '이 학생의 비밀번호를 초기화하시겠습니까?',
-        );
+        const confirmed = await confirm({
+            title: '학생 비밀번호 초기화',
+            message: '이 학생의 비밀번호를 초기화하시겠습니까?',
+            confirmText: '초기화하기',
+            tone: 'warning',
+        });
 
         if (!confirmed) return;
 

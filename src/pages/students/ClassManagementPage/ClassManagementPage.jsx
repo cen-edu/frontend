@@ -10,6 +10,7 @@ import {
     useDeleteClassesMutation,
     useUpdateClassOrderMutation,
 } from './classHooks';
+import { useDialog } from '../../../components/common/feedback';
 import './ClassManagementPage.scss';
 
 const ALL_FILTER = 'all';
@@ -33,6 +34,7 @@ const reorderClassIds = (classes, sourceId, targetId, position) => {
 };
 
 function ClassManagementPage() {
+    const { confirm } = useDialog();
     const [selectedIds, setSelectedIds] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [yearFilter, setYearFilter] = useState(ALL_FILTER);
@@ -109,8 +111,13 @@ function ClassManagementPage() {
         ));
     };
 
-    const deleteSelectedClasses = () => {
-        const confirmed = window.confirm(`선택한 반 ${selectedIds.length}개를 삭제하시겠습니까?`);
+    const deleteSelectedClasses = async () => {
+        const confirmed = await confirm({
+            title: '반 삭제',
+            message: `선택한 반 ${selectedIds.length}개를 삭제하시겠습니까?`,
+            confirmText: '삭제하기',
+            tone: 'danger',
+        });
         if (!confirmed) return;
 
         setOperationError('');

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { UnitScopeFilter, UnitTreeSelector } from '../../../components/common/filters';
+import { useDialog } from '../../../components/common/feedback';
 import { defaultSupportModes } from '../../../mocks/labels';
 import { defaultUnitCounts, difficultyLevels } from '../../../mocks/problemCreation';
 import { PracticeProblemView, StudentSupportPreview } from '../../../components/common/worksheets';
@@ -21,6 +22,7 @@ import './components/ProblemCreationComponents.scss';
 
 function ProblemCreationPage() {
     const navigate = useNavigate();
+    const { alert } = useDialog();
     const [searchParams] = useSearchParams();
     const sourceWorksheetId = searchParams.get('from');
     const initializedFromLibrary = useRef(false);
@@ -159,10 +161,14 @@ function ProblemCreationPage() {
                 supports[problem.id] ?? defaultSupportModes.practice,
             ])),
         }, {
-            onSuccess: (worksheet) => {
+            onSuccess: async (worksheet) => {
                 setSavedWorksheet(worksheet);
                 setTitleModalOpen(false);
-                window.alert('문제 보관함에 저장했습니다.');
+                await alert({
+                    title: '학습지 저장 완료',
+                    message: '문제 보관함에 저장했습니다.',
+                    tone: 'success',
+                });
                 navigate('/problems/library');
             },
         });

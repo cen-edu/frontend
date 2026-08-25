@@ -7,9 +7,11 @@ import {useState} from "react";
 import {saveAuth} from "../../../api/auth/authStorage.js";
 import {login} from "../../../api/auth/authApi.js";
 import {useMutation} from "@tanstack/react-query";
+import { useDialog } from '../../../components/common/feedback';
 
 const LoginPage = () => {
     const navigate = useNavigate();
+    const { alert } = useDialog();
 
     const [loginId, setLoginId] = useState('');
     const [password, setPassword] = useState('');
@@ -28,7 +30,11 @@ const LoginPage = () => {
             navigate('/dashboard', { replace: true });
         },
         onError: (error) => {
-            window.alert(error?.message || '로그인에 실패했습니다.');
+            alert({
+                title: '로그인하지 못했습니다',
+                message: error?.message || '로그인에 실패했습니다.',
+                tone: 'danger',
+            });
         },
     });
 

@@ -6,6 +6,7 @@ import {
     getStudentAccount,
 } from '../../../api/student/studentAccountApi';
 import Header from '../../../components/Header/Header';
+import { useDialog } from '../../../components/common/feedback';
 import './StudentProfilePage.scss';
 
 const initialPasswordForm = {
@@ -16,6 +17,7 @@ const initialPasswordForm = {
 
 function StudentProfilePage() {
     const navigate = useNavigate();
+    const { alert } = useDialog();
     const [passwordForm, setPasswordForm] = useState(initialPasswordForm);
     const accountQuery = useQuery({
         queryKey: ['student', 'account'],
@@ -25,10 +27,20 @@ function StudentProfilePage() {
         mutationFn: changeStudentPassword,
         onSuccess: () => {
             setPasswordForm(initialPasswordForm);
-            window.alert('비밀번호가 변경되었습니다.');
+            alert({
+                title: '비밀번호 변경 완료',
+                message: '비밀번호가 변경되었습니다.',
+                tone: 'success',
+                audience: 'student',
+            });
         },
         onError: (error) => {
-            window.alert(error?.message || '비밀번호 변경에 실패했습니다. 잠시 후 다시 시도해 주세요.');
+            alert({
+                title: '비밀번호를 변경하지 못했습니다',
+                message: error?.message || '비밀번호 변경에 실패했습니다. 잠시 후 다시 시도해 주세요.',
+                tone: 'danger',
+                audience: 'student',
+            });
         },
     });
 
@@ -41,22 +53,42 @@ function StudentProfilePage() {
         event.preventDefault();
 
         if (Object.values(passwordForm).some((value) => !value)) {
-            window.alert('비밀번호를 모두 입력해 주세요.');
+            alert({
+                title: '입력 내용을 확인해 주세요',
+                message: '비밀번호를 모두 입력해 주세요.',
+                tone: 'warning',
+                audience: 'student',
+            });
             return;
         }
 
         if (Object.values(passwordForm).some((value) => value.length < 8 || value.length > 64)) {
-            window.alert('비밀번호는 8자 이상 64자 이하로 입력해 주세요.');
+            alert({
+                title: '입력 내용을 확인해 주세요',
+                message: '비밀번호는 8자 이상 64자 이하로 입력해 주세요.',
+                tone: 'warning',
+                audience: 'student',
+            });
             return;
         }
 
         if (passwordForm.newPassword !== passwordForm.newPasswordConfirm) {
-            window.alert('새 비밀번호와 비밀번호 확인이 일치하지 않습니다.');
+            alert({
+                title: '입력 내용을 확인해 주세요',
+                message: '새 비밀번호와 비밀번호 확인이 일치하지 않습니다.',
+                tone: 'warning',
+                audience: 'student',
+            });
             return;
         }
 
         if (passwordForm.currentPassword === passwordForm.newPassword) {
-            window.alert('현재 비밀번호와 다른 비밀번호를 입력해 주세요.');
+            alert({
+                title: '입력 내용을 확인해 주세요',
+                message: '현재 비밀번호와 다른 비밀번호를 입력해 주세요.',
+                tone: 'warning',
+                audience: 'student',
+            });
             return;
         }
 

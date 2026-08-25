@@ -41,6 +41,7 @@
 - 컴포넌트의 스타일은 해당 컴포넌트와 같은 폴더의 `SCSS` 파일에 작성한다.
 - CSS 클래스는 기존 코드와 동일하게 BEM 형식을 사용한다.
 - 여러 화면에서 반복되는 UI는 공통 컴포넌트로 분리하고, 페이지마다 같은 UI나 스타일을 중복 구현하지 않는다.
+- 사용자 알림과 확인은 브라우저 기본 `window.alert`·`window.confirm` 대신 `src/components/common/feedback`의 `useDialog`를 사용한다. 삭제·탈퇴처럼 되돌릴 수 없는 동작은 `tone: 'danger'`, 학생 화면은 `audience: 'student'`를 지정하며, 알림 확인 뒤 이동해야 하는 흐름은 `alert` Promise를 기다린다.
 - 공통 상단 영역은 `src/components/Header/Header.jsx`를 재사용한다.
 - 교사 마이페이지는 `/profile` 경로를 사용하고 공통 `Header`의 교사 프로필 링크로 진입한다. 이름·이메일은 `GET /api/teacher/account`, 비밀번호 변경은 `PATCH /api/teacher/account/password`, 회원 탈퇴는 `DELETE /api/teacher/account`를 사용한다. 회원 탈퇴 성공 후에는 인증 정보를 지우고 로그인 화면으로 이동하며 로그아웃도 함께 제공한다.
 - 학생앱 메인 화면은 독립 경로 `/student`를 사용한다. 학생 관리 화면에서는 학생앱으로 이동하는 진입 UI를 제공하지 않는다. 공통 `Header`의 `mode="student"`를 사용해 학생 메뉴를 제공하며, 교사 계정이 학생 화면에 진입한 경우에만 교사 화면 복귀 동작을 표시하고 학생 계정으로 로그인한 경우에는 표시하지 않는다.

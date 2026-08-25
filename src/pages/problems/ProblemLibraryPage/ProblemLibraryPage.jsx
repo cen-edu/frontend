@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { CustomSelect, SearchInput } from '../../../components/common/inputs';
+import { useDialog } from '../../../components/common/feedback';
 import { libraryTypeLabels } from '../../../mocks/labels';
 import AssignWorksheetModal from './components/AssignWorksheetModal';
 import LibraryTable from './components/LibraryTable';
@@ -21,6 +22,7 @@ const statusOptions = [{ value: 'all', label: '전체 출제 상태' }, { value:
 
 function ProblemLibraryPage() {
     const navigate = useNavigate();
+    const { alert, confirm } = useDialog();
     const [tab, setTab] = useState('all');
     const [gradeId, setGradeId] = useState('all');
     const [term, setTerm] = useState('all');
@@ -40,18 +42,23 @@ function ProblemLibraryPage() {
 
     const duplicate = (worksheet) => navigate(`${worksheet.type === 'assessment' ? '/problems/comprehensive' : '/problems'}?from=${worksheet.id}`);
     const assign = () => setAssignTarget(null);
-    const remove = (worksheet) => {
-        const confirmed = window.confirm(
-            `${worksheet.title}을 삭제하시겠습니까?\n삭제한 학습지는 복구할 수 없습니다.`,
-        );
+    const remove = async (worksheet) => {
+        const confirmed = await confirm({
+            title: '학습지 삭제',
+            message: `${worksheet.title}을 삭제하시겠습니까?\n삭제한 학습지는 복구할 수 없습니다.`,
+            confirmText: '삭제하기',
+            tone: 'danger',
+        });
 
         if (!confirmed) return;
 
         deleteWorksheetMutation.mutate(worksheet.id, {
             onError: (mutationError) => {
-                window.alert(
-                    mutationError?.message || '학습지를 삭제하지 못했습니다.',
-                );
+                alert({
+                    title: '학습지를 삭제하지 못했습니다',
+                    message: mutationError?.message || '학습지를 삭제하지 못했습니다.',
+                    tone: 'danger',
+                });
             },
         });
     };

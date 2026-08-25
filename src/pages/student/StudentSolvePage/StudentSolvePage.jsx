@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { getAuth } from '../../../api/auth/authStorage.js';
 import { MathText } from '../../../components/common/worksheets';
+import { useDialog } from '../../../components/common/feedback';
 import Header from '../../../components/Header/Header';
 import {
     useSaveStudentItemMutation,
@@ -24,6 +25,7 @@ const hasAnswer = (answer) => Boolean(
 
 function StudentSolvePage() {
     const navigate = useNavigate();
+    const { confirm } = useDialog();
     const { assignmentId } = useParams();
     const [searchParams] = useSearchParams();
     const assignmentStudentId = Number(assignmentId);
@@ -162,7 +164,14 @@ function StudentSolvePage() {
     };
 
     const handleSubmit = async () => {
-        if (!window.confirm('미응답 문항이 있어도 제출되며, 제출 후에는 답안을 수정할 수 없습니다. 제출할까요?')) return;
+        const confirmed = await confirm({
+            title: '학습지 제출',
+            message: '미응답 문항이 있어도 제출되며, 제출 후에는 답안을 수정할 수 없습니다. 제출할까요?',
+            confirmText: '제출하기',
+            tone: 'warning',
+            audience: 'student',
+        });
+        if (!confirmed) return;
         setActionError(null);
         try {
             await saveCurrentItem();

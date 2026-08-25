@@ -8,6 +8,7 @@ import {
     deleteTeacherAccount,
     getTeacherAccount,
 } from '../../../api/teachers/teacherAccountApi';
+import { useDialog } from '../../../components/common/feedback';
 import './TeacherProfilePage.scss';
 
 const initialPasswordForm = {
@@ -18,6 +19,7 @@ const initialPasswordForm = {
 
 function TeacherProfilePage() {
     const navigate = useNavigate();
+    const { alert, confirm } = useDialog();
     const [passwordForm, setPasswordForm] = useState(initialPasswordForm);
     const [message, setMessage] = useState(null);
     const accountQuery = useQuery({
@@ -29,7 +31,11 @@ function TeacherProfilePage() {
         onSuccess: () => {
             setPasswordForm(initialPasswordForm);
             setMessage(null);
-            window.alert('비밀번호가 변경되었습니다.');
+            alert({
+                title: '비밀번호 변경 완료',
+                message: '비밀번호가 변경되었습니다.',
+                tone: 'success',
+            });
         },
         onError: (error) => {
             setMessage({
@@ -45,7 +51,11 @@ function TeacherProfilePage() {
             navigate('/', { replace: true });
         },
         onError: (error) => {
-            window.alert(error?.message || '회원 탈퇴에 실패했습니다. 잠시 후 다시 시도해 주세요.');
+            alert({
+                title: '회원 탈퇴를 완료하지 못했습니다',
+                message: error?.message || '회원 탈퇴에 실패했습니다. 잠시 후 다시 시도해 주세요.',
+                tone: 'danger',
+            });
         },
     });
 
@@ -86,10 +96,13 @@ function TeacherProfilePage() {
         navigate('/', { replace: true });
     };
 
-    const handleDeleteAccount = () => {
-        const confirmed = window.confirm(
-            '회원 탈퇴 시 계정과 관련 데이터가 삭제되며 복구할 수 없습니다. 정말 탈퇴하시겠습니까?',
-        );
+    const handleDeleteAccount = async () => {
+        const confirmed = await confirm({
+            title: '회원 탈퇴',
+            message: '회원 탈퇴 시 계정과 관련 데이터가 삭제되며 복구할 수 없습니다. 정말 탈퇴하시겠습니까?',
+            confirmText: '탈퇴하기',
+            tone: 'danger',
+        });
 
         if (confirmed) {
             deleteAccountMutation.mutate();

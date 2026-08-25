@@ -1,0 +1,126 @@
+.common-dialog {
+  width: min(440px, calc(100vw - 32px));
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid #dde2e8;
+  border-radius: 10px;
+  box-shadow: 0 20px 50px rgba(14, 24, 39, .22);
+  color: #172033;
+
+  &__overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 3000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    background: rgba(23, 32, 51, .52);
+  }
+
+  &__content {
+    padding: 24px 24px 22px;
+    border-top: 3px solid #176fc1;
+
+    h2 {
+      margin: 0;
+      color: #172033;
+      font-size: 19px;
+      font-weight: 700;
+      line-height: 1.4;
+    }
+
+    p {
+      margin: 10px 0 0;
+      color: #465166;
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 1.65;
+      white-space: pre-line;
+      overflow-wrap: anywhere;
+    }
+  }
+
+  &__footer {
+    min-height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 14px 24px;
+    background: #fafbfc;
+    border-top: 1px solid #ebeef2;
+  }
+
+  &__button {
+    min-width: 88px;
+    height: 40px;
+    padding: 0 16px;
+    border-radius: 6px;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+
+    &:focus-visible {
+      outline: 2px solid rgba(23, 111, 193, .38);
+      outline-offset: 2px;
+    }
+
+    &--primary {
+      background: #176fc1;
+      border: 1px solid #176fc1;
+      color: #fff;
+
+      &:hover { background: #0f5fa8; border-color: #0f5fa8; }
+    }
+
+    &--secondary {
+      background: #fff;
+      border: 1px solid #d7dde4;
+      color: #465166;
+
+      &:hover { background: #edf5fc; border-color: #8eb7dc; color: #176fc1; }
+    }
+
+    &--danger {
+      background: #b42318;
+      border: 1px solid #b42318;
+      color: #fff;
+
+      &:hover { background: #931d14; border-color: #931d14; }
+      &:focus-visible { outline-color: rgba(180, 35, 24, .35); }
+    }
+  }
+
+  &--danger .common-dialog__content { border-top: 0; }
+  &--warning .common-dialog__content { border-top-color: #b06b12; }
+  &--success .common-dialog__content { border-top: 0; }
+
+  &--student {
+    font-family: '학교안심 분필', cursive;
+
+    .common-dialog__content {
+      h2 { font-size: 21px; }
+      p { font-size: 16px; }
+    }
+
+    .common-dialog__button {
+      min-width: 104px;
+      height: 50px;
+      font-size: 16px;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .common-dialog {
+    &__content { padding: 21px 20px 19px; }
+    &__footer { padding: 12px 20px; }
+    &__button { flex: 1; }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .common-dialog__overlay { scroll-behavior: auto; }
+}

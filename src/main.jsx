@@ -7,11 +7,14 @@ import 'pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css'
 import '@kfonts/hakgyoansim-bunpil'
 import './index.css'
 import 'bootstrap-icons/font/bootstrap-icons.css'
+import { DialogProvider } from './components/common/feedback';
 
 createRoot(document.getElementById('root')).render(
     <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
-            <App />
-        </BrowserRouter>
+        <DialogProvider>
+            <BrowserRouter>
+                <App />
+            </BrowserRouter>
+        </DialogProvider>
     </QueryClientProvider>
 )
