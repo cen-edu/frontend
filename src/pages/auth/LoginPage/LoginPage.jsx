@@ -131,16 +131,6 @@ const LoginPage = () => {
                             </button>
                         </div>
 
-                        <label className="login-form__remember">
-                            <input type="checkbox"/>
-
-                            <span className="login-form__checkbox">
-                                <i className="bi bi-check"/>
-                            </span>
-
-                            <span>로그인 상태 유지</span>
-                        </label>
-
                         <button
                             className="login-form__submit"
                             type="submit"

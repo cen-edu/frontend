@@ -320,49 +320,6 @@ $chalk-line: #6f8c82;
     }
   }
 
-  &__remember {
-    display: inline-flex;
-    align-items: center;
-    gap: 9px;
-    margin-top: 18px;
-    color: $chalk-muted;
-    font-size: 13px;
-    line-height: 18px;
-    cursor: pointer;
-    user-select: none;
-
-    input {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      overflow: hidden;
-      opacity: 0;
-
-      &:checked + .login-form__checkbox {
-        border-color: $chalk;
-        color: $chalkboard;
-        background: $chalk;
-      }
-
-      &:focus-visible + .login-form__checkbox {
-        outline: 3px solid rgba($chalk, 0.22);
-        outline-offset: 2px;
-      }
-    }
-  }
-
-  &__checkbox {
-    display: grid;
-    width: 18px;
-    height: 18px;
-    place-items: center;
-    border: 2px solid #a8bbb4;
-    border-radius: 4px;
-    color: transparent;
-    font-size: 13px;
-    transition: 150ms ease;
-  }
-
   &__submit {
     width: 100%;
     height: 46px;

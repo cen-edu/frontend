@@ -76,7 +76,6 @@ function QuestionResultCard({ item, reportMessage = null }) {
                     const unitLabel = unitFailed ? '채점 실패' : resultLabels[answerUnit.resultType] ?? '결과 없음';
                     const unitTone = unitFailed ? 'wrong' : resultTones[answerUnit.resultType] ?? 'pending';
                     return <li key={answerUnit.answerUnitId}>
-                        <span>{String(answerUnit.displayOrder).padStart(2, '0')}</span>
                         <div><strong><MathText>{answerUnit.label}</MathText></strong><small>{answerUnit.diagnosticStage ? diagnosticStageLabels[answerUnit.diagnosticStage] ?? answerUnit.diagnosticStage : '답안 단위'}</small></div>
                         <dl><div><dt>학생 답안</dt><dd>{renderAnswer(answerUnit.studentAnswer)}</dd></div><div><dt>정답</dt><dd>{renderAnswer(answerUnit.correctAnswer)}</dd></div></dl>
                         <em className={`question-result__unit-status question-result__unit-status--${unitTone}`}>{unitLabel}{answerUnit.score !== null ? ` · ${answerUnit.score}점` : ''}</em>

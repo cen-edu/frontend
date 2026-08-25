@@ -1,5 +1,5 @@
-import { useMemo, useState } from 'react';
-import { GradingStatus, ReportGenerationStatus, StudentItemResultType, WorksheetType } from '../../../../api/analysis/analysisConstants.js';
+import { useMemo } from 'react';
+import { ReportGenerationStatus, WorksheetType } from '../../../../api/analysis/analysisConstants.js';
 import { formatAnalysisDuration, getAnalysisStatusView } from '../analysisAdapters.js';
 import QuestionResultCard from './QuestionResultCard.jsx';
 import StudentAnalysisReport from './StudentAnalysisReport.jsx';
@@ -26,17 +26,10 @@ function StudentAnalysisStatusView({
     customLearningQuery,
     reportState,
 }) {
-    const [resultFilter, setResultFilter] = useState('all');
     const summary = summaryQuery.data;
     const status = getAnalysisStatusView(summary?.analysisStatus ?? student?.analysisStatus);
     const isAssessment = summary?.worksheetType === WorksheetType.COMPREHENSIVE_ASSESSMENT;
     const items = [...(itemsQuery.data?.items ?? [])].sort((a, b) => a.itemNumber - b.itemNumber);
-    const filteredItems = items.filter((item) => {
-        if (resultFilter === 'wrong') return item.resultType === StudentItemResultType.INCORRECT || item.resultType === StudentItemResultType.PARTIAL_CORRECT;
-        if (resultFilter === 'pending') return item.gradingStatus === GradingStatus.NOT_GRADED;
-        if (resultFilter === 'failed') return item.gradingStatus === GradingStatus.FAILED;
-        return true;
-    });
     const studentRate = summary?.performanceRate ?? null;
     const classRate = summary?.classPerformanceRate ?? null;
     const classGap = studentRate !== null && classRate !== null ? studentRate - classRate : null;
@@ -105,9 +98,8 @@ function StudentAnalysisStatusView({
             <section className="student-analysis-view__results diagnosis-card">
                 <div className="student-analysis-view__results-heading">
                     <div><span>지도 근거 확인</span><h2>문항별 결과</h2></div>
-                    <div className="diagnosis-tabs" role="group" aria-label="문항 결과 필터">{[['all', '전체'], ['wrong', '오답·부분 정답'], ['pending', '채점 대기'], ['failed', '채점 실패']].map(([value, label]) => <button type="button" key={value} className={resultFilter === value ? 'diagnosis-tabs__button diagnosis-tabs__button--active' : 'diagnosis-tabs__button'} aria-pressed={resultFilter === value} onClick={() => setResultFilter(value)}>{label}</button>)}</div>
                 </div>
-                <div className="student-analysis-view__cards">{filteredItems.map((item) => <QuestionResultCard key={item.worksheetItemId} item={item} reportMessage={reportMessagesByItemId.get(String(item.worksheetItemId))} />)}{!filteredItems.length && <p className="student-analysis-view__empty">해당하는 문항 결과가 없습니다.</p>}</div>
+                <div className="student-analysis-view__cards">{items.map((item) => <QuestionResultCard key={item.worksheetItemId} item={item} reportMessage={reportMessagesByItemId.get(String(item.worksheetItemId))} />)}{!items.length && <p className="student-analysis-view__empty">표시할 문항 결과가 없습니다.</p>}</div>
             </section>
         </QueryState>
     </div>;
