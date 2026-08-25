@@ -20,8 +20,17 @@ const difficultyLabels = {
     high: '상',
 };
 
-export const adaptReissueProposal = (data) => ({
-    configs: (data?.subcategories ?? []).map((subcategory) => ({
+const hasProposedQuestions = (subcategory) => [
+    subcategory.review,
+    subcategory.similar,
+    subcategory.advanced,
+].some((stage) => (stage?.proposedCount ?? 0) > 0);
+
+export const adaptReissueProposal = (data) => {
+    const proposedSubcategories = (data?.subcategories ?? []).filter(hasProposedQuestions);
+
+    return {
+        configs: proposedSubcategories.map((subcategory) => ({
         conceptId: String(subcategory.subUnitId),
         unitId: String(subcategory.subUnitId),
         conceptLabel: subcategory.subUnitName,
@@ -45,9 +54,10 @@ export const adaptReissueProposal = (data) => ({
             basic: subcategory.similar?.maxCount ?? 0,
             independent: subcategory.advanced?.maxCount ?? 0,
         },
-    })),
-    reason: data?.subcategories?.length ? '' : '제안할 취약 소분류가 없습니다.',
-});
+        })),
+        reason: proposedSubcategories.length ? '' : '제안할 취약 소분류가 없습니다.',
+    };
+};
 
 export const getProposalErrorMessage = (error) => {
     const messages = {
