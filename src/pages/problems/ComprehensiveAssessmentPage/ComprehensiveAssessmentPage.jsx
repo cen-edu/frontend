@@ -146,6 +146,17 @@ function ComprehensiveAssessmentPage() {
         saveMutation.reset();
     };
 
+    const updateEditedProblem = (problem) => {
+        setResult((current) => ({
+            ...current,
+            problems: current.problems.map((item) => (
+                item.sessionId === problem.sessionId ? problem : item
+            )),
+        }));
+        setSavedWorksheet(null);
+        saveMutation.reset();
+    };
+
     const applyProblemOrder = (orderedProblems) => {
         setResult((current) => ({
             ...current,
@@ -244,6 +255,7 @@ function ComprehensiveAssessmentPage() {
                             <div className="comprehensive-assessment-page__question-preview">
                                 <AssessmentQuestionView
                                     problem={selectedProblem}
+                                    showExplanation={false}
                                     showScore={false}
                                     editMode={editMode}
                                     selectedEditTarget={editTarget}
@@ -267,8 +279,15 @@ function ComprehensiveAssessmentPage() {
                             />
                         </div>
                     </div>
-                    {editMode && !editTarget && <p className="comprehensive-assessment-page__edit-guide" role="status"><i className="bi bi-cursor" aria-hidden="true" /> 편집할 문제 전체, 정답 또는 채점 기준 영역을 선택하세요.</p>}
-                    {editMode && <ProblemAiEditPanel target={editTarget} onClose={() => setEditTarget(null)} />}
+                    {editMode && !editTarget && <p className="comprehensive-assessment-page__edit-guide" role="status"><i className="bi bi-cursor" aria-hidden="true" /> 편집할 문제 전체, 발문, 보기, 정답 또는 채점 기준 영역을 선택하세요.</p>}
+                    {editMode && (
+                        <ProblemAiEditPanel
+                            currentProblem={selectedProblem}
+                            target={editTarget}
+                            onProblemUpdated={updateEditedProblem}
+                            onClose={() => setEditTarget(null)}
+                        />
+                    )}
                 </section>
             )}
             {orderModalOpen && result && <AssessmentOrderModal problems={result.problems} onClose={() => setOrderModalOpen(false)} onApply={applyProblemOrder} />}

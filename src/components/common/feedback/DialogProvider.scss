@@ -20,7 +20,6 @@
 
   &__content {
     padding: 24px 24px 22px;
-    border-top: 3px solid #176fc1;
 
     h2 {
       margin: 0;
@@ -92,10 +91,6 @@
       &:focus-visible { outline-color: rgba(180, 35, 24, .35); }
     }
   }
-
-  &--danger .common-dialog__content { border-top: 0; }
-  &--warning .common-dialog__content { border-top-color: #b06b12; }
-  &--success .common-dialog__content { border-top: 0; }
 
   &--student {
     font-family: '학교안심 분필', cursive;

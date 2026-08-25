@@ -54,6 +54,7 @@ function PracticeProblemView({
     const selectStep = (step, stepIndex) => onSelectEditTarget?.({
         type: 'step',
         id: step.id,
+        targetKey: step.stepKey ?? step.id,
         label: step.label ?? `풀이 과정 ${stepIndex + 1}`,
     });
 

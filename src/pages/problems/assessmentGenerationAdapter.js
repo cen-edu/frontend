@@ -37,11 +37,22 @@ export const buildAssessmentGenerationItems = (groups) => groups.flatMap(({ unit
     }))
 ));
 
-const normalizeAssessmentProblem = (problem, index) => {
+const getAnswerValue = (answerUnit) => (
+    answerUnit?.answerRaw ?? answerUnit?.answer ?? ''
+);
+
+const normalizeRubricItem = (item, index) => ({
+    ...item,
+    rubricKey: item.rubricKey ?? item.key,
+    label: item.label ?? item.criteria ?? item.description ?? item.content ?? `채점 기준 ${index + 1}`,
+    score: item.score ?? item.points ?? item.maxScore ?? 0,
+});
+
+const normalizeAssessmentProblem = (problem, index, existingProblem = null) => {
     const curriculum = problem.curriculum ?? {};
     const format = formatValues[problem.questionType];
     const answerUnits = [...(problem.answerUnits ?? [])].sort(byDisplayOrder);
-    const mainAnswer = answerUnits[0]?.answer ?? '';
+    const mainAnswer = getAnswerValue(answerUnits[0]);
     const assets = [...(problem.assets ?? [])].sort(byDisplayOrder);
     const assetIndex = new Map(assets.map((asset) => [asset.assetKey, asset]));
     const contentBlocks = [...(problem.contentBlocks ?? [])]
@@ -58,21 +69,27 @@ const normalizeAssessmentProblem = (problem, index) => {
         .join('\n');
 
     return {
-        id: problem.id,
-        no: index + 1,
-        unitId: curriculum.subUnitId,
-        unitName: curriculum.subUnitName,
+        id: existingProblem?.id ?? problem.id ?? `session-${problem.sessionId}`,
+        no: existingProblem?.no ?? index + 1,
+        sessionId: problem.sessionId ?? existingProblem?.sessionId,
+        versionId: problem.versionId ?? existingProblem?.versionId,
+        finalizedQuestionId: problem.finalizedQuestionId ?? existingProblem?.finalizedQuestionId,
+        sourceQuestionId: problem.sourceQuestionId ?? existingProblem?.sourceQuestionId,
+        unitId: curriculum.subUnitId ?? existingProblem?.unitId,
+        unitName: curriculum.subUnitName ?? existingProblem?.unitName,
         unitPath: [curriculum.majorUnitName, curriculum.middleUnitName, curriculum.subUnitName]
             .filter(Boolean)
-            .join(' > '),
+            .join(' > ') || existingProblem?.unitPath,
         format,
         difficulty: difficultyKeys[problem.difficulty],
-        maxScore: defaultScores[format],
+        maxScore: existingProblem?.maxScore ?? defaultScores[format],
         prompt,
         choices: [...(problem.choices ?? [])].sort(byDisplayOrder),
         answer: mainAnswer,
         modelAnswer: format === 'essay' ? mainAnswer : '',
-        rubric: [],
+        rubric: [...(problem.rubricItems ?? problem.rubrics ?? problem.rubric ?? [])]
+            .sort(byDisplayOrder)
+            .map(normalizeRubricItem),
         concept: problem.learningGuide ? {
             title: problem.learningGuide.conceptTitle,
             summary: problem.learningGuide.summary,
@@ -89,5 +106,74 @@ const normalizeAssessmentProblem = (problem, index) => {
 };
 
 export const normalizeGeneratedAssessmentProblems = (problems = []) => (
-    problems.map(normalizeAssessmentProblem)
+    problems.map((problem, index) => normalizeAssessmentProblem(problem, index))
+);
+
+export const normalizeAssessmentAuthoringPreview = ({
+    preview,
+    existingProblem = null,
+    slotIndex,
+    unit,
+    sessionId,
+    sourceQuestionId,
+}) => {
+    const snapshot = preview?.snapshot ?? {};
+    const metadata = snapshot.metadata ?? {};
+    const resolvedSessionId = preview?.sessionId ?? sessionId ?? existingProblem?.sessionId;
+    const problem = {
+        id: existingProblem?.id ?? `session-${resolvedSessionId}`,
+        sessionId: resolvedSessionId,
+        versionId: preview?.versionId,
+        finalizedQuestionId: preview?.finalizedQuestionId,
+        sourceQuestionId,
+        curriculum: {
+            subUnitId: metadata.subUnitId ?? unit?.id,
+            subUnitName: existingProblem?.unitName ?? unit?.name,
+            majorUnitName: unit?.majorName,
+            middleUnitName: unit?.middleName,
+        },
+        difficulty: metadata.difficulty,
+        questionType: metadata.questionType,
+        presentation: metadata.presentation,
+        contentBlocks: snapshot.contentBlocks ?? [],
+        assets: snapshot.assets ?? [],
+        choices: snapshot.choices ?? [],
+        answerUnits: (snapshot.answerUnits ?? []).map((answerUnit) => ({
+            ...answerUnit,
+            answer: getAnswerValue(answerUnit),
+        })),
+        rubricItems: snapshot.rubricItems ?? snapshot.rubrics ?? snapshot.rubric ?? [],
+        explanation: snapshot.explanation,
+        learningGuide: snapshot.learningGuide,
+        hintText: snapshot.hintText,
+    };
+
+    return normalizeAssessmentProblem(
+        problem,
+        (slotIndex ?? existingProblem?.no ?? 1) - 1,
+        existingProblem,
+    );
+};
+
+export const normalizeAssessmentGenerationSlots = (slots = [], groups = []) => {
+    const unitsById = new Map(groups.map(({ unit }) => [Number(unit.id), unit]));
+
+    return [...slots]
+        .filter((slot) => slot.status === 'READY' && slot.preview)
+        .sort((left, right) => left.slotIndex - right.slotIndex)
+        .map((slot) => {
+            const subUnitId = slot.preview.snapshot?.metadata?.subUnitId;
+
+            return normalizeAssessmentAuthoringPreview({
+                preview: slot.preview,
+                slotIndex: slot.slotIndex,
+                unit: unitsById.get(Number(subUnitId)),
+                sessionId: slot.sessionId,
+                sourceQuestionId: slot.sourceQuestionId,
+            });
+        });
+};
+
+export const normalizeEditedAssessmentProblem = ({ preview, currentProblem }) => (
+    normalizeAssessmentAuthoringPreview({ preview, existingProblem: currentProblem })
 );

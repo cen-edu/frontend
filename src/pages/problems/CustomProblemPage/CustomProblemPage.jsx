@@ -10,6 +10,17 @@ import useSectionFocusMode from '../../../components/SectionLayout/useSectionFoc
 import CustomConfigTable from './components/CustomConfigTable';
 import StudentWeaknessList from './components/StudentWeaknessList';
 import WeaknessSummaryCard from './components/WeaknessSummaryCard';
+import CustomGenerationResult from './components/CustomGenerationResult.jsx';
+import {
+    buildCustomProblemGenerationItems,
+    CUSTOM_PROBLEM_MAX_COUNT,
+    getCustomGenerationErrorMessage,
+    getCustomProblemTotalCount,
+} from './customGenerationAdapter.js';
+import {
+    useCustomProblemGenerationJobQuery,
+    useCustomProblemGenerationMutation,
+} from './customGenerationHooks.js';
 import { adaptReissueProposal, getProposalErrorMessage } from './customProposalAdapters.js';
 import { useStudentReissueProposalQuery } from './customProposalHooks.js';
 import './CustomProblemPage.scss';
@@ -28,6 +39,8 @@ function CustomProblemPage() {
         searchParams.get('students')?.split(',').filter(Boolean)[0] ?? '',
     );
     const [proposalWork, setProposalWork] = useState({});
+    const [generationRequest, setGenerationRequest] = useState(null);
+    const [generationJobId, setGenerationJobId] = useState(null);
 
     const assignmentQuery = useAnalysisAssignmentsQuery({
         classId: academicFilters.classId,
@@ -56,8 +69,25 @@ function CustomProblemPage() {
     }, [preferredConcept, proposalQuery.data]);
     const workKey = selectedStudent ? `${assignmentId}:${selectedStudent.id}` : '';
     const configs = proposalWork[workKey] ?? proposal.configs;
+    const generationMutation = useCustomProblemGenerationMutation();
+    const generationJobQuery = useCustomProblemGenerationJobQuery(generationJobId);
+    const totalCount = getCustomProblemTotalCount(configs);
+    const canGenerate = proposalQuery.isSuccess
+        && Boolean(selectedAssignment && selectedStudent)
+        && totalCount > 0
+        && totalCount <= CUSTOM_PROBLEM_MAX_COUNT;
+    const generationError = generationMutation.isError
+        ? getCustomGenerationErrorMessage(generationMutation.error)
+        : totalCount > CUSTOM_PROBLEM_MAX_COUNT
+            ? `맞춤 문제는 한 번에 최대 ${CUSTOM_PROBLEM_MAX_COUNT}문항까지 생성할 수 있습니다.`
+            : '';
 
-    useSectionFocusMode(false);
+    useSectionFocusMode(Boolean(generationJobId));
+
+    const resetGenerationAttempt = () => {
+        generationMutation.reset();
+        setGenerationRequest(null);
+    };
 
     useEffect(() => {
         if (assignmentQuery.isPending || assignmentQuery.isError) return;
@@ -88,6 +118,8 @@ function CustomProblemPage() {
     }, [searchParams, selectedAssignment, selectedStudent, selectedStudentId, setSearchParams, students, studentsQuery.isError, studentsQuery.isPending]);
 
     const changeAcademicFilter = (key, value) => {
+        if (generationMutation.isPending) return;
+        resetGenerationAttempt();
         changeAcademicContextFilter(key, value);
         setAssignmentId('');
         setSelectedStudentId('');
@@ -99,6 +131,8 @@ function CustomProblemPage() {
     };
 
     const changeAssignment = (value) => {
+        if (generationMutation.isPending) return;
+        resetGenerationAttempt();
         setAssignmentId(value);
         setSelectedStudentId('');
         const nextParams = new URLSearchParams(searchParams);
@@ -109,6 +143,8 @@ function CustomProblemPage() {
     };
 
     const selectStudent = (studentId) => {
+        if (generationMutation.isPending) return;
+        resetGenerationAttempt();
         setSelectedStudentId(studentId);
         const nextParams = new URLSearchParams(searchParams);
         nextParams.set('students', studentId);
@@ -117,6 +153,7 @@ function CustomProblemPage() {
 
     const changeCount = (conceptId, stage, value) => {
         if (!workKey) return;
+        resetGenerationAttempt();
         setProposalWork((current) => ({
             ...current,
             [workKey]: (current[workKey] ?? proposal.configs).map((config) => (
@@ -129,10 +166,40 @@ function CustomProblemPage() {
 
     const removeConfig = (conceptId) => {
         if (!workKey) return;
+        resetGenerationAttempt();
         setProposalWork((current) => ({
             ...current,
             [workKey]: (current[workKey] ?? proposal.configs).filter((config) => config.conceptId !== conceptId),
         }));
+    };
+
+    const submitGenerationRequest = (request) => {
+        generationMutation.mutate(request, {
+            onSuccess: (startedJob) => setGenerationJobId(startedJob.jobId),
+        });
+    };
+
+    const createProblems = () => {
+        if (!canGenerate) return;
+
+        const request = {
+            clientRequestId: crypto.randomUUID(),
+            sourceAssignmentId: assignmentId,
+            studentId: selectedStudent.id,
+            items: buildCustomProblemGenerationItems(configs),
+        };
+        setGenerationRequest(request);
+        submitGenerationRequest(request);
+    };
+
+    const requestGeneration = () => {
+        if (generationRequest) submitGenerationRequest(generationRequest);
+        else createProblems();
+    };
+
+    const closeGenerationResult = () => {
+        setGenerationJobId(null);
+        resetGenerationAttempt();
     };
 
     const filterControls = [
@@ -150,6 +217,15 @@ function CustomProblemPage() {
             : proposal.reason;
 
     return <section className="custom-problem-page" aria-label="맞춤 문제 생성">
+        {generationJobId ? <CustomGenerationResult
+            job={generationJobQuery.data ?? generationMutation.data}
+            configs={configs}
+            student={selectedStudent}
+            isPending={generationJobQuery.isPending}
+            error={generationJobQuery.isError ? generationJobQuery.error : null}
+            onRetry={generationJobQuery.refetch}
+            onBack={closeGenerationResult}
+        /> : <>
         <AnalysisFilters className="custom-problem-page__filters" controls={filterControls} showContext={false} />
         {!selectedAssignment ? <div className="custom-problem-page__request-state">
             {academicContextsQuery.isPending
@@ -168,6 +244,7 @@ function CustomProblemPage() {
                 proposalCount={proposalQuery.isSuccess ? proposal.configs.length : null}
                 isPending={studentsQuery.isPending}
                 error={studentsQuery.isError ? studentsQuery.error : null}
+                disabled={generationMutation.isPending}
                 onSelect={selectStudent}
             />
             <div className="custom-problem-page__main">
@@ -176,8 +253,13 @@ function CustomProblemPage() {
                     reason={proposalReason}
                     isPending={proposalQuery.isPending}
                     isError={proposalQuery.isError}
+                    canGenerate={canGenerate}
+                    isGenerating={generationMutation.isPending}
+                    generationError={generationError}
+                    isRetry={generationMutation.isError && Boolean(generationRequest)}
                     onCountChange={changeCount}
                     onRemove={removeConfig}
+                    onGenerate={requestGeneration}
                 />
             </div>
             <WeaknessSummaryCard
@@ -187,7 +269,7 @@ function CustomProblemPage() {
                 isPending={proposalQuery.isPending}
                 isError={proposalQuery.isError}
             />
-        </div>}
+        </div>}</>}
     </section>;
 }
 

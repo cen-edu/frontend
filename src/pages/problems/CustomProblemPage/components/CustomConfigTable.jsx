@@ -8,19 +8,34 @@ function Stepper({ value, max, disabled, label, onChange }) {
     </span>;
 }
 
-function CustomConfigTable({ configs, reason, isPending, isError, onCountChange, onRemove }) {
+function CustomConfigTable({
+    configs,
+    reason,
+    isPending,
+    isError,
+    canGenerate,
+    isGenerating,
+    generationError,
+    isRetry,
+    onCountChange,
+    onRemove,
+    onGenerate,
+}) {
     const total = configs.reduce((sum, config) => sum + customStages.reduce((stageSum, stage) => stageSum + config.counts[stage], 0), 0);
 
     return <section className="custom-config" aria-labelledby="custom-config-title">
         <header><div><h2 id="custom-config-title">문항 구성 제안</h2><p>서버가 분석한 단계별 권장 문항 수입니다.</p></div><span>제안 조회 연동</span></header>
         {configs.length === 0 ? <p className={`custom-config__empty${isError ? ' custom-config__empty--error' : ''}`} role={isError ? 'alert' : 'status'}>{reason}</p> : <div className="custom-config__table-wrap"><table><thead><tr><th>취약 소분류</th>{customStages.map((stage) => <th key={stage}>{customStageStepLabels[stage]}</th>)}<th><span className="custom-sr-only">제외</span></th></tr></thead><tbody>{configs.map((config) => <tr key={config.conceptId}>
             <td><strong>{config.conceptLabel}</strong><span>현재 난이도 {config.adaptive.difficultyLabel}</span></td>
-            {customStages.map((stage) => <td key={stage}><Stepper label={`${config.conceptLabel} ${customStageStepLabels[stage]}`} value={config.counts[stage]} max={config.maxCounts[stage]} disabled={isPending || isError || config.maxCounts[stage] === 0} onChange={(value) => onCountChange(config.conceptId, stage, value)} /></td>)}
-            <td><button type="button" className="custom-config__remove" aria-label={`${config.conceptLabel} 제외`} onClick={() => onRemove(config.conceptId)}><i className="bi bi-x-lg" aria-hidden="true" /></button></td>
+            {customStages.map((stage) => <td key={stage}><Stepper label={`${config.conceptLabel} ${customStageStepLabels[stage]}`} value={config.counts[stage]} max={config.maxCounts[stage]} disabled={isPending || isError || isGenerating || config.disabledStages?.[stage] || config.maxCounts[stage] === 0} onChange={(value) => onCountChange(config.conceptId, stage, value)} /></td>)}
+            <td><button type="button" className="custom-config__remove" aria-label={`${config.conceptLabel} 제외`} disabled={isGenerating} onClick={() => onRemove(config.conceptId)}><i className="bi bi-x-lg" aria-hidden="true" /></button></td>
         </tr>)}</tbody></table></div>}
         <footer className="custom-config__footer">
-            <p className="custom-config__integration-notice"><i className="bi bi-info-circle" aria-hidden="true" /> 문제 생성·배포는 후속 API 연동 후 사용할 수 있습니다.</p>
-            <div className="custom-config__generate"><span>총 <strong>{total}</strong>문항</span><button type="button" disabled>문제 생성</button></div>
+            <div>
+                <p className="custom-config__integration-notice"><i className="bi bi-info-circle" aria-hidden="true" /> 한 번에 최대 20문항까지 생성할 수 있습니다.</p>
+                {generationError && <p className="custom-config__generation-error" role="alert">{generationError}</p>}
+            </div>
+            <div className="custom-config__generate"><span>총 <strong>{total}</strong>문항</span><button type="button" disabled={!canGenerate || isGenerating} onClick={onGenerate}>{isGenerating ? '접수 중...' : isRetry ? '같은 요청 다시 보내기' : '문제 생성'}</button></div>
         </footer>
     </section>;
 }

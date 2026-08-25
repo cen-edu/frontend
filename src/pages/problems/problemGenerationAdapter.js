@@ -108,6 +108,7 @@ const normalizeProblem = (problem, index) => {
         } : null,
         steps: [...(problem.steps ?? [])].sort(byDisplayOrder).map((step, stepIndex) => ({
             id: step.id,
+            stepKey: step.stepKey ?? step.id,
             conceptId: curriculum.subUnitId,
             label: step.label || `풀이 과정 ${stepIndex + 1}`,
             instruction: '빈칸에 알맞은 답을 써서 풀이 과정을 완성합니다.',
@@ -140,6 +141,8 @@ export const normalizeAuthoringPreview = ({ preview, existingProblem, slotIndex 
         id: existingProblem?.id ?? `session-${sessionId}`,
         sessionId,
         versionId: preview?.versionId,
+        finalizedQuestionId: preview?.finalizedQuestionId,
+        sourceQuestionId: preview?.sourceQuestionId ?? existingProblem?.sourceQuestionId,
         curriculum: {
             subUnitId: metadata.subUnitId,
             subUnitName: existingProblem?.unitName ?? '',
@@ -174,6 +177,8 @@ export const normalizeAuthoringPreview = ({ preview, existingProblem, slotIndex 
         no: existingProblem?.no ?? normalized.no,
         sessionId,
         versionId: preview?.versionId,
+        finalizedQuestionId: preview?.finalizedQuestionId,
+        sourceQuestionId: preview?.sourceQuestionId ?? existingProblem?.sourceQuestionId,
         unitId: metadata.subUnitId ?? existingProblem?.unitId,
         unitName: existingProblem?.unitName ?? normalized.unitName,
         unitPath: existingProblem?.unitPath ?? normalized.unitPath,
@@ -191,6 +196,7 @@ export const normalizeAuthoringGenerationSlots = (slots = [], configs = []) => {
             const existingProblem = unit ? {
                 id: `session-${slot.sessionId}`,
                 sessionId: slot.sessionId,
+                sourceQuestionId: slot.sourceQuestionId,
                 no: slot.slotIndex,
                 unitId: unit.id,
                 unitName: unit.name,

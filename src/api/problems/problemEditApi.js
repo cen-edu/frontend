@@ -4,12 +4,18 @@ const getSessionPath = (sessionId) => (
     `/teacher/problems/authoring-sessions/${sessionId}`
 );
 
-export const requestProblemEditTurn = ({ sessionId, userInput, history = [], selectedTarget }) => (
+export const requestProblemEditTurn = ({
+    sessionId,
+    userInput,
+    history = [],
+    selectedTarget,
+    signal,
+}) => (
     httpClient.post(`${getSessionPath(sessionId)}/edit/turns`, {
         userInput,
         history,
         selectedTarget,
-    })
+    }, { signal })
 );
 
 export const getProblemAuthoringStatus = ({ sessionId, signal }) => (

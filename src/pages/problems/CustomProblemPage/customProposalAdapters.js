@@ -47,12 +47,17 @@ export const adaptReissueProposal = (data) => {
         counts: {
             retrace: subcategory.review?.proposedCount ?? 0,
             basic: subcategory.similar?.proposedCount ?? 0,
-            independent: subcategory.advanced?.proposedCount ?? 0,
+            independent: subcategory.advanced?.triggered
+                ? subcategory.advanced?.proposedCount ?? 0
+                : 0,
         },
         maxCounts: {
             retrace: subcategory.review?.maxCount ?? 0,
             basic: subcategory.similar?.maxCount ?? 0,
             independent: subcategory.advanced?.maxCount ?? 0,
+        },
+        disabledStages: {
+            independent: !subcategory.advanced?.triggered,
         },
         })),
         reason: proposedSubcategories.length ? '' : '제안할 취약 소분류가 없습니다.',
