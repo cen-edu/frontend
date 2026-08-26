@@ -1,10 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { AnalysisFilters, useAcademicContextFilters } from '../../../components/common/filters';
+import { useDialog } from '../../../components/common/feedback';
+import { defaultSupportModes } from '../../../mocks/labels.js';
 import {
     useAnalysisAssignmentsQuery,
     useAnalysisStudentsQuery,
+    useStudentCustomLearningSessionsQuery,
 } from '../../learning/WeaknessAnalysisPage/analysisAssignmentHooks.js';
+import { useLearningStatusQuery } from '../../learning/LearningStatusPage/learningStatusHooks.js';
 import { adaptAnalysisStudents } from '../../learning/WeaknessAnalysisPage/analysisAdapters.js';
 import useSectionFocusMode from '../../../components/SectionLayout/useSectionFocusMode';
 import CustomConfigTable from './components/CustomConfigTable';
@@ -23,10 +27,20 @@ import {
 } from './customGenerationHooks.js';
 import { adaptReissueProposal, getProposalErrorMessage } from './customProposalAdapters.js';
 import { useStudentReissueProposalQuery } from './customProposalHooks.js';
+import {
+    useWorksheetAssignmentMutation,
+    useWorksheetSaveMutation,
+} from '../worksheetHooks.js';
+import {
+    buildCustomWorksheetTitle,
+    getCustomDeliveryErrorMessage,
+    resolveCustomParentWorksheetId,
+} from './customDeliveryAdapter.js';
 import './CustomProblemPage.scss';
 import './components/CustomProblemComponents.scss';
 
 function CustomProblemPage() {
+    const { alert } = useDialog();
     const [searchParams, setSearchParams] = useSearchParams();
     const {
         filters: academicFilters,
@@ -41,6 +55,8 @@ function CustomProblemPage() {
     const [proposalWork, setProposalWork] = useState({});
     const [generationRequest, setGenerationRequest] = useState(null);
     const [generationJobId, setGenerationJobId] = useState(null);
+    const [savedWorksheet, setSavedWorksheet] = useState(null);
+    const [assignedAssignment, setAssignedAssignment] = useState(null);
 
     const assignmentQuery = useAnalysisAssignmentsQuery({
         classId: academicFilters.classId,
@@ -57,6 +73,11 @@ function CustomProblemPage() {
         selectedAssignment ? assignmentId : '',
         selectedStudent?.id ?? '',
     );
+    const customSessionsQuery = useStudentCustomLearningSessionsQuery(
+        selectedAssignment ? assignmentId : '',
+        selectedStudent?.id ?? '',
+    );
+    const learningStatusQuery = useLearningStatusQuery();
     const preferredConcept = searchParams.get('concept');
     const proposal = useMemo(() => {
         const adapted = adaptReissueProposal(proposalQuery.data);
@@ -71,6 +92,8 @@ function CustomProblemPage() {
     const configs = proposalWork[workKey] ?? proposal.configs;
     const generationMutation = useCustomProblemGenerationMutation();
     const generationJobQuery = useCustomProblemGenerationJobQuery(generationJobId);
+    const saveMutation = useWorksheetSaveMutation();
+    const assignmentMutation = useWorksheetAssignmentMutation();
     const totalCount = getCustomProblemTotalCount(configs);
     const canGenerate = proposalQuery.isSuccess
         && Boolean(selectedAssignment && selectedStudent)
@@ -81,12 +104,40 @@ function CustomProblemPage() {
         : totalCount > CUSTOM_PROBLEM_MAX_COUNT
             ? `맞춤 문제는 한 번에 최대 ${CUSTOM_PROBLEM_MAX_COUNT}문항까지 생성할 수 있습니다.`
             : '';
+    const parentWorksheetId = useMemo(() => resolveCustomParentWorksheetId({
+        sourceAssignmentId: assignmentId,
+        sessions: customSessionsQuery.data?.sessions,
+        learningStatusAssignments: learningStatusQuery.data?.assignments,
+    }), [assignmentId, customSessionsQuery.data?.sessions, learningStatusQuery.data?.assignments]);
+    const deliveryContextPending = customSessionsQuery.isPending || learningStatusQuery.isPending;
+    const deliveryDisabledReason = deliveryContextPending
+        ? '맞춤 학습 회차 정보를 확인하고 있습니다.'
+        : customSessionsQuery.isError
+            ? customSessionsQuery.error?.message || '학생의 맞춤 학습 회차를 불러오지 못했습니다.'
+            : learningStatusQuery.isError
+                ? learningStatusQuery.error?.message || '원본 학습지 정보를 불러오지 못했습니다.'
+                : parentWorksheetId == null
+                    ? '원본 또는 직전 맞춤 학습지 정보를 찾지 못했습니다.'
+                    : '';
+    const deliveryError = saveMutation.isError || assignmentMutation.isError
+        ? getCustomDeliveryErrorMessage(
+            assignmentMutation.error ?? saveMutation.error,
+            Boolean(savedWorksheet),
+        )
+        : '';
 
     useSectionFocusMode(Boolean(generationJobId));
 
     const resetGenerationAttempt = () => {
         generationMutation.reset();
         setGenerationRequest(null);
+    };
+
+    const resetDelivery = () => {
+        saveMutation.reset();
+        assignmentMutation.reset();
+        setSavedWorksheet(null);
+        setAssignedAssignment(null);
     };
 
     useEffect(() => {
@@ -182,6 +233,7 @@ function CustomProblemPage() {
     const createProblems = () => {
         if (!canGenerate) return;
 
+        resetDelivery();
         const request = {
             clientRequestId: crypto.randomUUID(),
             sourceAssignmentId: assignmentId,
@@ -198,8 +250,51 @@ function CustomProblemPage() {
     };
 
     const closeGenerationResult = () => {
+        if (saveMutation.isPending || assignmentMutation.isPending) return;
         setGenerationJobId(null);
         resetGenerationAttempt();
+        resetDelivery();
+    };
+
+    const saveAndAssign = async ({ title, dueAt, problems }) => {
+        if (deliveryDisabledReason || assignedAssignment || saveMutation.isPending || assignmentMutation.isPending) return;
+
+        let worksheet = savedWorksheet;
+
+        try {
+            if (!worksheet) {
+                worksheet = await saveMutation.mutateAsync({
+                    title,
+                    type: 'practice',
+                    gradeId: academicFilters.grade,
+                    semester: academicFilters.semester,
+                    problems,
+                    supports: Object.fromEntries(problems.map((problem) => [
+                        problem.id,
+                        defaultSupportModes.custom,
+                    ])),
+                    origin: 'custom',
+                    sourceAssignmentId: assignmentId,
+                    parentWorksheetId,
+                });
+                setSavedWorksheet(worksheet);
+            }
+
+            const assignment = await assignmentMutation.mutateAsync({
+                worksheetId: worksheet.worksheetId,
+                classId: null,
+                studentId: selectedStudent.id,
+                dueAt,
+            });
+            setAssignedAssignment(assignment);
+            await alert({
+                title: '맞춤 학습 배정 완료',
+                message: `${selectedStudent.name} 학생에게 맞춤 학습을 배정했습니다.`,
+                tone: 'success',
+            });
+        } catch {
+            // 각 mutation의 오류 상태를 배정 영역에 표시하고, 저장 성공 시 재시도에는 저장 결과를 재사용한다.
+        }
     };
 
     const filterControls = [
@@ -223,6 +318,16 @@ function CustomProblemPage() {
             student={selectedStudent}
             isPending={generationJobQuery.isPending}
             error={generationJobQuery.isError ? generationJobQuery.error : null}
+            initialWorksheetTitle={buildCustomWorksheetTitle({
+                sourceTitle: selectedAssignment?.worksheetTitle,
+                studentName: selectedStudent?.name,
+            })}
+            assignment={assignedAssignment}
+            isSaving={saveMutation.isPending}
+            isAssigning={assignmentMutation.isPending}
+            assignmentError={deliveryError}
+            assignmentDisabledReason={deliveryDisabledReason}
+            onAssign={saveAndAssign}
             onRetry={generationJobQuery.refetch}
             onBack={closeGenerationResult}
         /> : <>

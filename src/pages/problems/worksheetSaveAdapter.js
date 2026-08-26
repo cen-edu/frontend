@@ -55,13 +55,15 @@ export const buildWorksheetSavePayload = ({
     supports,
     origin = 'manual',
     sourceAssignmentId,
+    parentWorksheetId,
 }) => ({
     title,
     type,
     origin,
-    grade: gradeValues[gradeId],
+    grade: gradeValues[gradeId] ?? Number(gradeId),
     semester,
     ...(sourceAssignmentId == null ? {} : { sourceAssignmentId: Number(sourceAssignmentId) }),
+    ...(parentWorksheetId == null ? {} : { parentWorksheetId: Number(parentWorksheetId) }),
     genSpec: buildGenerationSpec(problems),
     items: problems.map((problem, index) => ({
         ...(problem.sessionId

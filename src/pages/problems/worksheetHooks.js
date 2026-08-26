@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
+    assignWorksheet,
     createWorksheet,
     getWorksheetGenSpec,
 } from '../../api/problems/worksheetApi.js';
@@ -35,5 +36,18 @@ export const useWorksheetSaveMutation = () => {
             queryKey: ['teacher', 'worksheets', 'list'],
             refetchType: 'all',
         }),
+    });
+};
+
+export const useWorksheetAssignmentMutation = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: assignWorksheet,
+        onSuccess: () => Promise.all([
+            queryClient.invalidateQueries({ queryKey: ['teacher', 'worksheets'] }),
+            queryClient.invalidateQueries({ queryKey: ['teacher', 'learning-status'] }),
+            queryClient.invalidateQueries({ queryKey: ['teacher', 'analysis'] }),
+        ]),
     });
 };

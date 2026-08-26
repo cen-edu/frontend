@@ -5,6 +5,7 @@ import {
     getCustomGenerationErrorMessage,
     normalizeCustomGenerationSlots,
 } from '../customGenerationAdapter.js';
+import CustomAssignBar from './CustomAssignBar.jsx';
 
 const jobStatusLabels = {
     QUEUED: '생성 대기 중',
@@ -36,6 +37,13 @@ function CustomGenerationResult({
     student,
     isPending,
     error,
+    initialWorksheetTitle,
+    assignment,
+    isSaving,
+    isAssigning,
+    assignmentError,
+    assignmentDisabledReason,
+    onAssign,
     onRetry,
     onBack,
 }) {
@@ -75,7 +83,7 @@ function CustomGenerationResult({
                 <p>{student?.name ?? '선택한 학생'} 학생 · {jobStatusLabels[job?.status] ?? '생성 작업 확인 중'}</p>
             </div>
             <div className="custom-problem-result__actions">
-                <button type="button" className="custom-problem-result__secondary-button" onClick={onBack}>문항 구성으로 돌아가기</button>
+                <button type="button" className="custom-problem-result__secondary-button" disabled={isSaving || isAssigning} onClick={onBack}>문항 구성으로 돌아가기</button>
             </div>
         </header>
         <div className="custom-problem-result__progress" aria-label={`문제 생성 진행률 ${progress}%`}>
@@ -131,6 +139,16 @@ function CustomGenerationResult({
                     selectable={false}
                 />
             </div>
+            <CustomAssignBar
+                student={student}
+                initialTitle={initialWorksheetTitle}
+                assignment={assignment}
+                isSaving={isSaving}
+                isAssigning={isAssigning}
+                error={assignmentError}
+                disabledReason={assignmentDisabledReason}
+                onAssign={(values) => onAssign({ ...values, problems })}
+            />
         </>}
     </section>;
 }

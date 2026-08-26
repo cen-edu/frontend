@@ -32,9 +32,10 @@ export const deleteWorksheet = (worksheetId) => (
     httpClient.delete(`/teacher/worksheets/${worksheetId}`)
 );
 
-export const assignWorksheet = ({ worksheetId, classId, dueAt }) => (
+export const assignWorksheet = ({ worksheetId, classId, studentId, dueAt }) => (
     httpClient.post(`/teacher/worksheets/${worksheetId}/assignments`, {
-        classId: Number(classId),
+        classId: classId == null ? null : Number(classId),
+        studentId: studentId == null ? null : Number(studentId),
         dueAt,
     })
 );
