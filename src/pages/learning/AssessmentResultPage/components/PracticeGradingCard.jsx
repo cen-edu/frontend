@@ -24,11 +24,13 @@ function PracticeGradingCard({ student, question, answer, footer, onMark, onRese
                 const state = getBlankState(blank);
                 return (
                     <span className={`practice-grading-card__blank practice-grading-card__blank--${state}`}>
-                        <span className="practice-grading-card__input"><MathText>{blank?.input || '미작성'}</MathText></span>
+                        <span className="practice-grading-card__input">
+                            {blank?.input ? <MathText latex>{blank.input}</MathText> : '미작성'}
+                        </span>
                         <span className="practice-grading-card__reader">{blankStateLabels[state]}</span>
                         {(state === 'correct' || state === 'wrong') && (
                             <em className={`practice-grading-card__answer practice-grading-card__answer--${state}`}>
-                                정답 <MathText>{segment.answer}</MathText>
+                                정답 <MathText latex>{segment.answer}</MathText>
                             </em>
                         )}
                     </span>
@@ -57,7 +59,7 @@ function PracticeGradingCard({ student, question, answer, footer, onMark, onRese
                             <span className="practice-grading-card__field-label">인식된 답</span>
                             <div className="practice-grading-card__field-body">
                                 <p className={isUnanswered ? 'practice-grading-card__field-empty' : 'practice-grading-card__field-value'}>
-                                    <MathText>{blank?.input || '미작성'}</MathText>
+                                    {blank?.input ? <MathText latex>{blank.input}</MathText> : '미작성'}
                                 </p>
                             </div>
                         </div>
