@@ -4,6 +4,14 @@ const gradeValues = {
     'middle-3': 3,
 };
 
+const semesterValues = {
+    1: 'first',
+    2: 'second',
+    first: 'first',
+    second: 'second',
+    common: 'common',
+};
+
 const questionTypeValues = {
     MULTIPLE_CHOICE: 'choice',
     SHORT_INPUT: 'short',
@@ -50,7 +58,7 @@ export const buildWorksheetSavePayload = ({
     title,
     type,
     gradeId,
-    semester,
+    semester: semesterValues[semester] ?? semester,
     problems,
     supports,
     origin = 'manual',
