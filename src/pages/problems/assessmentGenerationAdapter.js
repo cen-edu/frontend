@@ -24,6 +24,10 @@ const difficultyKeys = {
     3: 'high',
 };
 
+const getDifficultyKey = (difficulty) => (
+    difficultyKeys[difficulty] ?? difficulty
+);
+
 const byDisplayOrder = (left, right) => (
     (left.displayOrder ?? 0) - (right.displayOrder ?? 0)
 );
@@ -37,8 +41,17 @@ export const buildAssessmentGenerationItems = (groups) => groups.flatMap(({ unit
     }))
 ));
 
+const normalizeAnswerLatex = (value) => {
+    const latex = String(value ?? '').trim();
+    const arrayBeginPattern = /\\begin\{array\}/;
+
+    if (arrayBeginPattern.test(latex)) return latex;
+
+    return latex.replace(/\\end\{array\}/g, '').trim();
+};
+
 const getAnswerValue = (answerUnit) => (
-    answerUnit?.answerRaw ?? answerUnit?.answer ?? ''
+    normalizeAnswerLatex(answerUnit?.answerRaw ?? answerUnit?.answer ?? '')
 );
 
 const normalizeRubricItem = (item, index) => ({
@@ -81,7 +94,7 @@ const normalizeAssessmentProblem = (problem, index, existingProblem = null) => {
             .filter(Boolean)
             .join(' > ') || existingProblem?.unitPath,
         format,
-        difficulty: difficultyKeys[problem.difficulty],
+        difficulty: getDifficultyKey(problem.difficulty),
         maxScore: existingProblem?.maxScore ?? defaultScores[format],
         prompt,
         choices: [...(problem.choices ?? [])].sort(byDisplayOrder),

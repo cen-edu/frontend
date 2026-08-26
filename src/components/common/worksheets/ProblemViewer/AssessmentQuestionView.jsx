@@ -111,11 +111,6 @@ function AssessmentQuestionView({ problem, onScoreChange, editMode = false, sele
                             );
                         })}
                     </ol>
-                    <div className={`assessment-question__answer-unit assessment-question__sector${selectableClass('answer-unit', answerUnitKey)}`}>
-                        {selectButton('answer-unit', '정답', answerUnitKey)}
-                        <strong>정답</strong>
-                        <MathText>{problem.answer}</MathText>
-                    </div>
                 </div>
             )}
 
