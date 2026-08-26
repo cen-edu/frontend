@@ -6,6 +6,7 @@ import {
     requestProblemEditTurn,
 } from '../../api/problems/problemEditApi.js';
 import { buildProblemEditTarget, normalizeEditedProblem } from './problemEditAdapter.js';
+import { hydrateProblemAssetPreviews } from './problemAssetPreview.js';
 
 const STATUS_POLLING_INTERVAL_MS = 1000;
 const STATUS_POLLING_TIMEOUT_MS = 120000;
@@ -85,10 +86,15 @@ export const useProblemEditMutation = () => {
                 sessionId,
                 signal: controller.signal,
             });
+            const normalizedProblem = normalizeEditedProblem({ preview, currentProblem });
+            const problem = await hydrateProblemAssetPreviews({
+                problem: normalizedProblem,
+                signal: controller.signal,
+            });
 
             return {
                 turn,
-                problem: normalizeEditedProblem({ preview, currentProblem }),
+                problem,
             };
         },
     });

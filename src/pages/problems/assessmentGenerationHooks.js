@@ -5,6 +5,7 @@ import {
     buildAssessmentGenerationItems,
     normalizeAssessmentGenerationSlots,
 } from './assessmentGenerationAdapter.js';
+import { hydrateProblemAssetPreviews } from './problemAssetPreview.js';
 
 const POLLING_INTERVAL_MS = 1000;
 const TERMINAL_JOB_STATUSES = new Set(['COMPLETED', 'PARTIALLY_FAILED', 'FAILED']);
@@ -35,12 +36,14 @@ export const useAssessmentGenerationMutation = () => useMutation({
             throw new Error('일부 평가 문항을 생성하지 못했습니다. 출제 구성을 확인한 뒤 다시 시도해 주세요.');
         }
 
-        const problems = normalizeAssessmentGenerationSlots(completedJob.slots, groups);
+        const normalizedProblems = normalizeAssessmentGenerationSlots(completedJob.slots, groups);
 
-        if (!problems?.length) {
+        if (!normalizedProblems.length) {
             throw new Error('생성된 평가 문항이 없습니다. 출제 구성을 확인한 뒤 다시 시도해 주세요.');
         }
 
-        return problems;
+        return Promise.all(normalizedProblems.map((problem) => (
+            hydrateProblemAssetPreviews({ problem })
+        )));
     },
 });
