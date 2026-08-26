@@ -20,6 +20,34 @@ const statusTabs = [
     { value: 'confirmed', label: '확정됨' },
 ];
 
+const getSelectableWorksheets = (worksheets) => worksheets.flatMap((worksheet) => [
+    worksheet,
+    ...(worksheet.customLearning?.students ?? []).flatMap((student) => student.sessions ?? []),
+]);
+
+const filterWorksheetTree = (worksheets, searchTerm) => {
+    const keyword = searchTerm.trim().toLowerCase();
+    if (!keyword) return worksheets;
+
+    return worksheets.reduce((filteredWorksheets, worksheet) => {
+        const parentMatches = worksheet.title.toLowerCase().includes(keyword);
+        const students = (worksheet.customLearning?.students ?? []).reduce((matchedStudents, student) => {
+            const sessions = (student.sessions ?? []).filter((session) => (
+                parentMatches || session.title.toLowerCase().includes(keyword)
+            ));
+            return sessions.length ? [...matchedStudents, { ...student, sessions }] : matchedStudents;
+        }, []);
+
+        if (!parentMatches && !students.length) return filteredWorksheets;
+        return [...filteredWorksheets, {
+            ...worksheet,
+            customLearning: worksheet.customLearning
+                ? { ...worksheet.customLearning, students }
+                : null,
+        }];
+    }, []);
+};
+
 function AssessmentResultPage() {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
@@ -45,10 +73,12 @@ function AssessmentResultPage() {
     }), [academicFilters.classId, academicFilters.grade, academicFilters.semester, status]);
     const worksheetsQuery = useGradingWorksheetsQuery(queryParams);
     const results = hasAcademicClass ? worksheetsQuery.data ?? [] : [];
-    const filtered = useMemo(() => results.filter((worksheet) => (
-        worksheet.title.toLowerCase().includes(searchTerm.trim().toLowerCase())
-    )), [results, searchTerm]);
-    const selectedWorksheet = filtered.find((item) => item.id === selectedId);
+    const filtered = useMemo(
+        () => filterWorksheetTree(results, searchTerm),
+        [results, searchTerm],
+    );
+    const selectableWorksheets = useMemo(() => getSelectableWorksheets(filtered), [filtered]);
+    const selectedWorksheet = selectableWorksheets.find((item) => item.id === selectedId);
     const scoreTableQuery = useGradingScoreTableQuery(Number(selectedWorksheet?.assignmentId));
     const worksheet = scoreTableQuery.data
         ? { ...selectedWorksheet, ...scoreTableQuery.data }
@@ -57,11 +87,11 @@ function AssessmentResultPage() {
 
     useEffect(() => {
         const requestedWorksheetId = searchParams.get('worksheet');
-        const nextId = filtered.some((item) => item.id === requestedWorksheetId)
+        const nextId = selectableWorksheets.some((item) => item.id === requestedWorksheetId)
             ? requestedWorksheetId
-            : filtered[0]?.id ?? '';
-        if (!filtered.some((item) => item.id === selectedId)) setSelectedId(nextId);
-    }, [filtered, searchParams, selectedId]);
+            : selectableWorksheets[0]?.id ?? '';
+        if (!selectableWorksheets.some((item) => item.id === selectedId)) setSelectedId(nextId);
+    }, [searchParams, selectableWorksheets, selectedId]);
 
     const changeAcademicFilter = (key, value) => {
         updateAcademicFilter(key, value);
@@ -109,7 +139,7 @@ function AssessmentResultPage() {
                     <h1 id="assessment-results-title">평가 결과</h1>
                     <p>학습별 채점 진행 상태와 학생별 문항 결과를 확인합니다.</p>
                 </div>
-                <span>검색 결과 <strong>{filtered.length}</strong>건</span>
+                <span>검색 결과 <strong>{selectableWorksheets.length}</strong>건</span>
             </header>
             <div className="assessment-results__toolbar">
                 <div className="assessment-results__filters">

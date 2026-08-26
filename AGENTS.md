@@ -117,6 +117,7 @@
 - 학습 현황과 취약점 분석 사이의 학습지 컨텍스트는 `worksheet` 쿼리로 전달한다.
 - 취약점 분석의 전체/개인 화면은 좌측 분석 대상 목록을 공유하고 개인 URL(`/learning/weaknesses/students/:id`)을 유지한 채 같은 2단 레이아웃 안에서 전환한다.
 - 평가 결과 조회(`/learning/results`)는 학습 관리의 중첩 라우트를 사용하고, 채점 화면(`/learning/results/:worksheetId/grading`)은 헤더와 사이드바가 없는 독립 라우트로 유지한다.
+- 평가 결과 목록의 맞춤 학습은 원본 학습지 응답의 `customLearning.students[].sessions[]`를 사용해 원본 학습지 → 학생 → 회차 계층으로 표시한다. 맞춤 회차를 선택하면 회차의 `assignmentId`로 기존 채점 상세를 조회하며, 검색 결과에서도 부모 계층을 유지한다.
 
 ## 접근성
 

@@ -27,6 +27,10 @@
     gap: 8px;
   }
 
+  &__group {
+    min-width: 0;
+  }
+
   &__item {
     width: 100%;
     padding: 14px;
@@ -50,6 +54,24 @@
       border-color: #b9c9d8;
     }
 
+    &--child {
+      position: relative;
+      padding: 12px 13px;
+      background: #fbfcfd;
+
+      &::before {
+        position: absolute;
+        top: 17px;
+        left: -15px;
+        width: 10px;
+        height: 10px;
+        border-bottom: 1px solid #cbd5df;
+        border-left: 1px solid #cbd5df;
+        border-radius: 0 0 0 4px;
+        content: '';
+      }
+    }
+
     strong {
       font-size: 15px;
     }
@@ -58,6 +80,46 @@
   &__meta {
     color: #747f91;
     font-size: 11px;
+  }
+
+  &__custom {
+    margin: 7px 0 0 13px;
+    padding-left: 13px;
+    display: grid;
+    gap: 9px;
+    border-left: 1px solid #d8e0e8;
+  }
+
+  &__student {
+    min-width: 0;
+  }
+
+  &__student-heading {
+    min-height: 28px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: #596579;
+
+    i {
+      color: #7e91a4;
+      font-size: 13px;
+    }
+
+    strong {
+      font-size: 12px;
+    }
+
+    span {
+      color: #8994a4;
+      font-size: 11px;
+    }
+  }
+
+  &__sessions {
+    margin-left: 14px;
+    display: grid;
+    gap: 7px;
   }
 
   &__status {

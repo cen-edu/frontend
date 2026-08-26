@@ -30,10 +30,36 @@ const getPrompt = (blocks) => blocks
     .filter(Boolean)
     .join('\n');
 
+const normalizeCustomLearning = (customLearning, parentWorksheet) => {
+    if (!customLearning) return null;
+
+    return {
+        ...customLearning,
+        students: [...(customLearning.students ?? [])]
+            .sort((left, right) => (left.displayNumber ?? 0) - (right.displayNumber ?? 0))
+            .map((student) => ({
+            ...student,
+            sessions: [...(student.sessions ?? [])]
+                .sort((left, right) => (left.sessionNumber ?? 0) - (right.sessionNumber ?? 0))
+                .map((session) => ({
+                ...session,
+                id: String(session.assignmentId),
+                origin: 'custom',
+                className: parentWorksheet.className,
+                studentId: student.studentId,
+                studentName: student.name,
+                studentDisplayNumber: student.displayNumber,
+                assignedAt: formatDate(session.assignedAt),
+                })),
+            })),
+    };
+};
+
 export const normalizeGradingWorksheet = (worksheet) => ({
     ...worksheet,
     id: String(worksheet.assignmentId),
     assignedAt: formatDate(worksheet.assignedAt),
+    customLearning: normalizeCustomLearning(worksheet.customLearning, worksheet),
 });
 
 export const normalizeScoreTable = (scoreTable) => {
